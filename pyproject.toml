@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.0a3"
+version = "0.0.0a4"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -31,6 +31,7 @@ packages = [
 [tool.poetry.dependencies]
 # Core dependencies
 python = ">=3.9,<3.13"
+packaging = ">=22.0,<23.3"
 
 [tool.poetry.extras]
 
@@ -49,7 +50,7 @@ pre-commit = "^3.4"
 pygments = "^2.16"
 pytest = "^7.4"
 pytest-cov = "^4.1"
-pytest-timeout = "^2.1"
+pytest-timeout = "^2.2"
 ruff = ">=0.0.292,<1.0"
 xdoctest = "^1.1"
 
