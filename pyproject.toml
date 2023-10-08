@@ -1,0 +1,170 @@
+[tool.poetry]
+name = "feu"
+version = "0.0.0a0"
+description = "A light library to help to manage packages"
+readme = "README.md"
+authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
+homepage = "https://github.com/durandtibo/feu"
+repository = "https://github.com/durandtibo/feu"
+keywords = ["package"]
+license = "BSD-3-Clause"
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries",
+]
+
+packages = [
+    { include = "feu", from = "src" },
+]
+
+[tool.poetry.dependencies]
+# Core dependencies
+python = ">=3.9,<3.13"
+
+[tool.poetry.extras]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.4"
+mkdocstrings = "^0.23"
+
+[tool.poetry.group.dev.dependencies]
+black = ">=23.9"
+coverage = { extras = ["toml"], version = "^7.3" }
+docformatter = { extras = ["tomli"], version = "^1.7" }
+pre-commit = "^3.4"
+pygments = "^2.16"
+pytest = "^7.4"
+pytest-cov = "^4.1"
+pytest-timeout = "^2.1"
+ruff = ">=0.0.292,<1.0"
+xdoctest = "^1.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["feu"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:"
+]
+
+[tool.pytest.ini_options]
+testpaths = "tests/"
+log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+log_level = "DEBUG"
+addopts = "--color yes --durations 10 -rf"
+# Configuration of the short test summary info
+# https://docs.pytest.org/en/stable/usage.html#detailed-summary-report
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310"]
+include = '\.pyi?$'
+
+[tool.pylint.FORMAT]
+max-line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[tool.docformatter]
+recursive = true
+wrap-summaries = 72
+wrap-descriptions = 72
+syntax = "google"
+
+[tool.ruff]
+select = [
+    "A", # builtins
+    "ANN", # annotations
+    "B", # bugbear
+    "BLE", # blind-except
+    "E", # pycodestyle (Error)
+    "F", # pyflakes
+    "N", # naming
+    "PTH", # pathlib
+    "UP", # pyupgrade
+    "W", # pycodestyle (Warning)
+]
+ignore = [
+    "A003", # Class attribute `{name}` is shadowing a python builtin
+    "ANN002", # Missing type annotation for `*args`
+    "ANN003", # Missing type annotation for `**kwargs`
+    "ANN101", # Missing type annotation for `self` in method
+    "ANN102", # Missing type annotation for `cls` in classmethod
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed.
+    "B905", # `zip()` without an explicit strict= parameter set. The `strict=` argument was added in Python 3.10
+    "E501", # Line lengths are recommended to be no greater than 79 characters.
+    "W505", # Doc line too long
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "ANN", "B", "E", "F", "PTH", "W"]
+unfixable = []
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+line-length = 100
+target-version = "py39"
+src = ["src"]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.pycodestyle]
+max-doc-length = 72
+
+[tool.ruff.isort]
+force-sort-within-sections = true
+combine-as-imports = true
+known-first-party = ["src"]
+
+[tool.ruff.flake8-import-conventions]
+[tool.ruff.flake8-import-conventions.aliases]
+numpy = "np"
