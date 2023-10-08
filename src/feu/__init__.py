@@ -1,5 +1,8 @@
 from __future__ import annotations
 
-__all__ = ["is_package_available"]
+__all__ = [
+    "is_module_available",
+    "is_package_available",
+]
 
-from feu.package import is_package_available
+from feu.imports import is_module_available, is_package_available
