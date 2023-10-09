@@ -26,8 +26,13 @@ jobs:
 
       - name: Install package
         run: |
-          pip install "coola[all]"
+          pip install "feu"
 
       - name: Tests
         run: |
-          python -c "from feu import is_module_available; is_module_available('os') "
+          python -c "from feu import is_module_available; assert is_module_available('os') "
+
+      - name: Check imports
+        run: |
+          python -c "from feu import is_module_available, is_package_available"
+          python -c "from feu import compare_version, get_package_version"
