@@ -31,6 +31,3 @@ jobs:
       - name: Tests
         run: |
           python -c "from feu import is_module_available; is_module_available('os') "
-
-  cyclic-imports:
-    uses: ./.github/workflows/cyclic-imports.yaml
