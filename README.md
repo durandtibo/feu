@@ -49,7 +49,15 @@
     <br/>
 </p>
 
-A light library to help to manage packages
+## Overview
+
+`feu` is a light Python library to help to manage packages.
+
+- [Documentation](https://durandtibo.github.io/feu/)
+- [Installation](#installation)
+- [Contributing](#contributing)
+- [API stability](#api-stability)
+- [License](#license)
 
 ## Installation
 
