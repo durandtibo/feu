@@ -1,0 +1,36 @@
+name: Nightly Package Tests
+on:
+  schedule:
+    - cron: '30 11 * * *' # run at 11:30 AM UTC
+  workflow_dispatch:  # to trigger manually
+
+jobs:
+  all:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install "coola[all]"
+
+      - name: Tests
+        run: |
+          python -c "from feu import is_module_available; is_module_available('os') "
+
+  cyclic-imports:
+    uses: ./.github/workflows/cyclic-imports.yaml
