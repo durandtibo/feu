@@ -83,6 +83,8 @@ The following is the corresponding `feu` versions and supported dependencies.
 
 | `feu`   | `packaging`    | `python`      |
 |---------|----------------|---------------|
+| `main`  | `>=22.0,<24.0` | `>=3.9,<3.13` |
+| `0.0.2` | `>=22.0,<24.0` | `>=3.9,<3.13` |
 | `0.0.1` | `>=22.0,<23.3` | `>=3.9,<3.13` |
 
 <sup>*</sup> indicates an optional dependency
