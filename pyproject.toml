@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.1"
+version = "0.0.2"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -31,7 +31,7 @@ packages = [
 [tool.poetry.dependencies]
 # Core dependencies
 python = ">=3.9,<3.13"
-packaging = ">=22.0,<23.3"
+packaging = ">=22.0,<24.0"
 
 [tool.poetry.extras]
 
