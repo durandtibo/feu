@@ -1,3 +1,5 @@
+r"""Root package of ``feu``."""
+
 from __future__ import annotations
 
 __all__ = [
