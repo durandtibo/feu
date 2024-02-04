@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import operator
 
+import pytest
 from packaging.version import Version
-from pytest import mark
 
 from feu import compare_version, get_package_version
 
@@ -29,7 +29,7 @@ def test_compare_version_false_missing() -> None:
 #########################################
 
 
-@mark.parametrize("package", ("pytest", "ruff"))
+@pytest.mark.parametrize("package", ["pytest", "ruff"])
 def test_get_package_version(package: str) -> None:
     assert isinstance(get_package_version(package), Version)
 
