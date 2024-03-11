@@ -31,7 +31,7 @@ packages = [
 [tool.poetry.dependencies]
 # Core dependencies
 python = ">=3.9,<3.13"
-packaging = ">=22.0,<24.0"
+packaging = ">=22.0,<25.0"
 
 [tool.poetry.extras]
 
