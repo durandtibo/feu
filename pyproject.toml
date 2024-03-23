@@ -31,7 +31,7 @@ packages = [
 [tool.poetry.dependencies]
 # Core dependencies
 python = ">=3.9,<3.13"
-packaging = ">=22.0,<24.0"
+packaging = ">=22.0,<25.0"
 
 [tool.poetry.extras]
 
@@ -43,12 +43,12 @@ mkdocs-material = "^9.5"
 mkdocstrings = "^0.24"
 
 [tool.poetry.group.dev.dependencies]
-black = ">=24.2"
+black = ">=24.3"
 coverage = { extras = ["toml"], version = "^7.4" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
 pre-commit = "^3.6"
 pygments = "^2.17"
-pytest = "^8.0"
+pytest = "^8.1"
 pytest-cov = "^4.1"
 pytest-timeout = "^2.3"
 ruff = ">=0.3,<1.0"
