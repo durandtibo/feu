@@ -28,11 +28,34 @@ jobs:
         run: |
           pip install "feu"
 
-      - name: Tests
+      - name: Run some checks
         run: |
-          python -c "from feu import is_module_available; assert is_module_available('os') "
+          python tests/package_checks.py
 
-      - name: Check imports
+  packaging:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        packaging-version: [ '24.0', '23.2', '22.0' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
         run: |
-          python -c "from feu import is_module_available, is_package_available"
-          python -c "from feu import compare_version, get_package_version"
+          pip install feu packaging==${{ matrix.packaging-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
