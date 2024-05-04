@@ -1,0 +1,67 @@
+site_name: feu
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.expand
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - get_started.md
+  - resolvers.md
+  - Reference:
+      - refs/index.md
+      - refs/registry.md
+      - refs/resolvers.md
+  - GitHub: https://github.com/durandtibo/feu
+
+repo_url: https://github.com/durandtibo/feu
+repo_name: durandtibo/feu
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [ ../src ]
+          options:
+            allow_inspection: true
+            docstring_style: google
+            separate_signature: true
+            show_bases: true
+            show_object_full_path: true
+            show_root_full_path: true
+            show_root_heading: true
+            show_root_toc_entry: true
+            show_signature: true
+            show_signature_annotations: true
+            show_source: false
+            signature_crossrefs: true
+
+extra:
+  version:
+    method: mike
+
+copyright: Copyright &copy; 2023 - present Thibaut Durand
