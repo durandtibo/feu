@@ -28,6 +28,7 @@ def compare_version(package: str, op: Callable, version: str) -> bool:
     Example usage:
 
     ```pycon
+
     >>> import operator
     >>> from feu import compare_version
     >>> compare_version("pytest", op=operator.ge, version="7.3.0")
@@ -53,6 +54,7 @@ def get_package_version(package: str) -> Version | None:
     Example usage:
 
     ```pycon
+
     >>> from feu import get_package_version
     >>> get_package_version("pytest")
     <Version('...')>

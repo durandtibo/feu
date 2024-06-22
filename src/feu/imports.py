@@ -22,6 +22,7 @@ def is_package_available(package: str) -> bool:
     Example usage:
 
     ```pycon
+
     >>> from feu import is_package_available
     >>> is_package_available("os")
     True
@@ -48,6 +49,7 @@ def is_module_available(module: str) -> bool:
     Example usage:
 
     ```pycon
+
     >>> from feu import is_module_available
     >>> is_module_available("os")
     True
