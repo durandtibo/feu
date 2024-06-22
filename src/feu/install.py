@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "BaseInstaller",
     "DefaultInstaller",
+    "MatplotlibInstaller",
     "Numpy2Installer",
     "PackageInstaller",
     "PandasInstaller",
@@ -88,6 +89,16 @@ class Numpy2Installer(BaseInstaller):
         run_bash_command(f"pip install -U {self._package}=={version}{deps}")
 
 
+class MatplotlibInstaller(Numpy2Installer):
+    r"""Implement the ``matplotlib`` package installer.
+
+    ``numpy`` 2.0 support was added in ``matplotlib`` 3.8.4.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="matplotlib", min_version="3.8.4")
+
+
 class PandasInstaller(Numpy2Installer):
     r"""Implement the ``pandas`` package installer.
 
@@ -122,6 +133,7 @@ class PackageInstaller:
     """Implement the default equality tester."""
 
     registry: ClassVar[dict[str, BaseInstaller]] = {
+        "matplotlib": MatplotlibInstaller(),
         "pandas": PandasInstaller(),
         "torch": TorchInstaller(),
         "xarray": XarrayInstaller(),

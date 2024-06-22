@@ -7,6 +7,7 @@ import pytest
 from feu.install import (
     BaseInstaller,
     DefaultInstaller,
+    MatplotlibInstaller,
     PackageInstaller,
     PandasInstaller,
     TorchInstaller,
@@ -49,6 +50,33 @@ def test_default_installer_install() -> None:
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("2.0.0")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+
+
+#########################################
+#     Tests for MatplotlibInstaller     #
+#########################################
+
+
+def test_matplotlib_installer_repr() -> None:
+    assert repr(MatplotlibInstaller()).startswith("MatplotlibInstaller(")
+
+
+def test_matplotlib_installer_str() -> None:
+    assert str(MatplotlibInstaller()).startswith("MatplotlibInstaller(")
+
+
+def test_matplotlib_installer_install_high() -> None:
+    installer = MatplotlibInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("3.8.4")
+        run_mock.assert_called_once_with("pip install -U matplotlib==3.8.4")
+
+
+def test_matplotlib_installer_install_low() -> None:
+    installer = MatplotlibInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("3.7.1")
+        run_mock.assert_called_once_with("pip install -U matplotlib==3.7.1 numpy==1.26.4")
 
 
 #####################################
