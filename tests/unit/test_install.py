@@ -7,6 +7,7 @@ import pytest
 from feu.install import (
     BaseInstaller,
     DefaultInstaller,
+    JaxInstaller,
     MatplotlibInstaller,
     PackageInstaller,
     PandasInstaller,
@@ -50,6 +51,33 @@ def test_default_installer_install() -> None:
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("2.0.0")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+
+
+##################################
+#     Tests for JaxInstaller     #
+##################################
+
+
+def test_jax_installer_repr() -> None:
+    assert repr(JaxInstaller()).startswith("JaxInstaller(")
+
+
+def test_jax_installer_str() -> None:
+    assert str(JaxInstaller()).startswith("JaxInstaller(")
+
+
+def test_jax_installer_install_high() -> None:
+    installer = JaxInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("0.4.30")
+        run_mock.assert_called_once_with("pip install -U jax==0.4.30 jaxlib==0.4.30")
+
+
+def test_jax_installer_install_low() -> None:
+    installer = JaxInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("0.4.25")
+        run_mock.assert_called_once_with("pip install -U jax==0.4.25 jaxlib==0.4.25 numpy==1.26.4")
 
 
 #########################################
@@ -209,6 +237,10 @@ def test_package_installer_install_pandas() -> None:
     with patch("feu.install.run_bash_command") as run_mock:
         PackageInstaller.install(package="pandas", version="2.1.1")
         run_mock.assert_called_once_with("pip install -U pandas==2.1.1 numpy==1.26.4")
+
+
+def test_package_installer_registry() -> None:
+    assert set(PackageInstaller.registry) == {"jax", "pandas", "matplotlib", "torch", "xarray"}
 
 
 #####################################

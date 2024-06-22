@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "BaseInstaller",
     "DefaultInstaller",
+    "JaxInstaller",
     "MatplotlibInstaller",
     "Numpy2Installer",
     "PackageInstaller",
@@ -89,6 +90,20 @@ class Numpy2Installer(BaseInstaller):
         run_bash_command(f"pip install -U {self._package}=={version}{deps}")
 
 
+class JaxInstaller(BaseInstaller):
+    r"""Implement the ``jax`` package installer.
+
+    ``numpy`` 2.0 support was added in ``jax`` 0.4.26.
+    """
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
+
+    def install(self, version: str) -> None:
+        deps = "" if Version(version) >= Version("0.4.26") else " numpy==1.26.4"
+        run_bash_command(f"pip install -U jax=={version} jaxlib=={version}{deps}")
+
+
 class MatplotlibInstaller(Numpy2Installer):
     r"""Implement the ``matplotlib`` package installer.
 
@@ -130,9 +145,10 @@ class XarrayInstaller(Numpy2Installer):
 
 
 class PackageInstaller:
-    """Implement the default equality tester."""
+    """Implement the main package installer."""
 
     registry: ClassVar[dict[str, BaseInstaller]] = {
+        "jax": JaxInstaller(),
         "matplotlib": MatplotlibInstaller(),
         "pandas": PandasInstaller(),
         "torch": TorchInstaller(),
