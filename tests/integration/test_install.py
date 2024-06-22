@@ -35,7 +35,7 @@ def test_pandas_installer_install() -> None:
 
 
 def test_torch_installer_install() -> None:
-    TorchInstaller().install("2.3.1")
+    TorchInstaller().install("2.2.1")
     assert is_package_available("torch")
 
 
