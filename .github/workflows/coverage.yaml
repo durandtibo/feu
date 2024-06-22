@@ -33,6 +33,10 @@ jobs:
         run: |
           poetry run make unit-test-cov
 
+      - name: Run integration tests
+        run: |
+          poetry run make integration-test-cov
+
       - name: Upload coverage to Codecov
         if: github.repository == 'durandtibo/feu' && (github.event_name == 'push' || github.event_name == 'pull_request')
         uses: codecov/codecov-action@v4
