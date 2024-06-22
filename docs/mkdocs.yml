@@ -19,11 +19,9 @@ theme:
 nav:
   - Home: index.md
   - get_started.md
-  - resolvers.md
   - Reference:
-      - refs/index.md
-      - refs/registry.md
-      - refs/resolvers.md
+      - refs/root.md
+      - refs/install.md
   - GitHub: https://github.com/durandtibo/feu
 
 repo_url: https://github.com/durandtibo/feu
