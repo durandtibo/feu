@@ -6,6 +6,7 @@ from feu import install_package, is_package_available
 from feu.install import PackageInstaller
 
 PACKAGES = [
+    ("jax", "0.4.30"),
     ("matplotlib", "3.9.0"),
     ("numpy", "2.0.0"),
     ("pandas", "2.2.2"),
