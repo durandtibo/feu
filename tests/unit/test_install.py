@@ -128,8 +128,8 @@ def test_xarray_installer_install_high() -> None:
 def test_xarray_installer_install_low() -> None:
     installer = XarrayInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
-        installer.install("2023.8")
-        run_mock.assert_called_once_with("pip install -U xarray==2023.8 numpy==1.26.4")
+        installer.install("2023.5")
+        run_mock.assert_called_once_with("pip install -U xarray==2023.5 numpy==1.26.4")
 
 
 ######################################

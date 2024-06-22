@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "BaseInstaller",
     "DefaultInstaller",
+    "Numpy2Installer",
     "PackageInstaller",
     "PandasInstaller",
     "TorchInstaller",
@@ -62,46 +63,59 @@ class DefaultInstaller(BaseInstaller):
         run_bash_command(f"pip install -U {self._package}=={version}")
 
 
-class PandasInstaller(BaseInstaller):
+class Numpy2Installer(BaseInstaller):
+    r"""Define a package installer to install package that did not pin
+    ``numpy<2.0`` and are not fully compatible with numpy.
+
+    https://github.com/numpy/numpy/issues/26191 indicates the packages
+    that are compatible with numpy 2.0.
+
+    Args:
+        package: The name of the package to install.
+        min_version: The first version that is fully compatible with
+            numpy 2.0.
+    """
+
+    def __init__(self, package: str, min_version: str) -> None:
+        self._package = package
+        self._min_version = min_version
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
+
+    def install(self, version: str) -> None:
+        deps = "" if Version(version) >= Version(self._min_version) else " numpy==1.26.4"
+        run_bash_command(f"pip install -U {self._package}=={version}{deps}")
+
+
+class PandasInstaller(Numpy2Installer):
     r"""Implement the ``pandas`` package installer.
 
     ``numpy`` 2.0 support was added in ``pandas`` 2.2.2.
     """
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}()"
-
-    def install(self, version: str) -> None:
-        deps = "" if Version(version) >= Version("2.2.2") else " numpy==1.26.4"
-        run_bash_command(f"pip install -U pandas=={version}{deps}")
+    def __init__(self) -> None:
+        super().__init__(package="pandas", min_version="2.2.2")
 
 
-class TorchInstaller(BaseInstaller):
+class TorchInstaller(Numpy2Installer):
     r"""Implement the ``torch`` package installer.
 
     ``numpy`` 2.0 support was added in ``torch`` 2.3.0.
     """
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}()"
-
-    def install(self, version: str) -> None:
-        deps = "" if Version(version) >= Version("2.3.0") else " numpy==1.26.4"
-        run_bash_command(f"pip install -U torch=={version}{deps}")
+    def __init__(self) -> None:
+        super().__init__(package="torch", min_version="2.3.0")
 
 
-class XarrayInstaller(BaseInstaller):
+class XarrayInstaller(Numpy2Installer):
     r"""Implement the ``xarray`` package installer.
 
-    ``numpy`` 2.0 support was added in ``xarray`` 2023.9.
+    ``numpy`` 2.0 support was added in ``xarray`` 2024.6.0.
     """
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}()"
-
-    def install(self, version: str) -> None:
-        deps = "" if Version(version) >= Version("2023.9") else " numpy==1.26.4"
-        run_bash_command(f"pip install -U xarray=={version}{deps}")
+    def __init__(self) -> None:
+        super().__init__(package="xarray", min_version="2024.6.0")
 
 
 class PackageInstaller:
