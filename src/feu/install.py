@@ -55,6 +55,9 @@ class DefaultInstaller(BaseInstaller):
     def __init__(self, package: str) -> None:
         self._package = package
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}(package={self._package})"
+
     def install(self, version: str) -> None:
         run_bash_command(f"pip install -U {self._package}=={version}")
 
@@ -64,6 +67,9 @@ class PandasInstaller(BaseInstaller):
 
     ``numpy`` 2.0 support was added in ``pandas`` 2.2.2.
     """
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
 
     def install(self, version: str) -> None:
         deps = "" if Version(version) >= Version("2.2.2") else " numpy==1.26.4"
@@ -76,6 +82,9 @@ class TorchInstaller(BaseInstaller):
     ``numpy`` 2.0 support was added in ``torch`` 2.3.0.
     """
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
+
     def install(self, version: str) -> None:
         deps = "" if Version(version) >= Version("2.3.0") else " numpy==1.26.4"
         run_bash_command(f"pip install -U torch=={version}{deps}")
@@ -86,6 +95,9 @@ class XarrayInstaller(BaseInstaller):
 
     ``numpy`` 2.0 support was added in ``xarray`` 2023.9.
     """
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
 
     def install(self, version: str) -> None:
         deps = "" if Version(version) >= Version("2023.9") else " numpy==1.26.4"
@@ -100,6 +112,61 @@ class PackageInstaller:
         "torch": TorchInstaller(),
         "xarray": XarrayInstaller(),
     }
+
+    @classmethod
+    def add_installer(cls, package: str, installer: BaseInstaller, exist_ok: bool = False) -> None:
+        r"""Add an installer for a given package.
+
+        Args:
+            package: The package name.
+            installer: The installer used for the given package.
+            exist_ok: If ``False``, ``RuntimeError`` is raised if the
+                package already exists. This parameter should be set
+                to ``True`` to overwrite the installer for a package.
+
+        Raises:
+            RuntimeError: if an installer is already registered for the
+                package name and ``exist_ok=False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install import PackageInstaller, PandasInstaller
+        >>> PackageInstaller.add_installer("pandas", PandasInstaller(), exist_ok=True)
+
+        ```
+        """
+        if package in cls.registry and not exist_ok:
+            msg = (
+                f"An installer ({cls.registry[package]}) is already registered for the data "
+                f"type {package}. Please use `exist_ok=True` if you want to overwrite the "
+                "installer for this type"
+            )
+            raise RuntimeError(msg)
+        cls.registry[package] = installer
+
+    @classmethod
+    def has_installer(cls, package: str) -> bool:
+        r"""Indicate if an installer is registered for the given package.
+
+        Args:
+            package: The package name.
+
+        Returns:
+            ``True`` if an installer is registered,
+                otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install import PackageInstaller
+        >>> PackageInstaller.has_installer("pandas")
+
+        ```
+        """
+        return package in cls.registry
 
     @classmethod
     def install(cls, package: str, version: str) -> None:
