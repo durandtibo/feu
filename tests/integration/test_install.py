@@ -1,52 +1,16 @@
 from __future__ import annotations
 
+import pytest
+
 from feu import install_package, is_package_available
-from feu.install import (
-    DefaultInstaller,
-    PackageInstaller,
-    PandasInstaller,
-    TorchInstaller,
-    XarrayInstaller,
-)
+from feu.install import PackageInstaller
 
-######################################
-#     Tests for DefaultInstaller     #
-######################################
-
-
-def test_default_installer_install() -> None:
-    DefaultInstaller("numpy").install("2.0.0")
-    assert is_package_available("numpy")
-
-
-#####################################
-#     Tests for PandasInstaller     #
-#####################################
-
-
-def test_pandas_installer_install() -> None:
-    PandasInstaller().install("2.2.2")
-    assert is_package_available("pandas")
-
-
-####################################
-#     Tests for TorchInstaller     #
-####################################
-
-
-def test_torch_installer_install() -> None:
-    TorchInstaller().install("2.3.1")
-    assert is_package_available("torch")
-
-
-#####################################
-#     Tests for XarrayInstaller     #
-#####################################
-
-
-def test_xarray_installer_install() -> None:
-    XarrayInstaller().install("2024.6")
-    assert is_package_available("xarray")
+PACKAGES = [
+    ("numpy", "2.0.0"),
+    ("pandas", "2.2.2"),
+    ("torch", "2.2.2"),
+    ("xarray", "2024.6"),
+]
 
 
 #####################################
@@ -54,9 +18,10 @@ def test_xarray_installer_install() -> None:
 #####################################
 
 
-def test_install_package() -> None:
-    install_package(package="numpy", version="2.0.0")
-    assert is_package_available("numpy")
+@pytest.mark.parametrize(("package", "version"), PACKAGES)
+def test_install_package(package: str, version: str) -> None:
+    install_package(package=package, version=version)
+    assert is_package_available(package)
 
 
 ######################################
@@ -64,6 +29,7 @@ def test_install_package() -> None:
 ######################################
 
 
-def test_package_installer_install_numpy() -> None:
-    PackageInstaller.install(package="numpy", version="2.0.0")
-    assert is_package_available("numpy")
+@pytest.mark.parametrize(("package", "version"), PACKAGES)
+def test_package_installer_install(package: str, version: str) -> None:
+    PackageInstaller.install(package=package, version=version)
+    assert is_package_available(package)
