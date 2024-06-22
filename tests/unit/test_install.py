@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+
+import pytest
 
 from feu.install import (
+    BaseInstaller,
     DefaultInstaller,
     PackageInstaller,
     PandasInstaller,
@@ -33,6 +36,14 @@ def test_run_bash_command_mock() -> None:
 ######################################
 
 
+def test_default_installer_repr() -> None:
+    assert repr(DefaultInstaller("numpy")).startswith("DefaultInstaller(")
+
+
+def test_default_installer_str() -> None:
+    assert str(DefaultInstaller("numpy")).startswith("DefaultInstaller(")
+
+
 def test_default_installer_install() -> None:
     installer = DefaultInstaller("numpy")
     with patch("feu.install.run_bash_command") as run_mock:
@@ -43,6 +54,14 @@ def test_default_installer_install() -> None:
 #####################################
 #     Tests for PandasInstaller     #
 #####################################
+
+
+def test_pandas_installer_repr() -> None:
+    assert repr(PandasInstaller()).startswith("PandasInstaller(")
+
+
+def test_pandas_installer_str() -> None:
+    assert str(PandasInstaller()).startswith("PandasInstaller(")
 
 
 def test_pandas_installer_install_high() -> None:
@@ -64,6 +83,14 @@ def test_pandas_installer_install_low() -> None:
 ####################################
 
 
+def test_torch_installer_repr() -> None:
+    assert repr(TorchInstaller()).startswith("TorchInstaller(")
+
+
+def test_torch_installer_str() -> None:
+    assert str(TorchInstaller()).startswith("TorchInstaller(")
+
+
 def test_torch_installer_install_high() -> None:
     installer = TorchInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
@@ -83,6 +110,14 @@ def test_torch_installer_install_low() -> None:
 #####################################
 
 
+def test_xarray_installer_repr() -> None:
+    assert repr(XarrayInstaller()).startswith("XarrayInstaller(")
+
+
+def test_xarray_installer_str() -> None:
+    assert str(XarrayInstaller()).startswith("XarrayInstaller(")
+
+
 def test_xarray_installer_install_high() -> None:
     installer = XarrayInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
@@ -100,6 +135,40 @@ def test_xarray_installer_install_low() -> None:
 ######################################
 #     Tests for PackageInstaller     #
 ######################################
+
+
+@patch.dict(PackageInstaller.registry, {}, clear=True)
+def test_package_installer_add_installer() -> None:
+    installer = Mock(spec=BaseInstaller)
+    PackageInstaller.add_installer("pandas", installer)
+    assert PackageInstaller.registry["pandas"] == installer
+
+
+@patch.dict(PackageInstaller.registry, {}, clear=True)
+def test_package_installer_add_installer_duplicate_exist_ok_true() -> None:
+    installer = Mock(spec=BaseInstaller)
+    PackageInstaller.add_installer("pandas", Mock(spec=BaseInstaller))
+    PackageInstaller.add_installer("pandas", installer, exist_ok=True)
+    assert PackageInstaller.registry["pandas"] == installer
+
+
+@patch.dict(PackageInstaller.registry, {}, clear=True)
+def test_package_installer_add_installer_duplicate_exist_ok_false() -> None:
+    installer = Mock(spec=BaseInstaller)
+    PackageInstaller.add_installer("pandas", Mock(spec=BaseInstaller))
+    with pytest.raises(RuntimeError, match="An installer (.*) is already registered"):
+        PackageInstaller.add_installer("pandas", installer)
+
+
+@patch.dict(PackageInstaller.registry, {}, clear=True)
+def test_package_installer_has_installer_false() -> None:
+    assert not PackageInstaller.has_installer("pandas")
+
+
+@patch.dict(PackageInstaller.registry, {}, clear=True)
+def test_package_installer_has_installer_true() -> None:
+    PackageInstaller.add_installer("pandas", Mock(spec=BaseInstaller))
+    assert PackageInstaller.has_installer("pandas")
 
 
 def test_package_installer_install_numpy() -> None:
