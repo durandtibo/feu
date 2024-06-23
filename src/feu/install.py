@@ -124,6 +124,16 @@ class PandasInstaller(Numpy2Installer):
         super().__init__(package="pandas", min_version="2.2.2")
 
 
+class ScipyInstaller(Numpy2Installer):
+    r"""Implement the ``scipy`` package installer.
+
+    ``numpy`` 2.0 support was added in ``scipy`` 1.13.0.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="scipy", min_version="1.13.0")
+
+
 class TorchInstaller(Numpy2Installer):
     r"""Implement the ``torch`` package installer.
 
@@ -151,6 +161,7 @@ class PackageInstaller:
         "jax": JaxInstaller(),
         "matplotlib": MatplotlibInstaller(),
         "pandas": PandasInstaller(),
+        "scipy": ScipyInstaller(),
         "torch": TorchInstaller(),
         "xarray": XarrayInstaller(),
     }
