@@ -10,6 +10,7 @@ __all__ = [
     "Numpy2Installer",
     "PackageInstaller",
     "PandasInstaller",
+    "PyarrowInstaller",
     "TorchInstaller",
     "XarrayInstaller",
     "install_package",
@@ -124,6 +125,16 @@ class PandasInstaller(Numpy2Installer):
         super().__init__(package="pandas", min_version="2.2.2")
 
 
+class PyarrowInstaller(Numpy2Installer):
+    r"""Implement the ``pyarrow`` package installer.
+
+    ``numpy`` 2.0 support was added in ``pyarrow`` 16.0.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="pyarrow", min_version="16.0")
+
+
 class ScipyInstaller(Numpy2Installer):
     r"""Implement the ``scipy`` package installer.
 
@@ -161,6 +172,7 @@ class PackageInstaller:
         "jax": JaxInstaller(),
         "matplotlib": MatplotlibInstaller(),
         "pandas": PandasInstaller(),
+        "pyarrow": PyarrowInstaller(),
         "scipy": ScipyInstaller(),
         "torch": TorchInstaller(),
         "xarray": XarrayInstaller(),

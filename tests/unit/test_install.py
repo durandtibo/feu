@@ -11,6 +11,7 @@ from feu.install import (
     MatplotlibInstaller,
     PackageInstaller,
     PandasInstaller,
+    PyarrowInstaller,
     ScipyInstaller,
     TorchInstaller,
     XarrayInstaller,
@@ -133,6 +134,33 @@ def test_pandas_installer_install_low() -> None:
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("2.1.1")
         run_mock.assert_called_once_with("pip install -U pandas==2.1.1 numpy==1.26.4")
+
+
+######################################
+#     Tests for PyarrowInstaller     #
+######################################
+
+
+def test_pyarrow_installer_repr() -> None:
+    assert repr(PyarrowInstaller()).startswith("PyarrowInstaller(")
+
+
+def test_pyarrow_installer_str() -> None:
+    assert str(PyarrowInstaller()).startswith("PyarrowInstaller(")
+
+
+def test_pyarrow_installer_install_high() -> None:
+    installer = PyarrowInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("16.0")
+        run_mock.assert_called_once_with("pip install -U pyarrow==16.0")
+
+
+def test_pyarrow_installer_install_low() -> None:
+    installer = PyarrowInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("15.0")
+        run_mock.assert_called_once_with("pip install -U pyarrow==15.0 numpy==1.26.4")
 
 
 ####################################
@@ -271,6 +299,7 @@ def test_package_installer_registry() -> None:
     assert set(PackageInstaller.registry) == {
         "jax",
         "pandas",
+        "pyarrow",
         "matplotlib",
         "scipy",
         "torch",
