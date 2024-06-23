@@ -11,6 +11,7 @@ from feu.install import (
     MatplotlibInstaller,
     PackageInstaller,
     PandasInstaller,
+    ScipyInstaller,
     TorchInstaller,
     XarrayInstaller,
     install_package,
@@ -135,6 +136,33 @@ def test_pandas_installer_install_low() -> None:
 
 
 ####################################
+#     Tests for ScipyInstaller     #
+####################################
+
+
+def test_scipy_installer_repr() -> None:
+    assert repr(ScipyInstaller()).startswith("ScipyInstaller(")
+
+
+def test_scipy_installer_str() -> None:
+    assert str(ScipyInstaller()).startswith("ScipyInstaller(")
+
+
+def test_scipy_installer_install_high() -> None:
+    installer = ScipyInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("1.13.0")
+        run_mock.assert_called_once_with("pip install -U scipy==1.13.0")
+
+
+def test_scipy_installer_install_low() -> None:
+    installer = ScipyInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("1.12.0")
+        run_mock.assert_called_once_with("pip install -U scipy==1.12.0 numpy==1.26.4")
+
+
+####################################
 #     Tests for TorchInstaller     #
 ####################################
 
@@ -240,7 +268,14 @@ def test_package_installer_install_pandas() -> None:
 
 
 def test_package_installer_registry() -> None:
-    assert set(PackageInstaller.registry) == {"jax", "pandas", "matplotlib", "torch", "xarray"}
+    assert set(PackageInstaller.registry) == {
+        "jax",
+        "pandas",
+        "matplotlib",
+        "scipy",
+        "torch",
+        "xarray",
+    }
 
 
 #####################################
