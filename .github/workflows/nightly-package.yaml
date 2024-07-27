@@ -5,7 +5,7 @@ on:
   workflow_dispatch:  # to trigger manually
 
 jobs:
-  all:
+  stable-all:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     strategy:
@@ -14,13 +14,6 @@ jobs:
       matrix:
         os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        # python 3.9 is not available for macos-latest
-        exclude:
-          - os: macos-latest
-            python-version: '3.9'
-        include:
-          - os: macos-12
-            python-version: '3.9'
 
     steps:
       - name: Checkout
@@ -33,11 +26,100 @@ jobs:
 
       - name: Install package
         run: |
-          pip install "feu"
+          pip install "feu[all]"
 
       - name: Run some checks
         run: |
           python tests/package_checks.py
+
+
+  stable-min:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install feu
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  latest-all:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install --pre "feu[all]"
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  latest-min:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install --pre feu
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  ########################
+  #     Dependencies     #
+  ########################
 
   packaging:
     runs-on: ${{ matrix.os }}
