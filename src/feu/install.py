@@ -11,6 +11,8 @@ __all__ = [
     "PackageInstaller",
     "PandasInstaller",
     "PyarrowInstaller",
+    "SklearnInstaller",
+    "ScipyInstaller",
     "TorchInstaller",
     "XarrayInstaller",
     "install_package",
@@ -145,6 +147,16 @@ class ScipyInstaller(Numpy2Installer):
         super().__init__(package="scipy", min_version="1.13.0")
 
 
+class SklearnInstaller(Numpy2Installer):
+    r"""Implement the ``sklearn`` package installer.
+
+    ``numpy`` 2.0 support was added in ``sklearn`` 1.4.2.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="scikit-learn", min_version="1.4.2")
+
+
 class TorchInstaller(Numpy2Installer):
     r"""Implement the ``torch`` package installer.
 
@@ -173,7 +185,9 @@ class PackageInstaller:
         "matplotlib": MatplotlibInstaller(),
         "pandas": PandasInstaller(),
         "pyarrow": PyarrowInstaller(),
+        "scikit-learn": SklearnInstaller(),
         "scipy": ScipyInstaller(),
+        "sklearn": SklearnInstaller(),
         "torch": TorchInstaller(),
         "xarray": XarrayInstaller(),
     }

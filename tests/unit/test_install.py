@@ -13,6 +13,7 @@ from feu.install import (
     PandasInstaller,
     PyarrowInstaller,
     ScipyInstaller,
+    SklearnInstaller,
     TorchInstaller,
     XarrayInstaller,
     install_package,
@@ -190,6 +191,33 @@ def test_scipy_installer_install_low() -> None:
         run_mock.assert_called_once_with("pip install -U scipy==1.12.0 numpy==1.26.4")
 
 
+######################################
+#     Tests for SklearnInstaller     #
+######################################
+
+
+def test_sklearn_installer_repr() -> None:
+    assert repr(SklearnInstaller()).startswith("SklearnInstaller(")
+
+
+def test_sklearn_installer_str() -> None:
+    assert str(SklearnInstaller()).startswith("SklearnInstaller(")
+
+
+def test_sklearn_installer_install_high() -> None:
+    installer = SklearnInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("1.4.2")
+        run_mock.assert_called_once_with("pip install -U scikit-learn==1.4.2")
+
+
+def test_sklearn_installer_install_low() -> None:
+    installer = SklearnInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("1.4.1")
+        run_mock.assert_called_once_with("pip install -U scikit-learn==1.4.1 numpy==1.26.4")
+
+
 ####################################
 #     Tests for TorchInstaller     #
 ####################################
@@ -298,10 +326,12 @@ def test_package_installer_install_pandas() -> None:
 def test_package_installer_registry() -> None:
     assert set(PackageInstaller.registry) == {
         "jax",
+        "matplotlib",
         "pandas",
         "pyarrow",
-        "matplotlib",
+        "scikit-learn",
         "scipy",
+        "sklearn",
         "torch",
         "xarray",
     }
