@@ -10,7 +10,7 @@ PACKAGES = [
     ("matplotlib", "3.9.0"),
     ("numpy", "2.0.0"),
     ("pandas", "2.2.2"),
-    ("sklearn", "1.5.0"),
+    ("sklearn", "1.4.2"),
     ("torch", "2.2.2"),
     ("xarray", "2024.6"),
 ]
