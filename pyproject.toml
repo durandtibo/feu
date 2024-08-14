@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.7a0"
+version = "0.0.7"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
 homepage = "https://github.com/durandtibo/feu"
 repository = "https://github.com/durandtibo/feu"
-keywords = ["package"]
+keywords = ["package", "install", "dependency"]
 license = "BSD-3-Clause"
 
 classifiers = [
