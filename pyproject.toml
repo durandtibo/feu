@@ -6,7 +6,7 @@ readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
 homepage = "https://github.com/durandtibo/feu"
 repository = "https://github.com/durandtibo/feu"
-keywords = ["package"]
+keywords = ["package", "install", "dependency"]
 license = "BSD-3-Clause"
 
 classifiers = [
