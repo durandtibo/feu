@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 class PackageValidator:
     """Implement the main package validator."""
 
-    registry: ClassVar[dict[str, dict[str, dict[str, dict[str, str]]]]] = {
+    registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
         "numpy": {
-            "3.12": {"default": {"min": "1.26.0", "max": None}},
-            "3.11": {"default": {"min": "1.23.2", "max": None}},
-            "3.10": {"default": {"min": "1.21.3", "max": None}},
-            "3.9": {"default": {"min": "1.19.3", "max": "2.0.2"}},
+            "3.12": {"min": "1.26.0", "max": None},
+            "3.11": {"min": "1.23.2", "max": None},
+            "3.10": {"min": "1.21.3", "max": None},
+            "3.9": {"min": "1.19.3", "max": "2.0.2"},
         }
     }
 
@@ -29,7 +29,6 @@ class PackageValidator:
         pkg_version_min: str | None,
         pkg_version_max: str | None,
         python_version: str,
-        os: str = "default",
         exist_ok: bool = False,
     ) -> None:
         r"""Add a new package configuration.
@@ -43,8 +42,6 @@ class PackageValidator:
                 this configuration. ``None`` means there is no maximum
                 valid package version.
             python_version: The python version.
-            os: The name of the OS, if the package configuration
-                depends on the OS.
             exist_ok: If ``False``, ``RuntimeError`` is raised if a
                 package configuration already exists. This parameter
                 should be  set to ``True`` to overwrite the package
@@ -70,35 +67,27 @@ class PackageValidator:
         ```
         """
         cls.registry[pkg_name] = cls.registry.get(pkg_name, {})
-        cls.registry[pkg_name][python_version] = cls.registry[pkg_name].get(python_version, {})
 
-        if os in cls.registry[pkg_name][python_version] and not exist_ok:
+        if python_version in cls.registry[pkg_name] and not exist_ok:
             msg = (
-                f"A package configuration ({cls.registry[pkg_name][python_version][os]}) is "
-                f"already registered for package {pkg_name}, python {python_version} and OS {os}. "
+                f"A package configuration ({cls.registry[pkg_name][python_version]}) is "
+                f"already registered for package {pkg_name} and python {python_version}. "
                 f"Please use `exist_ok=True` if you want to overwrite the package config"
             )
             raise RuntimeError(msg)
 
-        cls.registry[pkg_name][python_version][os] = {
+        cls.registry[pkg_name][python_version] = {
             "min": pkg_version_min,
             "max": pkg_version_max,
         }
 
     @classmethod
-    def get_package_config(
-        cls,
-        pkg_name: str,
-        python_version: str,
-        os: str = "default",
-    ) -> dict[str, str]:
+    def get_package_config(cls, pkg_name: str, python_version: str) -> dict[str, str]:
         r"""Get a specific package configuration.
 
         Args:
             pkg_name: The package name.
             python_version: The python version.
-            os: The name of the OS. If the OS name does not exist,
-                the default OS name is used if it exists.
 
         Example usage:
 
@@ -112,10 +101,9 @@ class PackageValidator:
 
         ```
         """
-        if pkg_name not in cls.registry or python_version not in cls.registry[pkg_name]:
+        if pkg_name not in cls.registry:
             return {}
-        default = cls.registry[pkg_name][python_version].get("default", {})
-        return cls.registry[pkg_name][python_version].get(os, default)
+        return cls.registry[pkg_name].get(python_version, {})
 
 
 # def is_valid(package: str, python: str, os: str = "default") -> bool:
