@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.7a0"
+version = "0.0.7"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
 homepage = "https://github.com/durandtibo/feu"
 repository = "https://github.com/durandtibo/feu"
-keywords = ["package"]
+keywords = ["package", "install", "dependency"]
 license = "BSD-3-Clause"
 
 classifiers = [
@@ -41,18 +41,18 @@ optional = true
 [tool.poetry.group.docs.dependencies]
 mike = "^2.1"
 mkdocs-material = "^9.5"
-mkdocstrings = { extras = ["python"], version = "^0.25" }
+mkdocstrings = { extras = ["python"], version = ">=0.25,<0.27" }
 
 [tool.poetry.group.dev.dependencies]
-black = ">=24.4"
-coverage = { extras = ["toml"], version = "^7.5" }
+black = ">=24.8"
+coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
-pre-commit = "^3.7"
+pre-commit = "^3.8"
 pygments = "^2.18"
-pytest = "^8.2"
+pytest = "^8.3"
 pytest-cov = "^5.0"
 pytest-timeout = "^2.3"
-ruff = ">=0.4,<1.0"
+ruff = ">=0.5,<1.0"
 xdoctest = "^1.1"
 
 [build-system]

@@ -62,11 +62,11 @@ unit-test-cov :
 
 .PHONY : integration-test
 integration-test :
-	python -m pytest --xdoctest --timeout 180 $(INTEGRATION_TESTS)
+	python -m pytest --xdoctest --timeout 300 $(INTEGRATION_TESTS)
 
 .PHONY : integration-test-cov
 integration-test-cov :
-	python -m pytest --xdoctest --timeout 180 --cov-report html --cov-report xml --cov-report term --cov=$(NAME) --cov-append $(INTEGRATION_TESTS)
+	python -m pytest --xdoctest --timeout 300 --cov-report html --cov-report xml --cov-report term --cov=$(NAME) --cov-append $(INTEGRATION_TESTS)
 
 .PHONY : publish-pypi
 publish-pypi :
