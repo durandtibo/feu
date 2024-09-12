@@ -2,7 +2,7 @@ r"""Contain functions to check a package configuration."""
 
 from __future__ import annotations
 
-__all__ = ["PackageConfig"]
+__all__ = ["PackageConfig", "is_valid_version"]
 
 import logging
 from typing import ClassVar
@@ -170,5 +170,39 @@ class PackageConfig:
         return (min_version <= version) and (version <= max_version)
 
 
-# def is_valid(package: str, python: str, os: str = "default") -> bool:
-#     pass
+def is_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> bool:
+    r"""Indicate if the specified package version is valid for the given
+    Python version.
+
+    Args:
+        pkg_name: The package name.
+        pkg_version: The package version to check.
+        python_version: The python version.
+
+    Returns:
+        ``True`` if the specified package version is valid for the
+            given Python version, otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.package import is_valid_version
+    >>> is_valid_version(
+    ...     pkg_name="numpy",
+    ...     pkg_version="2.0.2",
+    ...     python_version="3.11",
+    ... )
+    True
+    >>> is_valid_version(
+    ...     pkg_name="numpy",
+    ...     pkg_version="1.0.2",
+    ...     python_version="3.11",
+    ... )
+    False
+
+    ```
+    """
+    return PackageConfig.is_valid_version(
+        pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
+    )

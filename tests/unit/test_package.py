@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.package import PackageConfig
+from feu.package import PackageConfig, is_valid_version
 
 ###################################
 #     Tests for PackageConfig     #
@@ -178,3 +178,68 @@ def test_package_config_is_valid_version_empty() -> None:
     assert PackageConfig.is_valid_version(
         pkg_name="my_package", pkg_version="2.0.0", python_version="3.11"
     )
+
+
+######################################
+#     Tests for is_valid_version     #
+######################################
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_is_valid_version_true() -> None:
+    assert is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_is_valid_version_false_min() -> None:
+    assert not is_valid_version(pkg_name="my_package", pkg_version="1.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_is_valid_version_false_max() -> None:
+    assert not is_valid_version(pkg_name="my_package", pkg_version="3.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry, {"my_package": {"3.11": {"min": "1.2.0", "max": None}}}, clear=True
+)
+def test_is_valid_version_min_true() -> None:
+    assert is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry, {"my_package": {"3.11": {"min": "2.2.0", "max": None}}}, clear=True
+)
+def test_is_valid_version_min_false() -> None:
+    assert not is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry, {"my_package": {"3.11": {"min": None, "max": "2.2.0"}}}, clear=True
+)
+def test_is_valid_version_max_true() -> None:
+    assert is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry, {"my_package": {"3.11": {"min": None, "max": "1.2.0"}}}, clear=True
+)
+def test_is_valid_version_max_false() -> None:
+    assert not is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+
+
+@patch.dict(PackageConfig.registry, {}, clear=True)
+def test_is_valid_version_empty() -> None:
+    assert is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
