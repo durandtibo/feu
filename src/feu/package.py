@@ -1,8 +1,8 @@
-r"""Contain functions to check if a package configuration is valid."""
+r"""Contain functions to check a package configuration."""
 
 from __future__ import annotations
 
-__all__ = ["PackageValidator"]
+__all__ = ["PackageConfig"]
 
 import logging
 from typing import ClassVar
@@ -12,8 +12,8 @@ from packaging.version import Version
 logger = logging.getLogger(__name__)
 
 
-class PackageValidator:
-    """Implement the main package validator."""
+class PackageConfig:
+    """Implement the main package config registry."""
 
     registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
         # https://numpy.org/devdocs/release.html
@@ -33,7 +33,7 @@ class PackageValidator:
     }
 
     @classmethod
-    def add_package_config(
+    def add_config(
         cls,
         pkg_name: str,
         pkg_version_min: str | None,
@@ -65,8 +65,8 @@ class PackageValidator:
 
         ```pycon
 
-        >>> from feu.package import PackageValidator
-        >>> PackageValidator.add_package_config(
+        >>> from feu.package import PackageConfig
+        >>> PackageConfig.add_config(
         ...     pkg_name="numpy",
         ...     python_version="3.11",
         ...     pkg_version_min="1.2.0",
@@ -92,7 +92,7 @@ class PackageValidator:
         }
 
     @classmethod
-    def get_package_config(cls, pkg_name: str, python_version: str) -> dict[str, str]:
+    def get_config(cls, pkg_name: str, python_version: str) -> dict[str, str]:
         r"""Get a package configuration given the package name and python
         version.
 
@@ -107,8 +107,8 @@ class PackageValidator:
 
         ```pycon
 
-        >>> from feu.package import PackageValidator
-        >>> PackageValidator.get_package_config(
+        >>> from feu.package import PackageConfig
+        >>> PackageConfig.get_config(
         ...     pkg_name="numpy",
         ...     python_version="3.11",
         ... )
@@ -137,14 +137,14 @@ class PackageValidator:
 
         ```pycon
 
-        >>> from feu.package import PackageValidator
-        >>> PackageValidator.is_valid_version(
+        >>> from feu.package import PackageConfig
+        >>> PackageConfig.is_valid_version(
         ...     pkg_name="numpy",
         ...     pkg_version="2.0.2",
         ...     python_version="3.11",
         ... )
         True
-        >>> PackageValidator.is_valid_version(
+        >>> PackageConfig.is_valid_version(
         ...     pkg_name="numpy",
         ...     pkg_version="1.0.2",
         ...     python_version="3.11",
@@ -153,7 +153,7 @@ class PackageValidator:
 
         ```
         """
-        config = cls.get_package_config(pkg_name=pkg_name, python_version=python_version)
+        config = cls.get_config(pkg_name=pkg_name, python_version=python_version)
         version = Version(pkg_version)
         min_version = config.get("min", None)
         max_version = config.get("max", None)
