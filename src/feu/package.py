@@ -7,6 +7,8 @@ __all__ = ["PackageValidator"]
 import logging
 from typing import ClassVar
 
+from packaging.version import Version
+
 logger = logging.getLogger(__name__)
 
 
@@ -91,11 +93,15 @@ class PackageValidator:
 
     @classmethod
     def get_package_config(cls, pkg_name: str, python_version: str) -> dict[str, str]:
-        r"""Get a specific package configuration.
+        r"""Get a package configuration given the package name and python
+        version.
 
         Args:
             pkg_name: The package name.
             python_version: The python version.
+
+        Returns:
+            The package configuration.
 
         Example usage:
 
@@ -112,6 +118,56 @@ class PackageValidator:
         if pkg_name not in cls.registry:
             return {}
         return cls.registry[pkg_name].get(python_version, {})
+
+    @classmethod
+    def is_valid_version(cls, pkg_name: str, pkg_version: str, python_version: str) -> bool:
+        r"""Indicate if the specified package version is valid for the
+        given Python version.
+
+        Args:
+            pkg_name: The package name.
+            pkg_version: The package version to check.
+            python_version: The python version.
+
+        Returns:
+            ``True`` if the specified package version is valid for the
+                given Python version, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.package import PackageValidator
+        >>> PackageValidator.is_valid_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="2.0.2",
+        ...     python_version="3.11",
+        ... )
+        True
+        >>> PackageValidator.is_valid_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="1.0.2",
+        ...     python_version="3.11",
+        ... )
+        False
+
+        ```
+        """
+        config = cls.get_package_config(pkg_name=pkg_name, python_version=python_version)
+        version = Version(pkg_version)
+        min_version = config.get("min", None)
+        max_version = config.get("max", None)
+        if min_version is not None:
+            min_version = Version(min_version)
+        if max_version is not None:
+            max_version = Version(max_version)
+        if min_version is None and max_version is None:
+            return True
+        if min_version is None:
+            return version <= max_version
+        if max_version is None:
+            return min_version <= version
+        return (min_version <= version) and (version <= max_version)
 
 
 # def is_valid(package: str, python: str, os: str = "default") -> bool:
