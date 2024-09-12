@@ -67,7 +67,7 @@ class PackageConfig:
 
         >>> from feu.package import PackageConfig
         >>> PackageConfig.add_config(
-        ...     pkg_name="numpy",
+        ...     pkg_name="my_package",
         ...     python_version="3.11",
         ...     pkg_version_min="1.2.0",
         ...     pkg_version_max="2.0.2",
@@ -112,12 +112,96 @@ class PackageConfig:
         ...     pkg_name="numpy",
         ...     python_version="3.11",
         ... )
+        {'min': '1.23.2', 'max': None}
 
         ```
         """
         if pkg_name not in cls.registry:
             return {}
         return cls.registry[pkg_name].get(python_version, {})
+
+    @classmethod
+    def get_min_and_max_versions(
+        cls, pkg_name: str, python_version: str
+    ) -> tuple[Version | None, Version | None]:
+        r"""Get the minimum and maximum versions for the given package
+        name and python version.
+
+        Args:
+            pkg_name: The package name.
+            python_version: The python version.
+
+        Returns:
+            A tuple with the minimum and maximum versions.
+                The version is set to ``None`` if there is no minimum
+                or maximum version.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.package import PackageConfig
+        >>> PackageConfig.get_min_and_max_versions(
+        ...     pkg_name="numpy",
+        ...     python_version="3.11",
+        ... )
+        (<Version('1.23.2')>, None)
+
+        ```
+        """
+        config = cls.get_config(pkg_name=pkg_name, python_version=python_version)
+        min_version = config.get("min", None)
+        max_version = config.get("max", None)
+        if min_version is not None:
+            min_version = Version(min_version)
+        if max_version is not None:
+            max_version = Version(max_version)
+        return min_version, max_version
+
+    @classmethod
+    def find_closest_version(cls, pkg_name: str, pkg_version: str, python_version: str) -> str:
+        r"""Find the closest valid version given the package name and
+        version, and python version.
+
+        Args:
+            pkg_name: The package name.
+            pkg_version: The package version to check.
+            python_version: The python version.
+
+        Returns:
+            The closest valid version.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.package import PackageConfig
+        >>> PackageConfig.find_closest_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="2.0.2",
+        ...     python_version="3.11",
+        ... )
+        2.0.2
+        >>> PackageConfig.find_closest_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="1.0.2",
+        ...     python_version="3.11",
+        ... )
+        1.23.2
+
+        ```
+        """
+        if cls.is_valid_version(
+            pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
+        ):
+            return pkg_version
+        min_version, max_version = cls.get_min_and_max_versions(
+            pkg_name=pkg_name, python_version=python_version
+        )
+        version = Version(pkg_version)
+        if min_version is not None and version < min_version:
+            return min_version.base_version
+        return max_version.base_version
 
     @classmethod
     def is_valid_version(cls, pkg_name: str, pkg_version: str, python_version: str) -> bool:
@@ -153,14 +237,10 @@ class PackageConfig:
 
         ```
         """
-        config = cls.get_config(pkg_name=pkg_name, python_version=python_version)
         version = Version(pkg_version)
-        min_version = config.get("min", None)
-        max_version = config.get("max", None)
-        if min_version is not None:
-            min_version = Version(min_version)
-        if max_version is not None:
-            max_version = Version(max_version)
+        min_version, max_version = cls.get_min_and_max_versions(
+            pkg_name=pkg_name, python_version=python_version
+        )
         if min_version is None and max_version is None:
             return True
         if min_version is None:

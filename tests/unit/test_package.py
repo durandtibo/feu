@@ -3,6 +3,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
+from packaging.version import Version
 
 from feu.package import PackageConfig, is_valid_version
 
@@ -102,6 +103,98 @@ def test_package_config_get_config_empty_pkg_name() -> None:
 @patch.dict(PackageConfig.registry, {"my_package": {"3.11": {}}}, clear=True)
 def test_package_config_get_config_empty_python_version() -> None:
     assert PackageConfig.get_config(pkg_name="my_package", python_version="3.11") == {}
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_package_config_get_min_and_max_versions() -> None:
+    assert PackageConfig.get_min_and_max_versions(pkg_name="my_package", python_version="3.11") == (
+        Version("1.2.0"),
+        Version("2.2.0"),
+    )
+
+
+@patch.dict(
+    PackageConfig.registry, {"my_package": {"3.11": {"min": "1.2.0", "max": None}}}, clear=True
+)
+def test_package_config_get_min_and_max_versions_min() -> None:
+    assert PackageConfig.get_min_and_max_versions(pkg_name="my_package", python_version="3.11") == (
+        Version("1.2.0"),
+        None,
+    )
+
+
+@patch.dict(
+    PackageConfig.registry, {"my_package": {"3.11": {"min": None, "max": "2.2.0"}}}, clear=True
+)
+def test_package_config_get_min_and_max_versions_max() -> None:
+    assert PackageConfig.get_min_and_max_versions(pkg_name="my_package", python_version="3.11") == (
+        None,
+        Version("2.2.0"),
+    )
+
+
+@patch.dict(PackageConfig.registry, {}, clear=True)
+def test_package_config_get_min_and_max_versions_empty() -> None:
+    assert PackageConfig.get_min_and_max_versions(pkg_name="my_package", python_version="3.11") == (
+        None,
+        None,
+    )
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_package_config_find_closest_version_valid() -> None:
+    assert (
+        PackageConfig.find_closest_version(
+            pkg_name="my_package", pkg_version="2.0.0", python_version="3.11"
+        )
+        == "2.0.0"
+    )
+
+
+@patch.dict(PackageConfig.registry, {}, clear=True)
+def test_package_config_find_closest_version_missing() -> None:
+    assert (
+        PackageConfig.find_closest_version(
+            pkg_name="my_package", pkg_version="2.0.0", python_version="3.11"
+        )
+        == "2.0.0"
+    )
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_package_config_find_closest_version_lower() -> None:
+    assert (
+        PackageConfig.find_closest_version(
+            pkg_name="my_package", pkg_version="1.0.0", python_version="3.11"
+        )
+        == "1.2.0"
+    )
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_package_config_find_closest_version_higher() -> None:
+    assert (
+        PackageConfig.find_closest_version(
+            pkg_name="my_package", pkg_version="3.0.0", python_version="3.11"
+        )
+        == "2.2.0"
+    )
 
 
 @patch.dict(
