@@ -24,6 +24,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install package
+      - name: Install packages
         run: |
           pip install coola numpy==${{ matrix.numpy-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/install_package_checks.py
