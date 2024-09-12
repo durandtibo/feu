@@ -14,12 +14,20 @@ class PackageValidator:
     """Implement the main package validator."""
 
     registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
+        # https://numpy.org/devdocs/release.html
         "numpy": {
             "3.12": {"min": "1.26.0", "max": None},
             "3.11": {"min": "1.23.2", "max": None},
             "3.10": {"min": "1.21.3", "max": None},
             "3.9": {"min": "1.19.3", "max": "2.0.2"},
-        }
+        },
+        # https://github.com/pytorch/pytorch/releases
+        "torch": {
+            "3.12": {"min": "2.4.0", "max": None},
+            "3.11": {"min": "1.13.0", "max": None},
+            "3.10": {"min": None, "max": None},
+            "3.9": {"min": None, "max": None},
+        },
     }
 
     @classmethod
