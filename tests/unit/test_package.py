@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from packaging.version import Version
 
-from feu.package import PackageConfig, is_valid_version
+from feu.package import PackageConfig, find_closest_version, is_valid_version
 
 ###################################
 #     Tests for PackageConfig     #
@@ -270,6 +270,55 @@ def test_package_config_is_valid_version_max_false() -> None:
 def test_package_config_is_valid_version_empty() -> None:
     assert PackageConfig.is_valid_version(
         pkg_name="my_package", pkg_version="2.0.0", python_version="3.11"
+    )
+
+
+##########################################
+#     Tests for find_closest_version     #
+##########################################
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_find_closest_version_valid() -> None:
+    assert (
+        find_closest_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+        == "2.0.0"
+    )
+
+
+@patch.dict(PackageConfig.registry, {}, clear=True)
+def test_find_closest_version_missing() -> None:
+    assert (
+        find_closest_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+        == "2.0.0"
+    )
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_find_closest_version_lower() -> None:
+    assert (
+        find_closest_version(pkg_name="my_package", pkg_version="1.0.0", python_version="3.11")
+        == "1.2.0"
+    )
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_find_closest_version_higher() -> None:
+    assert (
+        find_closest_version(pkg_name="my_package", pkg_version="3.0.0", python_version="3.11")
+        == "2.2.0"
     )
 
 
