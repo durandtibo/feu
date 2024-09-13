@@ -2,7 +2,7 @@ r"""Contain functions to check a package configuration."""
 
 from __future__ import annotations
 
-__all__ = ["PackageConfig", "is_valid_version"]
+__all__ = ["PackageConfig", "is_valid_version", "find_closest_version"]
 
 import logging
 from typing import ClassVar
@@ -248,6 +248,43 @@ class PackageConfig:
         if max_version is None:
             return min_version <= version
         return (min_version <= version) and (version <= max_version)
+
+
+def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -> str:
+    r"""Find the closest valid version given the package name and
+    version, and python version.
+
+    Args:
+        pkg_name: The package name.
+        pkg_version: The package version to check.
+        python_version: The python version.
+
+    Returns:
+        The closest valid version.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.package import find_closest_version
+    >>> find_closest_version(
+    ...     pkg_name="numpy",
+    ...     pkg_version="2.0.2",
+    ...     python_version="3.11",
+    ... )
+    2.0.2
+    >>> find_closest_version(
+    ...     pkg_name="numpy",
+    ...     pkg_version="1.0.2",
+    ...     python_version="3.11",
+    ... )
+    1.23.2
+
+    ```
+    """
+    return PackageConfig.find_closest_version(
+        pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
+    )
 
 
 def is_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> bool:
