@@ -33,7 +33,11 @@ packages = [
 python = ">=3.9,<3.13"
 packaging = ">=21.0,<25.0"
 
+# Optional dependencies
+fire = { version = ">=0.6.0,<1.0", optional = true }
+
 [tool.poetry.extras]
+all = ["fire"]
 
 [tool.poetry.group.docs]
 optional = true
@@ -81,6 +85,10 @@ log_level = "DEBUG"
 addopts = "--color yes --durations 10 -rf"
 # Configuration of the short test summary info
 # https://docs.pytest.org/en/stable/usage.html#detailed-summary-report
+
+filterwarnings = [
+  "ignore::DeprecationWarning:fire.*",
+]
 
 [tool.black]
 line-length = 100

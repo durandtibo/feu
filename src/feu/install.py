@@ -26,7 +26,12 @@ from typing import ClassVar
 
 from packaging.version import Version
 
+from feu.imports import check_fire, is_fire_available
+
 logger = logging.getLogger(__name__)
+
+if is_fire_available():
+    import fire
 
 
 def run_bash_command(cmd: str) -> None:
@@ -284,3 +289,8 @@ def install_package(package: str, version: str) -> None:
     ```
     """
     PackageInstaller.install(package, version)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    check_fire()
+    fire.Fire(install_package)
