@@ -31,24 +31,25 @@ class PackageConfig:
             "3.9": {"min": "1.19.3", "max": "2.0.2"},
         },
         # https://github.com/pandas-dev/pandas/releases
+        # https://pandas.pydata.org/docs/whatsnew/index.html
         "pandas": {
             "3.12": {"min": "2.1.0", "max": None},
             "3.11": {"min": None, "max": None},
             "3.10": {"min": None, "max": None},
             "3.9": {"min": None, "max": None},
         },
-        # https://github.com/apache/arrow/releases
+        # https://arrow.apache.org/release/
         "pyarrow": {
-            "3.12": {"min": "14.0.2", "max": None},
-            "3.11": {"min": None, "max": None},
-            "3.10": {"min": None, "max": None},
-            "3.9": {"min": None, "max": "16.1.0"},
+            "3.12": {"min": "14.0.0", "max": None},
+            "3.11": {"min": "10.0.1", "max": None},
+            "3.10": {"min": "6.0.0", "max": None},
+            "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
         # https://github.com/pytorch/pytorch/releases
         "torch": {
             "3.12": {"min": "2.4.0", "max": None},
             "3.11": {"min": "1.13.0", "max": None},
-            "3.10": {"min": None, "max": None},
+            "3.10": {"min": "1.11.0", "max": None},
             "3.9": {"min": None, "max": None},
         },
     }
