@@ -86,6 +86,10 @@ addopts = "--color yes --durations 10 -rf"
 # Configuration of the short test summary info
 # https://docs.pytest.org/en/stable/usage.html#detailed-summary-report
 
+filterwarnings = [
+  "ignore::DeprecationWarning:fire.*",
+]
+
 [tool.black]
 line-length = 100
 target-version = ["py39", "py310", "py311", "py312"]
