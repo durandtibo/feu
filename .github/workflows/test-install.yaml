@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        numpy-version: [ 2.1.0, 2.0.2, 1.26.4, 1.25.2, 1.24.3, 1.23.5, 1.22.4, 1.21.6, 1.20.3 ]
+        numpy-version: [ 2.1.1, 2.0.2, 1.26.4, 1.25.2, 1.24.3, 1.23.5, 1.22.4, 1.21.6, 1.20.3 ]
 
     steps:
       - name: Checkout
@@ -24,10 +24,22 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Find closest valid version
+        id: python-package
+        uses: durandtibo/python-package-action@v0.1.0
+        with:
+          package-name: 'numpy'
+          package-version: ${{ matrix.numpy-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Print closest valid version
+        run: echo '${{ toJSON(steps.python-package.outputs) }}'
+
       - name: Install packages
         run: |
-          pip install coola numpy==${{ matrix.numpy-version }}
+          pip install numpy==${{ steps.python-package.outputs.closest-valid-version }}
 
-      - name: Run some checks
+      - name: Run functional tests
         run: |
-          python tests/install_package_checks.py
+          pip install pytest coola
+          python -m pytest tests/functional
