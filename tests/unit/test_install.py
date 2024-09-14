@@ -80,7 +80,7 @@ def test_jax_installer_install_low() -> None:
     installer = JaxInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("0.4.25")
-        run_mock.assert_called_once_with('pip install -U jax==0.4.25 jaxlib==0.4.25 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U jax==0.4.25 jaxlib==0.4.25 "numpy<2.0.0"')
 
 
 #########################################
@@ -107,7 +107,7 @@ def test_matplotlib_installer_install_low() -> None:
     installer = MatplotlibInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("3.7.1")
-        run_mock.assert_called_once_with('pip install -U matplotlib==3.7.1 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U matplotlib==3.7.1 "numpy<2.0.0"')
 
 
 #####################################
@@ -134,7 +134,7 @@ def test_pandas_installer_install_low() -> None:
     installer = PandasInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("2.1.1")
-        run_mock.assert_called_once_with('pip install -U pandas==2.1.1 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U pandas==2.1.1 "numpy<2.0.0"')
 
 
 ######################################
@@ -161,7 +161,7 @@ def test_pyarrow_installer_install_low() -> None:
     installer = PyarrowInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("15.0")
-        run_mock.assert_called_once_with('pip install -U pyarrow==15.0 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U pyarrow==15.0 "numpy<2.0.0"')
 
 
 ####################################
@@ -188,7 +188,7 @@ def test_scipy_installer_install_low() -> None:
     installer = ScipyInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("1.12.0")
-        run_mock.assert_called_once_with('pip install -U scipy==1.12.0 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U scipy==1.12.0 "numpy<2.0.0"')
 
 
 ######################################
@@ -215,7 +215,7 @@ def test_sklearn_installer_install_low() -> None:
     installer = SklearnInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("1.4.1")
-        run_mock.assert_called_once_with('pip install -U scikit-learn==1.4.1 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U scikit-learn==1.4.1 "numpy<2.0.0"')
 
 
 ####################################
@@ -242,7 +242,7 @@ def test_torch_installer_install_low() -> None:
     installer = TorchInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("2.1.1")
-        run_mock.assert_called_once_with('pip install -U torch==2.1.1 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U torch==2.1.1 "numpy<2.0.0"')
 
 
 #####################################
@@ -269,7 +269,7 @@ def test_xarray_installer_install_low() -> None:
     installer = XarrayInstaller()
     with patch("feu.install.run_bash_command") as run_mock:
         installer.install("2023.5")
-        run_mock.assert_called_once_with('pip install -U xarray==2023.5 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U xarray==2023.5 "numpy<2.0.0"')
 
 
 ######################################
@@ -320,7 +320,7 @@ def test_package_installer_install_numpy() -> None:
 def test_package_installer_install_pandas() -> None:
     with patch("feu.install.run_bash_command") as run_mock:
         PackageInstaller.install(package="pandas", version="2.1.1")
-        run_mock.assert_called_once_with('pip install -U pandas==2.1.1 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U pandas==2.1.1 "numpy<2.0.0"')
 
 
 def test_package_installer_registry() -> None:
@@ -351,4 +351,4 @@ def test_install_package_numpy() -> None:
 def test_install_package_pandas() -> None:
     with patch("feu.install.run_bash_command") as run_mock:
         install_package(package="pandas", version="2.1.1")
-        run_mock.assert_called_once_with('pip install -U pandas==2.1.1 "numpy<=2.0.0"')
+        run_mock.assert_called_once_with('pip install -U pandas==2.1.1 "numpy<2.0.0"')
