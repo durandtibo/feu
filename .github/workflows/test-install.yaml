@@ -25,20 +25,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Run Local Action
-        id: local-action
-        uses: ./
+      - name: Find closest valid version
+        id: python-package
+        uses: durandtibo/python-package-action@v0.1.0
         with:
-          who-to-greet: 'Mona the Octocat'
+          package-name: 'numpy'
+          package-version: ${{ matrix.numpy-version }}
+          python-version: ${{ matrix.python-version }}
 
-      - run: echo random-number "$RANDOM_NUMBER"
-        shell: bash
-        env:
-          RANDOM_NUMBER: ${{ steps.local-action.outputs.random-number }}
+      - name: Print closest valid version
+        run: echo '${{ toJSON(steps.python-package.outputs) }}'
 
-      - name: Install packages
+      - name: Install package
         run: |
-          pip install coola numpy==${{ matrix.numpy-version }}
+          pip install numpy==${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run some checks
         run: |
