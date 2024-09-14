@@ -36,9 +36,9 @@ jobs:
       - name: Print closest valid version
         run: echo '${{ toJSON(steps.python-package.outputs) }}'
 
-      - name: Install package
+      - name: Install packages
         run: |
-          pip install numpy==${{ steps.python-package.outputs.closest-valid-version }}
+          pip install coola numpy==${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run some checks
         run: |
