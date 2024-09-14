@@ -4,6 +4,7 @@ import pytest
 
 from feu import install_package, is_package_available
 from feu.install import PackageInstaller, run_bash_command
+from feu.testing import fire_available
 
 PACKAGES = [
     ("jax", "0.4.30"),
@@ -43,5 +44,6 @@ def test_package_installer_install(package: str, version: str) -> None:
 ################################
 
 
+@fire_available
 def test_entrypoint() -> None:
     run_bash_command("python -m feu.install --package=numpy --version=2.0.2")
