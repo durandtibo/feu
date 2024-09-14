@@ -30,7 +30,7 @@ from feu.imports import check_fire, is_fire_available
 
 logger = logging.getLogger(__name__)
 
-if is_fire_available():
+if is_fire_available():  # pragma: no cover
     import fire
 
 
@@ -94,7 +94,7 @@ class Numpy2Installer(BaseInstaller):
         return f"{self.__class__.__qualname__}()"
 
     def install(self, version: str) -> None:
-        deps = "" if Version(version) >= Version(self._min_version) else " numpy==1.26.4"
+        deps = "" if Version(version) >= Version(self._min_version) else ' "numpy<2.0.0"'
         run_bash_command(f"pip install -U {self._package}=={version}{deps}")
 
 
@@ -108,7 +108,7 @@ class JaxInstaller(BaseInstaller):
         return f"{self.__class__.__qualname__}()"
 
     def install(self, version: str) -> None:
-        deps = "" if Version(version) >= Version("0.4.26") else " numpy==1.26.4"
+        deps = "" if Version(version) >= Version("0.4.26") else ' "numpy<2.0.0"'
         run_bash_command(f"pip install -U jax=={version} jaxlib=={version}{deps}")
 
 
