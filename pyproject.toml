@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.8a0"
+version = "0.0.8a7"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -38,6 +38,7 @@ fire = { version = ">=0.6.0,<1.0", optional = true }
 
 [tool.poetry.extras]
 all = ["fire"]
+fire = ["fire"]
 
 [tool.poetry.group.docs]
 optional = true

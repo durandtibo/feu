@@ -16,6 +16,13 @@ class PackageConfig:
     """Implement the main package config registry."""
 
     registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
+        # https://pypi.org/project/jaxlib/#history
+        "jax": {
+            "3.12": {"min": "0.4.17", "max": None},
+            "3.11": {"min": "0.4.6", "max": None},
+            "3.10": {"min": "0.4.6", "max": None},
+            "3.9": {"min": "0.4.6", "max": "0.4.30"},
+        },
         # https://numpy.org/devdocs/release.html
         "numpy": {
             "3.12": {"min": "1.26.0", "max": None},
@@ -23,11 +30,26 @@ class PackageConfig:
             "3.10": {"min": "1.21.3", "max": None},
             "3.9": {"min": "1.19.3", "max": "2.0.2"},
         },
+        # https://github.com/pandas-dev/pandas/releases
+        # https://pandas.pydata.org/docs/whatsnew/index.html
+        "pandas": {
+            "3.12": {"min": "2.1.0", "max": None},
+            "3.11": {"min": None, "max": None},
+            "3.10": {"min": None, "max": None},
+            "3.9": {"min": None, "max": None},
+        },
+        # https://arrow.apache.org/release/
+        "pyarrow": {
+            "3.12": {"min": "14.0.0", "max": None},
+            "3.11": {"min": "10.0.1", "max": None},
+            "3.10": {"min": "6.0.0", "max": None},
+            "3.9": {"min": "3.0.0", "max": "16.1.0"},
+        },
         # https://github.com/pytorch/pytorch/releases
         "torch": {
             "3.12": {"min": "2.4.0", "max": None},
-            "3.11": {"min": "1.13.0", "max": None},
-            "3.10": {"min": None, "max": None},
+            "3.11": {"min": "2.0.0", "max": None},
+            "3.10": {"min": "1.11.0", "max": None},
             "3.9": {"min": None, "max": None},
         },
     }
