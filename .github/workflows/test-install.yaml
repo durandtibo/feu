@@ -120,7 +120,8 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install pandas==${{ steps.python-package.outputs.closest-valid-version }}
+          pip install feu
+          python -c "from feu import install_package; install_package('pandas', '${{ steps.python-package.outputs.closest-valid-version }}')"
 
       - name: Run functional tests
         run: |
