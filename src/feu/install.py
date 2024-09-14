@@ -30,7 +30,7 @@ from feu.imports import check_fire, is_fire_available
 
 logger = logging.getLogger(__name__)
 
-if is_fire_available():
+if is_fire_available():  # pragma: no cover
     import fire
 
 
