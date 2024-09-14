@@ -26,7 +26,7 @@ jobs:
 
       - name: Find closest valid version
         id: python-package
-        uses: durandtibo/python-package-action@v0.1.0
+        uses: durandtibo/python-package-action@v0.1.1
         with:
           package-name: 'jax'
           package-version: ${{ matrix.jax-version }}
@@ -68,7 +68,7 @@ jobs:
 
       - name: Find closest valid version
         id: python-package
-        uses: durandtibo/python-package-action@v0.1.0
+        uses: durandtibo/python-package-action@v0.1.1
         with:
           package-name: 'numpy'
           package-version: ${{ matrix.numpy-version }}
@@ -109,7 +109,7 @@ jobs:
 
       - name: Find closest valid version
         id: python-package
-        uses: durandtibo/python-package-action@v0.1.0
+        uses: durandtibo/python-package-action@v0.1.1
         with:
           package-name: 'pandas'
           package-version: ${{ matrix.pandas-version }}
@@ -151,7 +151,7 @@ jobs:
 
       - name: Find closest valid version
         id: python-package
-        uses: durandtibo/python-package-action@v0.1.0
+        uses: durandtibo/python-package-action@v0.1.1
         with:
           package-name: 'pyarrow'
           package-version: ${{ matrix.pyarrow-version }}
@@ -193,7 +193,7 @@ jobs:
 
       - name: Find closest valid version
         id: python-package
-        uses: durandtibo/python-package-action@v0.1.0
+        uses: durandtibo/python-package-action@v0.1.1
         with:
           package-name: 'torch'
           package-version: ${{ matrix.torch-version }}
