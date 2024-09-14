@@ -361,7 +361,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install feu>=0.0.8a6
+          pip install "feu[fire]>=0.0.8a6"
           python -m feu.install --package=torch --version=${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run functional tests

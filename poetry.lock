@@ -1432,8 +1432,9 @@ type = ["pytest-mypy"]
 
 [extras]
 all = ["fire"]
+fire = ["fire"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "f78349f7a801d86e7eaa00f30d10f03f83e70fc42dc19d4c10b7f520645a36e5"
+content-hash = "ebd12add4bd5514ed8898146fdd0b702dedb1e7c303acd80a2f45688da09a4fb"
