@@ -345,3 +345,33 @@ def is_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> bo
     return PackageConfig.is_valid_version(
         pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
     )
+
+
+def _find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -> None:
+    r"""Print the closest valid version given the package name and
+    version, and python version.
+
+    Args:
+        pkg_name: The package name.
+        pkg_version: The package version to check.
+        python_version: The python version.
+    """
+    print(  # noqa: T201
+        find_closest_version(
+            pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
+        )
+    )
+
+
+def _is_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> None:
+    r"""Print if the specified package version is valid for the given
+    Python version.
+
+    Args:
+        pkg_name: The package name.
+        pkg_version: The package version to check.
+        python_version: The python version.
+    """
+    print(  # noqa: T201
+        is_valid_version(pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version)
+    )
