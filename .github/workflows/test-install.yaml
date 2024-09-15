@@ -68,7 +68,7 @@ jobs:
       - name: Install packages
         run: |
           pip install "feu[fire]>=0.0.8a9"
-          python feu install --package=jax --version=${{ steps.python-package.outputs.closest-valid-version }}
+          python -m feu install --package=jax --version=${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run functional tests
         run: |
@@ -225,7 +225,7 @@ jobs:
       - name: Install packages
         run: |
           pip install "feu[fire]>=0.0.8a9"
-          python feu install --package=pandas --version=${{ steps.python-package.outputs.closest-valid-version }}
+          python -m feu install --package=pandas --version=${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run functional tests
         run: |
@@ -295,7 +295,7 @@ jobs:
       - name: Install packages
         run: |
           pip install "feu[fire]>=0.0.8a9"
-          python feu install --package=pyarrow --version=${{ steps.python-package.outputs.closest-valid-version }}
+          python -m feu install --package=pyarrow --version=${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run functional tests
         run: |
@@ -340,6 +340,9 @@ jobs:
         ]
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -359,10 +362,7 @@ jobs:
       - name: Install packages
         run: |
           pip install "feu[fire]>=0.0.8a9"
-          python feu install --package=torch --version=${{ steps.python-package.outputs.closest-valid-version }}
-
-      - name: Checkout
-        uses: actions/checkout@v4
+          python -m feu install --package=torch --version=${{ steps.python-package.outputs.closest-valid-version }}
 
       - name: Run functional tests
         run: |
