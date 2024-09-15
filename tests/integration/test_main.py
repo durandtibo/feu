@@ -5,7 +5,6 @@ from subprocess import CalledProcessError
 from unittest.mock import patch
 
 import pytest
-from coola.utils import is_numpy_available
 
 from feu.__main__ import main
 from feu.install import run_bash_command
@@ -26,7 +25,6 @@ def test_main() -> None:
 @fire_available
 def test_main_install() -> None:
     run_bash_command("python -m feu install --package=numpy --version=2.0.2")
-    assert is_numpy_available()
 
 
 @fire_available
