@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.8a11"
+version = "0.1.0"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -10,7 +10,7 @@ keywords = ["package", "install", "dependency"]
 license = "BSD-3-Clause"
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
