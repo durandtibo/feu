@@ -33,9 +33,9 @@ class PackageConfig:
         # https://github.com/pandas-dev/pandas/releases
         # https://pandas.pydata.org/docs/whatsnew/index.html
         "pandas": {
-            "3.12": {"min": "2.1.0", "max": None},
-            "3.11": {"min": None, "max": None},
-            "3.10": {"min": None, "max": None},
+            "3.12": {"min": "2.1.1", "max": None},
+            "3.11": {"min": "1.3.4", "max": None},
+            "3.10": {"min": "1.3.3", "max": None},
             "3.9": {"min": None, "max": None},
         },
         # https://arrow.apache.org/release/
