@@ -6,6 +6,7 @@ import sys
 
 from feu.imports import check_fire, is_fire_available
 from feu.install import install_package
+from feu.package import _find_closest_version, _is_valid_version
 
 if is_fire_available():  # pragma: no cover
     import fire
@@ -20,8 +21,13 @@ def main(args: list) -> None:
     Example usage:
 
     python feu install --package=torch --version=2.2.2
+    python feu check_valid_version --pkg-name=torch --pkg-version=2.2.2 --python-version=3.11
     """
-    options = {"install": install_package}
+    options = {
+        "install": install_package,
+        "check_valid_version": _is_valid_version,
+        "find_closest_version": _find_closest_version,
+    }
     opt = args.pop(1)
     fn = options.get(opt)
     if fn is None:
