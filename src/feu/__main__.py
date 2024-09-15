@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import sys
 
-import fire
-
-from feu.imports import check_fire
+from feu.imports import check_fire, is_fire_available
 from feu.install import install_package
+
+if is_fire_available():  # pragma: no cover
+    import fire
 
 
 def main(args: list) -> None:
@@ -24,7 +25,7 @@ def main(args: list) -> None:
     opt = args.pop(1)
     fn = options.get(opt)
     if fn is None:
-        msg = f"Incorrect argument: {opt}.Valid values are: {sorted(options.keys())}"
+        msg = f"Incorrect argument: {opt}. Valid values are: {sorted(options.keys())}"
         raise RuntimeError(msg)
 
     check_fire()
