@@ -340,9 +340,6 @@ jobs:
         ]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -363,6 +360,9 @@ jobs:
         run: |
           pip install "feu[fire]>=0.0.8a9"
           python feu install --package=torch --version=${{ steps.python-package.outputs.closest-valid-version }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Run functional tests
         run: |
