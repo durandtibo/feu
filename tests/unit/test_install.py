@@ -83,6 +83,15 @@ def test_jax_installer_install_low() -> None:
         run_mock.assert_called_once_with("pip install -U jax==0.4.25 jaxlib==0.4.25 numpy<2.0.0")
 
 
+def test_jax_installer_install_ml_dtypes() -> None:
+    installer = JaxInstaller()
+    with patch("feu.install.run_bash_command") as run_mock:
+        installer.install("0.4.9")
+        run_mock.assert_called_once_with(
+            "pip install -U jax==0.4.9 jaxlib==0.4.9 numpy<2.0.0 ml_dtypes<=0.2.0"
+        )
+
+
 #########################################
 #     Tests for MatplotlibInstaller     #
 #########################################
