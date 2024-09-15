@@ -103,7 +103,11 @@ class JaxInstaller(BaseInstaller):
         return f"{self.__class__.__qualname__}()"
 
     def install(self, version: str) -> None:
-        deps = "" if Version(version) >= Version("0.4.26") else " numpy<2.0.0"
+        ver = Version(version)
+        deps = "" if ver >= Version("0.4.26") else " numpy<2.0.0"
+        if (Version("0.4.9") <= ver) and (ver <= Version("0.4.11")):
+            # https://github.com/google/jax/issues/17693
+            deps += " ml_dtypes<=0.2.0"
         run_bash_command(f"pip install -U jax=={version} jaxlib=={version}{deps}")
 
 
