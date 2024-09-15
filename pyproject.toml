@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.0.8a9"
+version = "0.0.8a10"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
