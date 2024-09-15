@@ -16,7 +16,7 @@ from feu.testing import fire_available
 
 @fire_available
 def test_main() -> None:
-    args = ["__main__.py", "install", "--package=torch", "--version=2.2.2"]
+    args = ["__main__.py", "install", "--package=numpy", "--version=2.0.2"]
     with patch("sys.argv", args):
         main(args)
 
