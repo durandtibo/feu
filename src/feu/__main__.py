@@ -20,8 +20,9 @@ def main(args: list) -> None:
 
     Example usage:
 
-    python feu install --package=torch --version=2.2.2
-    python feu check_valid_version --pkg-name=torch --pkg-version=2.2.2 --python-version=3.11
+    python -m feu install --package=numpy --version=2.0.2
+    python -m feu check_valid_version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.11
+    python -m feu find_closest_version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.11
     """
     options = {
         "install": install_package,
