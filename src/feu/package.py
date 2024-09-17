@@ -305,7 +305,7 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
     ```
     """
     return PackageConfig.find_closest_version(
-        pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
+        pkg_name=str(pkg_name), pkg_version=str(pkg_version), python_version=str(python_version)
     )
 
 
@@ -343,7 +343,7 @@ def is_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> bo
     ```
     """
     return PackageConfig.is_valid_version(
-        pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
+        pkg_name=str(pkg_name), pkg_version=str(pkg_version), python_version=str(python_version)
     )
 
 

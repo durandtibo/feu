@@ -322,6 +322,17 @@ def test_find_closest_version_higher() -> None:
     )
 
 
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_find_closest_version_valid_float() -> None:
+    assert (
+        find_closest_version(pkg_name="my_package", pkg_version=2.0, python_version=3.11) == "2.0"
+    )
+
+
 ######################################
 #     Tests for is_valid_version     #
 ######################################
@@ -385,3 +396,12 @@ def test_is_valid_version_max_false() -> None:
 @patch.dict(PackageConfig.registry, {}, clear=True)
 def test_is_valid_version_empty() -> None:
     assert is_valid_version(pkg_name="my_package", pkg_version="2.0.0", python_version="3.11")
+
+
+@patch.dict(
+    PackageConfig.registry,
+    {"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}},
+    clear=True,
+)
+def test_is_valid_version_float() -> None:
+    assert is_valid_version(pkg_name="my_package", pkg_version=2.0, python_version=3.11)
