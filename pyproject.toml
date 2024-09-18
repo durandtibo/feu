@@ -52,7 +52,7 @@ mkdocstrings = { extras = ["python"], version = ">=0.26,<1.0" }
 
 [tool.poetry.group.dev.dependencies]
 black = ">=24.8"
-coola = ">=0.8"
+coola = ">=0.8,<1.0"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
 pre-commit = "^3.8"
