@@ -1431,11 +1431,11 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 type = ["pytest-mypy"]
 
 [extras]
-all = ["fire"]
-cli = ["click"]
-fire = ["fire"]
+all = ["click", "fire"]
+cli = ["click", "fire"]
+fire = ["click", "fire"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "30bb6dfaf8498bf5594661f313dbc939ab90e4e2f07abb52583dbef63edaf618"
+content-hash = "08c8307acfc9f0fbafad8d145b446e46df468efc3680e209193b53553b7d79a4"
