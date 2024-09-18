@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from feu import is_module_available, is_package_available
-from feu.imports import check_fire, is_fire_available
+from feu.imports import check_click, check_fire, is_click_available, is_fire_available
 
 ##########################################
 #     Tests for is_package_available     #
@@ -48,6 +48,28 @@ def test_is_module_available_false_missing_package() -> None:
 
 def test_is_module_available_false_missing_module() -> None:
     assert not is_module_available("feu.missing_module")
+
+
+#################
+#     click     #
+#################
+
+
+def test_check_click_with_package() -> None:
+    with patch("feu.imports.is_click_available", lambda: True):
+        check_click()
+
+
+def test_check_click_without_package() -> None:
+    with (
+        patch("feu.imports.is_click_available", lambda: False),
+        pytest.raises(RuntimeError, match="'click' package is required but not installed."),
+    ):
+        check_click()
+
+
+def test_is_click_available() -> None:
+    assert isinstance(is_click_available(), bool)
 
 
 ################

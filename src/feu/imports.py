@@ -69,6 +69,54 @@ def is_module_available(module: str) -> bool:
     return True
 
 
+#################
+#     click     #
+#################
+
+
+@lru_cache
+def is_click_available() -> bool:
+    r"""Indicate if the ``click`` package is installed or not.
+
+    Returns:
+        ``True`` if ``click`` is available otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import is_click_available
+    >>> is_click_available()
+
+    ```
+    """
+    return is_package_available("click")
+
+
+def check_click() -> None:
+    r"""Check if the ``click`` package is installed.
+
+    Raises:
+        RuntimeError: if the ``click`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import check_click
+    >>> check_click()
+
+    ```
+    """
+    if not is_click_available():
+        msg = (
+            "'click' package is required but not installed. "
+            "You can install 'click' package with the command:\n\n"
+            "pip install click\n"
+        )
+        raise RuntimeError(msg)
+
+
 ################
 #     fire     #
 ################

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.1.1"
+version = "0.1.2a0"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -34,10 +34,12 @@ python = ">=3.9,<3.13"
 packaging = ">=21.0,<25.0"
 
 # Optional dependencies
+click = { version = ">=8.1,<9.0", optional = true }
 fire = { version = ">=0.6.0,<1.0", optional = true }
 
 [tool.poetry.extras]
 all = ["fire"]
+cli = ["click"]
 fire = ["fire"]
 
 [tool.poetry.group.docs]
