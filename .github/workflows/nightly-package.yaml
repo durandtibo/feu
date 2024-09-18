@@ -148,3 +148,36 @@ jobs:
       - name: Run some checks
         run: |
           python tests/package_checks.py
+
+
+  #################################
+  #     Optional dependencies     #
+  #################################
+
+  click:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        click-version: [ '8.1.7', '8.1.0' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install feu click==${{ matrix.click-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
