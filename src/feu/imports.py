@@ -2,7 +2,7 @@ r"""Contain to check if a package or module is available."""
 
 from __future__ import annotations
 
-__all__ = ["is_module_available", "is_package_available", "check_fire", "is_fire_available"]
+__all__ = ["is_module_available", "is_package_available", "check_click", "is_click_available"]
 
 from contextlib import suppress
 from functools import lru_cache
@@ -113,53 +113,5 @@ def check_click() -> None:
             "'click' package is required but not installed. "
             "You can install 'click' package with the command:\n\n"
             "pip install click\n"
-        )
-        raise RuntimeError(msg)
-
-
-################
-#     fire     #
-################
-
-
-@lru_cache
-def is_fire_available() -> bool:
-    r"""Indicate if the ``fire`` package is installed or not.
-
-    Returns:
-        ``True`` if ``fire`` is available otherwise ``False``.
-
-    Example usage:
-
-    ```pycon
-
-    >>> from feu.imports import is_fire_available
-    >>> is_fire_available()
-
-    ```
-    """
-    return is_package_available("fire")
-
-
-def check_fire() -> None:
-    r"""Check if the ``fire`` package is installed.
-
-    Raises:
-        RuntimeError: if the ``fire`` package is not installed.
-
-    Example usage:
-
-    ```pycon
-
-    >>> from feu.imports import check_fire
-    >>> check_fire()
-
-    ```
-    """
-    if not is_fire_available():
-        msg = (
-            "'fire' package is required but not installed. "
-            "You can install 'fire' package with the command:\n\n"
-            "pip install fire\n"
         )
         raise RuntimeError(msg)
