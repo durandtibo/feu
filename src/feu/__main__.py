@@ -50,7 +50,7 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
 
     Example usage:
 
-    python -m feu find_closest_version --pkg_name=numpy --pkg_version=2.0.2 --python_version=3.10
+    python -m feu find-closest-version --pkg_name=numpy --pkg_version=2.0.2 --python_version=3.10
     """
     print(  # noqa: T201
         find_closest_version_(
@@ -76,7 +76,7 @@ def check_valid_version(pkg_name: str, pkg_version: str, python_version: str) ->
 
     Example usage:
 
-    python -m feu check_valid_version --pkg_name=numpy --pkg_version=2.0.2 --python_version=3.10
+    python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
     """
     print(  # noqa: T201
         is_valid_version(pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version)
