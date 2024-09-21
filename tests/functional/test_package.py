@@ -7,6 +7,7 @@ from coola.testing import (
     pandas_available,
     pyarrow_available,
     torch_available,
+    xarray_available,
 )
 
 
@@ -47,3 +48,14 @@ def test_torch() -> None:
     import torch  # local import because it is an optional dependency
 
     assert objects_are_equal(torch.ones(2, 3) + torch.ones(2, 3), torch.full((2, 3), 2.0))
+
+
+@xarray_available
+def test_xarray() -> None:
+    import numpy as np  # local import because it is an optional dependency
+    import xarray as xr
+
+    assert objects_are_equal(
+        xr.DataArray(np.array([1.0, 2.0, 3.0])) + xr.DataArray(np.array([1.0, 2.0, 3.0])),
+        xr.DataArray(np.array([2.0, 4.0, 6.0])),
+    )
