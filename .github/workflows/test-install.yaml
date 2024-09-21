@@ -315,3 +315,66 @@ jobs:
       - name: Run functional tests
         run: |
           python -m pytest tests/functional
+
+
+  xarray:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        xarray-version: [
+          '2024.9.0',
+          '2024.7.0',
+          '2024.6.0',
+          '2024.5.0',
+          '2024.3.0',
+          '2024.2.0',
+          '2024.1.1',
+          '2023.12.0',
+          '2023.11.0',
+          '2023.10.1',
+          '2023.9.0',
+          '2023.8.0',
+          '2023.7.0',
+          '2023.6.0',
+          '2023.5.0',
+          '2023.4.2',
+          '2023.3.0',
+          '2023.2.0',
+          '2023.1.0',
+          '2022.12.0',
+          '2022.11.0',
+          '2022.10.0',
+          '2022.9.0',
+          '2022.6.0',
+          '2022.3.0',
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install valid package version
+        id: python-package
+        uses: durandtibo/pip-install-package-action@v0.2.0
+        with:
+          package-name: 'xarray'
+          package-version: ${{ matrix.xarray-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install coola pytest
+
+      - name: Run functional tests
+        run: |
+          python -m pytest tests/functional
