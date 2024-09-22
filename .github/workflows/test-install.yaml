@@ -142,6 +142,7 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
         pandas-version: [
+          2.2.3,
           2.2.2,
           2.2.1,
           2.2.0,
