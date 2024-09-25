@@ -45,6 +45,13 @@ class PackageConfig:
             "3.10": {"min": "6.0.0", "max": None},
             "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
+        # https://github.com/scikit-learn/scikit-learn/releases
+        "scikit-learn": {
+            "3.12": {"min": "1.3.1", "max": None},
+            "3.11": {"min": "1.2.0", "max": None},
+            "3.10": {"min": "1.1.0", "max": None},
+            "3.9": {"min": None, "max": None},
+        },
         # https://github.com/pytorch/pytorch/releases
         "torch": {
             "3.12": {"min": "2.4.0", "max": None},
