@@ -299,7 +299,7 @@ jobs:
 
       - name: Install valid package version
         id: python-package
-        uses: durandtibo/pip-install-package-action@v0.2.0
+        uses: durandtibo/pip-install-package-action@v0.2.1
         with:
           package-name: 'scikit-learn'
           package-version: ${{ matrix.scikit-learn-version }}
