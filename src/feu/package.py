@@ -46,8 +46,8 @@ class PackageConfig:
             "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
         "scikit-learn": {
-            "3.12": {"min": None, "max": None},
-            "3.11": {"min": None, "max": None},
+            "3.12": {"min": "1.3.0", "max": None},
+            "3.11": {"min": "1.1.3", "max": None},
             "3.10": {"min": None, "max": None},
             "3.9": {"min": None, "max": None},
         },
