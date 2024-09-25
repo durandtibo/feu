@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from coola import objects_are_equal
 from coola.testing import (
     jax_available,
@@ -9,6 +10,9 @@ from coola.testing import (
     torch_available,
     xarray_available,
 )
+from coola.utils import package_available
+
+sklearn_available = pytest.mark.skipif(not package_available("sklearn"), reason="Requires sklearn")
 
 
 @jax_available
@@ -41,6 +45,19 @@ def test_pyarrow() -> None:
     assert objects_are_equal(
         pa.array([1.0, 2.0, 3.0], type=pa.float64()), pa.array([1.0, 2.0, 3.0], type=pa.float64())
     )
+
+
+@sklearn_available
+def test_sklearn() -> None:
+    from sklearn.datasets import (
+        make_classification,  # local import because it is an optional dependency
+    )
+
+    x, y = make_classification(
+        n_samples=100, n_features=5, n_informative=2, n_redundant=2, random_state=42
+    )
+    assert x.shape == (100, 5)
+    assert y.shape == (100,)
 
 
 @torch_available
