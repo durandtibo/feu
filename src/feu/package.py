@@ -54,10 +54,10 @@ class PackageConfig:
         },
         "scipy": {
             "3.13": {"min": "1.14.1", "max": None},
-            "3.12": {"min": "1.11.0", "max": None},
-            "3.11": {"min": None, "max": None},
+            "3.12": {"min": "1.11.2", "max": None},
+            "3.11": {"min": "1.9.2", "max": None},
             "3.10": {"min": None, "max": None},
-            "3.9": {"min": None, "max": "1.13.0"},
+            "3.9": {"min": None, "max": "1.13.1"},
         },
         # https://github.com/pytorch/pytorch/releases
         "torch": {
