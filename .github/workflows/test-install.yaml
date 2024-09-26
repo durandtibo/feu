@@ -312,6 +312,68 @@ jobs:
           python -m pytest tests/functional
 
 
+  scipy:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        scipy-version: [
+          1.14.1,
+          1.14.0,
+          1.13.1,
+          1.13.0,
+          1.12.0,
+          1.11.4,
+          1.11.3,
+          1.11.2,
+          1.11.1,
+          1.10.1,
+          1.10.0,
+          1.9.3,
+          1.9.2,
+          1.9.1,
+          1.9.0,
+          1.8.1,
+          1.8.0,
+          1.7.3,
+          1.7.2,
+          1.7.1,
+          1.7.0,
+          1.6.3,
+          1.6.2,
+          1.6.1,
+          1.6.0,
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'scipy'
+          package-version: ${{ matrix.scipy-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install coola pytest
+
+      - name: Run functional tests
+        run: |
+          python -m pytest tests/functional
+
+
   torch:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
