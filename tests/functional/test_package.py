@@ -13,6 +13,7 @@ from coola.testing import (
 from coola.utils import package_available
 
 sklearn_available = pytest.mark.skipif(not package_available("sklearn"), reason="Requires sklearn")
+scipy_available = pytest.mark.skipif(not package_available("scipy"), reason="Requires scipy")
 
 
 @jax_available
@@ -58,6 +59,13 @@ def test_sklearn() -> None:
     )
     assert x.shape == (100, 5)
     assert y.shape == (100,)
+
+
+@scipy_available
+def test_scipy() -> None:
+    from scipy import stats  # local import because it is an optional dependency
+
+    assert stats.norm.cdf(0) == 0.5
 
 
 @torch_available
