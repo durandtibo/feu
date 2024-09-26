@@ -52,6 +52,7 @@ class PackageConfig:
             "3.10": {"min": "1.1.0", "max": None},
             "3.9": {"min": None, "max": None},
         },
+        # https://github.com/scipy/scipy/releases/
         "scipy": {
             "3.13": {"min": "1.14.1", "max": None},
             "3.12": {"min": "1.11.2", "max": None},
