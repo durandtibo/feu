@@ -12,6 +12,9 @@ from coola.testing import (
 )
 from coola.utils import package_available
 
+requests_available = pytest.mark.skipif(
+    not package_available("requests"), reason="Requires requests"
+)
 sklearn_available = pytest.mark.skipif(not package_available("sklearn"), reason="Requires sklearn")
 scipy_available = pytest.mark.skipif(not package_available("scipy"), reason="Requires scipy")
 
@@ -46,6 +49,14 @@ def test_pyarrow() -> None:
     assert objects_are_equal(
         pa.array([1.0, 2.0, 3.0], type=pa.float64()), pa.array([1.0, 2.0, 3.0], type=pa.float64())
     )
+
+
+@requests_available
+def test_requests() -> None:
+    import requests  # local import because it is an optional dependency
+
+    r = requests.get("https://api.github.com/events", timeout=10)
+    assert r.status_code == 200
 
 
 @sklearn_available
