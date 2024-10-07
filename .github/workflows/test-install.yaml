@@ -257,6 +257,56 @@ jobs:
           python -m pytest tests/functional
 
 
+  requests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        requests-version: [
+          2.32.3,
+          2.32.2,
+          2.31.0,
+          2.30.0,
+          2.29.0,
+          2.28.2,
+          2.28.1,
+          2.28.0,
+          2.27.1,
+          2.27.0,
+          2.26.0,
+          2.25.1,
+          2.25.0,
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.0
+        with:
+          package-name: 'requests'
+          package-version: ${{ matrix.requests-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install coola pytest
+
+      - name: Run functional tests
+        run: |
+          python -m pytest tests/functional
+
+
   scikit-learn:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10

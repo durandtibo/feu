@@ -45,6 +45,12 @@ class PackageConfig:
             "3.10": {"min": "6.0.0", "max": None},
             "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
+        "requests": {
+            "3.12": {"min": None, "max": None},
+            "3.11": {"min": None, "max": None},
+            "3.10": {"min": None, "max": None},
+            "3.9": {"min": None, "max": None},
+        },
         # https://github.com/scikit-learn/scikit-learn/releases
         "scikit-learn": {
             "3.12": {"min": "1.3.1", "max": None},

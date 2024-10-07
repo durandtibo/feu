@@ -12,6 +12,9 @@ from coola.testing import (
 )
 from coola.utils import package_available
 
+requests_available = pytest.mark.skipif(
+    not package_available("requests"), reason="Requires requests"
+)
 sklearn_available = pytest.mark.skipif(not package_available("sklearn"), reason="Requires sklearn")
 scipy_available = pytest.mark.skipif(not package_available("scipy"), reason="Requires scipy")
 
@@ -48,17 +51,20 @@ def test_pyarrow() -> None:
     )
 
 
+@requests_available
+def test_requests() -> None:
+    import requests  # local import because it is an optional dependency
+
+    r = requests.get("https://api.github.com/events", timeout=10)
+    assert r.status_code in {200, 403}
+
+
 @sklearn_available
 def test_sklearn() -> None:
-    from sklearn.datasets import (
-        make_classification,  # local import because it is an optional dependency
-    )
+    from sklearn.svm import SVC  # local import because it is an optional dependency
 
-    x, y = make_classification(
-        n_samples=100, n_features=5, n_informative=2, n_redundant=2, random_state=42
-    )
-    assert x.shape == (100, 5)
-    assert y.shape == (100,)
+    model = SVC(C=0.1)
+    assert model.C == 0.1
 
 
 @scipy_available
