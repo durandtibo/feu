@@ -53,7 +53,7 @@ black = ">=24.8"
 coola = ">=0.8,<1.0"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
-pre-commit = "^3.8"
+pre-commit = ">=3.8,<5.0"
 pygments = "^2.18"
 pytest = "^8.3"
 pytest-cov = "^5.0"
