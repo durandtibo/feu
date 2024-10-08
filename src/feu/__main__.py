@@ -88,5 +88,5 @@ cli.add_command(find_closest_version)
 cli.add_command(check_valid_version)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     cli()
