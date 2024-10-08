@@ -25,6 +25,7 @@ class PackageConfig:
         },
         # https://numpy.org/devdocs/release.html
         "numpy": {
+            "3.13": {"min": "2.1.0", "max": None},
             "3.12": {"min": "1.26.0", "max": None},
             "3.11": {"min": "1.23.2", "max": None},
             "3.10": {"min": "1.21.3", "max": None},
