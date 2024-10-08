@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.2.4"
+version = "0.3.0a1"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Libraries",
 ]
@@ -30,7 +31,7 @@ packages = [
 
 [tool.poetry.dependencies]
 # Core dependencies
-python = ">=3.9,<3.13"
+python = ">=3.9,<3.14"
 packaging = ">=21.0,<25.0"
 
 # Optional dependencies
@@ -49,8 +50,7 @@ mkdocs-material = "^9.5"
 mkdocstrings = { extras = ["python"], version = ">=0.26,<1.0" }
 
 [tool.poetry.group.dev.dependencies]
-black = ">=24.8"
-coola = ">=0.8,<1.0"
+black = ">=24.10"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
 pre-commit = "^3.8"
@@ -93,7 +93,7 @@ filterwarnings = [
 
 [tool.black]
 line-length = 100
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py39", "py310", "py311", "py312", "py313"]
 include = '\.pyi?$'
 
 [tool.pylint.FORMAT]

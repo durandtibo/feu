@@ -16,6 +16,11 @@ PACKAGES = [
 ]
 
 
+@pytest.fixture(autouse=True)
+def _reset_cache() -> None:
+    is_package_available.cache_clear()
+
+
 #####################################
 #     Tests for install_package     #
 #####################################
