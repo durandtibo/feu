@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+
+from feu.imports import is_package_available
 from feu.testing import (
     jax_available,
     numpy_available,
@@ -11,6 +14,11 @@ from feu.testing import (
     torch_available,
     xarray_available,
 )
+
+
+@pytest.fixture(autouse=True)
+def _reset_cache() -> None:
+    is_package_available.cache_clear()
 
 
 @jax_available
