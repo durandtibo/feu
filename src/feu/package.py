@@ -18,6 +18,7 @@ class PackageConfig:
     registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
         # https://pypi.org/project/jaxlib/#history
         "jax": {
+            "3.13": {"min": "0.4.34", "max": None},
             "3.12": {"min": "0.4.17", "max": None},
             "3.11": {"min": "0.4.6", "max": None},
             "3.10": {"min": "0.4.6", "max": None},
@@ -34,6 +35,7 @@ class PackageConfig:
         # https://github.com/pandas-dev/pandas/releases
         # https://pandas.pydata.org/docs/whatsnew/index.html
         "pandas": {
+            "3.13": {"min": "2.2.3", "max": None},
             "3.12": {"min": "2.1.1", "max": None},
             "3.11": {"min": "1.3.4", "max": None},
             "3.10": {"min": "1.3.3", "max": None},
@@ -47,6 +49,7 @@ class PackageConfig:
             "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
         "requests": {
+            "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
             "3.11": {"min": None, "max": None},
             "3.10": {"min": None, "max": None},
@@ -61,7 +64,7 @@ class PackageConfig:
         },
         # https://github.com/scipy/scipy/releases/
         "scipy": {
-            "3.13": {"min": "1.15.0", "max": None},
+            "3.13": {"min": "1.14.1", "max": None},
             "3.12": {"min": "1.12.0", "max": None},
             "3.11": {"min": "1.10.0", "max": None},
             "3.10": {"min": "1.8.0", "max": None},
