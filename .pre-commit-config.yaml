@@ -1,7 +1,7 @@
 default_language_version:
   python: python3
 
-default_stages: [ commit ]
+default_stages: [ pre-commit ]
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
@@ -9,12 +9,18 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py39-plus]
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
+  - repo: local
     hooks:
       - id: docformatter
-        additional_dependencies: [ tomli ]
+        name: docformatter
+        entry: python -Im docformatter
+        additional_dependencies:
+          - docformatter >= 1.7.5
+          - tomli >= 2.0.0
         args: [ "--in-place", "--config", "./pyproject.toml" ]
+        language: python
+        types:
+          - python
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
