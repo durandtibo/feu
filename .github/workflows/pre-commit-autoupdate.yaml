@@ -3,8 +3,13 @@ name: pre-commit auto-update
 on:
   schedule:
     - cron: "0 8 * * 2" # run every Tuesday at 8:00 AM UTC
+    - cron: "30 8 * * *" # run every day at 8:30 AM UTC (for debug)
   workflow_call:
   workflow_dispatch:  # to trigger manually
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   auto-update:
@@ -42,7 +47,7 @@ jobs:
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-pre-commit-hooks
+          branch: update/pre-commit-hooks
           title: Update pre-commit hooks
           commit-message: "Update pre-commit hooks"
           body: Update versions of pre-commit hooks to latest version.
