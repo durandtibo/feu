@@ -2,7 +2,7 @@ r"""Contain to check if a package or module is available."""
 
 from __future__ import annotations
 
-__all__ = ["is_module_available", "is_package_available", "check_click", "is_click_available"]
+__all__ = ["check_click", "is_click_available", "is_module_available", "is_package_available"]
 
 from contextlib import suppress
 from functools import lru_cache
