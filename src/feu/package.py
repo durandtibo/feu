@@ -2,7 +2,7 @@ r"""Contain functions to check a package configuration."""
 
 from __future__ import annotations
 
-__all__ = ["PackageConfig", "is_valid_version", "find_closest_version"]
+__all__ = ["PackageConfig", "find_closest_version", "is_valid_version"]
 
 import logging
 from typing import ClassVar
