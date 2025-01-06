@@ -27,7 +27,6 @@ jobs:
 
       - name: Install packages
         run: |
-          poetry run make config-poetry
           make install-all
 
       - name: Setup doc deploy
@@ -40,4 +39,4 @@ jobs:
 
       - name: Build and deploy documentation
         run: |
-          poetry run make publish-doc-latest
+          make publish-doc-latest
