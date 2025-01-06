@@ -27,23 +27,26 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
 
+      - name: Set environment variable
+        run: |
+          echo $(poetry run poetry env info --path)/bin >> $GITHUB_PATH
+
       - name: Install packages
         run: |
-          poetry run make config-poetry
-          poetry run make install
+          make install
 
       - name: Install packaging
         run: |
-          poetry run pip install packaging==${{ matrix.packaging-version }}
+          pip install packaging==${{ matrix.packaging-version }}
 
       - name: Show installed packages
         run: |
-          poetry run poetry show
-          poetry run poetry show --tree
+          poetry show
+          poetry show --tree
 
       - name: Run unit tests
         run: |
-          poetry run make unit-test-cov
+          make unit-test-cov
 
 
   #################################
@@ -73,27 +76,30 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
 
+      - name: Set environment variable
+        run: |
+          echo $(poetry run poetry env info --path)/bin >> $GITHUB_PATH
+
       - name: Install packages
         run: |
-          poetry run make config-poetry
-          poetry run make install
+          make install
 
       - name: Install click
         run: |
-          poetry run pip install click==${{ matrix.click-version }}
+          pip install click==${{ matrix.click-version }}
 
       - name: Show installed packages
         run: |
-          poetry run poetry show
-          poetry run poetry show --tree
+          poetry show
+          poetry show --tree
 
       - name: Run unit tests
         run: |
-          poetry run make unit-test-cov
+          make unit-test-cov
 
       - name: Run integration tests
         run: |
-          poetry run make integration-test
+          make integration-test
 
 
   fire:
@@ -119,24 +125,27 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
 
+      - name: Set environment variable
+        run: |
+          echo $(poetry run poetry env info --path)/bin >> $GITHUB_PATH
+
       - name: Install packages
         run: |
-          poetry run make config-poetry
-          poetry run make install
+          make install
 
       - name: Install fire
         run: |
-          poetry run pip install fire==${{ matrix.fire-version }}
+          pip install fire==${{ matrix.fire-version }}
 
       - name: Show installed packages
         run: |
-          poetry run poetry show
-          poetry run poetry show --tree
+          poetry show
+          poetry show --tree
 
       - name: Run unit tests
         run: |
-          poetry run make unit-test-cov
+          make unit-test-cov
 
       - name: Run integration tests
         run: |
-          poetry run make integration-test
+          make integration-test
