@@ -302,7 +302,7 @@ class PackageConfig:
             return version <= max_version
         if max_version is None:
             return min_version <= version
-        return (min_version <= version <= max_version)
+        return min_version <= version <= max_version
 
 
 def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -> str:

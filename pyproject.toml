@@ -53,12 +53,12 @@ mkdocstrings = { extras = ["python"], version = ">=0.26,<1.0" }
 black = ">=24.10"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
-pre-commit = "^4.0"
-pygments = "^2.18"
+pre-commit = "^4.1"
+pygments = "^2.19"
 pytest = "^8.3"
 pytest-cov = ">=5,<7"
 pytest-timeout = "^2.3"
-ruff = ">=0.6,<1.0"
+ruff = ">=0.9,<1.0"
 xdoctest = "^1.2"
 
 [build-system]
@@ -87,9 +87,7 @@ addopts = "--color yes --durations 10 -rf"
 # Configuration of the short test summary info
 # https://docs.pytest.org/en/stable/usage.html#detailed-summary-report
 
-filterwarnings = [
-  "ignore::DeprecationWarning:fire.*",
-]
+filterwarnings = []
 
 [tool.black]
 line-length = 100
