@@ -73,6 +73,7 @@ class PackageConfig:
         },
         # https://github.com/pytorch/pytorch/releases
         "torch": {
+            "3.13": {"min": "2.6.0", "max": None},
             "3.12": {"min": "2.4.0", "max": None},
             "3.11": {"min": "2.0.0", "max": None},
             "3.10": {"min": "1.11.0", "max": None},
