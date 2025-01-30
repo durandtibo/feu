@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.3.1"
+version = "0.3.2a0"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -50,7 +50,7 @@ mkdocs-material = "^9.5"
 mkdocstrings = { extras = ["python"], version = ">=0.26,<1.0" }
 
 [tool.poetry.group.dev.dependencies]
-black = ">=24.10"
+black = ">=25.1"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
 pre-commit = "^4.1"
