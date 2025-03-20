@@ -51,9 +51,9 @@ mkdocstrings = { extras = ["python"], version = ">=0.26,<1.0" }
 
 [tool.poetry.group.dev.dependencies]
 black = ">=25.1"
-coverage = { extras = ["toml"], version = "^7.6" }
+coverage = { extras = ["toml"], version = "^7.7" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
-pre-commit = "^4.1"
+pre-commit = "^4.2"
 pygments = "^2.19"
 pytest = "^8.3"
 pytest-cov = ">=5,<7"
