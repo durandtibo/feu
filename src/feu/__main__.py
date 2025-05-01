@@ -2,6 +2,8 @@ r"""Contain the main entry point."""
 
 from __future__ import annotations
 
+import sys
+
 from feu.imports import is_click_available
 from feu.install import install_package
 from feu.package import find_closest_version as find_closest_version_
@@ -30,7 +32,12 @@ def install(pkg_name: str, pkg_version: str) -> None:
 
     python -m feu install --pkg_name=numpy --pkg_version=2.0.2
     """
-    install_package(package=pkg_name, version=pkg_version)
+    version = find_closest_version_(
+        pkg_name=pkg_name,
+        pkg_version=pkg_version,
+        python_version=f"{sys.version_info[0]}.{sys.version_info[1]}",
+    )
+    install_package(package=pkg_name, version=version)
 
 
 @click.command()
