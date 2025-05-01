@@ -2,9 +2,12 @@ r"""Contain git utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["get_last_tag_name", "get_tags"]
+__all__ = ["get_last_tag_name", "get_last_version_tag_name", "get_tags"]
 
+from contextlib import suppress
 from unittest.mock import Mock
+
+from packaging.version import InvalidVersion, Version
 
 from feu.imports import check_git, is_git_available
 
@@ -53,4 +56,36 @@ def get_last_tag_name() -> str:
     ```
     """
     tags = get_tags()
+    if not tags:
+        msg = "No tag was found"
+        raise RuntimeError(msg)
     return tags[-1].name
+
+
+def get_last_version_tag_name() -> str:
+    r"""Get the name of the most recent version tag in the current
+    repository.
+
+    A version tag is a tag starting with ``v{number}*``.
+
+    Returns:
+        The tag name.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.git import get_last_version_tag_name
+    >>> tag = get_last_version_tag_name()
+    >>> tag
+
+    ```
+    """
+    tags = get_tags()
+    for tag in tags[::-1]:
+        with suppress(InvalidVersion):
+            Version(tag.name)
+            return tag.name
+
+    msg = "No tag was found"
+    raise RuntimeError(msg)
