@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from feu.git import get_tags
+from unittest.mock import Mock, patch
+
+from feu.git import get_last_tag_name, get_tags
 from feu.testing import git_available
 
 ##############################
@@ -30,3 +32,25 @@ def test_get_tags() -> None:
         "v0.3.1",
         "v0.3.2",
     ]
+
+
+#######################################
+#     Tests for get_last_tag_name     #
+#######################################
+
+
+@git_available
+def test_get_last_tag_name() -> None:
+    assert isinstance(get_last_tag_name(), str)
+
+
+@git_available
+def test_get_last_tag_name_mock() -> None:
+    m1 = Mock()
+    m1.configure_mock(name="v1.0.0")
+    m2 = Mock()
+    m2.configure_mock(name="v1.1.0")
+    m3 = Mock()
+    m3.configure_mock(name="v2.0.0")
+    with patch("feu.git.get_tags", lambda: [m1, m2, m3]):
+        assert get_last_tag_name() == "v2.0.0"

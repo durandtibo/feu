@@ -2,21 +2,21 @@ r"""Contain git utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["get_tags"]
+__all__ = ["get_last_tag_name", "get_tags"]
 
 from unittest.mock import Mock
 
 from feu.imports import check_git, is_git_available
 
-if is_git_available():  # pragma: no cover
+if is_git_available():
     import git
-else:
+else:  # pragma: no cover
     git = Mock()
 
 
 def get_tags() -> list[git.TagReference]:
     r"""Get the list of git tags sorted by date/time for the current
-    repo.
+    repository.
 
     Returns:
         The list of git tags sorted by date/time.
@@ -34,3 +34,23 @@ def get_tags() -> list[git.TagReference]:
     check_git()
     repo = git.Repo(search_parent_directories=True)
     return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+
+
+def get_last_tag_name() -> str:
+    r"""Get the name of the most recent tag in the current repository.
+
+    Returns:
+        The tag name.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.git import get_last_tag_name
+    >>> tag = get_last_tag_name()
+    >>> tag
+
+    ```
+    """
+    tags = get_tags()
+    return tags[-1].name
