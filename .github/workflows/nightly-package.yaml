@@ -12,7 +12,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -40,7 +40,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -68,7 +68,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -96,7 +96,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -130,7 +130,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        packaging-version: [ '24.1', '23.2', '22.0', '21.3' ]
+        packaging-version: [ '25.0', '24.2', '23.2', '22.0', '21.3' ]
 
     steps:
       - name: Checkout
@@ -163,7 +163,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        click-version: [ '8.1.7', '8.1.0' ]
+        click-version: [ '8.1.8', '8.1.0' ]
 
     steps:
       - name: Checkout
