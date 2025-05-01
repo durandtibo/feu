@@ -9,7 +9,7 @@ from feu.install import PackageInstaller
 from feu.package import find_closest_version
 
 PACKAGES = [
-    ("numpy", "2.0.2"),
+    ("numpy", "2.2.5"),
     ("pandas", "2.2.3"),
     ("sklearn", "1.6.0"),
     ("xarray", "2024.9"),
