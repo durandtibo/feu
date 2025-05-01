@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "click_available",
+    "git_available",
     "jax_available",
     "numpy_available",
     "pandas_available",
@@ -18,9 +19,10 @@ __all__ = [
 
 import pytest
 
-from feu.imports import is_click_available, is_package_available
+from feu.imports import is_click_available, is_git_available, is_package_available
 
 click_available = pytest.mark.skipif(not is_click_available(), reason="Requires click")
+git_available = pytest.mark.skipif(not is_git_available(), reason="Requires git")
 jax_available = pytest.mark.skipif(not is_package_available("jax"), reason="Requires JAX")
 numpy_available = pytest.mark.skipif(not is_package_available("numpy"), reason="Requires NumPy")
 pandas_available = pytest.mark.skipif(not is_package_available("pandas"), reason="Requires pandas")

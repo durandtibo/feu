@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "feu"
-version = "0.3.2"
+version = "0.3.3a0"
 description = "A light library to help to manage packages"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -36,10 +36,12 @@ packaging = ">=21.0,<26.0"
 
 # Optional dependencies
 click = { version = ">=8.1,<9.0", optional = true }
+gitpython = { version = ">=3.1.41,<4.0", optional = true }
 
 [tool.poetry.extras]
-all = ["click"]
+all = ["click", "git"]
 cli = ["click"]
+git = ["gitpython"]
 
 [tool.poetry.group.docs]
 optional = true
@@ -152,8 +154,6 @@ lint.select = [
 ]
 lint.ignore = [
     "A003", # Class attribute `{name}` is shadowing a python builtin
-    "ANN101", # Missing type annotation for `self` in method
-    "ANN102", # Missing type annotation for `cls` in classmethod
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed.
     "B905", # `zip()` without an explicit strict= parameter set. The `strict=` argument was added in Python 3.10
     "E501", # Line lengths are recommended to be no greater than 79 characters.

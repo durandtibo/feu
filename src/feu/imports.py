@@ -2,7 +2,14 @@ r"""Contain to check if a package or module is available."""
 
 from __future__ import annotations
 
-__all__ = ["check_click", "is_click_available", "is_module_available", "is_package_available"]
+__all__ = [
+    "check_click",
+    "check_git",
+    "is_click_available",
+    "is_git_available",
+    "is_module_available",
+    "is_package_available",
+]
 
 from contextlib import suppress
 from functools import lru_cache
@@ -113,5 +120,53 @@ def check_click() -> None:
             "'click' package is required but not installed. "
             "You can install 'click' package with the command:\n\n"
             "pip install click\n"
+        )
+        raise RuntimeError(msg)
+
+
+###############
+#     git     #
+###############
+
+
+@lru_cache
+def is_git_available() -> bool:
+    r"""Indicate if the ``git`` package is installed or not.
+
+    Returns:
+        ``True`` if ``git`` is available otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import is_git_available
+    >>> is_git_available()
+
+    ```
+    """
+    return is_package_available("git")
+
+
+def check_git() -> None:
+    r"""Check if the ``git`` package is installed.
+
+    Raises:
+        RuntimeError: if the ``git`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import check_git
+    >>> check_git()
+
+    ```
+    """
+    if not is_git_available():
+        msg = (
+            "'git' package is required but not installed. "
+            "You can install 'git' package with the command:\n\n"
+            "pip install gitpython\n"
         )
         raise RuntimeError(msg)
