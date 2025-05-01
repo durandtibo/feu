@@ -9,18 +9,11 @@ from feu.install import PackageInstaller
 from feu.package import find_closest_version
 
 PACKAGES = [
-    # ("jax", "0.4.30"),
-    ("matplotlib", "3.10.0"),
     ("numpy", "2.0.2"),
     ("pandas", "2.2.3"),
-    # ("torch", "2.2.2"),
+    ("sklearn", "1.6.0"),
     ("xarray", "2024.9"),
 ]
-
-if version_info.minor < 13:
-    PACKAGES.append(
-        ("sklearn", "1.4.2"),
-    )
 
 
 @pytest.fixture(autouse=True)
