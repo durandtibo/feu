@@ -12,7 +12,6 @@ PACKAGES = [
     ("numpy", "2.2.5"),
     ("pandas", "2.2.3"),
     ("sklearn", "1.6.0"),
-    ("torch", "2.2.2"),
     ("xarray", "2024.9"),
 ]
 
