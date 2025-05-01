@@ -22,7 +22,7 @@ def is_package_available(package: str) -> bool:
     """Check if a package is available.
 
     Args:
-        package: Specifies the package name to check.
+        package: The package name to check.
 
     Returns:
         ``True`` if the package is available, otherwise ``False``.
@@ -51,7 +51,7 @@ def is_module_available(module: str) -> bool:
     """Check if a module path is available.
 
     Args:
-        module: Specifies the module to check.
+        module: The module to check.
 
     Example usage:
 
