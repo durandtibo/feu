@@ -15,13 +15,13 @@ from feu.testing import click_available
 
 @click_available
 def test_install() -> None:
-    run_bash_command("python -m feu install --pkg-name=numpy --pkg-version=2.0.2")
+    run_bash_command("python -m feu install --pkg-name=numpy --pkg-version=2.2.5")
 
 
 @click_available
 def test_check_valid_version() -> None:
     cmd = (
-        "python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 "
+        "python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.2.5 "
         "--python-version=3.11"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
@@ -31,11 +31,11 @@ def test_check_valid_version() -> None:
 @click_available
 def test_find_closest_version() -> None:
     cmd = (
-        "python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 "
+        "python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.2.5 "
         "--python-version=3.11"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
-    assert out.stdout == "2.0.2\n"
+    assert out.stdout == "2.2.5\n"
 
 
 def test_invalid() -> None:
