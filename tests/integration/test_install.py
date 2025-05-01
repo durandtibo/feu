@@ -10,7 +10,7 @@ from feu.package import find_closest_version
 
 PACKAGES = [
     # ("jax", "0.4.30"),
-    ("matplotlib", "3.9.0"),
+    ("matplotlib", "3.10.0"),
     ("numpy", "2.0.2"),
     ("pandas", "2.2.3"),
     # ("torch", "2.2.2"),
