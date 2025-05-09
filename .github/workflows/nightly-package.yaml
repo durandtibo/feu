@@ -4,6 +4,9 @@ on:
     - cron: '30 11 * * *' # run at 11:30 AM UTC
   workflow_dispatch:  # to trigger manually
 
+permissions:
+  contents: read
+
 jobs:
   stable-all:
     runs-on: ${{ matrix.os }}
