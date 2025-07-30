@@ -10,22 +10,15 @@
     <a href="https://github.com/durandtibo/feu/actions">
         <img alt="Nightly Package Tests" src="https://github.com/durandtibo/feu/workflows/Nightly%20Package%20Tests/badge.svg">
     </a>
+    <a href="https://codecov.io/gh/durandtibo/feu">
+        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/feu/branch/main/graph/badge.svg">
+    </a>
     <br/>
     <a href="https://durandtibo.github.io/feu/">
         <img alt="Documentation" src="https://github.com/durandtibo/feu/workflows/Documentation%20(stable)/badge.svg">
     </a>
     <a href="https://durandtibo.github.io/feu/">
         <img alt="Documentation" src="https://github.com/durandtibo/feu/workflows/Documentation%20(unstable)/badge.svg">
-    </a>
-    <br/>
-    <a href="https://codecov.io/gh/durandtibo/feu">
-        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/feu/branch/main/graph/badge.svg">
-    </a>
-    <a href="https://codeclimate.com/github/durandtibo/feu/maintainability">
-        <img src="https://api.codeclimate.com/v1/badges/173c4176f130dd424881/maintainability" />
-    </a>
-    <a href="https://codeclimate.com/github/durandtibo/feu/test_coverage">
-        <img src="https://api.codeclimate.com/v1/badges/173c4176f130dd424881/test_coverage" />
     </a>
     <br/>
     <a href="https://github.com/psf/black">
