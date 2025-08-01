@@ -86,7 +86,7 @@ class PackageConfig:
             "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
             "3.11": {"min": None, "max": None},
-            "3.10": {"min": None, "max": None},
+            "3.10": {"min": None, "max": "2025.6.1"},
             "3.9": {"min": None, "max": "2024.7.0"},
         },
     }
