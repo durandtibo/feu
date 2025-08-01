@@ -21,7 +21,7 @@ class PackageConfig:
             "3.13": {"min": "0.4.34", "max": None},
             "3.12": {"min": "0.4.17", "max": None},
             "3.11": {"min": "0.4.6", "max": None},
-            "3.10": {"min": "0.4.6", "max": None},
+            "3.10": {"min": "0.4.6", "max": "0.6.2"},
             "3.9": {"min": "0.4.6", "max": "0.4.30"},
         },
         # https://numpy.org/devdocs/release.html
