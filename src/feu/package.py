@@ -21,15 +21,16 @@ class PackageConfig:
             "3.13": {"min": "0.4.34", "max": None},
             "3.12": {"min": "0.4.17", "max": None},
             "3.11": {"min": "0.4.6", "max": None},
-            "3.10": {"min": "0.4.6", "max": None},
+            "3.10": {"min": "0.4.6", "max": "0.6.2"},
             "3.9": {"min": "0.4.6", "max": "0.4.30"},
         },
         # https://numpy.org/devdocs/release.html
         "numpy": {
+            "3.14": {"min": "2.3.0", "max": None},
             "3.13": {"min": "2.1.0", "max": None},
             "3.12": {"min": "1.26.0", "max": None},
             "3.11": {"min": "1.23.2", "max": None},
-            "3.10": {"min": "1.21.3", "max": None},
+            "3.10": {"min": "1.21.3", "max": "2.2.6"},
             "3.9": {"min": "1.19.3", "max": "2.0.2"},
         },
         # https://github.com/pandas-dev/pandas/releases
@@ -62,14 +63,14 @@ class PackageConfig:
             "3.12": {"min": "1.3.1", "max": None},
             "3.11": {"min": "1.2.0", "max": None},
             "3.10": {"min": "1.1.0", "max": None},
-            "3.9": {"min": None, "max": None},
+            "3.9": {"min": None, "max": "1.6.1"},
         },
         # https://github.com/scipy/scipy/releases/
         "scipy": {
             "3.13": {"min": "1.14.1", "max": None},
             "3.12": {"min": "1.12.0", "max": None},
             "3.11": {"min": "1.10.0", "max": None},
-            "3.10": {"min": "1.8.0", "max": None},
+            "3.10": {"min": "1.8.0", "max": "1.15.3"},
             "3.9": {"min": None, "max": "1.13.1"},
         },
         # https://github.com/pytorch/pytorch/releases
@@ -82,9 +83,10 @@ class PackageConfig:
         },
         # https://docs.xarray.dev/en/stable/whats-new.html
         "xarray": {
+            "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
             "3.11": {"min": None, "max": None},
-            "3.10": {"min": None, "max": None},
+            "3.10": {"min": None, "max": "2025.6.1"},
             "3.9": {"min": None, "max": "2024.7.0"},
         },
     }
