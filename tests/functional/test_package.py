@@ -5,6 +5,7 @@ import pytest
 from feu.imports import is_package_available
 from feu.testing import (
     jax_available,
+    matplotlib_available,
     numpy_available,
     pandas_available,
     pyarrow_available,
@@ -26,6 +27,13 @@ def test_jax() -> None:
     import jax.numpy as jnp  # local import because it is an optional dependency
 
     assert jnp.array_equal(jnp.ones((2, 3)) + jnp.ones((2, 3)), jnp.full((2, 3), 2.0))
+
+
+@matplotlib_available
+def test_matplotlib() -> None:
+    import matplotlib.pyplot as plt  # local import because it is an optional dependency
+
+    plt.plot([1, 2, 3], [1, 2, 3])
 
 
 @numpy_available

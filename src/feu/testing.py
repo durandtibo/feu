@@ -6,6 +6,7 @@ __all__ = [
     "click_available",
     "git_available",
     "jax_available",
+    "matplotlib_available",
     "numpy_available",
     "pandas_available",
     "polars_available",
@@ -24,6 +25,9 @@ from feu.imports import is_click_available, is_git_available, is_package_availab
 click_available = pytest.mark.skipif(not is_click_available(), reason="Requires click")
 git_available = pytest.mark.skipif(not is_git_available(), reason="Requires git")
 jax_available = pytest.mark.skipif(not is_package_available("jax"), reason="Requires JAX")
+matplotlib_available = pytest.mark.skipif(
+    not is_package_available("matplotlib"), reason="Requires matplotlib"
+)
 numpy_available = pytest.mark.skipif(not is_package_available("numpy"), reason="Requires NumPy")
 pandas_available = pytest.mark.skipif(not is_package_available("pandas"), reason="Requires pandas")
 polars_available = pytest.mark.skipif(not is_package_available("polars"), reason="Requires polars")
