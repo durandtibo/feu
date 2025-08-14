@@ -24,6 +24,15 @@ class PackageConfig:
             "3.10": {"min": "0.4.6", "max": "0.6.2"},
             "3.9": {"min": "0.4.6", "max": "0.4.30"},
         },
+        # https://matplotlib.org/stable/users/release_notes.html
+        "matplotlib": {
+            "3.14": {"min": "3.10.5", "max": None},
+            "3.13": {"min": None, "max": None},
+            "3.12": {"min": None, "max": None},
+            "3.11": {"min": None, "max": None},
+            "3.10": {"min": None, "max": None},
+            "3.9": {"min": None, "max": "3.9.4"},
+        },
         # https://numpy.org/devdocs/release.html
         "numpy": {
             "3.14": {"min": "2.3.0", "max": None},
