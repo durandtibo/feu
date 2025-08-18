@@ -67,7 +67,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        click-version: [ '8.1.8', '8.1.0' ]
+        click-version: [ '8.2.1', '8.1.8', '8.1.0' ]
 
     steps:
       - name: Checkout
@@ -118,7 +118,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        gitpython-version: [ '3.1.44', '3.1.41' ]
+        gitpython-version: [ '3.1.45', '3.1.41' ]
 
     steps:
       - name: Checkout
