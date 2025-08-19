@@ -16,6 +16,14 @@ class PackageConfig:
     """Implement the main package config registry."""
 
     registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
+        # https://click.palletsprojects.com/en/stable/changes/
+        "click": {
+            "3.13": {"min": None, "max": None},
+            "3.12": {"min": None, "max": None},
+            "3.11": {"min": None, "max": None},
+            "3.10": {"min": None, "max": None},
+            "3.9": {"min": None, "max": "8.1.8"},
+        },
         # https://pypi.org/project/jaxlib/#history
         "jax": {
             "3.13": {"min": "0.4.34", "max": None},

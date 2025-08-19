@@ -4,6 +4,7 @@ import pytest
 
 from feu.imports import is_package_available
 from feu.testing import (
+    click_available,
     jax_available,
     matplotlib_available,
     numpy_available,
@@ -20,6 +21,15 @@ from feu.testing import (
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
     is_package_available.cache_clear()
+
+
+@click_available
+def test_click() -> None:
+    import click  # local import because it is an optional dependency
+
+    @click.command()
+    def hello() -> None:
+        click.echo("Hello World!")
 
 
 @jax_available

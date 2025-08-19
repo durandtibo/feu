@@ -35,7 +35,10 @@ python = ">=3.9,<3.14"
 packaging = ">=21.0,<26.0"
 
 # Optional dependencies
-click = { version = ">=8.1,<9.0", optional = true }
+click = [
+    { version = ">=8.1,<9.0", optional = true },
+    { version = ">=8.1,<8.2", python = ">=3.9,<3.10", optional = true },
+]
 gitpython = { version = ">=3.1.41,<4.0", optional = true }
 
 [tool.poetry.extras]
