@@ -186,7 +186,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install feu packaging==${{ matrix.packaging-version }}
+          pip install feu
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'packaging'
+          package-version: ${{ matrix.packaging-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -219,7 +226,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install feu click==${{ matrix.click-version }}
+          pip install feu
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'click'
+          package-version: ${{ matrix.click-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -248,7 +262,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install feu gitpython==${{ matrix.gitpython-version }}
+          pip install feu
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'gitpython'
+          package-version: ${{ matrix.gitpython-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |

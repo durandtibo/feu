@@ -40,6 +40,13 @@ jobs:
         run: |
           make install
 
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'packaging'
+          package-version: ${{ matrix.packaging-version }}
+          python-version: ${{ matrix.python-version }}
+
       - name: Install packaging
         run: |
           pip install packaging==${{ matrix.packaging-version }}
@@ -91,9 +98,12 @@ jobs:
         run: |
           make install
 
-      - name: Install click
-        run: |
-          pip install click==${{ matrix.click-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'click'
+          package-version: ${{ matrix.click-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -142,9 +152,12 @@ jobs:
         run: |
           make install
 
-      - name: Install gitpython
-        run: |
-          pip install gitpython==${{ matrix.gitpython-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'gitpython'
+          package-version: ${{ matrix.gitpython-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
