@@ -52,7 +52,7 @@ def test_package_config_add_config_multiple() -> None:
 )
 def test_package_config_add_config_exist_ok_false() -> None:
     with pytest.raises(
-        RuntimeError, match="A package configuration .* is already registered for package"
+        RuntimeError, match=r"A package configuration .* is already registered for package"
     ):
         PackageConfig.add_config(
             pkg_name="my_package",
