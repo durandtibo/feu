@@ -63,7 +63,7 @@ def test_check_click_with_package() -> None:
 def test_check_click_without_package() -> None:
     with (
         patch("feu.imports.is_click_available", lambda: False),
-        pytest.raises(RuntimeError, match="'click' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'click' package is required but not installed."),
     ):
         check_click()
 
@@ -85,7 +85,7 @@ def test_check_git_with_package() -> None:
 def test_check_git_without_package() -> None:
     with (
         patch("feu.imports.is_git_available", lambda: False),
-        pytest.raises(RuntimeError, match="'git' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'git' package is required but not installed."),
     ):
         check_git()
 

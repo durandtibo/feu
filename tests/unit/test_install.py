@@ -305,7 +305,7 @@ def test_package_installer_add_installer_duplicate_exist_ok_true() -> None:
 def test_package_installer_add_installer_duplicate_exist_ok_false() -> None:
     installer = Mock(spec=BaseInstaller)
     PackageInstaller.add_installer("pandas", Mock(spec=BaseInstaller))
-    with pytest.raises(RuntimeError, match="An installer (.*) is already registered"):
+    with pytest.raises(RuntimeError, match=r"An installer (.*) is already registered"):
         PackageInstaller.add_installer("pandas", installer)
 
 
