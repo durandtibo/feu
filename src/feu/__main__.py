@@ -30,7 +30,7 @@ def install(pkg_name: str, pkg_version: str) -> None:
 
     Example usage:
 
-    python -m feu install --pkg_name=numpy --pkg_version=2.0.2
+    python -m feu install --pkg-name=numpy --pkg-version=2.0.2
     """
     version = find_closest_version_(
         pkg_name=pkg_name,
