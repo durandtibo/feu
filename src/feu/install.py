@@ -16,27 +16,17 @@ __all__ = [
     "TorchInstaller",
     "XarrayInstaller",
     "install_package",
-    "run_bash_command",
 ]
 
 import logging
-import subprocess
 from abc import ABC, abstractmethod
 from typing import ClassVar
 
 from packaging.version import Version
 
+from feu.utils.command import run_bash_command
+
 logger = logging.getLogger(__name__)
-
-
-def run_bash_command(cmd: str) -> None:
-    r"""Execute a bash command.
-
-    Args:
-        cmd: The command to run.
-    """
-    logger.info(f"execute the following command: {cmd}")
-    subprocess.run(cmd.split(), check=True)  # noqa: S603
 
 
 class BaseInstaller(ABC):

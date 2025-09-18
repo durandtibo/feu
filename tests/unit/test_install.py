@@ -17,24 +17,7 @@ from feu.install import (
     TorchInstaller,
     XarrayInstaller,
     install_package,
-    run_bash_command,
 )
-
-######################################
-#     Tests for run_bash_command     #
-######################################
-
-
-def test_run_bash_command() -> None:
-    # check it does not raise an error
-    run_bash_command("ls -l")
-
-
-def test_run_bash_command_mock() -> None:
-    with patch("feu.install.subprocess.run") as run_mock:
-        run_bash_command("ls -l")
-        run_mock.assert_called_once_with(["ls", "-l"], check=True)
-
 
 ######################################
 #     Tests for DefaultInstaller     #
