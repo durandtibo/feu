@@ -15,6 +15,6 @@ def test_run_bash_command() -> None:
 
 
 def test_run_bash_command_mock() -> None:
-    with patch("feu.install.subprocess.run") as run_mock:
+    with patch("feu.utils.command.subprocess.run") as run_mock:
         run_bash_command("ls -l")
         run_mock.assert_called_once_with(["ls", "-l"], check=True)
