@@ -7,6 +7,7 @@ __all__ = [
     "BaseDependencyResolver",
     "BasePackageInstaller",
     "DependencyResolver",
+    "JaxDependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
     "PandasDependencyResolver",
@@ -29,6 +30,7 @@ from feu.installer.pip.installer import (
 from feu.installer.pip.resolver import (
     BaseDependencyResolver,
     DependencyResolver,
+    JaxDependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
     PandasDependencyResolver,

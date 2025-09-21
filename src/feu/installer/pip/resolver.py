@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "BaseDependencyResolver",
     "DependencyResolver",
+    "JaxDependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
     "PandasDependencyResolver",
@@ -95,6 +96,40 @@ class DependencyResolver(BaseDependencyResolver):
 
     def resolve(self, version: str) -> tuple[str, ...]:
         return (f"{self._package}=={version}",)
+
+
+class JaxDependencyResolver(BaseDependencyResolver):
+    r"""Implement the ``jax`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``jax`` 0.4.26.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import JaxDependencyResolver
+    >>> resolver = JaxDependencyResolver()
+    >>> resolver
+    JaxDependencyResolver()
+    >>> deps = resolver.resolve("0.4.26")
+    >>> deps
+    ('jax==0.4.26', 'jaxlib==0.4.26')
+
+    ```
+    """
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
+
+    def resolve(self, version: str) -> tuple[str, ...]:
+        deps = [f"jax=={version}", f"jaxlib=={version}"]
+        ver = Version(version)
+        if ver < Version("0.4.26"):
+            deps.append("numpy<2.0.0")
+        if Version("0.4.9") <= ver <= Version("0.4.11"):
+            # https://github.com/google/jax/issues/17693
+            deps.append("ml_dtypes<=0.2.0")
+        return tuple(deps)
 
 
 class Numpy2DependencyResolver(BaseDependencyResolver):
