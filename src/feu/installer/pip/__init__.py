@@ -7,6 +7,7 @@ __all__ = [
     "BaseDependencyResolver",
     "BasePackageInstaller",
     "DependencyResolver",
+    "Numpy2DependencyResolver",
     "PipPackageInstaller",
     "PipxPackageInstaller",
     "UvPackageInstaller",
@@ -18,4 +19,8 @@ from feu.installer.pip.installer import (
     PipxPackageInstaller,
     UvPackageInstaller,
 )
-from feu.installer.pip.resolver import BaseDependencyResolver, DependencyResolver
+from feu.installer.pip.resolver import (
+    BaseDependencyResolver,
+    DependencyResolver,
+    Numpy2DependencyResolver,
+)
