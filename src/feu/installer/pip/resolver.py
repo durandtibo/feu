@@ -1,4 +1,4 @@
-r"""Contain package dependency resolvers."""
+r"""Contain pip compatible package dependency resolvers."""
 
 from __future__ import annotations
 
