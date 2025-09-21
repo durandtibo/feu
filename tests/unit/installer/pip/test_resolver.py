@@ -6,6 +6,7 @@ from feu.installer.pip import (
     Numpy2DependencyResolver,
     PandasDependencyResolver,
     PyarrowDependencyResolver,
+    ScipyDependencyResolver,
 )
 
 ########################################
@@ -141,5 +142,33 @@ def test_pyarrow_dependency_resolver_resolve_high() -> None:
 def test_pyarrow_dependency_resolver_resolve_low() -> None:
     assert PyarrowDependencyResolver().resolve("15.0") == (
         "pyarrow==15.0",
+        "numpy<2.0.0",
+    )
+
+
+#############################################
+#     Tests for ScipyDependencyResolver     #
+#############################################
+
+
+def test_scipy_dependency_resolver_repr() -> None:
+    assert repr(ScipyDependencyResolver()).startswith("ScipyDependencyResolver(")
+
+
+def test_scipy_dependency_resolver_str() -> None:
+    assert str(ScipyDependencyResolver()).startswith("ScipyDependencyResolver(")
+
+
+def test_scipy_dependency_resolver_resolve() -> None:
+    assert ScipyDependencyResolver().resolve("1.13.0") == ("scipy==1.13.0",)
+
+
+def test_scipy_dependency_resolver_resolve_high() -> None:
+    assert ScipyDependencyResolver().resolve("1.13.1") == ("scipy==1.13.1",)
+
+
+def test_scipy_dependency_resolver_resolve_low() -> None:
+    assert ScipyDependencyResolver().resolve("1.12.0") == (
+        "scipy==1.12.0",
         "numpy<2.0.0",
     )
