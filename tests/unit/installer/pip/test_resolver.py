@@ -7,6 +7,7 @@ from feu.installer.pip import (
     PandasDependencyResolver,
     PyarrowDependencyResolver,
     ScipyDependencyResolver,
+    SklearnDependencyResolver,
 )
 
 ########################################
@@ -170,5 +171,33 @@ def test_scipy_dependency_resolver_resolve_high() -> None:
 def test_scipy_dependency_resolver_resolve_low() -> None:
     assert ScipyDependencyResolver().resolve("1.12.0") == (
         "scipy==1.12.0",
+        "numpy<2.0.0",
+    )
+
+
+###############################################
+#     Tests for SklearnDependencyResolver     #
+###############################################
+
+
+def test_sklearn_dependency_resolver_repr() -> None:
+    assert repr(SklearnDependencyResolver()).startswith("SklearnDependencyResolver(")
+
+
+def test_sklearn_dependency_resolver_str() -> None:
+    assert str(SklearnDependencyResolver()).startswith("SklearnDependencyResolver(")
+
+
+def test_sklearn_dependency_resolver_resolve() -> None:
+    assert SklearnDependencyResolver().resolve("1.4.2") == ("scikit-learn==1.4.2",)
+
+
+def test_sklearn_dependency_resolver_resolve_high() -> None:
+    assert SklearnDependencyResolver().resolve("1.4.3") == ("scikit-learn==1.4.3",)
+
+
+def test_sklearn_dependency_resolver_resolve_low() -> None:
+    assert SklearnDependencyResolver().resolve("1.4.1") == (
+        "scikit-learn==1.4.1",
         "numpy<2.0.0",
     )
