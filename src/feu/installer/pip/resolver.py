@@ -240,3 +240,27 @@ class SklearnDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(package="scikit-learn", min_version="1.4.2")
+
+
+class TorchDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``torch`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``torch`` 2.3.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import TorchDependencyResolver
+    >>> resolver = TorchDependencyResolver()
+    >>> resolver
+    TorchDependencyResolver()
+    >>> deps = resolver.resolve("2.3.0")
+    >>> deps
+    ('torch==2.3.0',)
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="torch", min_version="2.3.0")

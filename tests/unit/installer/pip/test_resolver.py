@@ -8,6 +8,7 @@ from feu.installer.pip import (
     PyarrowDependencyResolver,
     ScipyDependencyResolver,
     SklearnDependencyResolver,
+    TorchDependencyResolver,
 )
 
 ########################################
@@ -199,5 +200,33 @@ def test_sklearn_dependency_resolver_resolve_high() -> None:
 def test_sklearn_dependency_resolver_resolve_low() -> None:
     assert SklearnDependencyResolver().resolve("1.4.1") == (
         "scikit-learn==1.4.1",
+        "numpy<2.0.0",
+    )
+
+
+#############################################
+#     Tests for TorchDependencyResolver     #
+#############################################
+
+
+def test_torch_dependency_resolver_repr() -> None:
+    assert repr(TorchDependencyResolver()).startswith("TorchDependencyResolver(")
+
+
+def test_torch_dependency_resolver_str() -> None:
+    assert str(TorchDependencyResolver()).startswith("TorchDependencyResolver(")
+
+
+def test_torch_dependency_resolver_resolve() -> None:
+    assert TorchDependencyResolver().resolve("2.3.0") == ("torch==2.3.0",)
+
+
+def test_torch_dependency_resolver_resolve_high() -> None:
+    assert TorchDependencyResolver().resolve("2.3.1") == ("torch==2.3.1",)
+
+
+def test_torch_dependency_resolver_resolve_low() -> None:
+    assert TorchDependencyResolver().resolve("2.2.0") == (
+        "torch==2.2.0",
         "numpy<2.0.0",
     )
