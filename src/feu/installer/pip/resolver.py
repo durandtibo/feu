@@ -8,6 +8,7 @@ __all__ = [
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
     "PandasDependencyResolver",
+    "PyarrowDependencyResolver",
 ]
 
 import logging
@@ -165,3 +166,27 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(package="pandas", min_version="2.2.2")
+
+
+class PyarrowDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``pyarrow`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``pyarrow`` 16.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import PyarrowDependencyResolver
+    >>> resolver = PyarrowDependencyResolver()
+    >>> resolver
+    PyarrowDependencyResolver()
+    >>> deps = resolver.resolve("16.0")
+    >>> deps
+    ('pyarrow==16.0',)
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="pyarrow", min_version="16.0")

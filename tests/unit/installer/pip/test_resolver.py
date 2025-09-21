@@ -5,6 +5,7 @@ from feu.installer.pip import (
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
     PandasDependencyResolver,
+    PyarrowDependencyResolver,
 )
 
 ########################################
@@ -112,5 +113,33 @@ def test_pandas_dependency_resolver_resolve_high() -> None:
 def test_pandas_dependency_resolver_resolve_low() -> None:
     assert PandasDependencyResolver().resolve("2.2.1") == (
         "pandas==2.2.1",
+        "numpy<2.0.0",
+    )
+
+
+###############################################
+#     Tests for PyarrowDependencyResolver     #
+###############################################
+
+
+def test_pyarrow_dependency_resolver_repr() -> None:
+    assert repr(PyarrowDependencyResolver()).startswith("PyarrowDependencyResolver(")
+
+
+def test_pyarrow_dependency_resolver_str() -> None:
+    assert str(PyarrowDependencyResolver()).startswith("PyarrowDependencyResolver(")
+
+
+def test_pyarrow_dependency_resolver_resolve() -> None:
+    assert PyarrowDependencyResolver().resolve("16.0") == ("pyarrow==16.0",)
+
+
+def test_pyarrow_dependency_resolver_resolve_high() -> None:
+    assert PyarrowDependencyResolver().resolve("16.1") == ("pyarrow==16.1",)
+
+
+def test_pyarrow_dependency_resolver_resolve_low() -> None:
+    assert PyarrowDependencyResolver().resolve("15.0") == (
+        "pyarrow==15.0",
         "numpy<2.0.0",
     )
