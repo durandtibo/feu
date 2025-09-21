@@ -9,6 +9,7 @@ from feu.installer.pip import (
     ScipyDependencyResolver,
     SklearnDependencyResolver,
     TorchDependencyResolver,
+    XarrayDependencyResolver,
 )
 
 ########################################
@@ -228,5 +229,33 @@ def test_torch_dependency_resolver_resolve_high() -> None:
 def test_torch_dependency_resolver_resolve_low() -> None:
     assert TorchDependencyResolver().resolve("2.2.0") == (
         "torch==2.2.0",
+        "numpy<2.0.0",
+    )
+
+
+##############################################
+#     Tests for XarrayDependencyResolver     #
+##############################################
+
+
+def test_xarray_dependency_resolver_repr() -> None:
+    assert repr(XarrayDependencyResolver()).startswith("XarrayDependencyResolver(")
+
+
+def test_xarray_dependency_resolver_str() -> None:
+    assert str(XarrayDependencyResolver()).startswith("XarrayDependencyResolver(")
+
+
+def test_xarray_dependency_resolver_resolve() -> None:
+    assert XarrayDependencyResolver().resolve("2024.6.0") == ("xarray==2024.6.0",)
+
+
+def test_xarray_dependency_resolver_resolve_high() -> None:
+    assert XarrayDependencyResolver().resolve("2024.7.0") == ("xarray==2024.7.0",)
+
+
+def test_xarray_dependency_resolver_resolve_low() -> None:
+    assert XarrayDependencyResolver().resolve("2024.5.0") == (
+        "xarray==2024.5.0",
         "numpy<2.0.0",
     )

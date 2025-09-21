@@ -17,6 +17,7 @@ __all__ = [
     "SklearnDependencyResolver",
     "TorchDependencyResolver",
     "UvPackageInstaller",
+    "XarrayDependencyResolver",
 ]
 
 from feu.installer.pip.installer import (
@@ -35,4 +36,5 @@ from feu.installer.pip.resolver import (
     ScipyDependencyResolver,
     SklearnDependencyResolver,
     TorchDependencyResolver,
+    XarrayDependencyResolver,
 )
