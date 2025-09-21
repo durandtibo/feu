@@ -2,10 +2,12 @@ r"""Contain pip compatible package dependency resolvers."""
 
 from __future__ import annotations
 
-__all__ = ["BaseDependencyResolver", "DependencyResolver"]
+__all__ = ["BaseDependencyResolver", "DependencyResolver", "Numpy2DependencyResolver"]
 
 import logging
 from abc import ABC, abstractmethod
+
+from packaging.version import Version
 
 logger = logging.getLogger(__name__)
 
@@ -82,3 +84,30 @@ class DependencyResolver(BaseDependencyResolver):
 
     def resolve(self, version: str) -> tuple[str, ...]:
         return (f"{self._package}=={version}",)
+
+
+class Numpy2DependencyResolver(BaseDependencyResolver):
+    r"""Define a dependency resolver to work with packages that did not
+    pin ``numpy<2.0`` and are not fully compatible with numpy 2.0.
+
+    https://github.com/numpy/numpy/issues/26191 indicates the packages
+    that are compatible with numpy 2.0.
+
+    Args:
+        package: The name of the package.
+        min_version: The first version that is fully compatible with
+            numpy 2.0.
+    """
+
+    def __init__(self, package: str, min_version: str) -> None:
+        self._package = package
+        self._min_version = min_version
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
+
+    def resolve(self, version: str) -> tuple[str, ...]:
+        deps = [f"{self._package}=={version}"]
+        if Version(version) < Version(self._min_version):
+            deps.append("numpy<2.0.0")
+        return tuple(deps)
