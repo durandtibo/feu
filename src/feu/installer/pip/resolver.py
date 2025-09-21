@@ -9,6 +9,7 @@ __all__ = [
     "Numpy2DependencyResolver",
     "PandasDependencyResolver",
     "PyarrowDependencyResolver",
+    "ScipyDependencyResolver",
 ]
 
 import logging
@@ -190,3 +191,27 @@ class PyarrowDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(package="pyarrow", min_version="16.0")
+
+
+class ScipyDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``scipy`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``scipy`` 1.13.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import ScipyDependencyResolver
+    >>> resolver = ScipyDependencyResolver()
+    >>> resolver
+    ScipyDependencyResolver()
+    >>> deps = resolver.resolve("1.13.0")
+    >>> deps
+    ('scipy==1.13.0',)
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="scipy", min_version="1.13.0")
