@@ -9,6 +9,7 @@ __all__ = [
     "DependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
+    "PandasDependencyResolver",
     "PipPackageInstaller",
     "PipxPackageInstaller",
     "UvPackageInstaller",
@@ -25,4 +26,5 @@ from feu.installer.pip.resolver import (
     DependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
+    PandasDependencyResolver,
 )

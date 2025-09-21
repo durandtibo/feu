@@ -4,6 +4,7 @@ from feu.installer.pip import (
     DependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
+    PandasDependencyResolver,
 )
 
 ########################################
@@ -83,5 +84,33 @@ def test_matplotlib_dependency_resolver_resolve_high() -> None:
 def test_matplotlib_dependency_resolver_resolve_low() -> None:
     assert MatplotlibDependencyResolver().resolve("3.8.3") == (
         "matplotlib==3.8.3",
+        "numpy<2.0.0",
+    )
+
+
+##############################################
+#     Tests for PandasDependencyResolver     #
+##############################################
+
+
+def test_pandas_dependency_resolver_repr() -> None:
+    assert repr(PandasDependencyResolver()).startswith("PandasDependencyResolver(")
+
+
+def test_pandas_dependency_resolver_str() -> None:
+    assert str(PandasDependencyResolver()).startswith("PandasDependencyResolver(")
+
+
+def test_pandas_dependency_resolver_resolve() -> None:
+    assert PandasDependencyResolver().resolve("2.2.2") == ("pandas==2.2.2",)
+
+
+def test_pandas_dependency_resolver_resolve_high() -> None:
+    assert PandasDependencyResolver().resolve("2.3.0") == ("pandas==2.3.0",)
+
+
+def test_pandas_dependency_resolver_resolve_low() -> None:
+    assert PandasDependencyResolver().resolve("2.2.1") == (
+        "pandas==2.2.1",
         "numpy<2.0.0",
     )
