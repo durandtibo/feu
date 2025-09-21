@@ -2,7 +2,7 @@ r"""Contain pip compatible package installers."""
 
 from __future__ import annotations
 
-__all__ = ["BasePackageInstaller", "PipPackageInstaller"]
+__all__ = ["BasePackageInstaller", "PipPackageInstaller", "PipxPackageInstaller"]
 
 import logging
 from abc import ABC, abstractmethod
@@ -79,3 +79,29 @@ class PipPackageInstaller(BasePackageInstaller):
         if args != "":
             args = " " + args.strip()
         run_bash_command(f"pip install{args} {' '.join(packages)}")
+
+
+class PipxPackageInstaller(BasePackageInstaller):
+    r"""Define a package installer that uses pipx to install the
+    packages.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import PipxPackageInstaller
+    >>> installer = PipxPackageInstaller()
+    >>> installer
+    PipxPackageInstaller()
+    >>> installer.install(["numpy", "pandas>=2.0,<3.0"])  # doctest: +SKIP
+
+    ```
+    """
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}()"
+
+    def install(self, packages: Sequence[str], args: str = "") -> None:
+        if args != "":
+            args = " " + args.strip()
+        run_bash_command(f"pipx install{args} {' '.join(packages)}")
