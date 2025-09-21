@@ -2,7 +2,12 @@ r"""Contain pip compatible package dependency resolvers."""
 
 from __future__ import annotations
 
-__all__ = ["BaseDependencyResolver", "DependencyResolver", "Numpy2DependencyResolver"]
+__all__ = [
+    "BaseDependencyResolver",
+    "DependencyResolver",
+    "MatplotlibDependencyResolver",
+    "Numpy2DependencyResolver",
+]
 
 import logging
 from abc import ABC, abstractmethod
@@ -23,8 +28,8 @@ class BaseDependencyResolver(ABC):
     >>> resolver = DependencyResolver("numpy")
     >>> resolver
     DependencyResolver(package=numpy)
-    >>> out = resolver.resolve("2.3.1")
-    >>> out
+    >>> deps = resolver.resolve("2.3.1")
+    >>> deps
     ('numpy==2.3.1',)
 
     ```
@@ -47,8 +52,8 @@ class BaseDependencyResolver(ABC):
 
         >>> from feu.installer.pip import DependencyResolver
         >>> resolver = DependencyResolver("numpy")
-        >>> out = resolver.resolve("2.3.1")
-        >>> out
+        >>> deps = resolver.resolve("2.3.1")
+        >>> deps
         ('numpy==2.3.1',)
 
         ```
@@ -69,8 +74,8 @@ class DependencyResolver(BaseDependencyResolver):
     >>> resolver = DependencyResolver("numpy")
     >>> resolver
     DependencyResolver(package=numpy)
-    >>> out = resolver.resolve("2.3.1")
-    >>> out
+    >>> deps = resolver.resolve("2.3.1")
+    >>> deps
     ('numpy==2.3.1',)
 
     ```
@@ -111,3 +116,27 @@ class Numpy2DependencyResolver(BaseDependencyResolver):
         if Version(version) < Version(self._min_version):
             deps.append("numpy<2.0.0")
         return tuple(deps)
+
+
+class MatplotlibDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``matplotlib`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``matplotlib`` 3.8.4.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import MatplotlibDependencyResolver
+    >>> resolver = MatplotlibDependencyResolver()
+    >>> resolver
+    MatplotlibDependencyResolver()
+    >>> deps = resolver.resolve("3.8.4")
+    >>> deps
+    ('matplotlib==3.8.4',)
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="matplotlib", min_version="3.8.4")
