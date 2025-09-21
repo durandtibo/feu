@@ -7,6 +7,7 @@ __all__ = [
     "DependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
+    "PandasDependencyResolver",
 ]
 
 import logging
@@ -140,3 +141,27 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(package="matplotlib", min_version="3.8.4")
+
+
+class PandasDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``pandas`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``pandas`` 2.2.2.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip import PandasDependencyResolver
+    >>> resolver = PandasDependencyResolver()
+    >>> resolver
+    PandasDependencyResolver()
+    >>> deps = resolver.resolve("2.2.2")
+    >>> deps
+    ('pandas==2.2.2',)
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(package="pandas", min_version="2.2.2")
