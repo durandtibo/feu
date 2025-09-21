@@ -9,11 +9,13 @@ __all__ = [
     "DependencyResolver",
     "PipPackageInstaller",
     "PipxPackageInstaller",
+    "UvPackageInstaller",
 ]
 
 from feu.installer.pip.installer import (
     BasePackageInstaller,
     PipPackageInstaller,
     PipxPackageInstaller,
+    UvPackageInstaller,
 )
 from feu.installer.pip.resolver import BaseDependencyResolver, DependencyResolver
