@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from feu.installer.pip import DependencyResolver, Numpy2DependencyResolver
+from feu.installer.pip import (
+    DependencyResolver,
+    MatplotlibDependencyResolver,
+    Numpy2DependencyResolver,
+)
 
 ########################################
 #     Tests for DependencyResolver     #
@@ -51,5 +55,33 @@ def test_numpy2_dependency_resolver_resolve_high() -> None:
 def test_numpy2_dependency_resolver_resolve_low() -> None:
     assert Numpy2DependencyResolver(package="my_package", min_version="1.2.3").resolve("1.2.0") == (
         "my_package==1.2.0",
+        "numpy<2.0.0",
+    )
+
+
+##################################################
+#     Tests for MatplotlibDependencyResolver     #
+##################################################
+
+
+def test_matplotlib_dependency_resolver_repr() -> None:
+    assert repr(MatplotlibDependencyResolver()).startswith("MatplotlibDependencyResolver(")
+
+
+def test_matplotlib_dependency_resolver_str() -> None:
+    assert str(MatplotlibDependencyResolver()).startswith("MatplotlibDependencyResolver(")
+
+
+def test_matplotlib_dependency_resolver_resolve() -> None:
+    assert MatplotlibDependencyResolver().resolve("3.8.4") == ("matplotlib==3.8.4",)
+
+
+def test_matplotlib_dependency_resolver_resolve_high() -> None:
+    assert MatplotlibDependencyResolver().resolve("3.9.0") == ("matplotlib==3.9.0",)
+
+
+def test_matplotlib_dependency_resolver_resolve_low() -> None:
+    assert MatplotlibDependencyResolver().resolve("3.8.3") == (
+        "matplotlib==3.8.3",
         "numpy<2.0.0",
     )
