@@ -3,6 +3,12 @@ package installers."""
 
 from __future__ import annotations
 
-__all__ = ["BaseDependencyResolver", "DependencyResolver"]
+__all__ = [
+    "BaseDependencyResolver",
+    "BasePackageInstaller",
+    "DependencyResolver",
+    "PipPackageInstaller",
+]
 
+from feu.installer.pip.installer import BasePackageInstaller, PipPackageInstaller
 from feu.installer.pip.resolver import BaseDependencyResolver, DependencyResolver
