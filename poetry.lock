@@ -1481,4 +1481,4 @@ git = ["gitpython"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.14"
-content-hash = "9a88bd25453647aaa9cab92fdff2610887d6fd253722caac2f52e45ecdbc5b64"
+content-hash = "8cad8d59f634f81c7aeca5e6345efaa201da6cd6c9e038db6516550cc0632369"
