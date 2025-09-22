@@ -4,7 +4,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.installer.pip import BasePackageInstaller, PipInstaller, PipxInstaller
+from feu.installer.pip import (
+    BasePackageInstaller,
+    PipInstaller,
+    PipxInstaller,
+    UvInstaller,
+)
 
 PACKAGE_NAMES = {
     "jax",
@@ -168,3 +173,79 @@ def test_pipx_installer_install_default() -> None:
 
 def test_pipx_installer_registry() -> None:
     assert set(PipxInstaller.registry) == PACKAGE_NAMES
+
+
+#################################
+#     Tests for UvInstaller     #
+#################################
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_add_installer() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    UvInstaller.add_installer("pandas", installer)
+    assert UvInstaller.registry["pandas"] == installer
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_add_installer_duplicate_exist_ok_true() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    UvInstaller.add_installer("pandas", Mock(spec=BasePackageInstaller))
+    UvInstaller.add_installer("pandas", installer, exist_ok=True)
+    assert UvInstaller.registry["pandas"] == installer
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_add_installer_duplicate_exist_ok_false() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    UvInstaller.add_installer("pandas", Mock(spec=BasePackageInstaller))
+    with pytest.raises(RuntimeError, match=r"An installer (.*) is already registered"):
+        UvInstaller.add_installer("pandas", installer)
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_has_installer_false() -> None:
+    assert not UvInstaller.has_installer("pandas")
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_has_installer_true() -> None:
+    UvInstaller.add_installer("pandas", Mock(spec=BasePackageInstaller))
+    assert UvInstaller.has_installer("pandas")
+
+
+def test_uv_installer_install_numpy() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        UvInstaller.install(package="numpy", version="2.0.0")
+        run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
+
+
+def test_uv_installer_install_pandas() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        UvInstaller.install(package="pandas", version="2.1.1")
+        run_mock.assert_called_once_with("uv pip install pandas==2.1.1 numpy<2.0.0")
+
+
+def test_uv_installer_install_numpy_with_args() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        UvInstaller.install(package="numpy", version="2.0.0", args="-U")
+        run_mock.assert_called_once_with("uv pip install -U numpy==2.0.0")
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_install_mock() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    UvInstaller.add_installer("numpy", installer)
+    UvInstaller.install(package="numpy", version="2.0.0", args="-U")
+    installer.install.assert_called_once_with(version="2.0.0", args="-U")
+
+
+@patch.dict(UvInstaller.registry, {}, clear=True)
+def test_uv_installer_install_default() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        UvInstaller.install(package="numpy", version="2.0.0")
+        run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
+
+
+def test_uv_installer_registry() -> None:
+    assert set(UvInstaller.registry) == PACKAGE_NAMES
