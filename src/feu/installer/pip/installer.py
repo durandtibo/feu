@@ -2,13 +2,17 @@ r"""Define the pip compatible installers."""
 
 from __future__ import annotations
 
-__all__ = ["PipInstaller", "PipxInstaller"]
+__all__ = ["PipInstaller", "PipxInstaller", "UvInstaller"]
 
 from abc import abstractmethod
 from typing import ClassVar
 
 from feu.installer.installer import BaseInstaller
-from feu.installer.pip.command import PipCommandGenerator, PipxCommandGenerator
+from feu.installer.pip.command import (
+    PipCommandGenerator,
+    PipxCommandGenerator,
+    UvCommandGenerator,
+)
 from feu.installer.pip.package import (
     BasePackageInstaller,
     PackageInstaller,
@@ -132,3 +136,15 @@ class PipxInstaller(BasePipInstaller):
         return PackageInstaller(
             resolver=DependencyResolver(package), command=PipxCommandGenerator()
         )
+
+
+class UvInstaller(BasePipInstaller):
+    """Implement a uv package installer."""
+
+    registry: ClassVar[dict[str, BasePackageInstaller]] = create_package_installer_mapping(
+        command=UvCommandGenerator()
+    )
+
+    @classmethod
+    def _get_default_installer(cls, package: str) -> BasePackageInstaller:
+        return PackageInstaller(resolver=DependencyResolver(package), command=UvCommandGenerator())
