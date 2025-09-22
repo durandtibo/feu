@@ -274,3 +274,43 @@ jobs:
       - name: Run some checks
         run: |
           python tests/package_checks.py
+
+
+  requests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        requests-version: [
+          '2.32.5',
+          '2.31.0',
+          '2.30.0',
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install feu
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'requests'
+          package-version: ${{ matrix.requests-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
