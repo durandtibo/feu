@@ -32,7 +32,7 @@ def python_version() -> str:
 
 
 @pytest.mark.parametrize(("package", "version"), PACKAGES)
-def test_install_package(installer: str, package: str, version: str, python_version: str) -> None:
+def test_install_package(package: str, version: str, python_version: str) -> None:
     version = find_closest_version(
         pkg_name=package, pkg_version=version, python_version=python_version
     )
