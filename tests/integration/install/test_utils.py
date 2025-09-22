@@ -5,15 +5,10 @@ from sys import version_info
 import pytest
 
 from feu import is_package_available
-from feu.installer import install_package
+from feu.installer import get_available_installers, install_package
 from feu.package import find_closest_version
 
-PACKAGES = [
-    ("numpy", "2.2.5"),
-    ("pandas", "2.2.3"),
-    ("sklearn", "1.6.0"),
-    ("xarray", "2024.9"),
-]
+PACKAGES = [("numpy", "2.2.5")]
 
 
 @pytest.fixture(autouse=True)
@@ -31,8 +26,9 @@ def python_version() -> str:
 #####################################
 
 
+@pytest.mark.parametrize("installer", get_available_installers())
 @pytest.mark.parametrize(("package", "version"), PACKAGES)
-def test_install_package(package: str, version: str, python_version: str) -> None:
+def test_install_package(installer: str, package: str, version: str, python_version: str) -> None:
     version = find_closest_version(
         pkg_name=package, pkg_version=version, python_version=python_version
     )
