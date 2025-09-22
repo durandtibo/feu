@@ -40,13 +40,13 @@ class BaseCommandGenerator(ABC):
 
     @abstractmethod
     def equal(self, other: Any) -> bool:
-        r"""Indicate if two vote objects are equal or not.
+        r"""Indicate if two command generators are equal or not.
 
         Args:
             other: The other object to compare.
 
         Returns:
-            ``True`` if the two votes are equal, otherwise ``False``.
+            ``True`` if the two command generators are equal, otherwise ``False``.
 
         Example usage:
 

@@ -18,6 +18,7 @@ __all__ = [
 
 import logging
 from abc import ABC, abstractmethod
+from typing import Any
 
 from packaging.version import Version
 
@@ -41,6 +42,32 @@ class BaseDependencyResolver(ABC):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any) -> bool:
+        r"""Indicate if two dependency resolvers are equal or not.
+
+        Args:
+            other: The other object to compare.
+
+        Returns:
+            ``True`` if the two dependency resolvers are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.installer.pip import DependencyResolver, TorchDependencyResolver
+        >>> obj1 = DependencyResolver("numpy")
+        >>> obj2 = DependencyResolver("numpy")
+        >>> obj3 = TorchDependencyResolver()
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def resolve(self, version: str) -> tuple[str, ...]:
@@ -94,6 +121,11 @@ class DependencyResolver(BaseDependencyResolver):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(package={self._package})"
 
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._package == other._package
+
     def resolve(self, version: str) -> tuple[str, ...]:
         return (f"{self._package}=={version}",)
 
@@ -120,6 +152,9 @@ class JaxDependencyResolver(BaseDependencyResolver):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any) -> bool:
+        return isinstance(other, self.__class__)
 
     def resolve(self, version: str) -> tuple[str, ...]:
         deps = [f"jax=={version}", f"jaxlib=={version}"]
@@ -151,6 +186,11 @@ class Numpy2DependencyResolver(BaseDependencyResolver):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._package == other._package and self._min_version == other._min_version
 
     def resolve(self, version: str) -> tuple[str, ...]:
         deps = [f"{self._package}=={version}"]
