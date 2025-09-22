@@ -2,11 +2,21 @@ r"""Contain package installers."""
 
 from __future__ import annotations
 
-__all__ = ["BasePackageInstaller", "PackageInstaller"]
+__all__ = ["BasePackageInstaller", "PackageInstaller", "create_package_installer_mapping"]
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from feu.installer.pip.resolver import (
+    JaxDependencyResolver,
+    MatplotlibDependencyResolver,
+    PandasDependencyResolver,
+    PyarrowDependencyResolver,
+    ScipyDependencyResolver,
+    SklearnDependencyResolver,
+    TorchDependencyResolver,
+    XarrayDependencyResolver,
+)
 from feu.utils.command import run_bash_command
 
 if TYPE_CHECKING:
@@ -89,3 +99,42 @@ class PackageInstaller(BasePackageInstaller):
         run_bash_command(
             self._command.generate(packages=self._resolver.resolve(version), args=args)
         )
+
+
+def create_package_installer_mapping(
+    command: BaseCommandGenerator,
+) -> dict[str, BasePackageInstaller]:
+    r"""Create the default package installer mapping.
+
+    Args:
+        command: The command generator uses to install the command.
+
+    Returns:
+        The mapping package installers, where the keys are the package
+            names and the values are the package installers.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip.command import PipCommandGenerator
+    >>> from feu.installer.pip.package import create_package_installer_mapping
+    >>> installers = create_package_installer_mapping(command=PipCommandGenerator())
+    >>> installers
+    {'jax': PackageInstaller(resolver=JaxDependencyResolver(), command=PipCommandGenerator()),
+     ...
+     'xarray': PackageInstaller(resolver=XarrayDependencyResolver(), command=PipCommandGenerator())}
+
+    ```
+    """
+    return {
+        "jax": PackageInstaller(resolver=JaxDependencyResolver(), command=command),
+        "matplotlib": PackageInstaller(resolver=MatplotlibDependencyResolver(), command=command),
+        "pandas": PackageInstaller(resolver=PandasDependencyResolver(), command=command),
+        "pyarrow": PackageInstaller(resolver=PyarrowDependencyResolver(), command=command),
+        "scikit-learn": PackageInstaller(resolver=SklearnDependencyResolver(), command=command),
+        "scipy": PackageInstaller(resolver=ScipyDependencyResolver(), command=command),
+        "sklearn": PackageInstaller(resolver=SklearnDependencyResolver(), command=command),
+        "torch": PackageInstaller(resolver=TorchDependencyResolver(), command=command),
+        "xarray": PackageInstaller(resolver=XarrayDependencyResolver(), command=command),
+    }
