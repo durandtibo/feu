@@ -4,7 +4,19 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.installer.pip import BasePackageInstaller, PipInstaller
+from feu.installer.pip import BasePackageInstaller, PipInstaller, PipxInstaller
+
+PACKAGE_NAMES = {
+    "jax",
+    "matplotlib",
+    "pandas",
+    "pyarrow",
+    "scikit-learn",
+    "scipy",
+    "sklearn",
+    "torch",
+    "xarray",
+}
 
 ##################################
 #     Tests for PipInstaller     #
@@ -79,14 +91,80 @@ def test_pip_installer_install_default() -> None:
 
 
 def test_pip_installer_registry() -> None:
-    assert set(PipInstaller.registry) == {
-        "jax",
-        "matplotlib",
-        "pandas",
-        "pyarrow",
-        "scikit-learn",
-        "scipy",
-        "sklearn",
-        "torch",
-        "xarray",
-    }
+    assert set(PipInstaller.registry) == PACKAGE_NAMES
+
+
+###################################
+#     Tests for PipxInstaller     #
+###################################
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_add_installer() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    PipxInstaller.add_installer("pandas", installer)
+    assert PipxInstaller.registry["pandas"] == installer
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_add_installer_duplicate_exist_ok_true() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    PipxInstaller.add_installer("pandas", Mock(spec=BasePackageInstaller))
+    PipxInstaller.add_installer("pandas", installer, exist_ok=True)
+    assert PipxInstaller.registry["pandas"] == installer
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_add_installer_duplicate_exist_ok_false() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    PipxInstaller.add_installer("pandas", Mock(spec=BasePackageInstaller))
+    with pytest.raises(RuntimeError, match=r"An installer (.*) is already registered"):
+        PipxInstaller.add_installer("pandas", installer)
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_has_installer_false() -> None:
+    assert not PipxInstaller.has_installer("pandas")
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_has_installer_true() -> None:
+    PipxInstaller.add_installer("pandas", Mock(spec=BasePackageInstaller))
+    assert PipxInstaller.has_installer("pandas")
+
+
+def test_pipx_installer_install_numpy() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        PipxInstaller.install(package="numpy", version="2.0.0")
+        run_mock.assert_called_once_with("pipx install numpy==2.0.0")
+
+
+def test_pipx_installer_install_pandas() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        PipxInstaller.install(package="pandas", version="2.1.1")
+        run_mock.assert_called_once_with("pipx install pandas==2.1.1 numpy<2.0.0")
+
+
+def test_pipx_installer_install_numpy_with_args() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        PipxInstaller.install(package="numpy", version="2.0.0", args="-U")
+        run_mock.assert_called_once_with("pipx install -U numpy==2.0.0")
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_install_mock() -> None:
+    installer = Mock(spec=BasePackageInstaller)
+    PipxInstaller.add_installer("numpy", installer)
+    PipxInstaller.install(package="numpy", version="2.0.0", args="-U")
+    installer.install.assert_called_once_with(version="2.0.0", args="-U")
+
+
+@patch.dict(PipxInstaller.registry, {}, clear=True)
+def test_pipx_installer_install_default() -> None:
+    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+        PipxInstaller.install(package="numpy", version="2.0.0")
+        run_mock.assert_called_once_with("pipx install numpy==2.0.0")
+
+
+def test_pipx_installer_registry() -> None:
+    assert set(PipxInstaller.registry) == PACKAGE_NAMES
