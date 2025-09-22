@@ -17,7 +17,7 @@ def python_version() -> str:
 @pytest.fixture(scope="module")
 def numpy_version(python_version: str) -> str:
     return find_closest_version(
-        pkg_name="numpy", pkg_version="2.3.0", python_version=python_version
+        pkg_name="numpy", pkg_version="2.2.5", python_version=python_version
     )
 
 
