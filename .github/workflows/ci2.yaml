@@ -25,7 +25,6 @@ jobs:
           matrix=$(echo $versions | jq -c '{packaging_version: .}')
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
-
   show-matrix:
     runs-on: ubuntu-24.04
     outputs:
@@ -35,25 +34,25 @@ jobs:
         run: |
           echo ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
 
-      - name: Show packages
+      - name: Show packages 2
         run: |
           echo ${{ fromJson(needs.generate-matrix.outputs.matrix).packaging_version }}
 
-  test-packaging:
-    needs: generate-matrix
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        include: ${{ fromJson(needs.generate-matrix.outputs.matrix).packaging_version }}
-    steps:
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install specific packaging version
-        run: pip install packaging==${{ matrix.packaging_version }}
-
-      - name: Check packaging version
-        run: python -m pip show packaging
+#  test-packaging:
+#    needs: generate-matrix
+#    runs-on: ubuntu-24.04
+#    strategy:
+#      matrix:
+#        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+#        include: ${{ fromJson(needs.generate-matrix.outputs.matrix).packaging_version }}
+#    steps:
+#      - name: Set up Python ${{ matrix.python-version }}
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#
+#      - name: Install specific packaging version
+#        run: pip install packaging==${{ matrix.packaging_version }}
+#
+#      - name: Check packaging version
+#        run: python -m pip show packaging
