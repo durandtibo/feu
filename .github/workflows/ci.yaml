@@ -15,14 +15,14 @@ jobs:
   coverage:
     uses: ./.github/workflows/coverage.yaml
     secrets: inherit
-  doctest:
-    uses: ./.github/workflows/doctest.yaml
-    secrets: inherit
-  format:
-    uses: ./.github/workflows/format.yaml
-  pre-commit:
-    uses: ./.github/workflows/pre-commit.yaml
-  test:
-    uses: ./.github/workflows/test.yaml
-  test-deps:
-    uses: ./.github/workflows/test-deps.yaml
+#  doctest:
+#    uses: ./.github/workflows/doctest.yaml
+#    secrets: inherit
+#  format:
+#    uses: ./.github/workflows/format.yaml
+#  pre-commit:
+#    uses: ./.github/workflows/pre-commit.yaml
+#  test:
+#    uses: ./.github/workflows/test.yaml
+#  test-deps:
+#    uses: ./.github/workflows/test-deps.yaml

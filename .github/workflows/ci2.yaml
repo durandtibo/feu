@@ -1,0 +1,45 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # to trigger manually
+
+permissions:
+  contents: read
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Fetch available packaging versions
+        id: set-matrix
+        run: |
+          versions=$(curl -s https://pypi.org/pypi/packaging/json | jq -r '.releases | keys | sort_by(.) | reverse | .[:5]')
+          echo "Latest versions: $versions"
+          matrix=$(echo $versions | jq -c '{packaging_version: .}')
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+  test-packaging:
+    needs: generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        include: ${{ fromJson(needs.generate-matrix.outputs.matrix).packaging_version }}
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install specific packaging version
+        run: pip install packaging==${{ matrix.packaging_version }}
+
+      - name: Check packaging version
+        run: python -m pip show packaging
