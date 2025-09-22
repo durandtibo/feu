@@ -1,3 +1,7 @@
+r"""Define the pip compatible installers."""
+
+from __future__ import annotations
+
 __all__ = ["PipInstaller"]
 
 from typing import ClassVar
