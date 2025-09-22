@@ -21,7 +21,7 @@ __all__ = [
     "XarrayDependencyResolver",
 ]
 
-from feu.installer.pip.installer import (
+from feu.installer.pip.package import (
     BasePackageInstaller,
     PipPackageInstaller,
     PipxPackageInstaller,
