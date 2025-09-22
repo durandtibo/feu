@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   generate-matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -27,7 +27,7 @@ jobs:
 
   test-packaging:
     needs: generate-matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
