@@ -25,6 +25,20 @@ jobs:
           matrix=$(echo $versions | jq -c '{packaging_version: .}')
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
+
+  show-matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Show packages
+        run: |
+          echo ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+
+      - name: Show packages
+        run: |
+          echo ${{ fromJson(needs.generate-matrix.outputs.matrix).packaging_version }}
+
   test-packaging:
     needs: generate-matrix
     runs-on: ubuntu-24.04
