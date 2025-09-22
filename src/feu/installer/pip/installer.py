@@ -1,7 +1,7 @@
 from typing import ClassVar
 
 from feu.installer.installer import BaseInstaller
-from feu.installer.pip.package import BasePackageInstaller
+from feu.installer.pip.command import BasePackageInstaller
 
 
 class PipInstaller(BaseInstaller):
