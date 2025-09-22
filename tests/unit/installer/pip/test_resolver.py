@@ -26,6 +26,18 @@ def test_dependency_resolver_str() -> None:
     assert str(DependencyResolver("numpy")).startswith("DependencyResolver(")
 
 
+def test_dependency_resolver_equal_true() -> None:
+    assert DependencyResolver("numpy").equal(DependencyResolver("numpy"))
+
+
+def test_dependency_resolver_equal_false_different_package() -> None:
+    assert not DependencyResolver("numpy").equal(DependencyResolver("torch"))
+
+
+def test_dependency_resolver_equal_false_different_type() -> None:
+    assert not DependencyResolver("numpy").equal(42)
+
+
 def test_dependency_resolver_resolve() -> None:
     assert DependencyResolver("numpy").resolve("2.3.1") == ("numpy==2.3.1",)
 
@@ -41,6 +53,14 @@ def test_jax_dependency_resolver_repr() -> None:
 
 def test_jax_dependency_resolver_str() -> None:
     assert str(JaxDependencyResolver()).startswith("JaxDependencyResolver(")
+
+
+def test_jax_dependency_resolver_equal_true() -> None:
+    assert JaxDependencyResolver().equal(JaxDependencyResolver())
+
+
+def test_jax_dependency_resolver_equal_false() -> None:
+    assert not JaxDependencyResolver().equal(42)
 
 
 def test_jax_dependency_resolver_resolve() -> None:
@@ -85,6 +105,28 @@ def test_numpy2_dependency_resolver_str() -> None:
     )
 
 
+def test_numpy2_dependency_resolver_equal_true() -> None:
+    assert Numpy2DependencyResolver(package="my_package", min_version="1.2.3").equal(
+        Numpy2DependencyResolver(package="my_package", min_version="1.2.3")
+    )
+
+
+def test_numpy2_dependency_resolver_equal_false_different_package() -> None:
+    assert not Numpy2DependencyResolver(package="my_package", min_version="1.2.3").equal(
+        Numpy2DependencyResolver(package="numpy", min_version="1.2.3")
+    )
+
+
+def test_numpy2_dependency_resolver_equal_false_different_min_version() -> None:
+    assert not Numpy2DependencyResolver(package="my_package", min_version="1.2.3").equal(
+        Numpy2DependencyResolver(package="my_package", min_version="2.0.0")
+    )
+
+
+def test_numpy2_dependency_resolver_equal_false_different_type() -> None:
+    assert not Numpy2DependencyResolver(package="my_package", min_version="1.2.3").equal(42)
+
+
 def test_numpy2_dependency_resolver_resolve() -> None:
     assert Numpy2DependencyResolver(package="my_package", min_version="1.2.3").resolve("1.2.3") == (
         "my_package==1.2.3",
@@ -117,6 +159,14 @@ def test_matplotlib_dependency_resolver_str() -> None:
     assert str(MatplotlibDependencyResolver()).startswith("MatplotlibDependencyResolver(")
 
 
+def test_matplotlib_dependency_resolver_equal_true() -> None:
+    assert MatplotlibDependencyResolver().equal(MatplotlibDependencyResolver())
+
+
+def test_matplotlib_dependency_resolver_equal_false() -> None:
+    assert not MatplotlibDependencyResolver().equal(42)
+
+
 def test_matplotlib_dependency_resolver_resolve() -> None:
     assert MatplotlibDependencyResolver().resolve("3.8.4") == ("matplotlib==3.8.4",)
 
@@ -143,6 +193,14 @@ def test_pandas_dependency_resolver_repr() -> None:
 
 def test_pandas_dependency_resolver_str() -> None:
     assert str(PandasDependencyResolver()).startswith("PandasDependencyResolver(")
+
+
+def test_pandas_dependency_resolver_equal_true() -> None:
+    assert PandasDependencyResolver().equal(PandasDependencyResolver())
+
+
+def test_pandas_dependency_resolver_equal_false() -> None:
+    assert not PandasDependencyResolver().equal(42)
 
 
 def test_pandas_dependency_resolver_resolve() -> None:
@@ -173,6 +231,14 @@ def test_pyarrow_dependency_resolver_str() -> None:
     assert str(PyarrowDependencyResolver()).startswith("PyarrowDependencyResolver(")
 
 
+def test_pyarrow_dependency_resolver_equal_true() -> None:
+    assert PyarrowDependencyResolver().equal(PyarrowDependencyResolver())
+
+
+def test_pyarrow_dependency_resolver_equal_false() -> None:
+    assert not PyarrowDependencyResolver().equal(42)
+
+
 def test_pyarrow_dependency_resolver_resolve() -> None:
     assert PyarrowDependencyResolver().resolve("16.0") == ("pyarrow==16.0",)
 
@@ -199,6 +265,14 @@ def test_scipy_dependency_resolver_repr() -> None:
 
 def test_scipy_dependency_resolver_str() -> None:
     assert str(ScipyDependencyResolver()).startswith("ScipyDependencyResolver(")
+
+
+def test_scipy_dependency_resolver_equal_true() -> None:
+    assert ScipyDependencyResolver().equal(ScipyDependencyResolver())
+
+
+def test_scipy_dependency_resolver_equal_false() -> None:
+    assert not ScipyDependencyResolver().equal(42)
 
 
 def test_scipy_dependency_resolver_resolve() -> None:
@@ -229,6 +303,14 @@ def test_sklearn_dependency_resolver_str() -> None:
     assert str(SklearnDependencyResolver()).startswith("SklearnDependencyResolver(")
 
 
+def test_sklearn_dependency_resolver_equal_true() -> None:
+    assert SklearnDependencyResolver().equal(SklearnDependencyResolver())
+
+
+def test_sklearn_dependency_resolver_equal_false() -> None:
+    assert not SklearnDependencyResolver().equal(42)
+
+
 def test_sklearn_dependency_resolver_resolve() -> None:
     assert SklearnDependencyResolver().resolve("1.4.2") == ("scikit-learn==1.4.2",)
 
@@ -257,6 +339,14 @@ def test_torch_dependency_resolver_str() -> None:
     assert str(TorchDependencyResolver()).startswith("TorchDependencyResolver(")
 
 
+def test_torch_dependency_resolver_equal_true() -> None:
+    assert TorchDependencyResolver().equal(TorchDependencyResolver())
+
+
+def test_torch_dependency_resolver_equal_false() -> None:
+    assert not TorchDependencyResolver().equal(42)
+
+
 def test_torch_dependency_resolver_resolve() -> None:
     assert TorchDependencyResolver().resolve("2.3.0") == ("torch==2.3.0",)
 
@@ -283,6 +373,14 @@ def test_xarray_dependency_resolver_repr() -> None:
 
 def test_xarray_dependency_resolver_str() -> None:
     assert str(XarrayDependencyResolver()).startswith("XarrayDependencyResolver(")
+
+
+def test_xarray_dependency_resolver_equal_true() -> None:
+    assert XarrayDependencyResolver().equal(XarrayDependencyResolver())
+
+
+def test_xarray_dependency_resolver_equal_false() -> None:
+    assert not XarrayDependencyResolver().equal(42)
 
 
 def test_xarray_dependency_resolver_resolve() -> None:
