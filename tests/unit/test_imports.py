@@ -5,7 +5,14 @@ from unittest.mock import Mock, patch
 import pytest
 
 from feu import is_module_available, is_package_available
-from feu.imports import check_click, check_git, is_click_available, is_git_available
+from feu.imports import (
+    check_click,
+    check_git,
+    check_requests,
+    is_click_available,
+    is_git_available,
+    is_requests_available,
+)
 
 ##########################################
 #     Tests for is_package_available     #
@@ -92,3 +99,25 @@ def test_check_git_without_package() -> None:
 
 def test_is_git_available() -> None:
     assert isinstance(is_git_available(), bool)
+
+
+####################
+#     requests     #
+####################
+
+
+def test_check_requests_with_package() -> None:
+    with patch("feu.imports.is_requests_available", lambda: True):
+        check_requests()
+
+
+def test_check_requests_without_package() -> None:
+    with (
+        patch("feu.imports.is_requests_available", lambda: False),
+        pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."),
+    ):
+        check_requests()
+
+
+def test_is_requests_available() -> None:
+    assert isinstance(is_requests_available(), bool)
