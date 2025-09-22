@@ -5,11 +5,11 @@ from unittest.mock import Mock, patch
 import pytest
 
 from feu.installer.pip import (
-    BasePackageInstaller,
     PipInstaller,
     PipxInstaller,
     UvInstaller,
 )
+from feu.installer.pip.package import BasePackageInstaller
 
 PACKAGE_NAMES = {
     "jax",

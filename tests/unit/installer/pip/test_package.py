@@ -2,16 +2,17 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from feu.installer.pip import (
-    DependencyResolver,
-    JaxDependencyResolver,
-    PackageInstaller,
+from feu.installer.pip.command import (
     PipCommandGenerator,
     PipxCommandGenerator,
-    TorchDependencyResolver,
     UvCommandGenerator,
 )
-from feu.installer.pip.package import create_package_installer_mapping
+from feu.installer.pip.package import PackageInstaller, create_package_installer_mapping
+from feu.installer.pip.resolver import (
+    DependencyResolver,
+    JaxDependencyResolver,
+    TorchDependencyResolver,
+)
 
 ######################################
 #     Tests for PackageInstaller     #

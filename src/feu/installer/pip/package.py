@@ -31,7 +31,9 @@ class BasePackageInstaller(ABC):
 
     ```pycon
 
-    >>> from feu.installer.pip import DependencyResolver, PackageInstaller, PipCommandGenerator
+    >>> from feu.installer.pip.command import PipCommandGenerator
+    >>> from feu.installer.pip.package import PackageInstaller
+    >>> from feu.installer.pip.resolver import DependencyResolver
     >>> installer = PackageInstaller(
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
@@ -56,7 +58,9 @@ class BasePackageInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip import DependencyResolver, PackageInstaller, PipCommandGenerator
+        >>> from feu.installer.pip.command import PipCommandGenerator
+        >>> from feu.installer.pip.package import PackageInstaller
+        >>> from feu.installer.pip.resolver import DependencyResolver
         >>> obj1 = PackageInstaller(
         ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
         ... )
@@ -88,7 +92,9 @@ class BasePackageInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip import DependencyResolver, PackageInstaller, PipCommandGenerator
+        >>> from feu.installer.pip.command import PipCommandGenerator
+        >>> from feu.installer.pip.package import PackageInstaller
+        >>> from feu.installer.pip.resolver import DependencyResolver
         >>> installer = PackageInstaller(
         ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
         ... )
@@ -109,7 +115,9 @@ class PackageInstaller(BasePackageInstaller):
 
     ```pycon
 
-    >>> from feu.installer.pip import DependencyResolver, PackageInstaller, PipCommandGenerator
+    >>> from feu.installer.pip.command import PipCommandGenerator
+    >>> from feu.installer.pip.package import PackageInstaller
+    >>> from feu.installer.pip.resolver import DependencyResolver
     >>> installer = PackageInstaller(
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
@@ -154,7 +162,7 @@ def create_package_installer_mapping(
 
     ```pycon
 
-    >>> from feu.installer.pip import PipCommandGenerator
+    >>> from feu.installer.pip.command import PipCommandGenerator
     >>> from feu.installer.pip.package import create_package_installer_mapping
     >>> installers = create_package_installer_mapping(command=PipCommandGenerator())
     >>> installers

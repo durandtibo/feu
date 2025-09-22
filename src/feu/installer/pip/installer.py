@@ -46,11 +46,9 @@ class BasePipInstaller(BaseInstaller):
 
         ```pycon
 
-        >>> from feu.installer.pip import (
-        ...     PipInstaller,
-        ...     PandasDependencyResolver,
-        ...     PipCommandGenerator,
-        ... )
+        >>> from feu.installer.pip import PipInstaller
+        >>> from feu.installer.pip.command import PipCommandGenerator
+        >>> from feu.installer.pip.resolver import PandasDependencyResolver
         >>> PipInstaller.add_installer(
         ...     "pandas",
         ...     PackageInstaller(
