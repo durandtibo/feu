@@ -4,8 +4,11 @@ from unittest.mock import patch
 
 from feu.installer.pip import (
     DependencyResolver,
+    JaxDependencyResolver,
     PackageInstaller,
     PipCommandGenerator,
+    PipxCommandGenerator,
+    TorchDependencyResolver,
     UvCommandGenerator,
 )
 from feu.installer.pip.package import create_package_installer_mapping
@@ -83,3 +86,27 @@ def test_package_installer_install_with_args() -> None:
 
 def test_create_package_installer_mapping() -> None:
     assert len(create_package_installer_mapping(command=PipCommandGenerator())) == 9
+
+
+def test_create_package_installer_mapping_pipx() -> None:
+    assert create_package_installer_mapping(command=PipxCommandGenerator())["torch"].equal(
+        PackageInstaller(resolver=TorchDependencyResolver(), command=PipxCommandGenerator())
+    )
+
+
+def test_create_package_installer_mapping_uv() -> None:
+    assert create_package_installer_mapping(command=UvCommandGenerator())["torch"].equal(
+        PackageInstaller(resolver=TorchDependencyResolver(), command=UvCommandGenerator())
+    )
+
+
+def test_create_package_installer_mapping_jax() -> None:
+    assert create_package_installer_mapping(command=PipCommandGenerator())["jax"].equal(
+        PackageInstaller(resolver=JaxDependencyResolver(), command=PipCommandGenerator())
+    )
+
+
+def test_create_package_installer_mapping_torch() -> None:
+    assert create_package_installer_mapping(command=PipCommandGenerator())["torch"].equal(
+        PackageInstaller(resolver=TorchDependencyResolver(), command=PipCommandGenerator())
+    )
