@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["BasePackageInstaller", "PackageInstaller", "create_package_installer_mapping"]
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from feu.installer.pip.resolver import (
     JaxDependencyResolver,
@@ -41,6 +41,38 @@ class BasePackageInstaller(ABC):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any) -> bool:
+        r"""Indicate if two package installers are equal or not.
+
+        Args:
+            other: The other object to compare.
+
+        Returns:
+            ``True`` if the two package installers are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.installer.pip import DependencyResolver, PackageInstaller, PipCommandGenerator
+        >>> obj1 = PackageInstaller(
+        ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
+        ... )
+        >>> obj2 = PackageInstaller(
+        ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
+        ... )
+        >>> obj3 = PackageInstaller(
+        ...     resolver=DependencyResolver("torch"), command=PipCommandGenerator()
+        ... )
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def install(self, version: str, args: str = "") -> None:
@@ -94,6 +126,11 @@ class PackageInstaller(BasePackageInstaller):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(resolver={self._resolver}, command={self._command})"
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._resolver.equal(other._resolver) and self._command.equal(other._command)
 
     def install(self, version: str, args: str = "") -> None:
         run_bash_command(
