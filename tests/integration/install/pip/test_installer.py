@@ -10,6 +10,11 @@ from feu.package import find_closest_version
 from feu.testing import pip_available, pipx_available, uv_available
 
 
+@pytest.fixture(autouse=True)
+def _reset_cache() -> None:
+    is_package_available.cache_clear()
+
+
 @pytest.fixture(scope="module")
 def python_version() -> str:
     return f"{version_info.major}.{version_info.minor}"
