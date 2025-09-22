@@ -1,12 +1,24 @@
 from unittest.mock import patch
 
+import pytest
+
 from feu.installer import (
+    get_available_installers,
     install_package,
     is_pip_available,
     is_pipx_available,
     is_uv_available,
 )
 from feu.testing import pip_available, pipx_available, uv_available
+
+
+@pytest.fixture(autouse=True)
+def _reset() -> None:
+    is_pip_available.cache_clear()
+    is_pipx_available.cache_clear()
+    is_uv_available.cache_clear()
+    get_available_installers.cache_clear()
+
 
 #####################################
 #     Tests for install_package     #
@@ -77,3 +89,53 @@ def test_is_uv_available() -> None:
 @uv_available
 def test_is_uv_available_true() -> None:
     assert is_uv_available()
+
+
+##############################################
+#     Tests for get_available_installers     #
+##############################################
+
+
+@patch("feu.installer.utils.is_pip_available", lambda: True)
+def test_get_available_installers_pip_available() -> None:
+    assert "pip" in get_available_installers()
+
+
+@patch("feu.installer.utils.is_pip_available", lambda: False)
+def test_get_available_installers_pip_not_available() -> None:
+    assert "pip" not in get_available_installers()
+
+
+@pip_available
+def test_get_available_installers_pip() -> None:
+    assert "pip" in get_available_installers()
+
+
+@patch("feu.installer.utils.is_pipx_available", lambda: True)
+def test_get_available_installers_pipx_available() -> None:
+    assert "pipx" in get_available_installers()
+
+
+@patch("feu.installer.utils.is_pipx_available", lambda: False)
+def test_get_available_installers_pipx_not_available() -> None:
+    assert "pipx" not in get_available_installers()
+
+
+@pipx_available
+def test_get_available_installers_pipx() -> None:
+    assert "pipx" in get_available_installers()
+
+
+@patch("feu.installer.utils.is_uv_available", lambda: True)
+def test_get_available_installers_uv_available() -> None:
+    assert "uv" in get_available_installers()
+
+
+@patch("feu.installer.utils.is_uv_available", lambda: False)
+def test_get_available_installers_uv_not_available() -> None:
+    assert "uv" not in get_available_installers()
+
+
+@uv_available
+def test_get_available_installers_uv() -> None:
+    assert "uv" in get_available_installers()
