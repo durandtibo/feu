@@ -8,8 +8,14 @@ __all__ = [
     "install_package",
     "is_pip_available",
     "is_pipx_available",
+    "is_uv_available",
 ]
 
 from feu.installer.installer import BaseInstaller
 from feu.installer.registry import InstallerRegistry
-from feu.installer.utils import install_package, is_pip_available, is_pipx_available
+from feu.installer.utils import (
+    install_package,
+    is_pip_available,
+    is_pipx_available,
+    is_uv_available,
+)
