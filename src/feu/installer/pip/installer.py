@@ -2,12 +2,13 @@ r"""Define the pip compatible installers."""
 
 from __future__ import annotations
 
-__all__ = ["PipInstaller"]
+__all__ = ["PipInstaller", "PipxInstaller"]
 
+from abc import abstractmethod
 from typing import ClassVar
 
 from feu.installer.installer import BaseInstaller
-from feu.installer.pip.command import PipCommandGenerator
+from feu.installer.pip.command import PipCommandGenerator, PipxCommandGenerator
 from feu.installer.pip.package import (
     BasePackageInstaller,
     PackageInstaller,
@@ -16,12 +17,9 @@ from feu.installer.pip.package import (
 from feu.installer.pip.resolver import DependencyResolver
 
 
-class PipInstaller(BaseInstaller):
-    """Implement a pip package installer."""
-
-    registry: ClassVar[dict[str, BasePackageInstaller]] = create_package_installer_mapping(
-        command=PipCommandGenerator()
-    )
+class BasePipInstaller(BaseInstaller):
+    """Define an intermediate base class to implement package
+    installer."""
 
     @classmethod
     def add_installer(
@@ -94,7 +92,43 @@ class PipInstaller(BaseInstaller):
     def install(cls, package: str, version: str, args: str = "") -> None:
         installer = cls.registry.get(package, None)
         if installer is None:
-            installer = PackageInstaller(
-                resolver=DependencyResolver(package), command=PipCommandGenerator()
-            )
+            installer = cls._get_default_installer(package)
         installer.install(version=version, args=args)
+
+    @classmethod
+    @abstractmethod
+    def _get_default_installer(cls, package: str) -> BasePackageInstaller:
+        r"""Return the default installer for a package.
+
+        Args:
+            package: The package name.
+
+        Returns:
+            The package installer.
+        """
+
+
+class PipInstaller(BasePipInstaller):
+    """Implement a pip package installer."""
+
+    registry: ClassVar[dict[str, BasePackageInstaller]] = create_package_installer_mapping(
+        command=PipCommandGenerator()
+    )
+
+    @classmethod
+    def _get_default_installer(cls, package: str) -> BasePackageInstaller:
+        return PackageInstaller(resolver=DependencyResolver(package), command=PipCommandGenerator())
+
+
+class PipxInstaller(BasePipInstaller):
+    """Implement a pipx package installer."""
+
+    registry: ClassVar[dict[str, BasePackageInstaller]] = create_package_installer_mapping(
+        command=PipxCommandGenerator()
+    )
+
+    @classmethod
+    def _get_default_installer(cls, package: str) -> BasePackageInstaller:
+        return PackageInstaller(
+            resolver=DependencyResolver(package), command=PipxCommandGenerator()
+        )
