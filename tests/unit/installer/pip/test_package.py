@@ -7,6 +7,7 @@ from feu.installer.pip import (
     PackageInstaller,
     PipCommandGenerator,
 )
+from feu.installer.pip.package import create_package_installer_mapping
 
 ######################################
 #     Tests for PackageInstaller     #
@@ -48,3 +49,12 @@ def test_package_installer_install_with_args() -> None:
     with patch("feu.installer.pip.package.run_bash_command") as run_mock:
         installer.install("2.0.0", args="-U")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+
+
+######################################################
+#     Tests for create_package_installer_mapping     #
+######################################################
+
+
+def test_create_package_installer_mapping() -> None:
+    assert len(create_package_installer_mapping(command=PipCommandGenerator())) == 9
