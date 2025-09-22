@@ -2,7 +2,7 @@ r"""Define the pip compatible installers."""
 
 from __future__ import annotations
 
-__all__ = ["PipInstaller", "PipxInstaller", "UvInstaller"]
+__all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
 from abc import abstractmethod
 from typing import ClassVar
