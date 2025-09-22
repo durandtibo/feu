@@ -5,8 +5,8 @@ from __future__ import annotations
 __all__ = ["install_package", "is_pip_available", "is_pipx_available"]
 
 import shutil
+from functools import lru_cache
 
-from feu.imports import is_package_available
 from feu.installer import InstallerRegistry
 
 
@@ -35,6 +35,7 @@ def install_package(installer: str, package: str, version: str, args: str = "") 
     InstallerRegistry.install(installer=installer, package=package, version=version, args=args)
 
 
+@lru_cache
 def is_pip_available() -> bool:
     """Check if ``pip`` is available.
 
@@ -50,9 +51,10 @@ def is_pip_available() -> bool:
 
     ```
     """
-    return is_package_available("pip")
+    return shutil.which("pip") is not None
 
 
+@lru_cache
 def is_pipx_available() -> bool:
     """Check if ``pipx`` is available.
 
@@ -69,3 +71,22 @@ def is_pipx_available() -> bool:
     ```
     """
     return shutil.which("pipx") is not None
+
+
+@lru_cache
+def is_uv_available() -> bool:
+    """Check if ``uv`` is available.
+
+    Returns:
+        ``True`` if ``uv`` is available, otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer import is_uv_available
+    >>> is_uv_available()
+
+    ```
+    """
+    return shutil.which("uv") is not None

@@ -17,13 +17,14 @@ __all__ = [
     "scipy_available",
     "sklearn_available",
     "torch_available",
+    "uv_available",
     "xarray_available",
 ]
 
 import pytest
 
 from feu.imports import is_click_available, is_git_available, is_package_available
-from feu.installer import is_pip_available, is_pipx_available
+from feu.installer import is_pip_available, is_pipx_available, is_uv_available
 
 click_available = pytest.mark.skipif(not is_click_available(), reason="Requires click")
 git_available = pytest.mark.skipif(not is_git_available(), reason="Requires git")
@@ -47,5 +48,7 @@ sklearn_available = pytest.mark.skipif(
 scipy_available = pytest.mark.skipif(not is_package_available("scipy"), reason="Requires scipy")
 xarray_available = pytest.mark.skipif(not is_package_available("xarray"), reason="Requires xarray")
 
+
 pip_available = pytest.mark.skipif(not is_pip_available(), reason="Requires pip")
 pipx_available = pytest.mark.skipif(not is_pipx_available(), reason="Requires pipx")
+uv_available = pytest.mark.skipif(not is_uv_available(), reason="Requires uv")
