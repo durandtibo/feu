@@ -88,6 +88,20 @@ def test_create_package_installer_mapping() -> None:
     assert len(create_package_installer_mapping(command=PipCommandGenerator())) == 9
 
 
+def test_create_package_installer_mapping_packages() -> None:
+    assert set(create_package_installer_mapping(command=PipCommandGenerator())) == {
+        "jax",
+        "matplotlib",
+        "pandas",
+        "pyarrow",
+        "scikit-learn",
+        "scipy",
+        "sklearn",
+        "torch",
+        "xarray",
+    }
+
+
 def test_create_package_installer_mapping_pipx() -> None:
     assert create_package_installer_mapping(command=PipxCommandGenerator())["torch"].equal(
         PackageInstaller(resolver=TorchDependencyResolver(), command=PipxCommandGenerator())
