@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from feu.installer.pip import (
     DependencyResolver,
+    JaxDependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
     PandasDependencyResolver,
@@ -27,6 +28,44 @@ def test_dependency_resolver_str() -> None:
 
 def test_dependency_resolver_resolve() -> None:
     assert DependencyResolver("numpy").resolve("2.3.1") == ("numpy==2.3.1",)
+
+
+###########################################
+#     Tests for JaxDependencyResolver     #
+###########################################
+
+
+def test_jax_dependency_resolver_repr() -> None:
+    assert repr(JaxDependencyResolver()).startswith("JaxDependencyResolver(")
+
+
+def test_jax_dependency_resolver_str() -> None:
+    assert str(JaxDependencyResolver()).startswith("JaxDependencyResolver(")
+
+
+def test_jax_dependency_resolver_resolve() -> None:
+    assert JaxDependencyResolver().resolve("0.4.26") == ("jax==0.4.26", "jaxlib==0.4.26")
+
+
+def test_jax_dependency_resolver_resolve_high() -> None:
+    assert JaxDependencyResolver().resolve("0.4.27") == ("jax==0.4.27", "jaxlib==0.4.27")
+
+
+def test_jax_dependency_resolver_resolve_low() -> None:
+    assert JaxDependencyResolver().resolve("0.4.25") == (
+        "jax==0.4.25",
+        "jaxlib==0.4.25",
+        "numpy<2.0.0",
+    )
+
+
+def test_jax_dependency_resolver_resolve_ml_dtypes() -> None:
+    assert JaxDependencyResolver().resolve("0.4.9") == (
+        "jax==0.4.9",
+        "jaxlib==0.4.9",
+        "numpy<2.0.0",
+        "ml_dtypes<=0.2.0",
+    )
 
 
 ##############################################
