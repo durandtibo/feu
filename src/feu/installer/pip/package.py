@@ -7,8 +7,6 @@ __all__ = ["BasePackageInstaller", "PackageInstaller"]
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from coola.utils import repr_indent, repr_mapping
-
 from feu.utils.command import run_bash_command
 
 if TYPE_CHECKING:
@@ -28,10 +26,7 @@ class BasePackageInstaller(ABC):
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
     >>> installer
-    PackageInstaller(
-      (resolver): DependencyResolver(package=numpy)
-      (command): PipCommandGenerator()
-    )
+    PackageInstaller(resolver=DependencyResolver(package=numpy), command=PipCommandGenerator())
     >>> installer.install("2.3.1")  # doctest: +SKIP
 
     ```
@@ -77,10 +72,7 @@ class PackageInstaller(BasePackageInstaller):
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
     >>> installer
-    PackageInstaller(
-      (resolver): DependencyResolver(package=numpy)
-      (command): PipCommandGenerator()
-    )
+    PackageInstaller(resolver=DependencyResolver(package=numpy), command=PipCommandGenerator())
     >>> installer.install("2.3.1")  # doctest: +SKIP
 
     ```
@@ -91,8 +83,7 @@ class PackageInstaller(BasePackageInstaller):
         self._command = command
 
     def __repr__(self) -> str:
-        args = repr_indent(repr_mapping({"resolver": self._resolver, "command": self._command}))
-        return f"{self.__class__.__qualname__}(\n  {args}\n)"
+        return f"{self.__class__.__qualname__}(resolver={self._resolver}, command={self._command})"
 
     def install(self, version: str, args: str = "") -> None:
         run_bash_command(
