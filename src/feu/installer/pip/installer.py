@@ -1,14 +1,18 @@
+__all__ = ["PipInstaller"]
+
 from typing import ClassVar
 
 from feu.installer.installer import BaseInstaller
-from feu.installer.pip.command import BasePackageInstaller
+from feu.installer.pip.command import PipCommandGenerator
+from feu.installer.pip.package import BasePackageInstaller, PackageInstaller
+from feu.installer.pip.resolver import JaxDependencyResolver
 
 
 class PipInstaller(BaseInstaller):
     """Implement a pip package installer."""
 
     registry: ClassVar[dict[str, BasePackageInstaller]] = {
-        "jax": JaxInstaller(),
+        "jax": PackageInstaller(resolver=JaxDependencyResolver(), command=PipCommandGenerator()),
         "matplotlib": MatplotlibInstaller(),
         "pandas": PandasInstaller(),
         "pyarrow": PyarrowInstaller(),

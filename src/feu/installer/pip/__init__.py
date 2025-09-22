@@ -14,6 +14,7 @@ __all__ = [
     "PackageInstaller",
     "PandasDependencyResolver",
     "PipCommandGenerator",
+    "PipInstaller",
     "PipxCommandGenerator",
     "PyarrowDependencyResolver",
     "ScipyDependencyResolver",
@@ -29,6 +30,7 @@ from feu.installer.pip.command import (
     PipxCommandGenerator,
     UvCommandGenerator,
 )
+from feu.installer.pip.installer import PipInstaller
 from feu.installer.pip.package import BasePackageInstaller, PackageInstaller
 from feu.installer.pip.resolver import (
     BaseDependencyResolver,
