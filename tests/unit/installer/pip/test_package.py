@@ -85,10 +85,6 @@ def test_package_installer_install_with_args() -> None:
 ######################################################
 
 
-def test_create_package_installer_mapping() -> None:
-    assert len(create_package_installer_mapping(command=PipCommandGenerator())) == 9
-
-
 def test_create_package_installer_mapping_packages() -> None:
     assert set(create_package_installer_mapping(command=PipCommandGenerator())) == {
         "jax",

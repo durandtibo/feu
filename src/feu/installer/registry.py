@@ -1,15 +1,24 @@
-from typing import ClassVar
+r"""Contain the main installer registry."""
 
-from feu.installer.installer import BaseInstaller
+from __future__ import annotations
+
+__all__ = ["InstallerRegistry"]
+
+from typing import TYPE_CHECKING, ClassVar
+
+from feu.installer.pip import PipInstaller, PipxInstaller, UvInstaller
+
+if TYPE_CHECKING:
+    from feu.installer.installer import BaseInstaller
 
 
 class InstallerRegistry:
-    """Implement the main installer."""
+    """Implement the main installer registry."""
 
     registry: ClassVar[dict[str, BaseInstaller]] = {
         "pip": PipInstaller(),
-        "pipx": PipInstaller(),
-        "uv": PipInstaller(),
+        "pipx": PipxInstaller(),
+        "uv": UvInstaller(),
     }
 
     @classmethod
@@ -31,8 +40,9 @@ class InstallerRegistry:
 
         ```pycon
 
-        >>> from feu.installer import Installer, PipInstaller
-        >>> PackageInstaller.add_installer("pandas", PandasInstaller(), exist_ok=True)
+        >>> from feu.installer import InstallerRegistry
+        >>> from feu.installer.pip import PipInstaller
+        >>> InstallerRegistry.add_installer("pip", PipInstaller(), exist_ok=True)
 
         ```
         """
@@ -46,11 +56,11 @@ class InstallerRegistry:
         cls.registry[name] = installer
 
     @classmethod
-    def has_installer(cls, package: str) -> bool:
-        r"""Indicate if an installer is registered for the given package.
+    def has_installer(cls, name: str) -> bool:
+        r"""Indicate if an installer is registered for the given name.
 
         Args:
-            package: The package name.
+            name: The installer name.
 
         Returns:
             ``True`` if an installer is registered,
@@ -60,27 +70,36 @@ class InstallerRegistry:
 
         ```pycon
 
-        >>> from feu.install import PackageInstaller
-        >>> PackageInstaller.has_installer("pandas")
+        >>> from feu.installer import InstallerRegistry
+        >>> InstallerRegistry.has_installer("pip")
+        True
 
         ```
         """
-        return package in cls.registry
+        return name in cls.registry
 
     @classmethod
     def install(cls, installer: str, package: str, version: str, args: str = "") -> None:
-        r"""Install a package and associated packages.
+        r"""Install a package and associated packages by using the
+        secified installer.
 
         Args:
-            package: The package name e.g. ``'pandas'``.
-            version: The target version to install.
+            installer: The package installer to use to install the
+                packages.
+            package: The target package to install.
+            version: The target version of the package to install.
+            args: Optional arguments to pass to the package installer.
+                The list of valid arguments depend on the package
+                installer.
 
         Example usage:
 
         ```pycon
 
-        >>> from feu.install import PackageInstaller
-        >>> PackageInstaller().install("pandas", "2.2.2")  # doctest: +SKIP
+        >>> from feu.installer import InstallerRegistry
+        >>> InstallerRegistry.install(
+        ...     installer="pip", package="pandas", version="2.2.2"
+        ... )  # doctest: +SKIP
 
         ```
         """
