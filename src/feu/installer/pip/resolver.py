@@ -18,6 +18,7 @@ __all__ = [
 
 import logging
 from abc import ABC, abstractmethod
+from typing import Any
 
 from packaging.version import Version
 
@@ -31,7 +32,7 @@ class BaseDependencyResolver(ABC):
 
     ```pycon
 
-    >>> from feu.installer.pip import DependencyResolver
+    >>> from feu.installer.pip.resolver import DependencyResolver
     >>> resolver = DependencyResolver("numpy")
     >>> resolver
     DependencyResolver(package=numpy)
@@ -41,6 +42,32 @@ class BaseDependencyResolver(ABC):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any) -> bool:
+        r"""Indicate if two dependency resolvers are equal or not.
+
+        Args:
+            other: The other object to compare.
+
+        Returns:
+            ``True`` if the two dependency resolvers are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.installer.pip.resolver import DependencyResolver, TorchDependencyResolver
+        >>> obj1 = DependencyResolver("numpy")
+        >>> obj2 = DependencyResolver("numpy")
+        >>> obj3 = TorchDependencyResolver()
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def resolve(self, version: str) -> tuple[str, ...]:
@@ -57,7 +84,7 @@ class BaseDependencyResolver(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip import DependencyResolver
+        >>> from feu.installer.pip.resolver import DependencyResolver
         >>> resolver = DependencyResolver("numpy")
         >>> deps = resolver.resolve("2.3.1")
         >>> deps
@@ -77,7 +104,7 @@ class DependencyResolver(BaseDependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import DependencyResolver
+    >>> from feu.installer.pip.resolver import DependencyResolver
     >>> resolver = DependencyResolver("numpy")
     >>> resolver
     DependencyResolver(package=numpy)
@@ -94,6 +121,11 @@ class DependencyResolver(BaseDependencyResolver):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(package={self._package})"
 
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._package == other._package
+
     def resolve(self, version: str) -> tuple[str, ...]:
         return (f"{self._package}=={version}",)
 
@@ -107,7 +139,7 @@ class JaxDependencyResolver(BaseDependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import JaxDependencyResolver
+    >>> from feu.installer.pip.resolver import JaxDependencyResolver
     >>> resolver = JaxDependencyResolver()
     >>> resolver
     JaxDependencyResolver()
@@ -120,6 +152,9 @@ class JaxDependencyResolver(BaseDependencyResolver):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any) -> bool:
+        return isinstance(other, self.__class__)
 
     def resolve(self, version: str) -> tuple[str, ...]:
         deps = [f"jax=={version}", f"jaxlib=={version}"]
@@ -143,6 +178,20 @@ class Numpy2DependencyResolver(BaseDependencyResolver):
         package: The name of the package.
         min_version: The first version that is fully compatible with
             numpy 2.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer.pip.resolver import Numpy2DependencyResolver
+    >>> resolver = Numpy2DependencyResolver(package="my_package", min_version="1.2.3")
+    >>> resolver
+    Numpy2DependencyResolver()
+    >>> deps = resolver.resolve("1.2.3")
+    >>> deps
+    ('my_package==1.2.3',)
+
+    ```
     """
 
     def __init__(self, package: str, min_version: str) -> None:
@@ -151,6 +200,11 @@ class Numpy2DependencyResolver(BaseDependencyResolver):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._package == other._package and self._min_version == other._min_version
 
     def resolve(self, version: str) -> tuple[str, ...]:
         deps = [f"{self._package}=={version}"]
@@ -168,7 +222,7 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import MatplotlibDependencyResolver
+    >>> from feu.installer.pip.resolver import MatplotlibDependencyResolver
     >>> resolver = MatplotlibDependencyResolver()
     >>> resolver
     MatplotlibDependencyResolver()
@@ -192,7 +246,7 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import PandasDependencyResolver
+    >>> from feu.installer.pip.resolver import PandasDependencyResolver
     >>> resolver = PandasDependencyResolver()
     >>> resolver
     PandasDependencyResolver()
@@ -216,7 +270,7 @@ class PyarrowDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import PyarrowDependencyResolver
+    >>> from feu.installer.pip.resolver import PyarrowDependencyResolver
     >>> resolver = PyarrowDependencyResolver()
     >>> resolver
     PyarrowDependencyResolver()
@@ -240,7 +294,7 @@ class ScipyDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import ScipyDependencyResolver
+    >>> from feu.installer.pip.resolver import ScipyDependencyResolver
     >>> resolver = ScipyDependencyResolver()
     >>> resolver
     ScipyDependencyResolver()
@@ -264,7 +318,7 @@ class SklearnDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import SklearnDependencyResolver
+    >>> from feu.installer.pip.resolver import SklearnDependencyResolver
     >>> resolver = SklearnDependencyResolver()
     >>> resolver
     SklearnDependencyResolver()
@@ -288,7 +342,7 @@ class TorchDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import TorchDependencyResolver
+    >>> from feu.installer.pip.resolver import TorchDependencyResolver
     >>> resolver = TorchDependencyResolver()
     >>> resolver
     TorchDependencyResolver()
@@ -312,7 +366,7 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip import XarrayDependencyResolver
+    >>> from feu.installer.pip.resolver import XarrayDependencyResolver
     >>> resolver = XarrayDependencyResolver()
     >>> resolver
     XarrayDependencyResolver()
