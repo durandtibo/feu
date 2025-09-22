@@ -6,6 +6,7 @@ from feu.installer.pip import (
     DependencyResolver,
     PackageInstaller,
     PipCommandGenerator,
+    UvCommandGenerator,
 )
 from feu.installer.pip.package import create_package_installer_mapping
 
@@ -24,6 +25,30 @@ def test_package_installer_str() -> None:
     assert str(
         PackageInstaller(resolver=DependencyResolver("numpy"), command=PipCommandGenerator())
     ).startswith("PackageInstaller(")
+
+
+def test_package_installer_equal_true() -> None:
+    assert PackageInstaller(
+        resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
+    ).equal(PackageInstaller(resolver=DependencyResolver("numpy"), command=PipCommandGenerator()))
+
+
+def test_package_installer_equal_false_different_resolver() -> None:
+    assert not PackageInstaller(
+        resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
+    ).equal(PackageInstaller(resolver=DependencyResolver("torch"), command=PipCommandGenerator()))
+
+
+def test_package_installer_equal_false_different_command() -> None:
+    assert not PackageInstaller(
+        resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
+    ).equal(PackageInstaller(resolver=DependencyResolver("numpy"), command=UvCommandGenerator()))
+
+
+def test_package_installer_equal_false_different_type() -> None:
+    assert not PackageInstaller(
+        resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
+    ).equal(42)
 
 
 def test_pip_package_installer_install() -> None:
