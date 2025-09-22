@@ -154,7 +154,7 @@ def create_package_installer_mapping(
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipCommandGenerator
+    >>> from feu.installer.pip import PipCommandGenerator
     >>> from feu.installer.pip.package import create_package_installer_mapping
     >>> installers = create_package_installer_mapping(command=PipCommandGenerator())
     >>> installers
