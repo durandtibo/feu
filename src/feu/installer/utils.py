@@ -2,7 +2,9 @@ r"""Contain utility functions to install packages."""
 
 from __future__ import annotations
 
-__all__ = ["install_package"]
+__all__ = ["install_package", "is_pip_available", "is_pipx_available"]
+
+import shutil
 
 from feu.imports import is_package_available
 from feu.installer import InstallerRegistry
@@ -49,3 +51,21 @@ def is_pip_available() -> bool:
     ```
     """
     return is_package_available("pip")
+
+
+def is_pipx_available() -> bool:
+    """Check if ``pipx`` is available.
+
+    Returns:
+        ``True`` if ``pipx`` is available, otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer import is_pipx_available
+    >>> is_pipx_available()
+
+    ```
+    """
+    return shutil.which("pipx") is not None

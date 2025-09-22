@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from feu.installer import install_package, is_pip_available
-from feu.testing import pip_available
+from feu.installer import install_package, is_pip_available, is_pipx_available
+from feu.testing import pip_available, pipx_available
 
 #####################################
 #     Tests for install_package     #
@@ -44,3 +44,17 @@ def test_is_pip_available() -> None:
 @pip_available
 def test_is_pip_available_true() -> None:
     assert is_pip_available()
+
+
+#######################################
+#     Tests for is_pipx_available     #
+#######################################
+
+
+def test_is_pipx_available() -> None:
+    assert isinstance(is_pipx_available(), bool)
+
+
+@pipx_available
+def test_is_pipx_available_true() -> None:
+    assert is_pipx_available()
