@@ -6,10 +6,12 @@ from __future__ import annotations
 __all__ = [
     "BaseCommandGenerator",
     "BaseDependencyResolver",
+    "BasePackageInstaller",
     "DependencyResolver",
     "JaxDependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
+    "PackageInstaller",
     "PandasDependencyResolver",
     "PipCommandGenerator",
     "PipxCommandGenerator",
@@ -27,6 +29,7 @@ from feu.installer.pip.command import (
     PipxCommandGenerator,
     UvCommandGenerator,
 )
+from feu.installer.pip.package import BasePackageInstaller, PackageInstaller
 from feu.installer.pip.resolver import (
     BaseDependencyResolver,
     DependencyResolver,
