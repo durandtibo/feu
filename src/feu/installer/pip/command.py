@@ -11,7 +11,7 @@ __all__ = [
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -37,6 +37,32 @@ class BaseCommandGenerator(ABC):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any) -> bool:
+        r"""Indicate if two vote objects are equal or not.
+
+        Args:
+            other: The other object to compare.
+
+        Returns:
+            ``True`` if the two votes are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.installer.pip import PipCommandGenerator, PipxCommandGenerator
+        >>> obj1 = PipCommandGenerator()
+        >>> obj2 = PipCommandGenerator()
+        >>> obj3 = PipxCommandGenerator()
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def generate(self, packages: Sequence[str], args: str = "") -> str:
@@ -87,6 +113,9 @@ class PipCommandGenerator(BaseCommandGenerator):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
 
+    def equal(self, other: Any) -> bool:
+        return isinstance(other, self.__class__)
+
     def generate(self, packages: Sequence[str], args: str = "") -> str:
         if args != "":
             args = " " + args.strip()
@@ -114,6 +143,9 @@ class PipxCommandGenerator(BaseCommandGenerator):
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
 
+    def equal(self, other: Any) -> bool:
+        return isinstance(other, self.__class__)
+
     def generate(self, packages: Sequence[str], args: str = "") -> str:
         if args != "":
             args = " " + args.strip()
@@ -140,6 +172,9 @@ class UvCommandGenerator(BaseCommandGenerator):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any) -> bool:
+        return isinstance(other, self.__class__)
 
     def generate(self, packages: Sequence[str], args: str = "") -> str:
         if args != "":
