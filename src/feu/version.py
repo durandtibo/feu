@@ -2,7 +2,12 @@ r"""Contain functions to manage package versions."""
 
 from __future__ import annotations
 
-__all__ = ["compare_version", "filter_stable_versions", "get_package_version"]
+__all__ = [
+    "compare_version",
+    "filter_stable_versions",
+    "filter_valid_versions",
+    "get_package_version",
+]
 
 from contextlib import suppress
 from importlib.metadata import PackageNotFoundError, version
@@ -133,11 +138,10 @@ def filter_valid_versions(versions: Sequence[str]) -> list[str]:
     ...         "1.0.0.0.0",
     ...         "4.0.0.dev1",
     ...         "2024.6",
-    ...         "2024.06",
     ...     ]
     ... )
     >>> versions
-    ['1.0.0', '1.0.0a1', '2.0.0.post1', '2', '3.0', '4.0.0.dev1']
+    ['1.0.0', '1.0.0a1', '2.0.0.post1', '2', '3.0', 'v1.0.0', '1.0.0.0.0', '4.0.0.dev1', '2024.6']
 
     ```
     """
