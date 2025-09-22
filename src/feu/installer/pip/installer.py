@@ -4,24 +4,18 @@ from typing import ClassVar
 
 from feu.installer.installer import BaseInstaller
 from feu.installer.pip.command import PipCommandGenerator
-from feu.installer.pip.package import BasePackageInstaller, PackageInstaller
-from feu.installer.pip.resolver import JaxDependencyResolver
+from feu.installer.pip.package import (
+    BasePackageInstaller,
+    create_package_installer_mapping,
+)
 
 
 class PipInstaller(BaseInstaller):
     """Implement a pip package installer."""
 
-    registry: ClassVar[dict[str, BasePackageInstaller]] = {
-        "jax": PackageInstaller(resolver=JaxDependencyResolver(), command=PipCommandGenerator()),
-        "matplotlib": MatplotlibInstaller(),
-        "pandas": PandasInstaller(),
-        "pyarrow": PyarrowInstaller(),
-        "scikit-learn": SklearnInstaller(),
-        "scipy": ScipyInstaller(),
-        "sklearn": SklearnInstaller(),
-        "torch": TorchInstaller(),
-        "xarray": XarrayInstaller(),
-    }
+    registry: ClassVar[dict[str, BasePackageInstaller]] = create_package_installer_mapping(
+        command=PipCommandGenerator()
+    )
 
     @classmethod
     def add_installer(
