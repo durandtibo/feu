@@ -5,10 +5,12 @@ from __future__ import annotations
 __all__ = [
     "check_click",
     "check_git",
+    "check_requests",
     "is_click_available",
     "is_git_available",
     "is_module_available",
     "is_package_available",
+    "is_requests_available",
 ]
 
 from contextlib import suppress
@@ -168,5 +170,53 @@ def check_git() -> None:
             "'git' package is required but not installed. "
             "You can install 'git' package with the command:\n\n"
             "pip install gitpython\n"
+        )
+        raise RuntimeError(msg)
+
+
+####################
+#     requests     #
+####################
+
+
+@lru_cache
+def is_requests_available() -> bool:
+    r"""Indicate if the ``requests`` package is installed or not.
+
+    Returns:
+        ``True`` if ``requests`` is available otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import is_requests_available
+    >>> is_requests_available()
+
+    ```
+    """
+    return is_package_available("requests")
+
+
+def check_requests() -> None:
+    r"""Check if the ``requests`` package is installed.
+
+    Raises:
+        RuntimeError: if the ``requests`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import check_requests
+    >>> check_requests()
+
+    ```
+    """
+    if not is_requests_available():
+        msg = (
+            "'requests' package is required but not installed. "
+            "You can install 'requests' package with the command:\n\n"
+            "pip install requests\n"
         )
         raise RuntimeError(msg)
