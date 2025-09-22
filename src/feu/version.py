@@ -4,11 +4,11 @@ from __future__ import annotations
 
 __all__ = ["compare_version", "filter_stable_versions", "get_package_version"]
 
-
+from contextlib import suppress
 from importlib.metadata import PackageNotFoundError, version
 from typing import TYPE_CHECKING
 
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -86,7 +86,7 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
 
     ```pycon
 
-    >>> from feu import get_package_version
+    >>> from feu.version import filter_stable_versions
     >>> versions = filter_stable_versions(
     ...     ["1.0.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"]
     ... )
@@ -101,3 +101,49 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
         if not (parsed.is_prerelease or parsed.is_postrelease or parsed.is_devrelease):
             stable_versions.append(v)
     return stable_versions
+
+
+def filter_valid_versions(versions: Sequence[str]) -> list[str]:
+    """Filter out invalid version strings based on PEP 440.
+
+    A valid version is one that can be parsed by `packaging.version.Version`.
+    Invalid versions include strings that don't conform to semantic versioning rules.
+
+    Args:
+        versions: A list of version strings.
+
+    Returns:
+        A list containing only valid version strings.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.version import filter_valid_versions
+    >>> versions = filter_valid_versions(
+    ...     [
+    ...         "1.0.0",
+    ...         "1.0.0a1",
+    ...         "2.0.0.post1",
+    ...         "not-a-version",
+    ...         "",
+    ...         "2",
+    ...         "3.0",
+    ...         "v1.0.0",
+    ...         "1.0.0.0.0",
+    ...         "4.0.0.dev1",
+    ...         "2024.6",
+    ...         "2024.06",
+    ...     ]
+    ... )
+    >>> versions
+    ['1.0.0', '1.0.0a1', '2.0.0.post1', '2', '3.0', '4.0.0.dev1']
+
+    ```
+    """
+    valid_versions = []
+    for v in versions:
+        with suppress(InvalidVersion):
+            Version(v)
+            valid_versions.append(v)
+    return valid_versions
