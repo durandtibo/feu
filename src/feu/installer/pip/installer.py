@@ -6,8 +6,10 @@ from feu.installer.installer import BaseInstaller
 from feu.installer.pip.command import PipCommandGenerator
 from feu.installer.pip.package import (
     BasePackageInstaller,
+    PackageInstaller,
     create_package_installer_mapping,
 )
+from feu.installer.pip.resolver import DependencyResolver
 
 
 class PipInstaller(BaseInstaller):
@@ -38,8 +40,18 @@ class PipInstaller(BaseInstaller):
 
         ```pycon
 
-        >>> from feu.install import PackageInstaller, PandasInstaller
-        >>> PackageInstaller.add_installer("pandas", PandasInstaller(), exist_ok=True)
+        >>> from feu.installer.pip import (
+        ...     PipInstaller,
+        ...     PandasDependencyResolver,
+        ...     PipCommandGenerator,
+        ... )
+        >>> PipInstaller.add_installer(
+        ...     "pandas",
+        ...     PackageInstaller(
+        ...         resolver=PandasDependencyResolver(), command=PipCommandGenerator()
+        ...     ),
+        ...     exist_ok=True,
+        ... )
 
         ```
         """
@@ -67,28 +79,18 @@ class PipInstaller(BaseInstaller):
 
         ```pycon
 
-        >>> from feu.install import PackageInstaller
-        >>> PackageInstaller.has_installer("pandas")
+        >>> from feu.installer.pip import PipInstaller
+        >>> PipInstaller.has_installer("pandas")
 
         ```
         """
         return package in cls.registry
 
     @classmethod
-    def install(cls, package: str, version: str) -> None:
-        r"""Install a package and associated packages.
-
-        Args:
-            package: The package name e.g. ``'pandas'``.
-            version: The target version to install.
-
-        Example usage:
-
-        ```pycon
-
-        >>> from feu.install import PackageInstaller
-        >>> PackageInstaller().install("pandas", "2.2.2")  # doctest: +SKIP
-
-        ```
-        """
-        cls.registry.get(package, DefaultInstaller(package)).install(version)
+    def install(cls, package: str, version: str, args: str = "") -> None:
+        installer = cls.registry.get(package, None)
+        if installer is None:
+            installer = PackageInstaller(
+                resolver=DependencyResolver(package), command=PipCommandGenerator()
+            )
+        installer.install(version=version, args=args)
