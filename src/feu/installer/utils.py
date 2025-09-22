@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["install_package"]
 
+from feu.imports import is_package_available
 from feu.installer import InstallerRegistry
 
 
@@ -30,3 +31,21 @@ def install_package(installer: str, package: str, version: str, args: str = "") 
     ```
     """
     InstallerRegistry.install(installer=installer, package=package, version=version, args=args)
+
+
+def is_pip_available() -> bool:
+    """Check if ``pip`` is available.
+
+    Returns:
+        ``True`` if ``pip`` is available, otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer import is_pip_available
+    >>> is_pip_available()
+
+    ```
+    """
+    return is_package_available("pip")

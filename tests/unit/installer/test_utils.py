@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
-from feu.installer import install_package
+from feu.installer import install_package, is_pip_available
+from feu.testing import pip_available
 
 #####################################
 #     Tests for install_package     #
@@ -29,3 +30,17 @@ def test_install_package_pip_numpy_with_args() -> None:
     with patch("feu.installer.pip.package.run_bash_command") as run_mock:
         install_package(installer="pip", package="numpy", version="2.0.0", args="-U")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+
+
+######################################
+#     Tests for is_pip_available     #
+######################################
+
+
+def test_is_pip_available() -> None:
+    assert isinstance(is_pip_available(), bool)
+
+
+@pip_available
+def test_is_pip_available_true() -> None:
+    assert is_pip_available()
