@@ -35,7 +35,7 @@ def install_package(installer: str, package: str, version: str, args: str = "") 
     InstallerRegistry.install(installer=installer, package=package, version=version, args=args)
 
 
-@lru_cache
+@lru_cache(1)
 def is_pip_available() -> bool:
     """Check if ``pip`` is available.
 
@@ -54,7 +54,7 @@ def is_pip_available() -> bool:
     return shutil.which("pip") is not None
 
 
-@lru_cache
+@lru_cache(1)
 def is_pipx_available() -> bool:
     """Check if ``pipx`` is available.
 
@@ -73,7 +73,7 @@ def is_pipx_available() -> bool:
     return shutil.which("pipx") is not None
 
 
-@lru_cache
+@lru_cache(1)
 def is_uv_available() -> bool:
     """Check if ``uv`` is available.
 
@@ -90,3 +90,30 @@ def is_uv_available() -> bool:
     ```
     """
     return shutil.which("uv") is not None
+
+
+@lru_cache(1)
+def get_available_installers() -> tuple[str, ...]:
+    r"""Get the available installers.
+
+    Returns:
+        The available installers.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.installer import get_available_installers
+    >>> get_available_installers()
+    (...)
+
+    ```
+    """
+    installers = []
+    if is_pip_available():
+        installers.append("pip")
+    if is_pipx_available():
+        installers.append("pipx")
+    if is_uv_available():
+        installers.append("uv")
+    return tuple(installers)
