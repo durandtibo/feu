@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from feu.installer.pip.command import (
+from feu.install.pip.command import (
     PipCommandGenerator,
     PipxCommandGenerator,
     UvCommandGenerator,
 )
-from feu.installer.pip.package import PackageInstaller, create_package_installer_mapping
-from feu.installer.pip.resolver import (
+from feu.install.pip.package import PackageInstaller, create_package_installer_mapping
+from feu.install.pip.resolver import (
     DependencyResolver,
     JaxDependencyResolver,
     TorchDependencyResolver,
@@ -59,7 +59,7 @@ def test_pip_package_installer_install() -> None:
     installer = PackageInstaller(
         resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     )
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         installer.install("2.0.0")
         run_mock.assert_called_once_with("pip install numpy==2.0.0")
 
@@ -75,7 +75,7 @@ def test_package_installer_install_with_args() -> None:
     installer = PackageInstaller(
         resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     )
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         installer.install("2.0.0", args="-U")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 

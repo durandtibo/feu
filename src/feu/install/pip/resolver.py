@@ -32,7 +32,7 @@ class BaseDependencyResolver(ABC):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import DependencyResolver
+    >>> from feu.install.pip.resolver import DependencyResolver
     >>> resolver = DependencyResolver("numpy")
     >>> resolver
     DependencyResolver(package=numpy)
@@ -57,7 +57,7 @@ class BaseDependencyResolver(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip.resolver import DependencyResolver, TorchDependencyResolver
+        >>> from feu.install.pip.resolver import DependencyResolver, TorchDependencyResolver
         >>> obj1 = DependencyResolver("numpy")
         >>> obj2 = DependencyResolver("numpy")
         >>> obj3 = TorchDependencyResolver()
@@ -84,7 +84,7 @@ class BaseDependencyResolver(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip.resolver import DependencyResolver
+        >>> from feu.install.pip.resolver import DependencyResolver
         >>> resolver = DependencyResolver("numpy")
         >>> deps = resolver.resolve("2.3.1")
         >>> deps
@@ -104,7 +104,7 @@ class DependencyResolver(BaseDependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import DependencyResolver
+    >>> from feu.install.pip.resolver import DependencyResolver
     >>> resolver = DependencyResolver("numpy")
     >>> resolver
     DependencyResolver(package=numpy)
@@ -139,7 +139,7 @@ class JaxDependencyResolver(BaseDependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import JaxDependencyResolver
+    >>> from feu.install.pip.resolver import JaxDependencyResolver
     >>> resolver = JaxDependencyResolver()
     >>> resolver
     JaxDependencyResolver()
@@ -183,7 +183,7 @@ class Numpy2DependencyResolver(BaseDependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import Numpy2DependencyResolver
+    >>> from feu.install.pip.resolver import Numpy2DependencyResolver
     >>> resolver = Numpy2DependencyResolver(package="my_package", min_version="1.2.3")
     >>> resolver
     Numpy2DependencyResolver()
@@ -222,7 +222,7 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import MatplotlibDependencyResolver
+    >>> from feu.install.pip.resolver import MatplotlibDependencyResolver
     >>> resolver = MatplotlibDependencyResolver()
     >>> resolver
     MatplotlibDependencyResolver()
@@ -246,7 +246,7 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import PandasDependencyResolver
+    >>> from feu.install.pip.resolver import PandasDependencyResolver
     >>> resolver = PandasDependencyResolver()
     >>> resolver
     PandasDependencyResolver()
@@ -270,7 +270,7 @@ class PyarrowDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import PyarrowDependencyResolver
+    >>> from feu.install.pip.resolver import PyarrowDependencyResolver
     >>> resolver = PyarrowDependencyResolver()
     >>> resolver
     PyarrowDependencyResolver()
@@ -294,7 +294,7 @@ class ScipyDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import ScipyDependencyResolver
+    >>> from feu.install.pip.resolver import ScipyDependencyResolver
     >>> resolver = ScipyDependencyResolver()
     >>> resolver
     ScipyDependencyResolver()
@@ -318,7 +318,7 @@ class SklearnDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import SklearnDependencyResolver
+    >>> from feu.install.pip.resolver import SklearnDependencyResolver
     >>> resolver = SklearnDependencyResolver()
     >>> resolver
     SklearnDependencyResolver()
@@ -342,7 +342,7 @@ class TorchDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import TorchDependencyResolver
+    >>> from feu.install.pip.resolver import TorchDependencyResolver
     >>> resolver = TorchDependencyResolver()
     >>> resolver
     TorchDependencyResolver()
@@ -366,7 +366,7 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
 
     ```pycon
 
-    >>> from feu.installer.pip.resolver import XarrayDependencyResolver
+    >>> from feu.install.pip.resolver import XarrayDependencyResolver
     >>> resolver = XarrayDependencyResolver()
     >>> resolver
     XarrayDependencyResolver()

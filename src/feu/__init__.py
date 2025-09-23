@@ -11,5 +11,5 @@ __all__ = [
 ]
 
 from feu.imports import is_module_available, is_package_available
-from feu.installer import install_package
+from feu.install import install_package
 from feu.version import compare_version, get_package_version

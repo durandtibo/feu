@@ -17,7 +17,7 @@ class BaseInstaller(ABC):
 
     ```pycon
 
-    >>> from feu.installer.pip import PipInstaller
+    >>> from feu.install.pip import PipInstaller
     >>> installer = PipInstaller()
     >>> installer.install(package="pandas", version="2.2.2")  # doctest: +SKIP
 
@@ -39,7 +39,7 @@ class BaseInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip import PipInstaller
+        >>> from feu.install.pip import PipInstaller
         >>> installer = PipInstaller()
         >>> installer.install(package="pandas", version="2.2.2")  # doctest: +SKIP
 

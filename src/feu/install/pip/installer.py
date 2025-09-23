@@ -7,18 +7,18 @@ __all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 from abc import abstractmethod
 from typing import ClassVar
 
-from feu.installer.installer import BaseInstaller
-from feu.installer.pip.command import (
+from feu.install.installer import BaseInstaller
+from feu.install.pip.command import (
     PipCommandGenerator,
     PipxCommandGenerator,
     UvCommandGenerator,
 )
-from feu.installer.pip.package import (
+from feu.install.pip.package import (
     BasePackageInstaller,
     PackageInstaller,
     create_package_installer_mapping,
 )
-from feu.installer.pip.resolver import DependencyResolver
+from feu.install.pip.resolver import DependencyResolver
 
 
 class BasePipInstaller(BaseInstaller):
@@ -48,9 +48,9 @@ class BasePipInstaller(BaseInstaller):
 
         ```pycon
 
-        >>> from feu.installer.pip import PipInstaller
-        >>> from feu.installer.pip.command import PipCommandGenerator
-        >>> from feu.installer.pip.resolver import PandasDependencyResolver
+        >>> from feu.install.pip import PipInstaller
+        >>> from feu.install.pip.command import PipCommandGenerator
+        >>> from feu.install.pip.resolver import PandasDependencyResolver
         >>> PipInstaller.add_installer(
         ...     "pandas",
         ...     PackageInstaller(
@@ -85,7 +85,7 @@ class BasePipInstaller(BaseInstaller):
 
         ```pycon
 
-        >>> from feu.installer.pip import PipInstaller
+        >>> from feu.install.pip import PipInstaller
         >>> PipInstaller.has_installer("pandas")
 
         ```

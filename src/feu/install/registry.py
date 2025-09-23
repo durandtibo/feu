@@ -6,10 +6,10 @@ __all__ = ["InstallerRegistry"]
 
 from typing import TYPE_CHECKING, ClassVar
 
-from feu.installer.pip import PipInstaller, PipxInstaller, UvInstaller
+from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 
 if TYPE_CHECKING:
-    from feu.installer.installer import BaseInstaller
+    from feu.install.installer import BaseInstaller
 
 
 class InstallerRegistry:
@@ -40,8 +40,8 @@ class InstallerRegistry:
 
         ```pycon
 
-        >>> from feu.installer import InstallerRegistry
-        >>> from feu.installer.pip import PipInstaller
+        >>> from feu.install import InstallerRegistry
+        >>> from feu.install.pip import PipInstaller
         >>> InstallerRegistry.add_installer("pip", PipInstaller(), exist_ok=True)
 
         ```
@@ -70,7 +70,7 @@ class InstallerRegistry:
 
         ```pycon
 
-        >>> from feu.installer import InstallerRegistry
+        >>> from feu.install import InstallerRegistry
         >>> InstallerRegistry.has_installer("pip")
         True
 
@@ -96,7 +96,7 @@ class InstallerRegistry:
 
         ```pycon
 
-        >>> from feu.installer import InstallerRegistry
+        >>> from feu.install import InstallerRegistry
         >>> InstallerRegistry.install(
         ...     installer="pip", package="pandas", version="2.2.2"
         ... )  # doctest: +SKIP

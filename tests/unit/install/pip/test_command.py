@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from feu.installer.pip.command import (
+from feu.install.pip.command import (
     PipCommandGenerator,
     PipxCommandGenerator,
     UvCommandGenerator,

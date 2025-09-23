@@ -29,7 +29,7 @@ from feu.imports import (
     is_package_available,
     is_requests_available,
 )
-from feu.installer import is_pip_available, is_pipx_available, is_uv_available
+from feu.install import is_pip_available, is_pipx_available, is_uv_available
 
 click_available = pytest.mark.skipif(not is_click_available(), reason="Requires click")
 git_available = pytest.mark.skipif(not is_git_available(), reason="Requires git")
