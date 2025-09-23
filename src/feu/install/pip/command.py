@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class BaseCommandGenerator(ABC):
     r"""Define the base class to generate a command to install packages
-    with pip or compatible package install.
+    with pip or compatible package installer.
 
     Example usage:
 

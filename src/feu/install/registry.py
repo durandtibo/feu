@@ -88,7 +88,7 @@ class InstallerRegistry:
                 the packages.
             package: The target package to install.
             version: The target version of the package to install.
-            args: Optional arguments to pass to the package install.
+            args: Optional arguments to pass to the package installer.
                 The list of valid arguments depend on the package
                 install.
 
