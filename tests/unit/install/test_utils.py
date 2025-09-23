@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -56,25 +56,37 @@ def test_install_package_pip_numpy_with_args() -> None:
 
 
 def test_install_package_closest_version_pip_numpy() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with (
+        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.pip.package.run_bash_command") as run_mock,
+    ):
         install_package_closest_version(installer="pip", package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("pip install numpy==2.0.0")
 
 
 def test_install_package_closest_version_pip_pandas() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with (
+        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.pip.package.run_bash_command") as run_mock,
+    ):
         install_package_closest_version(installer="pip", package="pandas", version="2.1.1")
         run_mock.assert_called_once_with("pip install pandas==2.1.1 numpy<2.0.0")
 
 
 def test_install_package_closest_version_uv_numpy() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with (
+        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.pip.package.run_bash_command") as run_mock,
+    ):
         install_package_closest_version(installer="uv", package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
 
 
 def test_install_package_closest_version_pip_numpy_with_args() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with (
+        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.pip.package.run_bash_command") as run_mock,
+    ):
         install_package_closest_version(
             installer="pip", package="numpy", version="2.0.0", args="-U"
         )
