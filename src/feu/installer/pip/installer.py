@@ -25,6 +25,8 @@ class BasePipInstaller(BaseInstaller):
     """Define an intermediate base class to implement package
     installer."""
 
+    registry: ClassVar[dict[str, BasePackageInstaller]]
+
     @classmethod
     def add_installer(
         cls, package: str, installer: BasePackageInstaller, exist_ok: bool = False
