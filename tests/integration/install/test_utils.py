@@ -3,7 +3,11 @@ from __future__ import annotations
 import pytest
 
 from feu import is_package_available
-from feu.install import get_available_installers, install_package
+from feu.install import (
+    get_available_installers,
+    install_package,
+    install_package_closest_version,
+)
 from feu.package import find_closest_version
 from feu.utils.version import get_python_major_minor
 
@@ -28,4 +32,15 @@ def numpy_version() -> str:
 @pytest.mark.parametrize("installer", get_available_installers())
 def test_install_package(installer: str, numpy_version: str) -> None:
     install_package(installer=installer, package="numpy", version=numpy_version)
+    assert is_package_available("numpy")
+
+
+#####################################################
+#     Tests for install_package_closest_version     #
+#####################################################
+
+
+@pytest.mark.parametrize("installer", get_available_installers())
+def test_install_package_closest_version(installer: str) -> None:
+    install_package_closest_version(installer=installer, package="numpy", version="2.2.5")
     assert is_package_available("numpy")

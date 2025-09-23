@@ -7,6 +7,7 @@ __all__ = [
     "InstallerRegistry",
     "get_available_installers",
     "install_package",
+    "install_package_closest_version",
     "is_pip_available",
     "is_pipx_available",
     "is_uv_available",
@@ -17,6 +18,7 @@ from feu.install.registry import InstallerRegistry
 from feu.install.utils import (
     get_available_installers,
     install_package,
+    install_package_closest_version,
     is_pip_available,
     is_pipx_available,
     is_uv_available,
