@@ -21,7 +21,14 @@ nav:
   - get_started.md
   - Reference:
       - refs/root.md
+      - refs/git.md
+      - refs/imports.md
       - refs/install.md
+      - refs/package.md
+      - refs/pypi.md
+      - refs/testing.md
+      - refs/utils.md
+      - refs/version.md
   - GitHub: https://github.com/durandtibo/feu
 
 repo_url: https://github.com/durandtibo/feu
