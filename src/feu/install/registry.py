@@ -84,7 +84,7 @@ class InstallerRegistry:
         secified install.
 
         Args:
-            installer: The package install name to use to install
+            installer: The package installer name to use to install
                 the packages.
             package: The target package to install.
             version: The target version of the package to install.

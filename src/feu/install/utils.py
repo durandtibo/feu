@@ -15,7 +15,7 @@ def install_package(installer: str, package: str, version: str, args: str = "") 
     install.
 
     Args:
-        installer: The package install name to use to install the
+        installer: The package installer name to use to install the
             packages.
         package: The target package to install.
         version: The target version of the package to install.
