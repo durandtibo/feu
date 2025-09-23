@@ -81,7 +81,7 @@ class InstallerRegistry:
     @classmethod
     def install(cls, installer: str, package: str, version: str, args: str = "") -> None:
         r"""Install a package and associated packages by using the
-        secified install.
+        secified installer.
 
         Args:
             installer: The package installer name to use to install
@@ -98,7 +98,7 @@ class InstallerRegistry:
 
         >>> from feu.install import InstallerRegistry
         >>> InstallerRegistry.install(
-        ...     install="pip", package="pandas", version="2.2.2"
+        ...     installer="pip", package="pandas", version="2.2.2"
         ... )  # doctest: +SKIP
 
         ```
