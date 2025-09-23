@@ -95,10 +95,10 @@ class BasePackageInstaller(ABC):
         >>> from feu.install.pip.command import PipCommandGenerator
         >>> from feu.install.pip.package import PackageInstaller
         >>> from feu.install.pip.resolver import DependencyResolver
-        >>> install = PackageInstaller(
+        >>> installer = PackageInstaller(
         ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
         ... )
-        >>> install.install("2.3.1")  # doctest: +SKIP
+        >>> installer.install("2.3.1")  # doctest: +SKIP
 
         ```
         """
@@ -118,12 +118,12 @@ class PackageInstaller(BasePackageInstaller):
     >>> from feu.install.pip.command import PipCommandGenerator
     >>> from feu.install.pip.package import PackageInstaller
     >>> from feu.install.pip.resolver import DependencyResolver
-    >>> install = PackageInstaller(
+    >>> installer = PackageInstaller(
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
-    >>> install
+    >>> installer
     PackageInstaller(resolver=DependencyResolver(package=numpy), command=PipCommandGenerator())
-    >>> install.install("2.3.1")  # doctest: +SKIP
+    >>> installer.install("2.3.1")  # doctest: +SKIP
 
     ```
     """

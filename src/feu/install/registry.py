@@ -1,4 +1,4 @@
-r"""Contain the main install registry."""
+r"""Contain the main installer registry."""
 
 from __future__ import annotations
 
@@ -26,14 +26,14 @@ class InstallerRegistry:
         r"""Add an install for a given package.
 
         Args:
-            name: The install name e.g. pip or uv.
-            installer: The install used for the given package.
+            name: The installer name e.g. pip or uv.
+            installer: The installer used for the given package.
             exist_ok: If ``False``, ``RuntimeError`` is raised if the
                 package already exists. This parameter should be set
-                to ``True`` to overwrite the install for a package.
+                to ``True`` to overwrite the installer for a package.
 
         Raises:
-            RuntimeError: if an install is already registered for the
+            RuntimeError: if an installer is already registered for the
                 package name and ``exist_ok=False``.
 
         Example usage:
@@ -57,13 +57,13 @@ class InstallerRegistry:
 
     @classmethod
     def has_installer(cls, name: str) -> bool:
-        r"""Indicate if an install is registered for the given name.
+        r"""Indicate if an installer is registered for the given name.
 
         Args:
-            name: The install name.
+            name: The installer name.
 
         Returns:
-            ``True`` if an install is registered,
+            ``True`` if an installer is registered,
                 otherwise ``False``.
 
         Example usage:
@@ -90,7 +90,7 @@ class InstallerRegistry:
             version: The target version of the package to install.
             args: Optional arguments to pass to the package installer.
                 The list of valid arguments depend on the package
-                install.
+                installer.
 
         Example usage:
 
