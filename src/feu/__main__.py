@@ -2,12 +2,11 @@ r"""Contain the main entry point."""
 
 from __future__ import annotations
 
-import sys
-
 from feu.imports import is_click_available
 from feu.install import install_package
 from feu.package import find_closest_version as find_closest_version_
 from feu.package import is_valid_version
+from feu.utils.version import get_python_major_minor
 
 if is_click_available():  # pragma: no cover
     import click
@@ -46,7 +45,7 @@ def install(installer: str, pkg_name: str, pkg_version: str, args: str = "") -> 
     version = find_closest_version_(
         pkg_name=pkg_name,
         pkg_version=pkg_version,
-        python_version=f"{sys.version_info[0]}.{sys.version_info[1]}",
+        python_version=get_python_major_minor(),
     )
     install_package(installer=installer, package=pkg_name, version=version, args=args)
 
