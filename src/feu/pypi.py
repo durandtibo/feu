@@ -26,8 +26,7 @@ def get_pypi_versions(package: str) -> list[str]:
     ```pycon
 
     >>> from feu.pypi import get_pypi_versions
-    >>> versions = get_pypi_versions("requests")
-    doctest: +SKIP
+    >>> versions = get_pypi_versions("requests")  # doctest: +SKIP
 
     ```
     """
