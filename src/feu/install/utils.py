@@ -12,7 +12,7 @@ from feu.install import InstallerRegistry
 
 def install_package(installer: str, package: str, version: str, args: str = "") -> None:
     r"""Install a package and associated packages by using the secified
-    install.
+    installer.
 
     Args:
         installer: The package installer name to use to install the
@@ -21,14 +21,14 @@ def install_package(installer: str, package: str, version: str, args: str = "") 
         version: The target version of the package to install.
         args: Optional arguments to pass to the package installer.
             The list of valid arguments depend on the package
-            install.
+            installer.
 
     Example usage:
 
     ```pycon
 
     >>> from feu.install import install_package
-    >>> install_package(install="pip", package="pandas", version="2.2.2")  # doctest: +SKIP
+    >>> install_package(installer="pip", package="pandas", version="2.2.2")  # doctest: +SKIP
 
     ```
     """
