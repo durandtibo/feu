@@ -1,0 +1,35 @@
+r"""Contain PyPI utility functions."""
+
+from __future__ import annotations
+
+__all__ = ["get_pypi_versions"]
+
+from functools import lru_cache
+
+import requests
+
+
+@lru_cache
+def get_pypi_versions(package: str) -> list[str]:
+    r"""Get the package versions available on PyPI.
+
+    The package versions are read from PyPI.
+
+    Args:
+        package: The package name.
+
+    Returns:
+        A list containing the version strings.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.pypi import get_pypi_versions
+    >>> versions = get_pypi_versions("requests")
+    doctest: +SKIP
+
+    ```
+    """
+    data = requests.get(url=f"https://pypi.org/pypi/{package}/json", timeout=10).json()
+    return sorted(data["releases"].keys(), reverse=True)

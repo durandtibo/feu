@@ -23,7 +23,12 @@ __all__ = [
 
 import pytest
 
-from feu.imports import is_click_available, is_git_available, is_package_available
+from feu.imports import (
+    is_click_available,
+    is_git_available,
+    is_package_available,
+    is_requests_available,
+)
 from feu.installer import is_pip_available, is_pipx_available, is_uv_available
 
 click_available = pytest.mark.skipif(not is_click_available(), reason="Requires click")
@@ -39,9 +44,7 @@ pyarrow_available = pytest.mark.skipif(
     not is_package_available("pyarrow"), reason="Requires pyarrow"
 )
 torch_available = pytest.mark.skipif(not is_package_available("torch"), reason="Requires PyTorch")
-requests_available = pytest.mark.skipif(
-    not is_package_available("requests"), reason="Requires requests"
-)
+requests_available = pytest.mark.skipif(not is_requests_available(), reason="Requires requests")
 sklearn_available = pytest.mark.skipif(
     not is_package_available("sklearn"), reason="Requires sklearn"
 )
