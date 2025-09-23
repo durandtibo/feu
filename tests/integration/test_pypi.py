@@ -18,9 +18,15 @@ def _reset_cache() -> None:
 
 @requests_available
 def test_get_pypi_versions_requests() -> None:
-    assert "2.32.5" in set(get_pypi_versions("requests"))
+    versions = get_pypi_versions("requests")
+    assert isinstance(versions, tuple)
+    assert len(versions) >= 157
+    assert "2.32.5" in versions
 
 
 @requests_available
 def test_get_pypi_versions_torch() -> None:
-    assert "2.8.0" in set(get_pypi_versions("torch"))
+    versions = get_pypi_versions("torch")
+    assert isinstance(versions, tuple)
+    assert len(versions) >= 42
+    assert "2.8.0" in versions
