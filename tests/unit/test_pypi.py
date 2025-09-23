@@ -26,7 +26,7 @@ def test_get_pypi_versions() -> None:
         )
     )
     with patch("feu.pypi.requests.get", mock):
-        assert get_pypi_versions("my_package") == ["2.0.0", "1.2.3", "1.2.0"]
+        assert get_pypi_versions("my_package") == ("2.0.0", "1.2.3", "1.2.0")
         mock.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10)
 
 
