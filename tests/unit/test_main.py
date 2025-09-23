@@ -11,7 +11,7 @@ from feu.testing import click_available
 @click_available
 def test_install() -> None:
     runner = CliRunner()
-    with patch("feu.__main__.install_package"):
+    with patch("feu.__main__.install_package_closest_version"):
         result = runner.invoke(
             install,
             ["--installer", "pip", "--pkg-name", "numpy", "--pkg-version", "2.0.2"],
@@ -23,7 +23,7 @@ def test_install() -> None:
 @click_available
 def test_install_with_args() -> None:
     runner = CliRunner()
-    with patch("feu.__main__.install_package"):
+    with patch("feu.__main__.install_package_closest_version"):
         result = runner.invoke(
             install,
             ["--installer", "pip", "--pkg-name", "numpy", "--pkg-version", "2.0.2", "--args", "-U"],
