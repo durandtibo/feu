@@ -5,8 +5,8 @@ from subprocess import CalledProcessError
 
 import pytest
 
-from feu.install import run_bash_command
 from feu.testing import click_available, pip_available, uv_available
+from feu.utils.command import run_bash_command
 
 ################################
 #     Tests for entrypoint     #
