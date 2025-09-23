@@ -6,7 +6,10 @@ __all__ = ["get_pypi_versions"]
 
 from functools import lru_cache
 
-import requests
+from feu.imports import check_requests, is_requests_available
+
+if is_requests_available():  # pragma: no cover
+    import requests
 
 
 @lru_cache
@@ -30,5 +33,6 @@ def get_pypi_versions(package: str) -> list[str]:
 
     ```
     """
+    check_requests()
     data = requests.get(url=f"https://pypi.org/pypi/{package}/json", timeout=10).json()
     return sorted(data["releases"].keys(), reverse=True)
