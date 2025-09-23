@@ -6,7 +6,7 @@ from subprocess import CalledProcessError
 import pytest
 
 from feu.install import run_bash_command
-from feu.testing import click_available
+from feu.testing import click_available, pip_available, uv_available
 
 ################################
 #     Tests for entrypoint     #
@@ -14,8 +14,15 @@ from feu.testing import click_available
 
 
 @click_available
-def test_install() -> None:
-    run_bash_command("python -m feu install --pkg-name=numpy --pkg-version=2.2.5")
+@pip_available
+def test_install_pip() -> None:
+    run_bash_command("python -m feu install --installer=pip --pkg-name=numpy --pkg-version=2.2.5")
+
+
+@click_available
+@uv_available
+def test_install_uv() -> None:
+    run_bash_command("python -m feu install --installer=uv --pkg-name=numpy --pkg-version=2.2.5")
 
 
 @click_available

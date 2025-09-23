@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 
 from feu.imports import is_click_available
-from feu.install import install_package
+from feu.installer import install_package
 from feu.package import find_closest_version as find_closest_version_
 from feu.package import is_valid_version
 
@@ -19,25 +19,36 @@ def cli() -> None:
 
 
 @click.command()
+@click.option("-i", "--installer", "installer", help="Installer name", required=True, type=str)
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
 @click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
-def install(pkg_name: str, pkg_version: str) -> None:
+@click.option(
+    "-a", "--args", "args", help="Optional installer arguments", required=True, type=str, default=""
+)
+def install(installer: str, pkg_name: str, pkg_version: str, args: str = "") -> None:
     r"""Install a package and associated packages.
 
     Args:
+        installer: The package installer name to use to install
+            the packages.
         pkg_name: The package name e.g. ``'pandas'``.
         pkg_version: The target version to install.
+        args: Optional arguments to pass to the package installer.
+            The list of valid arguments depend on the package
+            installer.
 
     Example usage:
 
+    ```
     python -m feu install --pkg-name=numpy --pkg-version=2.0.2
+    ```
     """
     version = find_closest_version_(
         pkg_name=pkg_name,
         pkg_version=pkg_version,
         python_version=f"{sys.version_info[0]}.{sys.version_info[1]}",
     )
-    install_package(package=pkg_name, version=version)
+    install_package(installer=installer, package=pkg_name, version=version, args=args)
 
 
 @click.command()
