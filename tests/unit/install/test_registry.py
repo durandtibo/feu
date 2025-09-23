@@ -30,7 +30,7 @@ def test_installer_registry_add_installer_duplicate_exist_ok_true() -> None:
 def test_installer_registry_add_installer_duplicate_exist_ok_false() -> None:
     installer = Mock(spec=BaseInstaller)
     InstallerRegistry.add_installer("pip", Mock(spec=BaseInstaller))
-    with pytest.raises(RuntimeError, match=r"An install (.*) is already registered"):
+    with pytest.raises(RuntimeError, match=r"An installer (.*) is already registered"):
         InstallerRegistry.add_installer("pip", installer)
 
 

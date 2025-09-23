@@ -48,9 +48,9 @@ class InstallerRegistry:
         """
         if name in cls.registry and not exist_ok:
             msg = (
-                f"An install ({cls.registry[name]}) is already registered for the name "
+                f"An installer ({cls.registry[name]}) is already registered for the name "
                 f"{name}. Please use `exist_ok=True` if you want to overwrite the "
-                "install for this name"
+                "installer for this name"
             )
             raise RuntimeError(msg)
         cls.registry[name] = installer
