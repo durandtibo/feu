@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class InstallerRegistry:
-    """Implement the main install registry."""
+    """Implement the main installer registry."""
 
     registry: ClassVar[dict[str, BaseInstaller]] = {
         "pip": PipInstaller(),
@@ -23,7 +23,7 @@ class InstallerRegistry:
 
     @classmethod
     def add_installer(cls, name: str, installer: BaseInstaller, exist_ok: bool = False) -> None:
-        r"""Add an install for a given package.
+        r"""Add an installer for a given package.
 
         Args:
             name: The installer name e.g. pip or uv.
