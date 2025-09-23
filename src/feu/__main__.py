@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 
 from feu.imports import is_click_available
-from feu.installer import install_package
+from feu.install import install_package
 from feu.package import find_closest_version as find_closest_version_
 from feu.package import is_valid_version
 
@@ -40,7 +40,7 @@ def install(installer: str, pkg_name: str, pkg_version: str, args: str = "") -> 
     Example usage:
 
     ```
-    python -m feu install --pkg-name=numpy --pkg-version=2.0.2
+    python -m feu install --installer=pip --pkg-name=numpy --pkg-version=2.0.2
     ```
     """
     version = find_closest_version_(

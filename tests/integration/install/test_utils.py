@@ -5,7 +5,7 @@ from sys import version_info
 import pytest
 
 from feu import is_package_available
-from feu.installer import get_available_installers, install_package
+from feu.install import get_available_installers, install_package
 from feu.package import find_closest_version
 
 

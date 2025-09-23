@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 class BaseCommandGenerator(ABC):
     r"""Define the base class to generate a command to install packages
-    with pip or compatible package installer.
+    with pip or compatible package install.
 
     Example usage:
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipCommandGenerator
+    >>> from feu.install.pip.command import PipCommandGenerator
     >>> gen = PipCommandGenerator()
     >>> gen
     PipCommandGenerator()
@@ -52,7 +52,7 @@ class BaseCommandGenerator(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip.command import PipCommandGenerator, PipxCommandGenerator
+        >>> from feu.install.pip.command import PipCommandGenerator, PipxCommandGenerator
         >>> obj1 = PipCommandGenerator()
         >>> obj2 = PipCommandGenerator()
         >>> obj3 = PipxCommandGenerator()
@@ -82,7 +82,7 @@ class BaseCommandGenerator(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip.command import PipCommandGenerator
+        >>> from feu.install.pip.command import PipCommandGenerator
         >>> gen = PipCommandGenerator()
         >>> cmd = gen.generate(["numpy", "pandas>=2.0,<3.0"])
         >>> cmd
@@ -99,7 +99,7 @@ class PipCommandGenerator(BaseCommandGenerator):
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipCommandGenerator
+    >>> from feu.install.pip.command import PipCommandGenerator
     >>> gen = PipCommandGenerator()
     >>> gen
     PipCommandGenerator()
@@ -129,7 +129,7 @@ class PipxCommandGenerator(BaseCommandGenerator):
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipxCommandGenerator
+    >>> from feu.install.pip.command import PipxCommandGenerator
     >>> gen = PipxCommandGenerator()
     >>> gen
     PipxCommandGenerator()
@@ -159,7 +159,7 @@ class UvCommandGenerator(BaseCommandGenerator):
 
     ```pycon
 
-    >>> from feu.installer.pip.command import UvCommandGenerator
+    >>> from feu.install.pip.command import UvCommandGenerator
     >>> gen = UvCommandGenerator()
     >>> gen
     UvCommandGenerator()

@@ -7,28 +7,28 @@ __all__ = ["install_package", "is_pip_available", "is_pipx_available"]
 import shutil
 from functools import lru_cache
 
-from feu.installer import InstallerRegistry
+from feu.install import InstallerRegistry
 
 
 def install_package(installer: str, package: str, version: str, args: str = "") -> None:
     r"""Install a package and associated packages by using the secified
-    installer.
+    install.
 
     Args:
-        installer: The package installer name to use to install the
+        installer: The package install name to use to install the
             packages.
         package: The target package to install.
         version: The target version of the package to install.
-        args: Optional arguments to pass to the package installer.
+        args: Optional arguments to pass to the package install.
             The list of valid arguments depend on the package
-            installer.
+            install.
 
     Example usage:
 
     ```pycon
 
-    >>> from feu.installer import install_package
-    >>> install_package(installer="pip", package="pandas", version="2.2.2")  # doctest: +SKIP
+    >>> from feu.install import install_package
+    >>> install_package(install="pip", package="pandas", version="2.2.2")  # doctest: +SKIP
 
     ```
     """
@@ -46,7 +46,7 @@ def is_pip_available() -> bool:
 
     ```pycon
 
-    >>> from feu.installer import is_pip_available
+    >>> from feu.install import is_pip_available
     >>> is_pip_available()
 
     ```
@@ -65,7 +65,7 @@ def is_pipx_available() -> bool:
 
     ```pycon
 
-    >>> from feu.installer import is_pipx_available
+    >>> from feu.install import is_pipx_available
     >>> is_pipx_available()
 
     ```
@@ -84,7 +84,7 @@ def is_uv_available() -> bool:
 
     ```pycon
 
-    >>> from feu.installer import is_uv_available
+    >>> from feu.install import is_uv_available
     >>> is_uv_available()
 
     ```
@@ -103,7 +103,7 @@ def get_available_installers() -> tuple[str, ...]:
 
     ```pycon
 
-    >>> from feu.installer import get_available_installers
+    >>> from feu.install import get_available_installers
     >>> get_available_installers()
     (...)
 

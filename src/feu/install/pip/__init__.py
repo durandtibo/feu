@@ -10,4 +10,4 @@ __all__ = [
 ]
 
 
-from feu.installer.pip.installer import PipInstaller, PipxInstaller, UvInstaller
+from feu.install.pip.installer import PipInstaller, PipxInstaller, UvInstaller

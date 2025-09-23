@@ -1,4 +1,4 @@
-r"""Contain the base class to implement a package installer."""
+r"""Contain the base class to implement a package install."""
 
 from __future__ import annotations
 
@@ -11,15 +11,15 @@ logger = logging.getLogger(__name__)
 
 
 class BaseInstaller(ABC):
-    r"""Define the base class to implement a package installer.
+    r"""Define the base class to implement a package install.
 
     Example usage:
 
     ```pycon
 
-    >>> from feu.installer.pip import PipInstaller
-    >>> installer = PipInstaller()
-    >>> installer.install(package="pandas", version="2.2.2")  # doctest: +SKIP
+    >>> from feu.install.pip import PipInstaller
+    >>> install = PipInstaller()
+    >>> install.install(package="pandas", version="2.2.2")  # doctest: +SKIP
 
     ```
     """
@@ -31,17 +31,17 @@ class BaseInstaller(ABC):
         Args:
             package: The name of the package.
             version: The target version to install.
-            args: Optional arguments to pass to the package installer.
+            args: Optional arguments to pass to the package install.
                 The list of valid arguments depend on the package
-                installer.
+                install.
 
         Example usage:
 
         ```pycon
 
-        >>> from feu.installer.pip import PipInstaller
-        >>> installer = PipInstaller()
-        >>> installer.install(package="pandas", version="2.2.2")  # doctest: +SKIP
+        >>> from feu.install.pip import PipInstaller
+        >>> install = PipInstaller()
+        >>> install.install(package="pandas", version="2.2.2")  # doctest: +SKIP
 
         ```
         """

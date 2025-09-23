@@ -5,7 +5,7 @@ from sys import version_info
 import pytest
 
 from feu import is_package_available
-from feu.installer.pip import PipInstaller, PipxInstaller, UvInstaller
+from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 from feu.package import find_closest_version
 from feu.testing import pip_available, pipx_available, uv_available
 

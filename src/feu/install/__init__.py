@@ -12,9 +12,9 @@ __all__ = [
     "is_uv_available",
 ]
 
-from feu.installer.installer import BaseInstaller
-from feu.installer.registry import InstallerRegistry
-from feu.installer.utils import (
+from feu.install.installer import BaseInstaller
+from feu.install.registry import InstallerRegistry
+from feu.install.utils import (
     get_available_installers,
     install_package,
     is_pip_available,

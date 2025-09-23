@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from feu.installer.pip.resolver import (
+from feu.install.pip.resolver import (
     DependencyResolver,
     JaxDependencyResolver,
     MatplotlibDependencyResolver,

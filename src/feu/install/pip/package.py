@@ -7,7 +7,7 @@ __all__ = ["BasePackageInstaller", "PackageInstaller", "create_package_installer
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from feu.installer.pip.resolver import (
+from feu.install.pip.resolver import (
     JaxDependencyResolver,
     MatplotlibDependencyResolver,
     PandasDependencyResolver,
@@ -20,8 +20,8 @@ from feu.installer.pip.resolver import (
 from feu.utils.command import run_bash_command
 
 if TYPE_CHECKING:
-    from feu.installer.pip.command import BaseCommandGenerator
-    from feu.installer.pip.resolver import BaseDependencyResolver
+    from feu.install.pip.command import BaseCommandGenerator
+    from feu.install.pip.resolver import BaseDependencyResolver
 
 
 class BasePackageInstaller(ABC):
@@ -31,9 +31,9 @@ class BasePackageInstaller(ABC):
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipCommandGenerator
-    >>> from feu.installer.pip.package import PackageInstaller
-    >>> from feu.installer.pip.resolver import DependencyResolver
+    >>> from feu.install.pip.command import PipCommandGenerator
+    >>> from feu.install.pip.package import PackageInstaller
+    >>> from feu.install.pip.resolver import DependencyResolver
     >>> installer = PackageInstaller(
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
@@ -58,9 +58,9 @@ class BasePackageInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip.command import PipCommandGenerator
-        >>> from feu.installer.pip.package import PackageInstaller
-        >>> from feu.installer.pip.resolver import DependencyResolver
+        >>> from feu.install.pip.command import PipCommandGenerator
+        >>> from feu.install.pip.package import PackageInstaller
+        >>> from feu.install.pip.resolver import DependencyResolver
         >>> obj1 = PackageInstaller(
         ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
         ... )
@@ -92,13 +92,13 @@ class BasePackageInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.installer.pip.command import PipCommandGenerator
-        >>> from feu.installer.pip.package import PackageInstaller
-        >>> from feu.installer.pip.resolver import DependencyResolver
-        >>> installer = PackageInstaller(
+        >>> from feu.install.pip.command import PipCommandGenerator
+        >>> from feu.install.pip.package import PackageInstaller
+        >>> from feu.install.pip.resolver import DependencyResolver
+        >>> install = PackageInstaller(
         ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
         ... )
-        >>> installer.install("2.3.1")  # doctest: +SKIP
+        >>> install.install("2.3.1")  # doctest: +SKIP
 
         ```
         """
@@ -115,15 +115,15 @@ class PackageInstaller(BasePackageInstaller):
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipCommandGenerator
-    >>> from feu.installer.pip.package import PackageInstaller
-    >>> from feu.installer.pip.resolver import DependencyResolver
-    >>> installer = PackageInstaller(
+    >>> from feu.install.pip.command import PipCommandGenerator
+    >>> from feu.install.pip.package import PackageInstaller
+    >>> from feu.install.pip.resolver import DependencyResolver
+    >>> install = PackageInstaller(
     ...     resolver=DependencyResolver("numpy"), command=PipCommandGenerator()
     ... )
-    >>> installer
+    >>> install
     PackageInstaller(resolver=DependencyResolver(package=numpy), command=PipCommandGenerator())
-    >>> installer.install("2.3.1")  # doctest: +SKIP
+    >>> install.install("2.3.1")  # doctest: +SKIP
 
     ```
     """
@@ -162,8 +162,8 @@ def create_package_installer_mapping(
 
     ```pycon
 
-    >>> from feu.installer.pip.command import PipCommandGenerator
-    >>> from feu.installer.pip.package import create_package_installer_mapping
+    >>> from feu.install.pip.command import PipCommandGenerator
+    >>> from feu.install.pip.package import create_package_installer_mapping
     >>> installers = create_package_installer_mapping(command=PipCommandGenerator())
     >>> installers
     {'jax': PackageInstaller(resolver=JaxDependencyResolver(), command=PipCommandGenerator()),

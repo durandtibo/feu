@@ -4,12 +4,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.installer.pip import (
+from feu.install.pip import (
     PipInstaller,
     PipxInstaller,
     UvInstaller,
 )
-from feu.installer.pip.package import BasePackageInstaller
+from feu.install.pip.package import BasePackageInstaller
 
 PACKAGE_NAMES = {
     "jax",
@@ -63,19 +63,19 @@ def test_pip_installer_has_installer_true() -> None:
 
 
 def test_pip_installer_install_numpy() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipInstaller.install(package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("pip install numpy==2.0.0")
 
 
 def test_pip_installer_install_pandas() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipInstaller.install(package="pandas", version="2.1.1")
         run_mock.assert_called_once_with("pip install pandas==2.1.1 numpy<2.0.0")
 
 
 def test_pip_installer_install_numpy_with_args() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipInstaller.install(package="numpy", version="2.0.0", args="-U")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 
@@ -90,7 +90,7 @@ def test_pip_installer_install_mock() -> None:
 
 @patch.dict(PipInstaller.registry, {}, clear=True)
 def test_pip_installer_install_default() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipInstaller.install(package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("pip install numpy==2.0.0")
 
@@ -139,19 +139,19 @@ def test_pipx_installer_has_installer_true() -> None:
 
 
 def test_pipx_installer_install_numpy() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipxInstaller.install(package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("pipx install numpy==2.0.0")
 
 
 def test_pipx_installer_install_pandas() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipxInstaller.install(package="pandas", version="2.1.1")
         run_mock.assert_called_once_with("pipx install pandas==2.1.1 numpy<2.0.0")
 
 
 def test_pipx_installer_install_numpy_with_args() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipxInstaller.install(package="numpy", version="2.0.0", args="-U")
         run_mock.assert_called_once_with("pipx install -U numpy==2.0.0")
 
@@ -166,7 +166,7 @@ def test_pipx_installer_install_mock() -> None:
 
 @patch.dict(PipxInstaller.registry, {}, clear=True)
 def test_pipx_installer_install_default() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         PipxInstaller.install(package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("pipx install numpy==2.0.0")
 
@@ -215,19 +215,19 @@ def test_uv_installer_has_installer_true() -> None:
 
 
 def test_uv_installer_install_numpy() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         UvInstaller.install(package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
 
 
 def test_uv_installer_install_pandas() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         UvInstaller.install(package="pandas", version="2.1.1")
         run_mock.assert_called_once_with("uv pip install pandas==2.1.1 numpy<2.0.0")
 
 
 def test_uv_installer_install_numpy_with_args() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         UvInstaller.install(package="numpy", version="2.0.0", args="-U")
         run_mock.assert_called_once_with("uv pip install -U numpy==2.0.0")
 
@@ -242,7 +242,7 @@ def test_uv_installer_install_mock() -> None:
 
 @patch.dict(UvInstaller.registry, {}, clear=True)
 def test_uv_installer_install_default() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         UvInstaller.install(package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
 

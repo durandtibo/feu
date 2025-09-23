@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.installer import BaseInstaller, InstallerRegistry
+from feu.install import BaseInstaller, InstallerRegistry
 
 #######################################
 #     Tests for InstallerRegistry     #
@@ -30,7 +30,7 @@ def test_installer_registry_add_installer_duplicate_exist_ok_true() -> None:
 def test_installer_registry_add_installer_duplicate_exist_ok_false() -> None:
     installer = Mock(spec=BaseInstaller)
     InstallerRegistry.add_installer("pip", Mock(spec=BaseInstaller))
-    with pytest.raises(RuntimeError, match=r"An installer (.*) is already registered"):
+    with pytest.raises(RuntimeError, match=r"An install (.*) is already registered"):
         InstallerRegistry.add_installer("pip", installer)
 
 
@@ -46,25 +46,25 @@ def test_installer_registry_has_installer_true() -> None:
 
 
 def test_installer_registry_install_pip_numpy() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         InstallerRegistry.install(installer="pip", package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("pip install numpy==2.0.0")
 
 
 def test_installer_registry_install_pip_pandas() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         InstallerRegistry.install(installer="pip", package="pandas", version="2.1.1")
         run_mock.assert_called_once_with("pip install pandas==2.1.1 numpy<2.0.0")
 
 
 def test_installer_registry_install_uv_numpy() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         InstallerRegistry.install(installer="uv", package="numpy", version="2.0.0")
         run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
 
 
 def test_installer_registry_install_pip_numpy_with_args() -> None:
-    with patch("feu.installer.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.package.run_bash_command") as run_mock:
         InstallerRegistry.install(installer="pip", package="numpy", version="2.0.0", args="-U")
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 
