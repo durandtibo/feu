@@ -47,10 +47,6 @@ jobs:
           package-version: ${{ matrix.packaging-version }}
           python-version: ${{ matrix.python-version }}
 
-      - name: Install packaging
-        run: |
-          pip install packaging==${{ matrix.packaging-version }}
-
       - name: Show installed packages
         run: |
           poetry show

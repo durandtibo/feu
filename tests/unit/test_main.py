@@ -33,6 +33,18 @@ def test_install_with_args() -> None:
 
 
 @click_available
+def test_install_default_installer() -> None:
+    runner = CliRunner()
+    with patch("feu.__main__.install_package_closest_version"):
+        result = runner.invoke(
+            install,
+            ["--pkg-name", "numpy", "--pkg-version", "2.0.2"],
+        )
+        assert result.exit_code == 0
+        assert result.output.strip() == ""
+
+
+@click_available
 def test_find_closest_version() -> None:
     runner = CliRunner()
     result = runner.invoke(
