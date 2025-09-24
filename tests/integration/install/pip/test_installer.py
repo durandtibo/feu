@@ -34,7 +34,7 @@ def test_pip_installer(pkg_name: str, pkg_version: str) -> None:
 
 @pipx_available
 def test_pipx_installer(pkg_name: str, pkg_version: str) -> None:
-    PipxInstaller().install(package="mkdocs", version=pkg_version)
+    PipxInstaller().install(package=pkg_name, version=pkg_version)
     assert is_package_available(pkg_name)
 
 
