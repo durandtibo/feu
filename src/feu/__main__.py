@@ -17,7 +17,9 @@ def cli() -> None:
 
 
 @click.command()
-@click.option("-i", "--installer", "installer", help="Installer name", required=True, type=str)
+@click.option(
+    "-i", "--installer", "installer", help="Installer name", required=True, type=str, default="pip"
+)
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
 @click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
 @click.option(

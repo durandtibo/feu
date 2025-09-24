@@ -15,6 +15,12 @@ from feu.utils.command import run_bash_command
 
 @click_available
 @pip_available
+def test_install_default_installer() -> None:
+    run_bash_command("python -m feu install --pkg-name=numpy --pkg-version=2.2.5")
+
+
+@click_available
+@pip_available
 def test_install_pip() -> None:
     run_bash_command("python -m feu install --installer=pip --pkg-name=numpy --pkg-version=2.2.5")
 
