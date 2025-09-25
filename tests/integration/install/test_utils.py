@@ -18,9 +18,14 @@ def _reset_cache() -> None:
 
 
 @pytest.fixture(scope="module")
-def numpy_version() -> str:
+def pkg_name() -> str:
+    return "mkdocs"
+
+
+@pytest.fixture(scope="module")
+def pkg_version(pkg_name: str) -> str:
     return find_closest_version(
-        pkg_name="numpy", pkg_version="2.2.5", python_version=get_python_major_minor()
+        pkg_name=pkg_name, pkg_version="1.6.1", python_version=get_python_major_minor()
     )
 
 
@@ -30,9 +35,9 @@ def numpy_version() -> str:
 
 
 @pytest.mark.parametrize("installer", get_available_installers())
-def test_install_package(installer: str, numpy_version: str) -> None:
-    install_package(installer=installer, package="numpy", version=numpy_version)
-    assert is_package_available("numpy")
+def test_install_package(installer: str, pkg_name: str, pkg_version: str) -> None:
+    install_package(installer=installer, package=pkg_name, version=pkg_version)
+    assert is_package_available(pkg_name)
 
 
 #####################################################
@@ -41,6 +46,6 @@ def test_install_package(installer: str, numpy_version: str) -> None:
 
 
 @pytest.mark.parametrize("installer", get_available_installers())
-def test_install_package_closest_version(installer: str) -> None:
-    install_package_closest_version(installer=installer, package="numpy", version="2.2.5")
-    assert is_package_available("numpy")
+def test_install_package_closest_version(installer: str, pkg_name: str, pkg_version: str) -> None:
+    install_package_closest_version(installer=installer, package=pkg_name, version=pkg_version)
+    assert is_package_available(pkg_name)
