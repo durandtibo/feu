@@ -15,25 +15,30 @@ def _reset_cache() -> None:
 
 
 @pytest.fixture(scope="module")
-def numpy_version() -> str:
+def pkg_name() -> str:
+    return "mkdocs"
+
+
+@pytest.fixture(scope="module")
+def pkg_version(pkg_name: str) -> str:
     return find_closest_version(
-        pkg_name="numpy", pkg_version="2.2.5", python_version=get_python_major_minor()
+        pkg_name=pkg_name, pkg_version="1.6.1", python_version=get_python_major_minor()
     )
 
 
 @pip_available
-def test_pip_installer(numpy_version: str) -> None:
-    PipInstaller().install(package="numpy", version=numpy_version)
-    assert is_package_available("numpy")
+def test_pip_installer(pkg_name: str, pkg_version: str) -> None:
+    PipInstaller().install(package=pkg_name, version=pkg_version)
+    assert is_package_available(pkg_name)
 
 
 @pipx_available
-def test_pipx_installer(numpy_version: str) -> None:
-    PipxInstaller().install(package="numpy", version=numpy_version)
-    assert is_package_available("numpy")
+def test_pipx_installer(pkg_name: str, pkg_version: str) -> None:
+    PipxInstaller().install(package=pkg_name, version=pkg_version)
+    assert is_package_available(pkg_name)
 
 
 @uv_available
-def test_uv_installer(numpy_version: str) -> None:
-    UvInstaller().install(package="numpy", version=numpy_version)
-    assert is_package_available("numpy")
+def test_uv_installer(pkg_name: str, pkg_version: str) -> None:
+    UvInstaller().install(package=pkg_name, version=pkg_version)
+    assert is_package_available(pkg_name)
