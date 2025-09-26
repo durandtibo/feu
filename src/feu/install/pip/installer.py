@@ -97,7 +97,7 @@ class BasePipInstaller(BaseInstaller):
     def install(cls, package: str, version: str, args: str = "") -> None:
         installer = cls.registry.get(package, None)
         if installer is None:
-            installer = cls.registry.get(package, None)  # TODO: how to manage extra dependencies?
+            installer = cls.registry.get(extract_package_name(package), None)
         if installer is None:
             installer = cls._get_default_installer(package)
         installer.install(version=version, args=args)
