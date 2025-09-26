@@ -46,7 +46,7 @@ def test_extract_package_name(requirement: str, expected: str) -> None:
         ("some-package[extra1,extra2]", ["extra1", "extra2"]),
     ],
 )
-def test_extract_package_extras(requirement: str, expected: str) -> None:
+def test_extract_package_extras(requirement: str, expected: list[str]) -> None:
     assert extract_package_extras(requirement) == expected
 
 
