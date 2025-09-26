@@ -204,7 +204,7 @@ def test_uv_installer_add_installer_duplicate_exist_ok_false() -> None:
 
 
 @patch.dict(UvInstaller.registry, {}, clear=True)
-def test_uv_installer_add_installer_with_optional_dependencies() -> None:
+def test_uv_installer_add_installer_with_extras() -> None:
     installer1 = Mock(spec=BasePackageInstaller)
     installer2 = Mock(spec=BasePackageInstaller)
     UvInstaller.add_installer("requests", installer1)
@@ -225,14 +225,14 @@ def test_uv_installer_has_installer_true() -> None:
 
 
 @patch.dict(UvInstaller.registry, {}, clear=True)
-def test_uv_installer_has_installer_true_optional_dependencies_explicit() -> None:
+def test_uv_installer_has_installer_true_extras_explicit() -> None:
     UvInstaller.add_installer("requests", Mock(spec=BasePackageInstaller))
     UvInstaller.add_installer("requests[security]", Mock(spec=BasePackageInstaller))
     assert UvInstaller.has_installer("requests[security]")
 
 
 @patch.dict(UvInstaller.registry, {}, clear=True)
-def test_uv_installer_has_installer_true_optional_dependencies_implicit() -> None:
+def test_uv_installer_has_installer_true_extras_implicit() -> None:
     UvInstaller.add_installer("requests", Mock(spec=BasePackageInstaller))
     assert UvInstaller.has_installer("requests[security]")
 
