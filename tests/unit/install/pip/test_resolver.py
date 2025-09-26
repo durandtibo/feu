@@ -19,27 +19,39 @@ from feu.install.pip.resolver import (
 
 
 def test_dependency_resolver_repr() -> None:
-    assert repr(DependencyResolver("numpy")).startswith("DependencyResolver(")
+    assert repr(DependencyResolver("requests")).startswith("DependencyResolver(")
 
 
 def test_dependency_resolver_str() -> None:
-    assert str(DependencyResolver("numpy")).startswith("DependencyResolver(")
+    assert str(DependencyResolver("requests")).startswith("DependencyResolver(")
 
 
 def test_dependency_resolver_equal_true() -> None:
-    assert DependencyResolver("numpy").equal(DependencyResolver("numpy"))
+    assert DependencyResolver("requests").equal(DependencyResolver("requests"))
 
 
 def test_dependency_resolver_equal_false_different_package() -> None:
-    assert not DependencyResolver("numpy").equal(DependencyResolver("torch"))
+    assert not DependencyResolver("requests").equal(DependencyResolver("torch"))
 
 
 def test_dependency_resolver_equal_false_different_type() -> None:
-    assert not DependencyResolver("numpy").equal(42)
+    assert not DependencyResolver("requests").equal(42)
 
 
 def test_dependency_resolver_resolve() -> None:
-    assert DependencyResolver("numpy").resolve("2.3.1") == ("numpy==2.3.1",)
+    assert DependencyResolver("requests").resolve("2.32.5") == ("requests==2.32.5",)
+
+
+def test_dependency_resolver_resolve_with_extras_1() -> None:
+    assert DependencyResolver("requests").resolve("2.32.5", extras=["security"]) == (
+        "requests[security]==2.32.5",
+    )
+
+
+def test_dependency_resolver_resolve_with_extras_2() -> None:
+    assert DependencyResolver("requests").resolve("2.32.5", extras=["security", "socks"]) == (
+        "requests[security,socks]==2.32.5",
+    )
 
 
 ###########################################
@@ -85,6 +97,13 @@ def test_jax_dependency_resolver_resolve_ml_dtypes() -> None:
         "jaxlib==0.4.9",
         "numpy<2.0.0",
         "ml_dtypes<=0.2.0",
+    )
+
+
+def test_jax_dependency_resolver_resolve_with_extras() -> None:
+    assert JaxDependencyResolver().resolve("0.4.26", extras=["dev"]) == (
+        "jax[dev]==0.4.26",
+        "jaxlib==0.4.26",
     )
 
 
@@ -146,6 +165,12 @@ def test_numpy2_dependency_resolver_resolve_low() -> None:
     )
 
 
+def test_numpy2_dependency_resolver_resolve_with_extras() -> None:
+    assert Numpy2DependencyResolver(package="my_package", min_version="1.2.3").resolve(
+        "1.2.3", extras=["dev"]
+    ) == ("my_package[dev]==1.2.3",)
+
+
 ##################################################
 #     Tests for MatplotlibDependencyResolver     #
 ##################################################
@@ -179,6 +204,12 @@ def test_matplotlib_dependency_resolver_resolve_low() -> None:
     assert MatplotlibDependencyResolver().resolve("3.8.3") == (
         "matplotlib==3.8.3",
         "numpy<2.0.0",
+    )
+
+
+def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
+    assert MatplotlibDependencyResolver().resolve("3.8.4", extras=["tk"]) == (
+        "matplotlib[tk]==3.8.4",
     )
 
 
@@ -218,6 +249,12 @@ def test_pandas_dependency_resolver_resolve_low() -> None:
     )
 
 
+def test_pandas_dependency_resolver_resolve_with_extras() -> None:
+    assert PandasDependencyResolver().resolve("2.2.2", extras=["performance"]) == (
+        "pandas[performance]==2.2.2",
+    )
+
+
 ###############################################
 #     Tests for PyarrowDependencyResolver     #
 ###############################################
@@ -251,6 +288,12 @@ def test_pyarrow_dependency_resolver_resolve_low() -> None:
     assert PyarrowDependencyResolver().resolve("15.0") == (
         "pyarrow==15.0",
         "numpy<2.0.0",
+    )
+
+
+def test_pyarrow_dependency_resolver_resolve_with_extras() -> None:
+    assert PyarrowDependencyResolver().resolve("16.0", extras=["pandas"]) == (
+        "pyarrow[pandas]==16.0",
     )
 
 
@@ -326,6 +369,12 @@ def test_sklearn_dependency_resolver_resolve_low() -> None:
     )
 
 
+def test_sklearn_dependency_resolver_resolve_with_extras() -> None:
+    assert SklearnDependencyResolver().resolve("1.4.2", extras=["benchmark"]) == (
+        "scikit-learn[benchmark]==1.4.2",
+    )
+
+
 #############################################
 #     Tests for TorchDependencyResolver     #
 #############################################
@@ -395,4 +444,10 @@ def test_xarray_dependency_resolver_resolve_low() -> None:
     assert XarrayDependencyResolver().resolve("2024.5.0") == (
         "xarray==2024.5.0",
         "numpy<2.0.0",
+    )
+
+
+def test_xarray_dependency_resolver_resolve_with_extras() -> None:
+    assert XarrayDependencyResolver().resolve("2024.6.0", extras=["performance"]) == (
+        "xarray[performance]==2024.6.0",
     )
