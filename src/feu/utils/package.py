@@ -2,7 +2,7 @@ r"""Contain utility functions to manage packages."""
 
 from __future__ import annotations
 
-__all__ = ["extract_package_name", "generate_extras_string"]
+__all__ = ["extract_package_extras", "extract_package_name", "generate_extras_string"]
 
 import re
 from typing import TYPE_CHECKING
@@ -30,17 +30,50 @@ def extract_package_name(requirement: str) -> str:
     ```pycon
 
     >>> from feu.utils.package import extract_package_name
-    >>> extract_package_name("requests[security,socks]")
-    'requests'
     >>> extract_package_name("numpy")
     'numpy'
     >>> extract_package_name("pandas[performance]")
     'pandas'
+    >>> extract_package_name("requests[security,socks]")
+    'requests'
 
     ```
     """
     match = re.match(r"^([a-zA-Z0-9_\-\.]+)", requirement)
     return match.group(1) if match else requirement
+
+
+def extract_package_extras(requirement: str) -> list[str]:
+    """Extract the optional extras from a requirement string.
+
+    The requirement string may include extras in square brackets, e.g.,
+    'package[extra1,extra2]'. This function returns the list of extras.
+
+    Args:
+        requirement: The requirement string containing the package name and
+            optionally extra dependencies.
+
+    Returns:
+        A list of extra requirements, or an empty list if none exist.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.utils.package import extract_package_extras
+    >>> extract_package_extras("numpy")
+    []
+    >>> extract_package_extras("pandas[performance]")
+    ['performance']
+    >>> extract_package_extras("requests[security,socks]")
+    ['security', 'socks']
+
+    ```
+    """
+    match = re.search(r"\[([^\]]+)\]", requirement)
+    if not match:
+        return []
+    return [extra.strip() for extra in match.group(1).split(",")]
 
 
 def generate_extras_string(extras: Sequence[str]) -> str:
