@@ -71,10 +71,9 @@ def extract_package_extras(requirement: str) -> list[str]:
     ```
     """
     match = re.search(r"\[([^\]]+)\]", requirement)
-    if match:
-        extras_str = match.group(1)
-        return [extra.strip() for extra in extras_str.split(",")]
-    return []
+    if not match:
+        return []
+    return [extra.strip() for extra in match.group(1).split(",")]
 
 
 def generate_extras_string(extras: Sequence[str]) -> str:
