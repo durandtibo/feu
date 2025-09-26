@@ -18,9 +18,14 @@ __all__ = [
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from packaging.version import Version
+
+from feu.utils.package import generate_extras_string
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +75,13 @@ class BaseDependencyResolver(ABC):
         """
 
     @abstractmethod
-    def resolve(self, version: str) -> tuple[str, ...]:
+    def resolve(self, version: str, extras: Sequence[str] = ()) -> tuple[str, ...]:
         r"""Find the dependency packages and their versions to install
         the specific version of a package.
 
         Args:
             version: The target version of the package to install.
+            extras: The optional dependencies of the package.
 
         Returns:
             The tuple of packages and versions constraints.
@@ -126,8 +132,8 @@ class DependencyResolver(BaseDependencyResolver):
             return False
         return self._package == other._package
 
-    def resolve(self, version: str) -> tuple[str, ...]:
-        return (f"{self._package}=={version}",)
+    def resolve(self, version: str, extras: Sequence[str] = ()) -> tuple[str, ...]:
+        return (f"{self._package}{generate_extras_string(extras)}=={version}",)
 
 
 class JaxDependencyResolver(BaseDependencyResolver):
@@ -156,8 +162,8 @@ class JaxDependencyResolver(BaseDependencyResolver):
     def equal(self, other: Any) -> bool:
         return isinstance(other, self.__class__)
 
-    def resolve(self, version: str) -> tuple[str, ...]:
-        deps = [f"jax=={version}", f"jaxlib=={version}"]
+    def resolve(self, version: str, extras: Sequence[str] = ()) -> tuple[str, ...]:
+        deps = [f"jax{generate_extras_string(extras)}=={version}", f"jaxlib=={version}"]
         ver = Version(version)
         if ver < Version("0.4.26"):
             deps.append("numpy<2.0.0")
@@ -206,8 +212,8 @@ class Numpy2DependencyResolver(BaseDependencyResolver):
             return False
         return self._package == other._package and self._min_version == other._min_version
 
-    def resolve(self, version: str) -> tuple[str, ...]:
-        deps = [f"{self._package}=={version}"]
+    def resolve(self, version: str, extras: Sequence[str] = ()) -> tuple[str, ...]:
+        deps = [f"{self._package}{generate_extras_string(extras)}=={version}"]
         if Version(version) < Version(self._min_version):
             deps.append("numpy<2.0.0")
         return tuple(deps)
