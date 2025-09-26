@@ -19,6 +19,7 @@ from feu.install.pip.package import (
     create_package_installer_mapping,
 )
 from feu.install.pip.resolver import DependencyResolver
+from feu.utils.package import extract_package_name
 
 
 class BasePipInstaller(BaseInstaller):
@@ -90,11 +91,13 @@ class BasePipInstaller(BaseInstaller):
 
         ```
         """
-        return package in cls.registry
+        return (package in cls.registry) or (extract_package_name(package) in cls.registry)
 
     @classmethod
     def install(cls, package: str, version: str, args: str = "") -> None:
         installer = cls.registry.get(package, None)
+        if installer is None:
+            installer = cls.registry.get(package, None)  # TODO: how to manage extra dependencies?
         if installer is None:
             installer = cls._get_default_installer(package)
         installer.install(version=version, args=args)
