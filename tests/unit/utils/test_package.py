@@ -55,6 +55,32 @@ def test_package_str_extras_empty() -> None:
     assert str(Package("my_package", version="1.2.3", extras=[])) == "my_package==1.2.3"
 
 
+def test_package_to_package_dependency_name() -> None:
+    assert Package("my_package").to_package_dependency() == PackageDependency("my_package")
+
+
+def test_package_to_package_dependency_version() -> None:
+    assert Package("my_package", version="1.2.3").to_package_dependency() == PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"]
+    )
+
+
+def test_package_to_package_dependency_extras() -> None:
+    assert Package(
+        "my_package", version="1.2.3", extras=["security", "socks"]
+    ).to_package_dependency() == PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
+    )
+
+
+def test_package_to_package_dependency_extras_empty() -> None:
+    assert Package(
+        "my_package", version="1.2.3", extras=[]
+    ).to_package_dependency() == PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"], extras=[]
+    )
+
+
 #######################################
 #     Tests for PackageDependency     #
 #######################################
