@@ -253,3 +253,28 @@ class TorchDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(min_version="2.3.0")
+
+
+class XarrayDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``xarray`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``xarray`` 2024.6.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import XarrayDependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = XarrayDependencyResolver()
+    >>> resolver
+    XarrayDependencyResolver(min_version=2024.6.0)
+    >>> deps = resolver.resolve(Package(name="xarray", version="2024.6.0"))
+    >>> deps
+    [PackageDependency(name='xarray', version_specifiers=['==2024.6.0'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(min_version="2024.6.0")
