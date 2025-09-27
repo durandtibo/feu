@@ -7,6 +7,7 @@ from feu.install.pip.resolver2 import (
     JaxDependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
+    TorchDependencyResolver,
 )
 from feu.utils.package import Package, PackageDependency
 
@@ -221,3 +222,43 @@ def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
     assert MatplotlibDependencyResolver().resolve(
         Package(name="matplotlib", version="3.8.4", extras=["tk"])
     ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"], extras=["tk"])]
+
+
+#############################################
+#     Tests for TorchDependencyResolver     #
+#############################################
+
+
+def test_torch_dependency_resolver_repr() -> None:
+    assert repr(TorchDependencyResolver()).startswith("TorchDependencyResolver(")
+
+
+def test_torch_dependency_resolver_str() -> None:
+    assert str(TorchDependencyResolver()).startswith("TorchDependencyResolver(")
+
+
+def test_torch_dependency_resolver_equal_true() -> None:
+    assert TorchDependencyResolver().equal(TorchDependencyResolver())
+
+
+def test_torch_dependency_resolver_equal_false() -> None:
+    assert not TorchDependencyResolver().equal(42)
+
+
+def test_torch_dependency_resolver_resolve() -> None:
+    assert TorchDependencyResolver().resolve(Package(name="torch", version="2.3.0")) == [
+        PackageDependency(name="torch", version_specifiers=["==2.3.0"])
+    ]
+
+
+def test_torch_dependency_resolver_resolve_high() -> None:
+    assert TorchDependencyResolver().resolve(Package(name="torch", version="2.3.1")) == [
+        PackageDependency(name="torch", version_specifiers=["==2.3.1"])
+    ]
+
+
+def test_torch_dependency_resolver_resolve_low() -> None:
+    assert TorchDependencyResolver().resolve(Package(name="torch", version="2.2.0")) == [
+        PackageDependency(name="torch", version_specifiers=["==2.2.0"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]

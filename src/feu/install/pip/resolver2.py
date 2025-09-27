@@ -8,6 +8,7 @@ __all__ = [
     "JaxDependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
+    "TorchDependencyResolver",
 ]
 
 import logging
@@ -227,3 +228,28 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(min_version="3.8.4")
+
+
+class TorchDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``torch`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``torch`` 2.3.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import TorchDependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = TorchDependencyResolver()
+    >>> resolver
+    TorchDependencyResolver(min_version=2.3.0)
+    >>> deps = resolver.resolve(Package(name="torch", version="2.3.0"))
+    >>> deps
+    [PackageDependency(name='torch', version_specifiers=['==2.3.0'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(min_version="2.3.0")
