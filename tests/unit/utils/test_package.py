@@ -81,6 +81,34 @@ def test_package_to_package_dependency_extras_empty() -> None:
     )
 
 
+def test_package_eq_true_name() -> None:
+    assert Package("my_package") == Package("my_package")
+
+
+def test_package_eq_true_version() -> None:
+    assert Package("my_package", version="1.2.3") == Package("my_package", version="1.2.3")
+
+
+def test_package_eq_true_extras() -> None:
+    assert Package("my_package", version="1.2.3", extras=["security", "socks"]) == Package(
+        "my_package", version="1.2.3", extras=["security", "socks"]
+    )
+
+
+def test_package_eq_false_different_name() -> None:
+    assert Package("my_package") != Package("my")
+
+
+def test_package_eq_false_different_version() -> None:
+    assert Package("my_package", version="1.2.3") != Package("my_package", version="2.0.0")
+
+
+def test_package_eq_false_different_extras() -> None:
+    assert Package("my_package", version="1.2.3", extras=["security", "socks"]) != Package(
+        "my_package", version="1.2.3", extras=["dev"]
+    )
+
+
 #######################################
 #     Tests for PackageDependency     #
 #######################################
@@ -142,6 +170,40 @@ def test_package_dependency_str_extras_empty() -> None:
         str(PackageDependency("my_package", version_specifiers=["==1.2.3"], extras=[]))
         == "my_package==1.2.3"
     )
+
+
+def test_package_dependency_eq_true_name() -> None:
+    assert PackageDependency("my_package") == PackageDependency("my_package")
+
+
+def test_package_dependency_eq_true_version_specifiers() -> None:
+    assert PackageDependency("my_package", version_specifiers=["==1.2.3"]) == PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"]
+    )
+
+
+def test_package_dependency_eq_true_extras() -> None:
+    assert PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
+    ) == PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
+    )
+
+
+def test_package_dependency_eq_false_different_name() -> None:
+    assert PackageDependency("my_package") != PackageDependency("my")
+
+
+def test_package_dependency_eq_false_different_version_specifiers() -> None:
+    assert PackageDependency("my_package", version_specifiers=["==1.2.3"]) != PackageDependency(
+        "my_package", version_specifiers=["==2.0.0"]
+    )
+
+
+def test_package_dependency_eq_false_different_extras() -> None:
+    assert PackageDependency(
+        "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
+    ) != PackageDependency("my_package", version_specifiers=["==1.2.3"], extras=["dev"])
 
 
 ##########################################
