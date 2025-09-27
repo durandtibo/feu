@@ -89,7 +89,7 @@ class PackageDependency:
     extras: list[str] | None = field(default=None)
 
     def __str__(self) -> str:
-        extras_str = f"[{','.join(self.extras)}]" if self.extras else ""
+        extras_str = generate_extras_string(self.extras) if self.extras else ""
         version_str = ",".join(self.version_specifiers) if self.version_specifiers else ""
         return f"{self.name}{extras_str}{version_str}"
 
