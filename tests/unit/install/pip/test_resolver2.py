@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from feu.install.pip.resolver2 import DependencyResolver, JaxDependencyResolver
+from feu.install.pip.resolver2 import (
+    DependencyResolver,
+    JaxDependencyResolver,
+    Numpy2DependencyResolver,
+)
 from feu.utils.package import Package, PackageDependency
 
 ########################################
@@ -110,3 +114,63 @@ def test_jax_dependency_resolver_resolve_with_extras() -> None:
         PackageDependency(name="jax", version_specifiers=["==0.4.26"], extras=["dev"]),
         PackageDependency(name="jaxlib", version_specifiers=["==0.4.26"]),
     ]
+
+
+##############################################
+#     Tests for Numpy2DependencyResolver     #
+##############################################
+
+
+def test_numpy2_dependency_resolver_repr() -> None:
+    assert repr(Numpy2DependencyResolver(min_version="1.2.3")).startswith(
+        "Numpy2DependencyResolver("
+    )
+
+
+def test_numpy2_dependency_resolver_str() -> None:
+    assert str(Numpy2DependencyResolver(min_version="1.2.3")).startswith(
+        "Numpy2DependencyResolver("
+    )
+
+
+def test_numpy2_dependency_resolver_equal_true() -> None:
+    assert Numpy2DependencyResolver(min_version="1.2.3").equal(
+        Numpy2DependencyResolver(min_version="1.2.3")
+    )
+
+
+def test_numpy2_dependency_resolver_equal_false_different_min_version() -> None:
+    assert not Numpy2DependencyResolver(min_version="1.2.3").equal(
+        Numpy2DependencyResolver(min_version="2.0.0")
+    )
+
+
+def test_numpy2_dependency_resolver_equal_false_different_type() -> None:
+    assert not Numpy2DependencyResolver(min_version="1.2.3").equal(42)
+
+
+def test_numpy2_dependency_resolver_resolve() -> None:
+    assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
+        Package(name="my_package", version="1.2.3")
+    ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"])]
+
+
+def test_numpy2_dependency_resolver_resolve_high() -> None:
+    assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
+        Package(name="my_package", version="1.3.0")
+    ) == [PackageDependency(name="my_package", version_specifiers=["==1.3.0"])]
+
+
+def test_numpy2_dependency_resolver_resolve_low() -> None:
+    assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
+        Package(name="my_package", version="1.2.0")
+    ) == [
+        PackageDependency(name="my_package", version_specifiers=["==1.2.0"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_numpy2_dependency_resolver_resolve_with_extras() -> None:
+    assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
+        Package(name="my_package", version="1.2.3", extras=["dev"])
+    ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=["dev"])]
