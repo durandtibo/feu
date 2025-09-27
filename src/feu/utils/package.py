@@ -2,13 +2,51 @@ r"""Contain utility functions to manage packages."""
 
 from __future__ import annotations
 
-__all__ = ["extract_package_extras", "extract_package_name", "generate_extras_string"]
+__all__ = ["Package", "extract_package_extras", "extract_package_name", "generate_extras_string"]
 
 import re
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+@dataclass
+class Package:
+    r"""Define a dataclass to represent a package.
+
+    Args:
+        name: The package name.
+        version: An optional package version.
+        extras: Optional package extra dependencies.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.utils.package import Package
+    >>> pkg1 = Package("my_package")
+    >>> pkg1
+    Package(name='my_package', version=None, extras=None)
+    >>> pkg2 = Package("my_package", version="1.2.3")
+    >>> pkg2
+    Package(name='my_package', version='1.2.3', extras=None)
+    >>> pkg3 = Package("my_package", version="1.2.3", extras=["security", "socks"])
+    >>> pkg3
+    Package(name='my_package', version='1.2.3', extras=['security', 'socks'])
+
+    ```
+    """
+
+    name: str
+    version: str | None = field(default=None)
+    extras: list[str] | None = field(default=None)
+
+    def __str__(self) -> str:
+        extras_str = f"[{','.join(self.extras)}]" if self.extras else ""
+        version_str = f"=={self.version}" if self.version else ""
+        return f"{self.name}{extras_str}{version_str}"
 
 
 def extract_package_name(requirement: str) -> str:
