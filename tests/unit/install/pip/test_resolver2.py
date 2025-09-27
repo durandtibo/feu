@@ -8,6 +8,7 @@ from feu.install.pip.resolver2 import (
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
     TorchDependencyResolver,
+    XarrayDependencyResolver,
 )
 from feu.utils.package import Package, PackageDependency
 
@@ -261,4 +262,52 @@ def test_torch_dependency_resolver_resolve_low() -> None:
     assert TorchDependencyResolver().resolve(Package(name="torch", version="2.2.0")) == [
         PackageDependency(name="torch", version_specifiers=["==2.2.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+##############################################
+#     Tests for XarrayDependencyResolver     #
+##############################################
+
+
+def test_xarray_dependency_resolver_repr() -> None:
+    assert repr(XarrayDependencyResolver()).startswith("XarrayDependencyResolver(")
+
+
+def test_xarray_dependency_resolver_str() -> None:
+    assert str(XarrayDependencyResolver()).startswith("XarrayDependencyResolver(")
+
+
+def test_xarray_dependency_resolver_equal_true() -> None:
+    assert XarrayDependencyResolver().equal(XarrayDependencyResolver())
+
+
+def test_xarray_dependency_resolver_equal_false() -> None:
+    assert not XarrayDependencyResolver().equal(42)
+
+
+def test_xarray_dependency_resolver_resolve() -> None:
+    assert XarrayDependencyResolver().resolve(Package(name="xarray", version="2024.6.0")) == [
+        PackageDependency(name="xarray", version_specifiers=["==2024.6.0"]),
+    ]
+
+
+def test_xarray_dependency_resolver_resolve_high() -> None:
+    assert XarrayDependencyResolver().resolve(Package(name="xarray", version="2024.7.0")) == [
+        PackageDependency(name="xarray", version_specifiers=["==2024.7.0"]),
+    ]
+
+
+def test_xarray_dependency_resolver_resolve_low() -> None:
+    assert XarrayDependencyResolver().resolve(Package(name="xarray", version="2024.5.0")) == [
+        PackageDependency(name="xarray", version_specifiers=["==2024.5.0"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_xarray_dependency_resolver_resolve_with_extras() -> None:
+    assert XarrayDependencyResolver().resolve(
+        Package(name="xarray", version="2024.6.0", extras=["performance"])
+    ) == [
+        PackageDependency(name="xarray", version_specifiers=["==2024.6.0"], extras=["performance"]),
     ]
