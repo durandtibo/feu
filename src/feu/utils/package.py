@@ -54,6 +54,30 @@ class Package:
         version_str = f"=={self.version}" if self.version else ""
         return f"{self.name}{extras_str}{version_str}"
 
+    def to_package_dependency(self) -> PackageDependency:
+        r"""Convert to a ``PackageDependency``.
+
+        Returns:
+            The current package as a package dependency.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.utils.package import Package
+        >>> pkg = Package("my_package")
+        >>> dep = pkg.to_package_dependency()
+        >>> dep
+        PackageDependency(name='my_package', version_specifiers=None, extras=None)
+
+        ```
+        """
+        return PackageDependency(
+            name=self.name,
+            extras=self.extras,
+            version_specifiers=[f"=={self.version}"] if self.version else None,
+        )
+
 
 @dataclass
 class PackageDependency:
