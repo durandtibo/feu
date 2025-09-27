@@ -9,6 +9,7 @@ __all__ = [
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
     "TorchDependencyResolver",
+    "XarrayDependencyResolver",
 ]
 
 import logging
@@ -120,7 +121,7 @@ class DependencyResolver(BaseDependencyResolver):
         return f"{self.__class__.__qualname__}()"
 
     def equal(self, other: Any) -> bool:
-        return isinstance(other, self.__class__)
+        return type(self) is type(other)
 
     def resolve(self, package: Package) -> list[PackageDependency]:
         return [package.to_package_dependency()]
