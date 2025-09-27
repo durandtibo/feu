@@ -5,6 +5,7 @@ import pytest
 from feu.install.pip.resolver2 import (
     DependencyResolver,
     JaxDependencyResolver,
+    MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
 )
 from feu.utils.package import Package, PackageDependency
@@ -174,3 +175,49 @@ def test_numpy2_dependency_resolver_resolve_with_extras() -> None:
     assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
         Package(name="my_package", version="1.2.3", extras=["dev"])
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=["dev"])]
+
+
+##################################################
+#     Tests for MatplotlibDependencyResolver     #
+##################################################
+
+
+def test_matplotlib_dependency_resolver_repr() -> None:
+    assert repr(MatplotlibDependencyResolver()).startswith("MatplotlibDependencyResolver(")
+
+
+def test_matplotlib_dependency_resolver_str() -> None:
+    assert str(MatplotlibDependencyResolver()).startswith("MatplotlibDependencyResolver(")
+
+
+def test_matplotlib_dependency_resolver_equal_true() -> None:
+    assert MatplotlibDependencyResolver().equal(MatplotlibDependencyResolver())
+
+
+def test_matplotlib_dependency_resolver_equal_false() -> None:
+    assert not MatplotlibDependencyResolver().equal(42)
+
+
+def test_matplotlib_dependency_resolver_resolve() -> None:
+    assert MatplotlibDependencyResolver().resolve(Package(name="matplotlib", version="3.8.4")) == [
+        PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"])
+    ]
+
+
+def test_matplotlib_dependency_resolver_resolve_high() -> None:
+    assert MatplotlibDependencyResolver().resolve(Package(name="matplotlib", version="3.9.0")) == [
+        PackageDependency(name="matplotlib", version_specifiers=["==3.9.0"])
+    ]
+
+
+def test_matplotlib_dependency_resolver_resolve_low() -> None:
+    assert MatplotlibDependencyResolver().resolve(Package(name="matplotlib", version="3.8.3")) == [
+        PackageDependency(name="matplotlib", version_specifiers=["==3.8.3"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
+    assert MatplotlibDependencyResolver().resolve(
+        Package(name="matplotlib", version="3.8.4", extras=["tk"])
+    ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"], extras=["tk"])]
