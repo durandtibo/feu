@@ -6,6 +6,7 @@ __all__ = [
     "BaseDependencyResolver",
     "DependencyResolver",
     "JaxDependencyResolver",
+    "Numpy2DependencyResolver",
 ]
 
 import logging
@@ -35,9 +36,9 @@ class BaseDependencyResolver(ABC):
     >>> resolver = DependencyResolver()
     >>> resolver
     DependencyResolver()
-    >>> deps = resolver.resolve(Package(name="numpy", version="2.3.1"))
+    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
     >>> deps
-    [PackageDependency(name='numpy', version_specifiers=['==2.3.1'], extras=None)]
+    [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
     ```
     """
@@ -86,9 +87,9 @@ class BaseDependencyResolver(ABC):
         >>> from feu.install.pip.resolver2 import DependencyResolver
         >>> from feu.utils.package import Package
         >>> resolver = DependencyResolver()
-        >>> deps = resolver.resolve(Package(name="numpy", version="2.3.1"))
+        >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
         >>> deps
-        [PackageDependency(name='numpy', version_specifiers=['==2.3.1'], extras=None)]
+        [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
         ```
         """
@@ -106,9 +107,9 @@ class DependencyResolver(BaseDependencyResolver):
     >>> resolver = DependencyResolver()
     >>> resolver
     DependencyResolver()
-    >>> deps = resolver.resolve(Package(name="numpy", version="2.3.1"))
+    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
     >>> deps
-    [PackageDependency(name='numpy', version_specifiers=['==2.3.1'], extras=None)]
+    [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
     ```
     """
@@ -154,4 +155,49 @@ class JaxDependencyResolver(DependencyResolver):
         if Version("0.4.9") <= ver <= Version("0.4.11"):
             # https://github.com/google/jax/issues/17693
             deps.append(PackageDependency("ml_dtypes", version_specifiers=["<=0.2.0"]))
+        return deps
+
+
+class Numpy2DependencyResolver(DependencyResolver):
+    r"""Define a dependency resolver to work with packages that did not
+    pin ``numpy<2.0`` and are not fully compatible with numpy 2.0.
+
+    https://github.com/numpy/numpy/issues/26191 indicates the packages
+    that are compatible with numpy 2.0.
+
+    Args:
+        min_version: The first version that is fully compatible with
+            numpy 2.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import Numpy2DependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = Numpy2DependencyResolver(min_version="1.2.3")
+    >>> resolver
+    Numpy2DependencyResolver(min_version=1.2.3)
+    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
+    >>> deps
+    [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self, min_version: str) -> None:
+        self._min_version = min_version
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}(min_version={self._min_version})"
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._min_version == other._min_version
+
+    def resolve(self, package: Package) -> list[PackageDependency]:
+        deps = super().resolve(package)
+        if Version(package.version) < Version(self._min_version):
+            deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
         return deps
