@@ -2,7 +2,13 @@ r"""Contain utility functions to manage packages."""
 
 from __future__ import annotations
 
-__all__ = ["Package", "extract_package_extras", "extract_package_name", "generate_extras_string"]
+__all__ = [
+    "Package",
+    "PackageDependency",
+    "extract_package_extras",
+    "extract_package_name",
+    "generate_extras_string",
+]
 
 import re
 from dataclasses import dataclass, field
@@ -44,8 +50,47 @@ class Package:
     extras: list[str] | None = field(default=None)
 
     def __str__(self) -> str:
-        extras_str = f"[{','.join(self.extras)}]" if self.extras else ""
+        extras_str = generate_extras_string(self.extras) if self.extras else ""
         version_str = f"=={self.version}" if self.version else ""
+        return f"{self.name}{extras_str}{version_str}"
+
+
+@dataclass
+class PackageDependency:
+    r"""Define a dataclass to represent a package dependency.
+
+    Args:
+        name: The package name.
+        version_specifiers: Optional package version specifies.
+        extras: Optional package extra dependencies.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.utils.package import PackageDependency
+    >>> pkg1 = PackageDependency("my_package")
+    >>> pkg1
+    PackageDependency(name='my_package', version_specifiers=None, extras=None)
+    >>> pkg2 = PackageDependency("my_package", version_specifiers=["==1.2.3"])
+    >>> pkg2
+    PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)
+    >>> pkg3 = PackageDependency(
+    ...     "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
+    ... )
+    >>> pkg3
+    PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=['security', 'socks'])
+
+    ```
+    """
+
+    name: str
+    version_specifiers: list[str] | None = field(default=None)
+    extras: list[str] | None = field(default=None)
+
+    def __str__(self) -> str:
+        extras_str = generate_extras_string(self.extras) if self.extras else ""
+        version_str = ",".join(self.version_specifiers) if self.version_specifiers else ""
         return f"{self.name}{extras_str}{version_str}"
 
 
