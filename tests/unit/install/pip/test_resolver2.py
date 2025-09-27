@@ -7,6 +7,7 @@ from feu.install.pip.resolver2 import (
     JaxDependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
+    PandasDependencyResolver,
     TorchDependencyResolver,
     XarrayDependencyResolver,
 )
@@ -227,6 +228,52 @@ def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
     assert MatplotlibDependencyResolver().resolve(
         Package(name="matplotlib", version="3.8.4", extras=["tk"])
     ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"], extras=["tk"])]
+
+
+##############################################
+#     Tests for PandasDependencyResolver     #
+##############################################
+
+
+def test_pandas_dependency_resolver_repr() -> None:
+    assert repr(PandasDependencyResolver()).startswith("PandasDependencyResolver(")
+
+
+def test_pandas_dependency_resolver_str() -> None:
+    assert str(PandasDependencyResolver()).startswith("PandasDependencyResolver(")
+
+
+def test_pandas_dependency_resolver_equal_true() -> None:
+    assert PandasDependencyResolver().equal(PandasDependencyResolver())
+
+
+def test_pandas_dependency_resolver_equal_false() -> None:
+    assert not PandasDependencyResolver().equal(42)
+
+
+def test_pandas_dependency_resolver_resolve() -> None:
+    assert PandasDependencyResolver().resolve(Package(name="pandas", version="2.2.2")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.2.2"])
+    ]
+
+
+def test_pandas_dependency_resolver_resolve_high() -> None:
+    assert PandasDependencyResolver().resolve(Package(name="pandas", version="2.2.3")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.2.3"])
+    ]
+
+
+def test_pandas_dependency_resolver_resolve_low() -> None:
+    assert PandasDependencyResolver().resolve(Package(name="pandas", version="2.2.1")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.2.1"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_pandas_dependency_resolver_resolve_with_extras() -> None:
+    assert PandasDependencyResolver().resolve(
+        Package(name="pandas", version="2.2.2", extras=["performance"])
+    ) == [PackageDependency(name="pandas", version_specifiers=["==2.2.2"], extras=["performance"])]
 
 
 #############################################

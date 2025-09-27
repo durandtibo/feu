@@ -8,6 +8,7 @@ __all__ = [
     "JaxDependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
+    "PandasDependencyResolver",
     "TorchDependencyResolver",
     "XarrayDependencyResolver",
 ]
@@ -229,6 +230,31 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(min_version="3.8.4")
+
+
+class PandasDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``pandas`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``pandas`` 2.2.2.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import PandasDependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = PandasDependencyResolver()
+    >>> resolver
+    PandasDependencyResolver(min_version=2.2.2)
+    >>> deps = resolver.resolve(Package(name="pandas", version="2.2.2"))
+    >>> deps
+    [PackageDependency(name='pandas', version_specifiers=['==2.2.2'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(min_version="2.2.2")
 
 
 class TorchDependencyResolver(Numpy2DependencyResolver):
