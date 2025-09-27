@@ -29,6 +29,10 @@ def test_dependency_resolver_equal_true() -> None:
     assert DependencyResolver().equal(DependencyResolver())
 
 
+def test_dependency_resolver_equal_false_different() -> None:
+    assert not DependencyResolver().equal(TorchDependencyResolver())
+
+
 def test_dependency_resolver_equal_false_different_type() -> None:
     assert not DependencyResolver().equal(42)
 
