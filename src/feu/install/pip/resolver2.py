@@ -6,6 +6,7 @@ __all__ = [
     "BaseDependencyResolver",
     "DependencyResolver",
     "JaxDependencyResolver",
+    "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
 ]
 
@@ -201,3 +202,28 @@ class Numpy2DependencyResolver(DependencyResolver):
         if Version(package.version) < Version(self._min_version):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
         return deps
+
+
+class MatplotlibDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``matplotlib`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``matplotlib`` 3.8.4.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import MatplotlibDependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = MatplotlibDependencyResolver()
+    >>> resolver
+    MatplotlibDependencyResolver(min_version=3.8.4)
+    >>> deps = resolver.resolve(Package(name="matplotlib", version="3.8.4"))
+    >>> deps
+    [PackageDependency(name='matplotlib', version_specifiers=['==3.8.4'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(min_version="3.8.4")
