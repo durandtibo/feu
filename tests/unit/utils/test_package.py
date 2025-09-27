@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from feu.utils.package import (
+    Package,
     extract_package_extras,
     extract_package_name,
     generate_extras_string,
@@ -12,6 +13,41 @@ from feu.utils.package import (
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+#############################
+#     Tests for Package     #
+#############################
+
+
+def test_package_name() -> None:
+    assert Package("my_package").name == "my_package"
+
+
+def test_package_version() -> None:
+    assert Package("my_package", version="1.2.3").version == "1.2.3"
+
+
+def test_package_extras() -> None:
+    assert Package("my_package", version="1.2.3", extras=["security", "socks"]).extras == [
+        "security",
+        "socks",
+    ]
+
+
+def test_package_str_name() -> None:
+    assert str(Package("my_package")) == "my_package"
+
+
+def test_package_str_version() -> None:
+    assert str(Package("my_package", version="1.2.3")) == "my_package==1.2.3"
+
+
+def test_package_str_extras() -> None:
+    assert (
+        str(Package("my_package", version="1.2.3", extras=["security", "socks"]))
+        == "my_package[security,socks]==1.2.3"
+    )
 
 
 ##########################################
