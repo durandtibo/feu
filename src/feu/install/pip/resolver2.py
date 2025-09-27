@@ -9,6 +9,7 @@ __all__ = [
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
     "PandasDependencyResolver",
+    "PyarrowDependencyResolver",
     "TorchDependencyResolver",
     "XarrayDependencyResolver",
 ]
@@ -255,6 +256,31 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(min_version="2.2.2")
+
+
+class PyarrowDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``pyarrow`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``pyarrow`` 16.0.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import PyarrowDependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = PyarrowDependencyResolver()
+    >>> resolver
+    PyarrowDependencyResolver(min_version=16.0)
+    >>> deps = resolver.resolve(Package(name="pyarrow", version="16.0"))
+    >>> deps
+    [PackageDependency(name='pyarrow', version_specifiers=['==16.0'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(min_version="16.0")
 
 
 class TorchDependencyResolver(Numpy2DependencyResolver):

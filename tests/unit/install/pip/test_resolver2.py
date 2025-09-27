@@ -8,6 +8,7 @@ from feu.install.pip.resolver2 import (
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
     PandasDependencyResolver,
+    PyarrowDependencyResolver,
     TorchDependencyResolver,
     XarrayDependencyResolver,
 )
@@ -274,6 +275,52 @@ def test_pandas_dependency_resolver_resolve_with_extras() -> None:
     assert PandasDependencyResolver().resolve(
         Package(name="pandas", version="2.2.2", extras=["performance"])
     ) == [PackageDependency(name="pandas", version_specifiers=["==2.2.2"], extras=["performance"])]
+
+
+###############################################
+#     Tests for PyarrowDependencyResolver     #
+###############################################
+
+
+def test_pyarrow_dependency_resolver_repr() -> None:
+    assert repr(PyarrowDependencyResolver()).startswith("PyarrowDependencyResolver(")
+
+
+def test_pyarrow_dependency_resolver_str() -> None:
+    assert str(PyarrowDependencyResolver()).startswith("PyarrowDependencyResolver(")
+
+
+def test_pyarrow_dependency_resolver_equal_true() -> None:
+    assert PyarrowDependencyResolver().equal(PyarrowDependencyResolver())
+
+
+def test_pyarrow_dependency_resolver_equal_false() -> None:
+    assert not PyarrowDependencyResolver().equal(42)
+
+
+def test_pyarrow_dependency_resolver_resolve() -> None:
+    assert PyarrowDependencyResolver().resolve(Package(name="pyarrow", version="16.0")) == [
+        PackageDependency(name="pyarrow", version_specifiers=["==16.0"])
+    ]
+
+
+def test_pyarrow_dependency_resolver_resolve_high() -> None:
+    assert PyarrowDependencyResolver().resolve(Package(name="pyarrow", version="16.1")) == [
+        PackageDependency(name="pyarrow", version_specifiers=["==16.1"])
+    ]
+
+
+def test_pyarrow_dependency_resolver_resolve_low() -> None:
+    assert PyarrowDependencyResolver().resolve(Package(name="pyarrow", version="15.0")) == [
+        PackageDependency(name="pyarrow", version_specifiers=["==15.0"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_pyarrow_dependency_resolver_resolve_with_extras() -> None:
+    assert PyarrowDependencyResolver().resolve(
+        Package(name="pyarrow", version="16.0", extras=["pandas"])
+    ) == [PackageDependency(name="pyarrow", version_specifiers=["==16.0"], extras=["pandas"])]
 
 
 #############################################
