@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import pytest
+
 from feu.install.pip.resolver2 import DependencyResolver, JaxDependencyResolver
 from feu.utils.package import Package, PackageDependency
-
 
 ########################################
 #     Tests for DependencyResolver     #
@@ -92,10 +93,11 @@ def test_jax_dependency_resolver_resolve_low() -> None:
     ]
 
 
-def test_jax_dependency_resolver_resolve_ml_dtypes() -> None:
-    assert JaxDependencyResolver().resolve(Package(name="jax", version="0.4.9")) == [
-        PackageDependency(name="jax", version_specifiers=["==0.4.9"]),
-        PackageDependency(name="jaxlib", version_specifiers=["==0.4.9"]),
+@pytest.mark.parametrize("version", ["0.4.9", "0.4.10", "0.4.11"])
+def test_jax_dependency_resolver_resolve_ml_dtypes(version: str) -> None:
+    assert JaxDependencyResolver().resolve(Package(name="jax", version=version)) == [
+        PackageDependency(name="jax", version_specifiers=[f"=={version}"]),
+        PackageDependency(name="jaxlib", version_specifiers=[f"=={version}"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
         PackageDependency(name="ml_dtypes", version_specifiers=["<=0.2.0"]),
     ]
