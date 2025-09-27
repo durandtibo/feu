@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDependencyResolver(ABC):
-    r"""Define the base class to implement a pip package installer.
+    r"""Define the base class for pip-compatible package dependency resolvers.
 
     Example usage:
 
