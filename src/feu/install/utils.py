@@ -75,14 +75,16 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
 
     ```
     """
-    package.with_version(
-        find_closest_version(
-            pkg_name=package.name,
-            pkg_version=package.version,
-            python_version=get_python_major_minor(),
-        )
+    install_package(
+        installer=installer,
+        package=package.with_version(
+            find_closest_version(
+                pkg_name=package.name,
+                pkg_version=package.version,
+                python_version=get_python_major_minor(),
+            )
+        ),
     )
-    install_package(installer=installer, package=package)
 
 
 @lru_cache(1)
