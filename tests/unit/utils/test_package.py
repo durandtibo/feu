@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from feu.utils.package import (
-    Package,
     PackageDependency,
+    PackageSpec,
     extract_package_extras,
     extract_package_name,
     generate_extras_string,
@@ -16,95 +16,95 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-#############################
-#     Tests for Package     #
-#############################
+#################################
+#     Tests for PackageSpec     #
+#################################
 
 
-def test_package_name() -> None:
-    assert Package("my_package").name == "my_package"
+def test_package_spec_name() -> None:
+    assert PackageSpec("my_package").name == "my_package"
 
 
-def test_package_version() -> None:
-    assert Package("my_package", version="1.2.3").version == "1.2.3"
+def test_package_spec_version() -> None:
+    assert PackageSpec("my_package", version="1.2.3").version == "1.2.3"
 
 
-def test_package_extras() -> None:
-    assert Package("my_package", version="1.2.3", extras=["security", "socks"]).extras == [
+def test_package_spec_extras() -> None:
+    assert PackageSpec("my_package", version="1.2.3", extras=["security", "socks"]).extras == [
         "security",
         "socks",
     ]
 
 
-def test_package_str_name() -> None:
-    assert str(Package("my_package")) == "my_package"
+def test_package_spec_str_name() -> None:
+    assert str(PackageSpec("my_package")) == "my_package"
 
 
-def test_package_str_version() -> None:
-    assert str(Package("my_package", version="1.2.3")) == "my_package==1.2.3"
+def test_package_spec_str_version() -> None:
+    assert str(PackageSpec("my_package", version="1.2.3")) == "my_package==1.2.3"
 
 
-def test_package_str_extras() -> None:
+def test_package_spec_str_extras() -> None:
     assert (
-        str(Package("my_package", version="1.2.3", extras=["security", "socks"]))
+        str(PackageSpec("my_package", version="1.2.3", extras=["security", "socks"]))
         == "my_package[security,socks]==1.2.3"
     )
 
 
-def test_package_str_extras_empty() -> None:
-    assert str(Package("my_package", version="1.2.3", extras=[])) == "my_package==1.2.3"
+def test_package_spec_str_extras_empty() -> None:
+    assert str(PackageSpec("my_package", version="1.2.3", extras=[])) == "my_package==1.2.3"
 
 
-def test_package_to_package_dependency_name() -> None:
-    assert Package("my_package").to_package_dependency() == PackageDependency("my_package")
+def test_package_spec_to_package_dependency_name() -> None:
+    assert PackageSpec("my_package").to_package_dependency() == PackageDependency("my_package")
 
 
-def test_package_to_package_dependency_version() -> None:
-    assert Package("my_package", version="1.2.3").to_package_dependency() == PackageDependency(
+def test_package_spec_to_package_dependency_version() -> None:
+    assert PackageSpec("my_package", version="1.2.3").to_package_dependency() == PackageDependency(
         "my_package", version_specifiers=["==1.2.3"]
     )
 
 
-def test_package_to_package_dependency_extras() -> None:
-    assert Package(
+def test_package_spec_to_package_dependency_extras() -> None:
+    assert PackageSpec(
         "my_package", version="1.2.3", extras=["security", "socks"]
     ).to_package_dependency() == PackageDependency(
         "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
     )
 
 
-def test_package_to_package_dependency_extras_empty() -> None:
-    assert Package(
+def test_package_spec_to_package_dependency_extras_empty() -> None:
+    assert PackageSpec(
         "my_package", version="1.2.3", extras=[]
     ).to_package_dependency() == PackageDependency(
         "my_package", version_specifiers=["==1.2.3"], extras=[]
     )
 
 
-def test_package_eq_true_name() -> None:
-    assert Package("my_package") == Package("my_package")
+def test_package_spec_eq_true_name() -> None:
+    assert PackageSpec("my_package") == PackageSpec("my_package")
 
 
-def test_package_eq_true_version() -> None:
-    assert Package("my_package", version="1.2.3") == Package("my_package", version="1.2.3")
+def test_package_spec_eq_true_version() -> None:
+    assert PackageSpec("my_package", version="1.2.3") == PackageSpec("my_package", version="1.2.3")
 
 
-def test_package_eq_true_extras() -> None:
-    assert Package("my_package", version="1.2.3", extras=["security", "socks"]) == Package(
+def test_package_spec_eq_true_extras() -> None:
+    assert PackageSpec("my_package", version="1.2.3", extras=["security", "socks"]) == PackageSpec(
         "my_package", version="1.2.3", extras=["security", "socks"]
     )
 
 
-def test_package_eq_false_different_name() -> None:
-    assert Package("my_package") != Package("my")
+def test_package_spec_eq_false_different_name() -> None:
+    assert PackageSpec("my_package") != PackageSpec("my")
 
 
-def test_package_eq_false_different_version() -> None:
-    assert Package("my_package", version="1.2.3") != Package("my_package", version="2.0.0")
+def test_package_spec_eq_false_different_version() -> None:
+    assert PackageSpec("my_package", version="1.2.3") != PackageSpec("my_package", version="2.0.0")
 
 
-def test_package_eq_false_different_extras() -> None:
-    assert Package("my_package", version="1.2.3", extras=["security", "socks"]) != Package(
+def test_package_spec_eq_false_different_extras() -> None:
+    assert PackageSpec("my_package", version="1.2.3", extras=["security", "socks"]) != PackageSpec(
         "my_package", version="1.2.3", extras=["dev"]
     )
 

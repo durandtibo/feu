@@ -25,7 +25,7 @@ from packaging.version import Version
 from feu.utils.package import PackageDependency
 
 if TYPE_CHECKING:
-    from feu.utils.package import Package
+    from feu.utils.package import PackageSpec
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +39,11 @@ class BaseDependencyResolver(ABC):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import DependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = DependencyResolver()
     >>> resolver
     DependencyResolver()
-    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
+    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
     >>> deps
     [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
@@ -65,7 +65,7 @@ class BaseDependencyResolver(ABC):
         ```pycon
 
         >>> from feu.install.pip.resolver2 import DependencyResolver, TorchDependencyResolver
-        >>> from feu.utils.package import Package
+        >>> from feu.utils.package import PackageSpec
         >>> obj1 = DependencyResolver()
         >>> obj2 = DependencyResolver()
         >>> obj3 = TorchDependencyResolver()
@@ -78,7 +78,7 @@ class BaseDependencyResolver(ABC):
         """
 
     @abstractmethod
-    def resolve(self, package: Package) -> list[PackageDependency]:
+    def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         r"""Find the dependency packages to install a specific package.
 
         Args:
@@ -92,9 +92,9 @@ class BaseDependencyResolver(ABC):
         ```pycon
 
         >>> from feu.install.pip.resolver2 import DependencyResolver
-        >>> from feu.utils.package import Package
+        >>> from feu.utils.package import PackageSpec
         >>> resolver = DependencyResolver()
-        >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
+        >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
         >>> deps
         [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
@@ -110,11 +110,11 @@ class DependencyResolver(BaseDependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import DependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = DependencyResolver()
     >>> resolver
     DependencyResolver()
-    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
+    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
     >>> deps
     [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
@@ -127,7 +127,7 @@ class DependencyResolver(BaseDependencyResolver):
     def equal(self, other: Any) -> bool:
         return type(self) is type(other)
 
-    def resolve(self, package: Package) -> list[PackageDependency]:
+    def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         return [package.to_package_dependency()]
 
 
@@ -141,15 +141,15 @@ class JaxDependencyResolver(DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import JaxDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = JaxDependencyResolver()
     >>> resolver
     JaxDependencyResolver()
-    >>> deps = resolver.resolve(Package(name="jax", version="0.4.26"))
+    >>> deps = resolver.resolve(PackageSpec(name="jax", version="0.4.26"))
     >>> deps
     [PackageDependency(name='jax', version_specifiers=['==0.4.26'], extras=None),
      PackageDependency(name='jaxlib', version_specifiers=['==0.4.26'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="jax", version="0.4.25"))
+    >>> deps = resolver.resolve(PackageSpec(name="jax", version="0.4.25"))
     >>> deps
     [PackageDependency(name='jax', version_specifiers=['==0.4.25'], extras=None),
      PackageDependency(name='jaxlib', version_specifiers=['==0.4.25'], extras=None),
@@ -158,7 +158,7 @@ class JaxDependencyResolver(DependencyResolver):
     ```
     """
 
-    def resolve(self, package: Package) -> list[PackageDependency]:
+    def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         deps = super().resolve(package)
         deps.append(PackageDependency("jaxlib", version_specifiers=[f"=={package.version}"]))
         ver = Version(package.version)
@@ -186,14 +186,14 @@ class Numpy2DependencyResolver(DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import Numpy2DependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = Numpy2DependencyResolver(min_version="1.2.3")
     >>> resolver
     Numpy2DependencyResolver(min_version=1.2.3)
-    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
+    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
     >>> deps
     [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.2"))
+    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.2"))
     >>> deps
     [PackageDependency(name='my_package', version_specifiers=['==1.2.2'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -212,7 +212,7 @@ class Numpy2DependencyResolver(DependencyResolver):
             return False
         return self._min_version == other._min_version
 
-    def resolve(self, package: Package) -> list[PackageDependency]:
+    def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         deps = super().resolve(package)
         if Version(package.version) < Version(self._min_version):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
@@ -229,14 +229,14 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import MatplotlibDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = MatplotlibDependencyResolver()
     >>> resolver
     MatplotlibDependencyResolver(min_version=3.8.4)
-    >>> deps = resolver.resolve(Package(name="matplotlib", version="3.8.4"))
+    >>> deps = resolver.resolve(PackageSpec(name="matplotlib", version="3.8.4"))
     >>> deps
     [PackageDependency(name='matplotlib', version_specifiers=['==3.8.4'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="matplotlib", version="3.8.3"))
+    >>> deps = resolver.resolve(PackageSpec(name="matplotlib", version="3.8.3"))
     >>> deps
     [PackageDependency(name='matplotlib', version_specifiers=['==3.8.3'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -258,14 +258,14 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import PandasDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = PandasDependencyResolver()
     >>> resolver
     PandasDependencyResolver(min_version=2.2.2)
-    >>> deps = resolver.resolve(Package(name="pandas", version="2.2.2"))
+    >>> deps = resolver.resolve(PackageSpec(name="pandas", version="2.2.2"))
     >>> deps
     [PackageDependency(name='pandas', version_specifiers=['==2.2.2'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="pandas", version="2.2.1"))
+    >>> deps = resolver.resolve(PackageSpec(name="pandas", version="2.2.1"))
     >>> deps
     [PackageDependency(name='pandas', version_specifiers=['==2.2.1'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -287,14 +287,14 @@ class PyarrowDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import PyarrowDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = PyarrowDependencyResolver()
     >>> resolver
     PyarrowDependencyResolver(min_version=16.0)
-    >>> deps = resolver.resolve(Package(name="pyarrow", version="16.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="pyarrow", version="16.0"))
     >>> deps
     [PackageDependency(name='pyarrow', version_specifiers=['==16.0'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="pyarrow", version="15.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="pyarrow", version="15.0"))
     >>> deps
     [PackageDependency(name='pyarrow', version_specifiers=['==15.0'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -316,14 +316,14 @@ class ScipyDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import ScipyDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = ScipyDependencyResolver()
     >>> resolver
     ScipyDependencyResolver(min_version=1.13.0)
-    >>> deps = resolver.resolve(Package(name="scipy", version="1.13.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="scipy", version="1.13.0"))
     >>> deps
     [PackageDependency(name='scipy', version_specifiers=['==1.13.0'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="scipy", version="1.12.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="scipy", version="1.12.0"))
     >>> deps
     [PackageDependency(name='scipy', version_specifiers=['==1.12.0'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -345,14 +345,14 @@ class SklearnDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import SklearnDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = SklearnDependencyResolver()
     >>> resolver
     SklearnDependencyResolver(min_version=1.4.2)
-    >>> deps = resolver.resolve(Package(name="scikit-learn", version="1.4.2"))
+    >>> deps = resolver.resolve(PackageSpec(name="scikit-learn", version="1.4.2"))
     >>> deps
     [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.2'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="scikit-learn", version="1.4.1"))
+    >>> deps = resolver.resolve(PackageSpec(name="scikit-learn", version="1.4.1"))
     >>> deps
     [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.1'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -374,14 +374,14 @@ class TorchDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import TorchDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = TorchDependencyResolver()
     >>> resolver
     TorchDependencyResolver(min_version=2.3.0)
-    >>> deps = resolver.resolve(Package(name="torch", version="2.3.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="torch", version="2.3.0"))
     >>> deps
     [PackageDependency(name='torch', version_specifiers=['==2.3.0'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="torch", version="2.2.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="torch", version="2.2.0"))
     >>> deps
     [PackageDependency(name='torch', version_specifiers=['==2.2.0'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
@@ -403,14 +403,14 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
     ```pycon
 
     >>> from feu.install.pip.resolver2 import XarrayDependencyResolver
-    >>> from feu.utils.package import Package
+    >>> from feu.utils.package import PackageSpec
     >>> resolver = XarrayDependencyResolver()
     >>> resolver
     XarrayDependencyResolver(min_version=2024.6.0)
-    >>> deps = resolver.resolve(Package(name="xarray", version="2024.6.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="xarray", version="2024.6.0"))
     >>> deps
     [PackageDependency(name='xarray', version_specifiers=['==2024.6.0'], extras=None)]
-    >>> deps = resolver.resolve(Package(name="xarray", version="2024.5.0"))
+    >>> deps = resolver.resolve(PackageSpec(name="xarray", version="2024.5.0"))
     >>> deps
     [PackageDependency(name='xarray', version_specifiers=['==2024.5.0'], extras=None),
      PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]

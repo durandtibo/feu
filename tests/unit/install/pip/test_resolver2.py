@@ -14,7 +14,7 @@ from feu.install.pip.resolver2 import (
     TorchDependencyResolver,
     XarrayDependencyResolver,
 )
-from feu.utils.package import Package, PackageDependency
+from feu.utils.package import PackageDependency, PackageSpec
 
 ########################################
 #     Tests for DependencyResolver     #
@@ -42,27 +42,27 @@ def test_dependency_resolver_equal_false_different_type() -> None:
 
 
 def test_dependency_resolver_resolve() -> None:
-    assert DependencyResolver().resolve(Package(name="my_package", version="1.2.3")) == [
+    assert DependencyResolver().resolve(PackageSpec(name="my_package", version="1.2.3")) == [
         PackageDependency(name="my_package", version_specifiers=["==1.2.3"])
     ]
 
 
 def test_dependency_resolver_resolve_no_version() -> None:
-    assert DependencyResolver().resolve(Package(name="my_package")) == [
+    assert DependencyResolver().resolve(PackageSpec(name="my_package")) == [
         PackageDependency(name="my_package")
     ]
 
 
 def test_dependency_resolver_resolve_with_extras() -> None:
     assert DependencyResolver().resolve(
-        Package(name="my_package", version="1.2.3", extras=["dev"])
+        PackageSpec(name="my_package", version="1.2.3", extras=["dev"])
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=["dev"])]
 
 
 def test_dependency_resolver_resolve_with_extras_empty() -> None:
-    assert DependencyResolver().resolve(Package(name="my_package", version="1.2.3", extras=[])) == [
-        PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=[])
-    ]
+    assert DependencyResolver().resolve(
+        PackageSpec(name="my_package", version="1.2.3", extras=[])
+    ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=[])]
 
 
 ###########################################
@@ -87,21 +87,21 @@ def test_jax_dependency_resolver_equal_false() -> None:
 
 
 def test_jax_dependency_resolver_resolve() -> None:
-    assert JaxDependencyResolver().resolve(Package(name="jax", version="0.4.26")) == [
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.4.26")) == [
         PackageDependency(name="jax", version_specifiers=["==0.4.26"]),
         PackageDependency(name="jaxlib", version_specifiers=["==0.4.26"]),
     ]
 
 
 def test_jax_dependency_resolver_resolve_high() -> None:
-    assert JaxDependencyResolver().resolve(Package(name="jax", version="0.4.27")) == [
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.4.27")) == [
         PackageDependency(name="jax", version_specifiers=["==0.4.27"]),
         PackageDependency(name="jaxlib", version_specifiers=["==0.4.27"]),
     ]
 
 
 def test_jax_dependency_resolver_resolve_low() -> None:
-    assert JaxDependencyResolver().resolve(Package(name="jax", version="0.4.25")) == [
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.4.25")) == [
         PackageDependency(name="jax", version_specifiers=["==0.4.25"]),
         PackageDependency(name="jaxlib", version_specifiers=["==0.4.25"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
@@ -110,7 +110,7 @@ def test_jax_dependency_resolver_resolve_low() -> None:
 
 @pytest.mark.parametrize("version", ["0.4.9", "0.4.10", "0.4.11"])
 def test_jax_dependency_resolver_resolve_ml_dtypes(version: str) -> None:
-    assert JaxDependencyResolver().resolve(Package(name="jax", version=version)) == [
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version=version)) == [
         PackageDependency(name="jax", version_specifiers=[f"=={version}"]),
         PackageDependency(name="jaxlib", version_specifiers=[f"=={version}"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
@@ -120,7 +120,7 @@ def test_jax_dependency_resolver_resolve_ml_dtypes(version: str) -> None:
 
 def test_jax_dependency_resolver_resolve_with_extras() -> None:
     assert JaxDependencyResolver().resolve(
-        Package(name="jax", version="0.4.26", extras=["dev"])
+        PackageSpec(name="jax", version="0.4.26", extras=["dev"])
     ) == [
         PackageDependency(name="jax", version_specifiers=["==0.4.26"], extras=["dev"]),
         PackageDependency(name="jaxlib", version_specifiers=["==0.4.26"]),
@@ -162,19 +162,19 @@ def test_numpy2_dependency_resolver_equal_false_different_type() -> None:
 
 def test_numpy2_dependency_resolver_resolve() -> None:
     assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
-        Package(name="my_package", version="1.2.3")
+        PackageSpec(name="my_package", version="1.2.3")
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"])]
 
 
 def test_numpy2_dependency_resolver_resolve_high() -> None:
     assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
-        Package(name="my_package", version="1.3.0")
+        PackageSpec(name="my_package", version="1.3.0")
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.3.0"])]
 
 
 def test_numpy2_dependency_resolver_resolve_low() -> None:
     assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
-        Package(name="my_package", version="1.2.0")
+        PackageSpec(name="my_package", version="1.2.0")
     ) == [
         PackageDependency(name="my_package", version_specifiers=["==1.2.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
@@ -183,7 +183,7 @@ def test_numpy2_dependency_resolver_resolve_low() -> None:
 
 def test_numpy2_dependency_resolver_resolve_with_extras() -> None:
     assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
-        Package(name="my_package", version="1.2.3", extras=["dev"])
+        PackageSpec(name="my_package", version="1.2.3", extras=["dev"])
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=["dev"])]
 
 
@@ -209,19 +209,21 @@ def test_matplotlib_dependency_resolver_equal_false() -> None:
 
 
 def test_matplotlib_dependency_resolver_resolve() -> None:
-    assert MatplotlibDependencyResolver().resolve(Package(name="matplotlib", version="3.8.4")) == [
-        PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"])
-    ]
+    assert MatplotlibDependencyResolver().resolve(
+        PackageSpec(name="matplotlib", version="3.8.4")
+    ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"])]
 
 
 def test_matplotlib_dependency_resolver_resolve_high() -> None:
-    assert MatplotlibDependencyResolver().resolve(Package(name="matplotlib", version="3.9.0")) == [
-        PackageDependency(name="matplotlib", version_specifiers=["==3.9.0"])
-    ]
+    assert MatplotlibDependencyResolver().resolve(
+        PackageSpec(name="matplotlib", version="3.9.0")
+    ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.9.0"])]
 
 
 def test_matplotlib_dependency_resolver_resolve_low() -> None:
-    assert MatplotlibDependencyResolver().resolve(Package(name="matplotlib", version="3.8.3")) == [
+    assert MatplotlibDependencyResolver().resolve(
+        PackageSpec(name="matplotlib", version="3.8.3")
+    ) == [
         PackageDependency(name="matplotlib", version_specifiers=["==3.8.3"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -229,7 +231,7 @@ def test_matplotlib_dependency_resolver_resolve_low() -> None:
 
 def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
     assert MatplotlibDependencyResolver().resolve(
-        Package(name="matplotlib", version="3.8.4", extras=["tk"])
+        PackageSpec(name="matplotlib", version="3.8.4", extras=["tk"])
     ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"], extras=["tk"])]
 
 
@@ -255,19 +257,19 @@ def test_pandas_dependency_resolver_equal_false() -> None:
 
 
 def test_pandas_dependency_resolver_resolve() -> None:
-    assert PandasDependencyResolver().resolve(Package(name="pandas", version="2.2.2")) == [
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.2.2")) == [
         PackageDependency(name="pandas", version_specifiers=["==2.2.2"])
     ]
 
 
 def test_pandas_dependency_resolver_resolve_high() -> None:
-    assert PandasDependencyResolver().resolve(Package(name="pandas", version="2.2.3")) == [
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.2.3")) == [
         PackageDependency(name="pandas", version_specifiers=["==2.2.3"])
     ]
 
 
 def test_pandas_dependency_resolver_resolve_low() -> None:
-    assert PandasDependencyResolver().resolve(Package(name="pandas", version="2.2.1")) == [
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.2.1")) == [
         PackageDependency(name="pandas", version_specifiers=["==2.2.1"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -275,7 +277,7 @@ def test_pandas_dependency_resolver_resolve_low() -> None:
 
 def test_pandas_dependency_resolver_resolve_with_extras() -> None:
     assert PandasDependencyResolver().resolve(
-        Package(name="pandas", version="2.2.2", extras=["performance"])
+        PackageSpec(name="pandas", version="2.2.2", extras=["performance"])
     ) == [PackageDependency(name="pandas", version_specifiers=["==2.2.2"], extras=["performance"])]
 
 
@@ -301,19 +303,19 @@ def test_pyarrow_dependency_resolver_equal_false() -> None:
 
 
 def test_pyarrow_dependency_resolver_resolve() -> None:
-    assert PyarrowDependencyResolver().resolve(Package(name="pyarrow", version="16.0")) == [
+    assert PyarrowDependencyResolver().resolve(PackageSpec(name="pyarrow", version="16.0")) == [
         PackageDependency(name="pyarrow", version_specifiers=["==16.0"])
     ]
 
 
 def test_pyarrow_dependency_resolver_resolve_high() -> None:
-    assert PyarrowDependencyResolver().resolve(Package(name="pyarrow", version="16.1")) == [
+    assert PyarrowDependencyResolver().resolve(PackageSpec(name="pyarrow", version="16.1")) == [
         PackageDependency(name="pyarrow", version_specifiers=["==16.1"])
     ]
 
 
 def test_pyarrow_dependency_resolver_resolve_low() -> None:
-    assert PyarrowDependencyResolver().resolve(Package(name="pyarrow", version="15.0")) == [
+    assert PyarrowDependencyResolver().resolve(PackageSpec(name="pyarrow", version="15.0")) == [
         PackageDependency(name="pyarrow", version_specifiers=["==15.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -321,7 +323,7 @@ def test_pyarrow_dependency_resolver_resolve_low() -> None:
 
 def test_pyarrow_dependency_resolver_resolve_with_extras() -> None:
     assert PyarrowDependencyResolver().resolve(
-        Package(name="pyarrow", version="16.0", extras=["pandas"])
+        PackageSpec(name="pyarrow", version="16.0", extras=["pandas"])
     ) == [PackageDependency(name="pyarrow", version_specifiers=["==16.0"], extras=["pandas"])]
 
 
@@ -347,19 +349,19 @@ def test_scipy_dependency_resolver_equal_false() -> None:
 
 
 def test_scipy_dependency_resolver_resolve() -> None:
-    assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.13.0")) == [
+    assert ScipyDependencyResolver().resolve(PackageSpec(name="scipy", version="1.13.0")) == [
         PackageDependency(name="scipy", version_specifiers=["==1.13.0"])
     ]
 
 
 def test_scipy_dependency_resolver_resolve_high() -> None:
-    assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.13.1")) == [
+    assert ScipyDependencyResolver().resolve(PackageSpec(name="scipy", version="1.13.1")) == [
         PackageDependency(name="scipy", version_specifiers=["==1.13.1"])
     ]
 
 
 def test_scipy_dependency_resolver_resolve_low() -> None:
-    assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.12.0")) == [
+    assert ScipyDependencyResolver().resolve(PackageSpec(name="scipy", version="1.12.0")) == [
         PackageDependency(name="scipy", version_specifiers=["==1.12.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -387,19 +389,21 @@ def test_sklearn_dependency_resolver_equal_false() -> None:
 
 
 def test_sklearn_dependency_resolver_resolve() -> None:
-    assert SklearnDependencyResolver().resolve(Package(name="scikit-learn", version="1.4.2")) == [
-        PackageDependency(name="scikit-learn", version_specifiers=["==1.4.2"])
-    ]
+    assert SklearnDependencyResolver().resolve(
+        PackageSpec(name="scikit-learn", version="1.4.2")
+    ) == [PackageDependency(name="scikit-learn", version_specifiers=["==1.4.2"])]
 
 
 def test_sklearn_dependency_resolver_resolve_high() -> None:
-    assert SklearnDependencyResolver().resolve(Package(name="scikit-learn", version="1.4.3")) == [
-        PackageDependency(name="scikit-learn", version_specifiers=["==1.4.3"])
-    ]
+    assert SklearnDependencyResolver().resolve(
+        PackageSpec(name="scikit-learn", version="1.4.3")
+    ) == [PackageDependency(name="scikit-learn", version_specifiers=["==1.4.3"])]
 
 
 def test_sklearn_dependency_resolver_resolve_low() -> None:
-    assert SklearnDependencyResolver().resolve(Package(name="scikit-learn", version="1.4.1")) == [
+    assert SklearnDependencyResolver().resolve(
+        PackageSpec(name="scikit-learn", version="1.4.1")
+    ) == [
         PackageDependency(name="scikit-learn", version_specifiers=["==1.4.1"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -407,7 +411,7 @@ def test_sklearn_dependency_resolver_resolve_low() -> None:
 
 def test_sklearn_dependency_resolver_resolve_with_extras() -> None:
     assert SklearnDependencyResolver().resolve(
-        Package(name="scikit-learn", version="1.4.2", extras=["benchmark"])
+        PackageSpec(name="scikit-learn", version="1.4.2", extras=["benchmark"])
     ) == [
         PackageDependency(name="scikit-learn", version_specifiers=["==1.4.2"], extras=["benchmark"])
     ]
@@ -435,19 +439,19 @@ def test_torch_dependency_resolver_equal_false() -> None:
 
 
 def test_torch_dependency_resolver_resolve() -> None:
-    assert TorchDependencyResolver().resolve(Package(name="torch", version="2.3.0")) == [
+    assert TorchDependencyResolver().resolve(PackageSpec(name="torch", version="2.3.0")) == [
         PackageDependency(name="torch", version_specifiers=["==2.3.0"])
     ]
 
 
 def test_torch_dependency_resolver_resolve_high() -> None:
-    assert TorchDependencyResolver().resolve(Package(name="torch", version="2.3.1")) == [
+    assert TorchDependencyResolver().resolve(PackageSpec(name="torch", version="2.3.1")) == [
         PackageDependency(name="torch", version_specifiers=["==2.3.1"])
     ]
 
 
 def test_torch_dependency_resolver_resolve_low() -> None:
-    assert TorchDependencyResolver().resolve(Package(name="torch", version="2.2.0")) == [
+    assert TorchDependencyResolver().resolve(PackageSpec(name="torch", version="2.2.0")) == [
         PackageDependency(name="torch", version_specifiers=["==2.2.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -475,19 +479,19 @@ def test_xarray_dependency_resolver_equal_false() -> None:
 
 
 def test_xarray_dependency_resolver_resolve() -> None:
-    assert XarrayDependencyResolver().resolve(Package(name="xarray", version="2024.6.0")) == [
+    assert XarrayDependencyResolver().resolve(PackageSpec(name="xarray", version="2024.6.0")) == [
         PackageDependency(name="xarray", version_specifiers=["==2024.6.0"]),
     ]
 
 
 def test_xarray_dependency_resolver_resolve_high() -> None:
-    assert XarrayDependencyResolver().resolve(Package(name="xarray", version="2024.7.0")) == [
+    assert XarrayDependencyResolver().resolve(PackageSpec(name="xarray", version="2024.7.0")) == [
         PackageDependency(name="xarray", version_specifiers=["==2024.7.0"]),
     ]
 
 
 def test_xarray_dependency_resolver_resolve_low() -> None:
-    assert XarrayDependencyResolver().resolve(Package(name="xarray", version="2024.5.0")) == [
+    assert XarrayDependencyResolver().resolve(PackageSpec(name="xarray", version="2024.5.0")) == [
         PackageDependency(name="xarray", version_specifiers=["==2024.5.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
@@ -495,7 +499,7 @@ def test_xarray_dependency_resolver_resolve_low() -> None:
 
 def test_xarray_dependency_resolver_resolve_with_extras() -> None:
     assert XarrayDependencyResolver().resolve(
-        Package(name="xarray", version="2024.6.0", extras=["performance"])
+        PackageSpec(name="xarray", version="2024.6.0", extras=["performance"])
     ) == [
         PackageDependency(name="xarray", version_specifiers=["==2024.6.0"], extras=["performance"]),
     ]
