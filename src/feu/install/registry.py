@@ -83,7 +83,7 @@ class InstallerRegistry:
     @classmethod
     def install(cls, installer: InstallerSpec, package: PackageSpec) -> None:
         r"""Install a package and associated packages by using the
-        secified installer.
+        specified installer.
 
         Args:
             installer: The installer specification.
