@@ -10,6 +10,8 @@ from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 
 if TYPE_CHECKING:
     from feu.install.installer import BaseInstaller
+    from feu.utils.installer import InstallerSpec
+    from feu.utils.package import PackageSpec
 
 
 class InstallerRegistry:
@@ -79,28 +81,27 @@ class InstallerRegistry:
         return name in cls.registry
 
     @classmethod
-    def install(cls, installer: str, package: str, version: str, args: str = "") -> None:
+    def install(cls, installer: InstallerSpec, package: PackageSpec) -> None:
         r"""Install a package and associated packages by using the
-        secified installer.
+        specified installer.
 
         Args:
-            installer: The package installer name to use to install
-                the packages.
-            package: The target package to install.
-            version: The target version of the package to install.
-            args: Optional arguments to pass to the package installer.
-                The list of valid arguments depend on the package
-                installer.
+            installer: The installer specification.
+            package: The package specification.
 
         Example usage:
 
         ```pycon
 
         >>> from feu.install import InstallerRegistry
+        >>> from feu.utils.installer import InstallerSpec
+        >>> from feu.utils.package import PackageSpec
         >>> InstallerRegistry.install(
-        ...     installer="pip", package="pandas", version="2.2.2"
+        ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
         ... )  # doctest: +SKIP
 
         ```
         """
-        cls.registry[installer].install(package=package, version=version, args=args)
+        cls.registry[installer.name].install(
+            package=package.name, version=package.version, args=installer.arguments
+        )

@@ -43,12 +43,7 @@ def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
 
     ```
     """
-    InstallerRegistry.install(
-        installer=installer.name,
-        package=package.name,
-        version=package.version,
-        args=installer.arguments,
-    )
+    InstallerRegistry.install(installer=installer, package=package)
 
 
 def install_package_closest_version(installer: InstallerSpec, package: PackageSpec) -> None:
