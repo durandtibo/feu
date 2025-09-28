@@ -149,6 +149,11 @@ class JaxDependencyResolver(DependencyResolver):
     >>> deps
     [PackageDependency(name='jax', version_specifiers=['==0.4.26'], extras=None),
      PackageDependency(name='jaxlib', version_specifiers=['==0.4.26'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="jax", version="0.4.25"))
+    >>> deps
+    [PackageDependency(name='jax', version_specifiers=['==0.4.25'], extras=None),
+     PackageDependency(name='jaxlib', version_specifiers=['==0.4.25'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -188,6 +193,10 @@ class Numpy2DependencyResolver(DependencyResolver):
     >>> deps = resolver.resolve(Package(name="my_package", version="1.2.3"))
     >>> deps
     [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="my_package", version="1.2.2"))
+    >>> deps
+    [PackageDependency(name='my_package', version_specifiers=['==1.2.2'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -227,6 +236,10 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="matplotlib", version="3.8.4"))
     >>> deps
     [PackageDependency(name='matplotlib', version_specifiers=['==3.8.4'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="matplotlib", version="3.8.3"))
+    >>> deps
+    [PackageDependency(name='matplotlib', version_specifiers=['==3.8.3'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -252,6 +265,10 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="pandas", version="2.2.2"))
     >>> deps
     [PackageDependency(name='pandas', version_specifiers=['==2.2.2'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="pandas", version="2.2.1"))
+    >>> deps
+    [PackageDependency(name='pandas', version_specifiers=['==2.2.1'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -277,6 +294,10 @@ class PyarrowDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="pyarrow", version="16.0"))
     >>> deps
     [PackageDependency(name='pyarrow', version_specifiers=['==16.0'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="pyarrow", version="15.0"))
+    >>> deps
+    [PackageDependency(name='pyarrow', version_specifiers=['==15.0'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -302,6 +323,10 @@ class ScipyDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="scipy", version="1.13.0"))
     >>> deps
     [PackageDependency(name='scipy', version_specifiers=['==1.13.0'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="scipy", version="1.12.0"))
+    >>> deps
+    [PackageDependency(name='scipy', version_specifiers=['==1.12.0'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -327,6 +352,10 @@ class SklearnDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="scikit-learn", version="1.4.2"))
     >>> deps
     [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.2'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="scikit-learn", version="1.4.1"))
+    >>> deps
+    [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.1'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -352,6 +381,10 @@ class TorchDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="torch", version="2.3.0"))
     >>> deps
     [PackageDependency(name='torch', version_specifiers=['==2.3.0'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="torch", version="2.2.0"))
+    >>> deps
+    [PackageDependency(name='torch', version_specifiers=['==2.2.0'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
@@ -377,6 +410,10 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
     >>> deps = resolver.resolve(Package(name="xarray", version="2024.6.0"))
     >>> deps
     [PackageDependency(name='xarray', version_specifiers=['==2024.6.0'], extras=None)]
+    >>> deps = resolver.resolve(Package(name="xarray", version="2024.5.0"))
+    >>> deps
+    [PackageDependency(name='xarray', version_specifiers=['==2024.5.0'], extras=None),
+     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
     ```
     """
