@@ -9,6 +9,8 @@ from feu.install import (
     install_package_closest_version,
 )
 from feu.package import find_closest_version
+from feu.utils.installer import InstallerSpec
+from feu.utils.package import PackageSpec
 from feu.utils.version import get_python_major_minor
 
 
@@ -36,7 +38,9 @@ def pkg_version(pkg_name: str) -> str:
 
 @pytest.mark.parametrize("installer", get_available_installers())
 def test_install_package(installer: str, pkg_name: str, pkg_version: str) -> None:
-    install_package(installer=installer, package=pkg_name, version=pkg_version)
+    install_package(
+        installer=InstallerSpec(installer), package=PackageSpec(name=pkg_name, version=pkg_version)
+    )
     assert is_package_available(pkg_name)
 
 
@@ -47,5 +51,7 @@ def test_install_package(installer: str, pkg_name: str, pkg_version: str) -> Non
 
 @pytest.mark.parametrize("installer", get_available_installers())
 def test_install_package_closest_version(installer: str, pkg_name: str, pkg_version: str) -> None:
-    install_package_closest_version(installer=installer, package=pkg_name, version=pkg_version)
+    install_package_closest_version(
+        installer=InstallerSpec(installer), package=PackageSpec(name=pkg_name, version=pkg_version)
+    )
     assert is_package_available(pkg_name)
