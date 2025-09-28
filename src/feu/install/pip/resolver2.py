@@ -11,6 +11,7 @@ __all__ = [
     "PandasDependencyResolver",
     "PyarrowDependencyResolver",
     "ScipyDependencyResolver",
+    "SklearnDependencyResolver",
     "TorchDependencyResolver",
     "XarrayDependencyResolver",
 ]
@@ -307,6 +308,31 @@ class ScipyDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(min_version="1.13.0")
+
+
+class SklearnDependencyResolver(Numpy2DependencyResolver):
+    r"""Implement the ``scikit-learn`` dependency resolver.
+
+    ``numpy`` 2.0 support was added in ``scikit-learn`` 1.4.2.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.resolver2 import SklearnDependencyResolver
+    >>> from feu.utils.package import Package
+    >>> resolver = SklearnDependencyResolver()
+    >>> resolver
+    SklearnDependencyResolver(min_version=1.4.2)
+    >>> deps = resolver.resolve(Package(name="scikit-learn", version="1.4.2"))
+    >>> deps
+    [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.2'], extras=None)]
+
+    ```
+    """
+
+    def __init__(self) -> None:
+        super().__init__(min_version="1.4.2")
 
 
 class TorchDependencyResolver(Numpy2DependencyResolver):

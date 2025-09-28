@@ -10,6 +10,7 @@ from feu.install.pip.resolver2 import (
     PandasDependencyResolver,
     PyarrowDependencyResolver,
     ScipyDependencyResolver,
+    SklearnDependencyResolver,
     TorchDependencyResolver,
     XarrayDependencyResolver,
 )
@@ -361,6 +362,54 @@ def test_scipy_dependency_resolver_resolve_low() -> None:
     assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.12.0")) == [
         PackageDependency(name="scipy", version_specifiers=["==1.12.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+###############################################
+#     Tests for SklearnDependencyResolver     #
+###############################################
+
+
+def test_sklearn_dependency_resolver_repr() -> None:
+    assert repr(SklearnDependencyResolver()).startswith("SklearnDependencyResolver(")
+
+
+def test_sklearn_dependency_resolver_str() -> None:
+    assert str(SklearnDependencyResolver()).startswith("SklearnDependencyResolver(")
+
+
+def test_sklearn_dependency_resolver_equal_true() -> None:
+    assert SklearnDependencyResolver().equal(SklearnDependencyResolver())
+
+
+def test_sklearn_dependency_resolver_equal_false() -> None:
+    assert not SklearnDependencyResolver().equal(42)
+
+
+def test_sklearn_dependency_resolver_resolve() -> None:
+    assert SklearnDependencyResolver().resolve(Package(name="scikit-learn", version="1.4.2")) == [
+        PackageDependency(name="scikit-learn", version_specifiers=["==1.4.2"])
+    ]
+
+
+def test_sklearn_dependency_resolver_resolve_high() -> None:
+    assert SklearnDependencyResolver().resolve(Package(name="scikit-learn", version="1.4.3")) == [
+        PackageDependency(name="scikit-learn", version_specifiers=["==1.4.3"])
+    ]
+
+
+def test_sklearn_dependency_resolver_resolve_low() -> None:
+    assert SklearnDependencyResolver().resolve(Package(name="scikit-learn", version="1.4.1")) == [
+        PackageDependency(name="scikit-learn", version_specifiers=["==1.4.1"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_sklearn_dependency_resolver_resolve_with_extras() -> None:
+    assert SklearnDependencyResolver().resolve(
+        Package(name="scikit-learn", version="1.4.2", extras=["benchmark"])
+    ) == [
+        PackageDependency(name="scikit-learn", version_specifiers=["==1.4.2"], extras=["benchmark"])
     ]
 
 
