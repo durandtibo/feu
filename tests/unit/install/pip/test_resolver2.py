@@ -9,6 +9,7 @@ from feu.install.pip.resolver2 import (
     Numpy2DependencyResolver,
     PandasDependencyResolver,
     PyarrowDependencyResolver,
+    ScipyDependencyResolver,
     TorchDependencyResolver,
     XarrayDependencyResolver,
 )
@@ -321,6 +322,46 @@ def test_pyarrow_dependency_resolver_resolve_with_extras() -> None:
     assert PyarrowDependencyResolver().resolve(
         Package(name="pyarrow", version="16.0", extras=["pandas"])
     ) == [PackageDependency(name="pyarrow", version_specifiers=["==16.0"], extras=["pandas"])]
+
+
+#############################################
+#     Tests for ScipyDependencyResolver     #
+#############################################
+
+
+def test_scipy_dependency_resolver_repr() -> None:
+    assert repr(ScipyDependencyResolver()).startswith("ScipyDependencyResolver(")
+
+
+def test_scipy_dependency_resolver_str() -> None:
+    assert str(ScipyDependencyResolver()).startswith("ScipyDependencyResolver(")
+
+
+def test_scipy_dependency_resolver_equal_true() -> None:
+    assert ScipyDependencyResolver().equal(ScipyDependencyResolver())
+
+
+def test_scipy_dependency_resolver_equal_false() -> None:
+    assert not ScipyDependencyResolver().equal(42)
+
+
+def test_scipy_dependency_resolver_resolve() -> None:
+    assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.13.0")) == [
+        PackageDependency(name="scipy", version_specifiers=["==1.13.0"])
+    ]
+
+
+def test_scipy_dependency_resolver_resolve_high() -> None:
+    assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.13.1")) == [
+        PackageDependency(name="scipy", version_specifiers=["==1.13.1"])
+    ]
+
+
+def test_scipy_dependency_resolver_resolve_low() -> None:
+    assert ScipyDependencyResolver().resolve(Package(name="scipy", version="1.12.0")) == [
+        PackageDependency(name="scipy", version_specifiers=["==1.12.0"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
 
 
 #############################################
