@@ -12,72 +12,79 @@ __all__ = [
 
 import shutil
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 from feu.install import InstallerRegistry
 from feu.package import find_closest_version
 from feu.utils.version import get_python_major_minor
 
+if TYPE_CHECKING:
+    from feu.utils.installer import InstallerSpec
+    from feu.utils.package import PackageSpec
 
-def install_package(installer: str, package: str, version: str, args: str = "") -> None:
-    r"""Install a package and associated packages by using the secified
-    installer.
+
+def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
+    r"""Install a package with the specified installer.
 
     Args:
-        installer: The package installer name to use to install the
-            packages.
-        package: The target package to install.
-        version: The target version of the package to install.
-        args: Optional arguments to pass to the package installer.
-            The list of valid arguments depend on the package
-            installer.
+        installer: The installer specification.
+        package: The package specification.
 
     Example usage:
 
     ```pycon
 
     >>> from feu.install import install_package
-    >>> install_package(installer="pip", package="pandas", version="2.2.2")  # doctest: +SKIP
+    >>> from feu.utils.installer import InstallerSpec
+    >>> from feu.utils.package import PackageSpec
+    >>> install_package(
+    ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
+    ... )  # doctest: +SKIP
 
     ```
     """
-    InstallerRegistry.install(installer=installer, package=package, version=version, args=args)
+    InstallerRegistry.install(
+        installer=installer.name,
+        package=package.name,
+        version=package.version,
+        args=installer.arguments,
+    )
 
 
-def install_package_closest_version(
-    installer: str, package: str, version: str, args: str = ""
-) -> None:
+def install_package_closest_version(installer: InstallerSpec, package: PackageSpec) -> None:
     r"""Install a package and associated packages by using the secified
     installer.
 
     This function finds the closest valid version if the specified
-    version is not specified.
+    version is not compatible.
 
     Args:
-        installer: The package installer name to use to install the
-            packages.
-        package: The target package to install.
-        version: The target version of the package to install.
-        args: Optional arguments to pass to the package installer.
-            The list of valid arguments depend on the package
-            installer.
+        installer: The installer specification.
+        package: The package specification.
 
     Example usage:
 
     ```pycon
 
     >>> from feu.install import install_package_closest_version
+    >>> from feu.utils.installer import InstallerSpec
+    >>> from feu.utils.package import PackageSpec
     >>> install_package_closest_version(
-    ...     installer="pip", package="pandas", version="2.2.2"
+    ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
     ... )  # doctest: +SKIP
 
     ```
     """
-    version = find_closest_version(
-        pkg_name=package,
-        pkg_version=version,
-        python_version=get_python_major_minor(),
+    install_package(
+        installer=installer,
+        package=package.with_version(
+            find_closest_version(
+                pkg_name=package.name,
+                pkg_version=package.version,
+                python_version=get_python_major_minor(),
+            )
+        ),
     )
-    install_package(installer=installer, package=package, version=version, args=args)
 
 
 @lru_cache(1)

@@ -6,6 +6,8 @@ from feu.imports import is_click_available
 from feu.install import install_package_closest_version
 from feu.package import find_closest_version as find_closest_version_
 from feu.package import is_valid_version
+from feu.utils.installer import InstallerSpec
+from feu.utils.package import PackageSpec
 
 if is_click_available():  # pragma: no cover
     import click
@@ -44,7 +46,8 @@ def install(installer: str, pkg_name: str, pkg_version: str, args: str = "") -> 
     ```
     """
     install_package_closest_version(
-        installer=installer, package=pkg_name, version=pkg_version, args=args
+        installer=InstallerSpec(name=installer, arguments=args),
+        package=PackageSpec(name=pkg_name, version=pkg_version),
     )
 
 
