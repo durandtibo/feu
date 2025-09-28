@@ -35,7 +35,11 @@ def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
     ```pycon
 
     >>> from feu.install import install_package
-    >>> install_package(installer="pip", package="pandas", version="2.2.2")  # doctest: +SKIP
+    >>> from feu.utils.installer import InstallerSpec
+    >>> from feu.utils.package import PackageSpec
+    >>> install_package(
+    ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
+    ... )  # doctest: +SKIP
 
     ```
     """
@@ -63,8 +67,10 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
     ```pycon
 
     >>> from feu.install import install_package_closest_version
+    >>> from feu.utils.installer import InstallerSpec
+    >>> from feu.utils.package import PackageSpec
     >>> install_package_closest_version(
-    ...     installer="pip", package="pandas", version="2.2.2"
+    ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
     ... )  # doctest: +SKIP
 
     ```
