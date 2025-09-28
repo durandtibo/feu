@@ -109,6 +109,31 @@ def test_package_spec_eq_false_different_extras() -> None:
     )
 
 
+def test_package_spec_with_version() -> None:
+    pkg1 = PackageSpec(name="my_package", version="1.2.0")
+    pkg2 = pkg1.with_version("1.2.3")
+    assert pkg1 is not pkg2
+    assert pkg1 == PackageSpec(name="my_package", version="1.2.0")
+    assert pkg2 == PackageSpec(name="my_package", version="1.2.3")
+
+
+def test_package_spec_with_version_no_version() -> None:
+    pkg1 = PackageSpec("my_package")
+    pkg2 = pkg1.with_version("1.2.3")
+    assert pkg1 is not pkg2
+    assert pkg1 == PackageSpec(name="my_package")
+    assert pkg2 == PackageSpec(name="my_package", version="1.2.3")
+
+
+def test_package_spec_with_version_extras() -> None:
+    pkg1 = PackageSpec(name="my_package", version="1.2.0", extras=["dev"])
+    pkg2 = pkg1.with_version("1.2.3")
+    assert pkg1 is not pkg2
+    assert pkg1 == PackageSpec(name="my_package", version="1.2.0", extras=["dev"])
+    assert pkg2 == PackageSpec(name="my_package", version="1.2.3", extras=["dev"])
+    assert pkg1.extras is not pkg2.extras
+
+
 #######################################
 #     Tests for PackageDependency     #
 #######################################

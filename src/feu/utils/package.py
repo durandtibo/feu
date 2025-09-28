@@ -10,6 +10,7 @@ __all__ = [
     "generate_extras_string",
 ]
 
+import copy
 import re
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -77,6 +78,31 @@ class PackageSpec:
             extras=self.extras,
             version_specifiers=[f"=={self.version}"] if self.version else None,
         )
+
+    def with_version(self, version: str | None) -> PackageSpec:
+        r"""Create a new ``PackageSpec`` instance with the given version.
+
+        Args:
+            version: The new version to apply.
+
+        Returns:
+            A new instance of PackageSpec with the updated version.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.utils.package import PackageSpec
+        >>> pkg = PackageSpec("my_package", version="1.2.0")
+        >>> pkg
+        PackageSpec(name='my_package', version='1.2.0', extras=None)
+        >>> pkg2 = pkg.with_version("1.2.3")
+        >>> pkg2
+        PackageSpec(name='my_package', version='1.2.3', extras=None)
+
+        ```
+        """
+        return self.__class__(name=self.name, version=version, extras=copy.deepcopy(self.extras))
 
 
 @dataclass
