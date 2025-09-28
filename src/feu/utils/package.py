@@ -3,8 +3,8 @@ r"""Contain utility functions to manage packages."""
 from __future__ import annotations
 
 __all__ = [
-    "Package",
     "PackageDependency",
+    "PackageSpec",
     "extract_package_extras",
     "extract_package_name",
     "generate_extras_string",
@@ -19,8 +19,8 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Package:
-    r"""Define a dataclass to represent a package.
+class PackageSpec:
+    r"""Define a dataclass to represent a package specification.
 
     Args:
         name: The package name.
@@ -31,16 +31,16 @@ class Package:
 
     ```pycon
 
-    >>> from feu.utils.package import Package
-    >>> pkg1 = Package("my_package")
+    >>> from feu.utils.package import PackageSpec
+    >>> pkg1 = PackageSpec("my_package")
     >>> pkg1
-    Package(name='my_package', version=None, extras=None)
-    >>> pkg2 = Package("my_package", version="1.2.3")
+    PackageSpec(name='my_package', version=None, extras=None)
+    >>> pkg2 = PackageSpec("my_package", version="1.2.3")
     >>> pkg2
-    Package(name='my_package', version='1.2.3', extras=None)
-    >>> pkg3 = Package("my_package", version="1.2.3", extras=["security", "socks"])
+    PackageSpec(name='my_package', version='1.2.3', extras=None)
+    >>> pkg3 = PackageSpec("my_package", version="1.2.3", extras=["security", "socks"])
     >>> pkg3
-    Package(name='my_package', version='1.2.3', extras=['security', 'socks'])
+    PackageSpec(name='my_package', version='1.2.3', extras=['security', 'socks'])
 
     ```
     """
@@ -64,8 +64,8 @@ class Package:
 
         ```pycon
 
-        >>> from feu.utils.package import Package
-        >>> pkg = Package("my_package")
+        >>> from feu.utils.package import PackageSpec
+        >>> pkg = PackageSpec("my_package")
         >>> dep = pkg.to_package_dependency()
         >>> dep
         PackageDependency(name='my_package', version_specifiers=None, extras=None)
