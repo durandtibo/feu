@@ -569,8 +569,8 @@ def test_dependency_resolver_registry_has_resolver_false() -> None:
 
 
 def test_dependency_resolver_registry_find_resolver() -> None:
-    assert isinstance(
-        DependencyResolverRegistry.find_resolver(PackageSpec("torch")), TorchDependencyResolver
+    assert (
+        DependencyResolverRegistry.find_resolver(PackageSpec("torch")) == TorchDependencyResolver()
     )
 
 
