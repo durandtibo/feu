@@ -2,7 +2,7 @@ r"""Define the pip compatible installers."""
 
 from __future__ import annotations
 
-__all__ = ["BasePipInstaller", "PipInstaller"]
+__all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
 from abc import abstractmethod
 from typing import TYPE_CHECKING
@@ -116,6 +116,31 @@ class PipxInstaller(BasePipInstaller):
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
         cmd_parts = ["pipx", "install"]
+        if args:
+            cmd_parts.append(args)
+        cmd_parts.extend(map(str, deps))
+        return " ".join(cmd_parts)
+
+
+class UvInstaller(BasePipInstaller):
+    """Implement a uv package installer.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.installer2 import UvInstaller
+    >>> from feu.utils.package import PackageSpec
+    >>> installer = UvInstaller()
+    >>> installer
+    UvInstaller(arguments='')
+    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
+
+    ```
+    """
+
+    def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
+        cmd_parts = ["uv", "pip", "install"]
         if args:
             cmd_parts.append(args)
         cmd_parts.extend(map(str, deps))
