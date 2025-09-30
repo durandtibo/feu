@@ -27,7 +27,7 @@ class BaseInstaller(ABC):
 
     ```pycon
 
-    >>> from feu.install.pip.installer2 import PipInstaller
+    >>> from feu.install.pip import PipInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = PipInstaller()
     >>> installer
@@ -51,7 +51,7 @@ class BaseInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> from feu.install.pip import PipInstaller
         >>> from feu.utils.package import PackageSpec
         >>> obj1 = PipInstaller()
         >>> obj2 = PipInstaller()
@@ -75,7 +75,7 @@ class BaseInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> from feu.install.pip import PipInstaller
         >>> from feu.utils.package import PackageSpec
         >>> installer = PipInstaller()
         >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
@@ -98,7 +98,7 @@ class BaseInstaller(ABC):
 
         ```pycon
 
-        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> from feu.install.pip import PipInstaller
         >>> installer = PipInstaller.instantiate_with_arguments("-U")
         >>> installer
         PipInstaller(arguments='-U')

@@ -8,7 +8,7 @@ import sys
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from feu.install.installer2 import BaseInstaller
+from feu.install.installer import BaseInstaller
 from feu.install.pip.resolver2 import (
     DependencyResolverRegistry,
 )
@@ -37,7 +37,7 @@ class BasePipInstaller(BaseInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer2 import BasePipInstaller
+    >>> from feu.install.pip.installer import BasePipInstaller
     >>> from feu.utils.package import PackageSpec, PackageDependency
     >>> class MyInstaller(BasePipInstaller):
     ...     def _generate_command(self, deps, args):
@@ -94,7 +94,7 @@ class PipInstaller(BasePipInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer2 import PipInstaller
+    >>> from feu.install.pip import PipInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = PipInstaller()
     >>> installer
@@ -119,7 +119,7 @@ class PipxInstaller(BasePipInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer2 import PipxInstaller
+    >>> from feu.install.pip import PipxInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = PipxInstaller()
     >>> installer
@@ -144,7 +144,7 @@ class UvInstaller(BasePipInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer2 import UvInstaller
+    >>> from feu.install.pip import UvInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = UvInstaller()
     >>> installer

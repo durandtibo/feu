@@ -29,7 +29,7 @@ def _reset() -> None:
 
 
 def test_install_package_pip_numpy() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         install_package(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
         )
@@ -37,7 +37,7 @@ def test_install_package_pip_numpy() -> None:
 
 
 def test_install_package_pip_pandas() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         install_package(
             installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.1.1")
         )
@@ -45,7 +45,7 @@ def test_install_package_pip_pandas() -> None:
 
 
 def test_install_package_uv_numpy() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         install_package(
             installer=InstallerSpec("uv"), package=PackageSpec(name="numpy", version="2.0.0")
         )
@@ -53,7 +53,7 @@ def test_install_package_uv_numpy() -> None:
 
 
 def test_install_package_pip_numpy_with_args() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         install_package(
             installer=InstallerSpec("pip", arguments="-U"),
             package=PackageSpec(name="numpy", version="2.0.0"),
@@ -69,7 +69,7 @@ def test_install_package_pip_numpy_with_args() -> None:
 def test_install_package_closest_version_pip_numpy() -> None:
     with (
         patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
-        patch("feu.install.pip.installer2.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
@@ -80,7 +80,7 @@ def test_install_package_closest_version_pip_numpy() -> None:
 def test_install_package_closest_version_pip_pandas() -> None:
     with (
         patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
-        patch("feu.install.pip.installer2.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.1.1")
@@ -91,7 +91,7 @@ def test_install_package_closest_version_pip_pandas() -> None:
 def test_install_package_closest_version_uv_numpy() -> None:
     with (
         patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
-        patch("feu.install.pip.installer2.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("uv"), package=PackageSpec(name="numpy", version="2.0.0")
@@ -102,7 +102,7 @@ def test_install_package_closest_version_uv_numpy() -> None:
 def test_install_package_closest_version_pip_numpy_with_args() -> None:
     with (
         patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
-        patch("feu.install.pip.installer2.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip", arguments="-U"),

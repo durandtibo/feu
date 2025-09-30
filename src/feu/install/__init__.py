@@ -13,7 +13,7 @@ __all__ = [
     "is_uv_available",
 ]
 
-from feu.install.installer2 import BaseInstaller
+from feu.install.installer import BaseInstaller
 from feu.install.registry import InstallerRegistry
 from feu.install.utils import (
     get_available_installers,
