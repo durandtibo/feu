@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
+import sys
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
@@ -12,6 +13,11 @@ from feu.install.pip.resolver2 import (
     DependencyResolverRegistry,
 )
 from feu.utils.command import run_bash_command
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -61,6 +67,10 @@ class BasePipInstaller(BaseInstaller):
         cmd = self._generate_command(deps=deps, args=self._arguments)
         cmd = " ".join(cmd.split())  # remove duplicate spaces
         run_bash_command(cmd)
+
+    @classmethod
+    def instantiate_with_arguments(cls, arguments: str) -> Self:
+        return cls(arguments=arguments)
 
     @abstractmethod
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
