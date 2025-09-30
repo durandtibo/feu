@@ -21,14 +21,18 @@ def test_install_default_installer() -> None:
 
 @click_available
 @pip_available
-def test_install_pip() -> None:
-    run_bash_command("python -m feu install --installer=pip --pkg-name=numpy --pkg-version=2.2.5")
+def test_install_installer_pip() -> None:
+    run_bash_command(
+        "python -m feu install --pkg-name=numpy --pkg-version=2.2.5 --installer-name=pip"
+    )
 
 
 @click_available
 @uv_available
 def test_install_uv() -> None:
-    run_bash_command("python -m feu install --installer=uv --pkg-name=numpy --pkg-version=2.2.5")
+    run_bash_command(
+        "python -m feu install --pkg-name=numpy --pkg-version=2.2.5 --installer-name=uv"
+    )
 
 
 @click_available

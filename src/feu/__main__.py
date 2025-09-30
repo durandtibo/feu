@@ -19,35 +19,62 @@ def cli() -> None:
 
 
 @click.command()
-@click.option(
-    "-i", "--installer", "installer", help="Installer name", required=True, type=str, default="pip"
-)
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
 @click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
 @click.option(
-    "-a", "--args", "args", help="Optional installer arguments", required=True, type=str, default=""
+    "-e", "--pkg-extras", "pkg_extras", help="Package version", required=True, type=str, default=""
 )
-def install(installer: str, pkg_name: str, pkg_version: str, args: str = "") -> None:
+@click.option(
+    "-i",
+    "--installer-name",
+    "installer_name",
+    help="Optional installer name",
+    required=True,
+    type=str,
+    default="pip",
+)
+@click.option(
+    "-a",
+    "--installer-args",
+    "installer_args",
+    help="Optional installer arguments",
+    required=True,
+    type=str,
+    default="",
+)
+def install(
+    pkg_name: str,
+    pkg_version: str,
+    pkg_extras: str,
+    installer_name: str,
+    installer_args: str,
+) -> None:
     r"""Install a package and associated packages.
 
     Args:
-        installer: The package installer name to use to install
-            the packages.
         pkg_name: The package name e.g. ``'pandas'``.
-        pkg_version: The target version to install.
-        args: Optional arguments to pass to the package installer.
-            The list of valid arguments depend on the package
+        pkg_version: The target version of the package to install.
+        pkg_extras: Optional package extra dependencies.
+        installer_name: The package installer name to use to install
+            the packages.
+        installer_args: Optional arguments to pass to the package
+            installer. The valid arguments depend on the package
             installer.
 
     Example usage:
 
     ```
-    python -m feu install --installer=pip --pkg-name=numpy --pkg-version=2.0.2
+    python -m feu install --installer-name=pip --pkg-name=numpy --pkg-version=2.0.2
     ```
     """
+    pkg_extras = pkg_extras.strip()
     install_package_closest_version(
-        installer=InstallerSpec(name=installer, arguments=args),
-        package=PackageSpec(name=pkg_name, version=pkg_version),
+        installer=InstallerSpec(name=installer_name, arguments=installer_args),
+        package=PackageSpec(
+            name=pkg_name,
+            version=pkg_version,
+            extras=pkg_extras.split(",") if pkg_extras else [],
+        ),
     )
 
 
@@ -68,7 +95,7 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
 
     Example usage:
 
-    python -m feu find-closest-version --pkg_name=numpy --pkg_version=2.0.2 --python_version=3.10
+    python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
     """
     print(  # noqa: T201
         find_closest_version_(
