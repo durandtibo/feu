@@ -26,10 +26,30 @@ class BasePipInstaller(BaseInstaller):
     Args:
         arguments: Optional arguments to pass to the package installer.
             The valid arguments depend on the package installer.
+
+    Example usage (subclassing):
+
+    ```pycon
+
+    >>> from feu.install.pip.installer2 import BasePipInstaller
+    >>> from feu.utils.package import PackageSpec, PackageDependency
+    >>> class MyInstaller(BasePipInstaller):
+    ...     def _generate_command(self, deps, args):
+    ...         return f"echo Installing {', '.join(map(str, deps))} with args: {args}"
+    ...
+    >>> installer = MyInstaller(arguments="--verbose")
+    >>> installer
+    MyInstaller(arguments='--verbose')
+    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
+
+    ```
     """
 
     def __init__(self, arguments: str = "") -> None:
         self._arguments = arguments.strip()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}(arguments={self._arguments!r})"
 
     def install(self, package: PackageSpec) -> None:
         deps = DependencyResolverRegistry.find_resolver(package).resolve(package)
@@ -53,10 +73,49 @@ class BasePipInstaller(BaseInstaller):
 
 
 class PipInstaller(BasePipInstaller):
-    """Implement a pip package installer."""
+    """Implement a pip package installer.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.installer2 import PipInstaller
+    >>> from feu.utils.package import PackageSpec
+    >>> installer = PipInstaller()
+    >>> installer
+    PipInstaller(arguments='')
+    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
+
+    ```
+    """
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
         cmd_parts = ["pip", "install"]
+        if args:
+            cmd_parts.append(args)
+        cmd_parts.extend(map(str, deps))
+        return " ".join(cmd_parts)
+
+
+class PipxInstaller(BasePipInstaller):
+    """Implement a pipx package installer.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.install.pip.installer2 import PipxInstaller
+    >>> from feu.utils.package import PackageSpec
+    >>> installer = PipxInstaller()
+    >>> installer
+    PipxInstaller(arguments='')
+    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
+
+    ```
+    """
+
+    def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
+        cmd_parts = ["pipx", "install"]
         if args:
             cmd_parts.append(args)
         cmd_parts.extend(map(str, deps))
