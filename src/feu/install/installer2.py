@@ -5,8 +5,14 @@ from __future__ import annotations
 __all__ = ["BaseInstaller"]
 
 import logging
+import sys
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from feu.utils.package import PackageSpec
@@ -79,7 +85,7 @@ class BaseInstaller(ABC):
 
     @classmethod
     @abstractmethod
-    def instantiate_with_arguments(cls, arguments: str) -> BaseInstaller:
+    def instantiate_with_arguments(cls, arguments: str) -> Self:
         r"""Instantiate an installer instance with custom arguments.
 
         Args:

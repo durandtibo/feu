@@ -4,14 +4,20 @@ from __future__ import annotations
 
 __all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
+import sys
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 from feu.install.installer2 import BaseInstaller
 from feu.install.pip.resolver2 import (
     DependencyResolverRegistry,
 )
 from feu.utils.command import run_bash_command
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:  # pragma: no cover
+    from typing_extensions import Self
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
