@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 
-from feu.install import BaseInstaller, InstallerRegistry
+from feu.install import InstallerRegistry
+from feu.install.pip.installer2 import PipInstaller, PipxInstaller
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 
@@ -15,25 +16,22 @@ from feu.utils.package import PackageSpec
 
 @patch.dict(InstallerRegistry.registry, {}, clear=True)
 def test_installer_registry_add_installer() -> None:
-    installer = Mock(spec=BaseInstaller)
-    InstallerRegistry.add_installer("pip", installer)
-    assert InstallerRegistry.registry["pip"] == installer
+    InstallerRegistry.add_installer("pip", PipInstaller)
+    assert InstallerRegistry.registry["pip"] == PipInstaller
 
 
 @patch.dict(InstallerRegistry.registry, {}, clear=True)
 def test_installer_registry_add_installer_duplicate_exist_ok_true() -> None:
-    installer = Mock(spec=BaseInstaller)
-    InstallerRegistry.add_installer("pip", Mock(spec=BaseInstaller))
-    InstallerRegistry.add_installer("pip", installer, exist_ok=True)
-    assert InstallerRegistry.registry["pip"] == installer
+    InstallerRegistry.add_installer("pip", PipxInstaller)
+    InstallerRegistry.add_installer("pip", PipInstaller, exist_ok=True)
+    assert InstallerRegistry.registry["pip"] == PipInstaller
 
 
 @patch.dict(InstallerRegistry.registry, {}, clear=True)
 def test_installer_registry_add_installer_duplicate_exist_ok_false() -> None:
-    installer = Mock(spec=BaseInstaller)
-    InstallerRegistry.add_installer("pip", Mock(spec=BaseInstaller))
+    InstallerRegistry.add_installer("pip", PipInstaller)
     with pytest.raises(RuntimeError, match=r"An installer (.*) is already registered"):
-        InstallerRegistry.add_installer("pip", installer)
+        InstallerRegistry.add_installer("pip", PipInstaller)
 
 
 @patch.dict(InstallerRegistry.registry, {}, clear=True)
@@ -43,12 +41,12 @@ def test_installer_registry_has_installer_false() -> None:
 
 @patch.dict(InstallerRegistry.registry, {}, clear=True)
 def test_installer_registry_has_installer_true() -> None:
-    InstallerRegistry.add_installer("pip", Mock(spec=BaseInstaller))
+    InstallerRegistry.add_installer("pip", PipInstaller)
     assert InstallerRegistry.has_installer("pip")
 
 
 def test_installer_registry_install_pip_numpy() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
         )
@@ -56,7 +54,7 @@ def test_installer_registry_install_pip_numpy() -> None:
 
 
 def test_installer_registry_install_pip_pandas() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.1.1")
         )
@@ -64,7 +62,7 @@ def test_installer_registry_install_pip_pandas() -> None:
 
 
 def test_installer_registry_install_uv_numpy() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec("uv"), package=PackageSpec(name="numpy", version="2.0.0")
         )
@@ -72,7 +70,7 @@ def test_installer_registry_install_uv_numpy() -> None:
 
 
 def test_installer_registry_install_pip_numpy_with_args() -> None:
-    with patch("feu.install.pip.package.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec(name="pip", arguments="-U"),
             package=PackageSpec(name="numpy", version="2.0.0"),

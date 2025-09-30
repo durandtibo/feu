@@ -6,10 +6,10 @@ __all__ = ["InstallerRegistry"]
 
 from typing import TYPE_CHECKING, ClassVar
 
-from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
+from feu.install.pip.installer2 import PipInstaller, PipxInstaller, UvInstaller
 
 if TYPE_CHECKING:
-    from feu.install.installer import BaseInstaller
+    from feu.install.installer2 import BaseInstaller
     from feu.utils.installer import InstallerSpec
     from feu.utils.package import PackageSpec
 
@@ -17,21 +17,23 @@ if TYPE_CHECKING:
 class InstallerRegistry:
     """Implement the main installer registry."""
 
-    registry: ClassVar[dict[str, BaseInstaller]] = {
-        "pip": PipInstaller(),
-        "pipx": PipxInstaller(),
-        "uv": UvInstaller(),
+    registry: ClassVar[dict[str, type[BaseInstaller]]] = {
+        "pip": PipInstaller,
+        "pipx": PipxInstaller,
+        "uv": UvInstaller,
     }
 
     @classmethod
-    def add_installer(cls, name: str, installer: BaseInstaller, exist_ok: bool = False) -> None:
+    def add_installer(
+        cls, name: str, installer: type[BaseInstaller], exist_ok: bool = False
+    ) -> None:
         r"""Add an installer for a given package.
 
         Args:
             name: The installer name e.g. pip or uv.
             installer: The installer used for the given package.
             exist_ok: If ``False``, ``RuntimeError`` is raised if the
-                package already exists. This parameter should be set
+                installer already exists. This parameter should be set
                 to ``True`` to overwrite the installer for a package.
 
         Raises:
@@ -43,8 +45,8 @@ class InstallerRegistry:
         ```pycon
 
         >>> from feu.install import InstallerRegistry
-        >>> from feu.install.pip import PipInstaller
-        >>> InstallerRegistry.add_installer("pip", PipInstaller(), exist_ok=True)
+        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> InstallerRegistry.add_installer("pip", PipInstaller, exist_ok=True)
 
         ```
         """
@@ -102,6 +104,5 @@ class InstallerRegistry:
 
         ```
         """
-        cls.registry[installer.name].install(
-            package=package.name, version=package.version, args=installer.arguments
-        )
+        installer = cls.registry[installer.name].instantiate_with_arguments(installer.arguments)
+        installer.install(package=package)
