@@ -568,13 +568,19 @@ def test_dependency_resolver_registry_has_resolver_false() -> None:
     assert not DependencyResolverRegistry.has_resolver(PackageSpec("my_package"))
 
 
-def test_dependency_resolver_registry_find_resolver() -> None:
-    assert (
-        DependencyResolverRegistry.find_resolver(PackageSpec("torch")) == TorchDependencyResolver()
+def test_dependency_resolver_registry_find_resolver_pandas() -> None:
+    assert DependencyResolverRegistry.find_resolver(PackageSpec("pandas")).equal(
+        PandasDependencyResolver()
+    )
+
+
+def test_dependency_resolver_registry_find_resolver_torch() -> None:
+    assert DependencyResolverRegistry.find_resolver(PackageSpec("torch")).equal(
+        TorchDependencyResolver()
     )
 
 
 def test_dependency_resolver_registry_find_resolver_default() -> None:
-    assert (
-        DependencyResolverRegistry.find_resolver(PackageSpec("my_package")) != DependencyResolver()
+    assert DependencyResolverRegistry.find_resolver(PackageSpec("my_package")).equal(
+        DependencyResolver()
     )
