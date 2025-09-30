@@ -9,7 +9,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from feu.install.installer import BaseInstaller
-from feu.install.pip.resolver2 import (
+from feu.install.pip.resolver import (
     DependencyResolverRegistry,
 )
 from feu.utils.command import run_bash_command

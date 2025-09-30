@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.install.pip.resolver2 import (
+from feu.install.pip.resolver import (
     BaseDependencyResolver,
     DependencyResolver,
     DependencyResolverRegistry,
