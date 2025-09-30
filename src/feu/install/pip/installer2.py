@@ -56,4 +56,8 @@ class PipInstaller(BasePipInstaller):
     """Implement a pip package installer."""
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
-        return f"pip install {args} {' '.join(map(str, deps))}"
+        cmd_parts = ["pip", "install"]
+        if args:
+            cmd_parts.append(args)
+        cmd_parts.extend(map(str, deps))
+        return " ".join(cmd_parts)
