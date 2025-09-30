@@ -40,6 +40,10 @@ def test_pip_installer_install_numpy_with_args() -> None:
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 
 
+def test_pip_installer_instantiate_with_arguments() -> None:
+    assert PipInstaller.instantiate_with_arguments(arguments="-U").equal(PipInstaller(arguments="-U"))
+
+
 ###################################
 #     Tests for PipxInstaller     #
 ###################################

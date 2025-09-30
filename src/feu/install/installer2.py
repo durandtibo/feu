@@ -8,6 +8,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from feu.utils.package import PackageSpec
 
@@ -48,4 +49,16 @@ class BaseInstaller(ABC):
         >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
         ```
+        """
+
+    @classmethod
+    @abstractmethod
+    def instantiate_with_arguments(cls, arguments: str) -> BaseInstaller:
+        r"""Instantiate an installer instance with custom arguments.
+
+        Args:
+            arguments: The installer arguments.
+
+        Returns:
+            An instantiated installer.
         """

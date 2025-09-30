@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from feu.install.installer2 import BaseInstaller
 from feu.install.pip.resolver2 import (
@@ -56,6 +56,10 @@ class BasePipInstaller(BaseInstaller):
         cmd = self._generate_command(deps=deps, args=self._arguments)
         cmd = " ".join(cmd.split())  # remove duplicate spaces
         run_bash_command(cmd)
+
+    @classmethod
+    def instantiate_with_arguments(cls, arguments: str) -> Self:
+        return cls(arguments)
 
     @abstractmethod
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
