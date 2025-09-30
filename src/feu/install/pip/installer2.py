@@ -70,7 +70,7 @@ class BasePipInstaller(BaseInstaller):
 
     @classmethod
     def instantiate_with_arguments(cls, arguments: str) -> Self:
-        return cls(arguments)
+        return cls(arguments=arguments)
 
     @abstractmethod
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
