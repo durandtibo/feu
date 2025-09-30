@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from unittest.mock import Mock, patch
+
 import pytest
 
 from feu.install.pip.resolver2 import (
+    BaseDependencyResolver,
     DependencyResolver,
+    DependencyResolverRegistry,
     JaxDependencyResolver,
     MatplotlibDependencyResolver,
     Numpy2DependencyResolver,
@@ -503,3 +507,74 @@ def test_xarray_dependency_resolver_resolve_with_extras() -> None:
     ) == [
         PackageDependency(name="xarray", version_specifiers=["==2024.6.0"], extras=["performance"]),
     ]
+
+
+################################################
+#     Tests for DependencyResolverRegistry     #
+################################################
+
+
+def test_dependency_resolver_registry_registry() -> None:
+    assert set(DependencyResolverRegistry.registry) == {
+        "jax",
+        "matplotlib",
+        "pandas",
+        "pyarrow",
+        "scikit-learn",
+        "scipy",
+        "sklearn",
+        "torch",
+        "xarray",
+    }
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+def test_dependency_resolver_registry_add_resolver() -> None:
+    resolver = Mock(spec=BaseDependencyResolver)
+    DependencyResolverRegistry.add_resolver(PackageSpec("my_package"), resolver)
+    assert DependencyResolverRegistry.registry["my_package"] == resolver
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+def test_dependency_resolver_registry_add_resolver_exist_ok_true() -> None:
+    resolver = Mock(spec=BaseDependencyResolver)
+    DependencyResolverRegistry.add_resolver(
+        PackageSpec("my_package"), Mock(spec=BaseDependencyResolver)
+    )
+    DependencyResolverRegistry.add_resolver(PackageSpec("my_package"), resolver, exist_ok=True)
+    assert DependencyResolverRegistry.registry["my_package"] == resolver
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+def test_dependency_resolver_registry_add_resolver_exist_ok_false() -> None:
+    resolver = Mock(spec=BaseDependencyResolver)
+    DependencyResolverRegistry.add_resolver(
+        PackageSpec("my_package"), Mock(spec=BaseDependencyResolver)
+    )
+    with pytest.raises(RuntimeError, match=r"A dependency resolver is already registered"):
+        DependencyResolverRegistry.add_resolver(PackageSpec("my_package"), resolver)
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+def test_dependency_resolver_registry_has_resolver_true() -> None:
+    DependencyResolverRegistry.add_resolver(
+        PackageSpec("my_package"), Mock(spec=BaseDependencyResolver)
+    )
+    assert DependencyResolverRegistry.has_resolver(PackageSpec("my_package"))
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+def test_dependency_resolver_registry_has_resolver_false() -> None:
+    assert not DependencyResolverRegistry.has_resolver(PackageSpec("my_package"))
+
+
+def test_dependency_resolver_registry_find_resolver() -> None:
+    assert (
+        DependencyResolverRegistry.find_resolver(PackageSpec("torch")) != TorchDependencyResolver()
+    )
+
+
+def test_dependency_resolver_registry_find_resolver_default() -> None:
+    assert (
+        DependencyResolverRegistry.find_resolver(PackageSpec("my_package")) != DependencyResolver()
+    )

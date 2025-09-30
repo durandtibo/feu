@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "BaseDependencyResolver",
     "DependencyResolver",
+    "DependencyResolverRegistry",
     "JaxDependencyResolver",
     "MatplotlibDependencyResolver",
     "Numpy2DependencyResolver",
@@ -18,7 +19,7 @@ __all__ = [
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from packaging.version import Version
 
@@ -420,3 +421,112 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
 
     def __init__(self) -> None:
         super().__init__(min_version="2024.6.0")
+
+
+class DependencyResolverRegistry:
+    """Implement the main dependency resolver registry.
+
+    The dependency resolvers are indexed by name.
+    """
+
+    registry: ClassVar[dict[str, BaseDependencyResolver]] = {
+        "jax": JaxDependencyResolver(),
+        "matplotlib": MatplotlibDependencyResolver(),
+        "pandas": PandasDependencyResolver(),
+        "pyarrow": PyarrowDependencyResolver(),
+        "scikit-learn": SklearnDependencyResolver(),
+        "scipy": ScipyDependencyResolver(),
+        "sklearn": SklearnDependencyResolver(),
+        "torch": TorchDependencyResolver(),
+        "xarray": XarrayDependencyResolver(),
+    }
+
+    @classmethod
+    def add_resolver(
+        cls, package: PackageSpec, resolver: BaseDependencyResolver, exist_ok: bool = False
+    ) -> None:
+        r"""Add a dependency resolver for a given package.
+
+        Args:
+            package: The package specification.
+            resolver: The resolver used for the given package.
+            exist_ok: If ``False``, ``RuntimeError`` is raised if the
+                package already exists. This parameter should be set
+                to ``True`` to overwrite the resolver for a package.
+
+        Raises:
+            RuntimeError: if a dependency resolver is already registered for the
+                package name and ``exist_ok=False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install.pip.resolver2 import (
+        ...     DependencyResolverRegistry,
+        ...     TorchDependencyResolver,
+        ... )
+        >>> from feu.utils.package import PackageSpec
+        >>> DependencyResolverRegistry.add_resolver(
+        ...     PackageSpec("torch"), TorchDependencyResolver(), exist_ok=True
+        ... )
+
+        ```
+        """
+        if package.name in cls.registry and not exist_ok:
+            msg = (
+                f"A dependency resolver is already registered for the package "
+                f"{package.name}. Please use `exist_ok=True` if you want to overwrite the "
+                "dependency resolver for this package"
+            )
+            raise RuntimeError(msg)
+        cls.registry[package.name] = resolver
+
+    @classmethod
+    def has_resolver(cls, package: PackageSpec) -> bool:
+        r"""Indicate if a dependency resolver is registered for the given
+        package specification.
+
+        Args:
+            package: The package specification.
+
+        Returns:
+            ``True`` if a dependency resolver is registered,
+                otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install.pip.resolver2 import DependencyResolverRegistry
+        >>> from feu.utils.package import PackageSpec
+        >>> DependencyResolverRegistry.has_resolver(PackageSpec("torch"))
+        True
+
+        ```
+        """
+        return package.name in cls.registry
+
+    @classmethod
+    def find_resolver(cls, package: PackageSpec) -> BaseDependencyResolver:
+        r"""Find the relevant dependency resolver for the given package.
+
+        Args:
+            package: The package specification.
+
+        Returns:
+            The dependency resolver for the package.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install.pip.resolver2 import DependencyResolverRegistry
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = DependencyResolverRegistry.find_resolver(PackageSpec("torch"))
+        >>> resolver
+        TorchDependencyResolver(min_version=2.3.0)
+
+        ```
+        """
+        return cls.registry.get(package.name, DependencyResolver())
