@@ -94,7 +94,7 @@ class PipInstaller(BasePipInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer import PipInstaller
+    >>> from feu.install.pip import PipInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = PipInstaller()
     >>> installer
@@ -119,7 +119,7 @@ class PipxInstaller(BasePipInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer import PipxInstaller
+    >>> from feu.install.pip import PipxInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = PipxInstaller()
     >>> installer
@@ -144,7 +144,7 @@ class UvInstaller(BasePipInstaller):
 
     ```pycon
 
-    >>> from feu.install.pip.installer import UvInstaller
+    >>> from feu.install.pip import UvInstaller
     >>> from feu.utils.package import PackageSpec
     >>> installer = UvInstaller()
     >>> installer
