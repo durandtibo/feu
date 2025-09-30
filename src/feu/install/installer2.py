@@ -6,7 +6,7 @@ __all__ = ["BaseInstaller"]
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 
 if TYPE_CHECKING:
@@ -31,6 +31,33 @@ class BaseInstaller(ABC):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any) -> bool:
+        r"""Indicate if two installers are equal or not.
+
+        Args:
+            other: The other object to compare.
+
+        Returns:
+            ``True`` if the two installers are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> from feu.utils.package import PackageSpec
+        >>> obj1 = PipInstaller()
+        >>> obj2 = PipInstaller()
+        >>> obj3 = PipInstaller("-U")
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def install(self, package: PackageSpec) -> None:

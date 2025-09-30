@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING, Any
 from typing import TYPE_CHECKING, Self
 
 from feu.install.installer2 import BaseInstaller
@@ -50,6 +51,11 @@ class BasePipInstaller(BaseInstaller):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(arguments={self._arguments!r})"
+
+    def equal(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._arguments == other._arguments
 
     def install(self, package: PackageSpec) -> None:
         deps = DependencyResolverRegistry.find_resolver(package).resolve(package)
