@@ -6,10 +6,10 @@ __all__ = ["InstallerRegistry"]
 
 from typing import TYPE_CHECKING, ClassVar
 
-from feu.install.pip.installer2 import PipInstaller, PipxInstaller, UvInstaller
+from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 
 if TYPE_CHECKING:
-    from feu.install.installer2 import BaseInstaller
+    from feu.install.installer import BaseInstaller
     from feu.utils.installer import InstallerSpec
     from feu.utils.package import PackageSpec
 
@@ -45,7 +45,7 @@ class InstallerRegistry:
         ```pycon
 
         >>> from feu.install import InstallerRegistry
-        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> from feu.install.pip import PipInstaller
         >>> InstallerRegistry.add_installer("pip", PipInstaller, exist_ok=True)
 
         ```

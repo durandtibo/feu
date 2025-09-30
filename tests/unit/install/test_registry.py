@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from feu.install import InstallerRegistry
-from feu.install.pip.installer2 import PipInstaller, PipxInstaller
+from feu.install.pip.installer import PipInstaller, PipxInstaller
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 
@@ -46,7 +46,7 @@ def test_installer_registry_has_installer_true() -> None:
 
 
 def test_installer_registry_install_pip_numpy() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
         )
@@ -54,7 +54,7 @@ def test_installer_registry_install_pip_numpy() -> None:
 
 
 def test_installer_registry_install_pip_pandas() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.1.1")
         )
@@ -62,7 +62,7 @@ def test_installer_registry_install_pip_pandas() -> None:
 
 
 def test_installer_registry_install_uv_numpy() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec("uv"), package=PackageSpec(name="numpy", version="2.0.0")
         )
@@ -70,7 +70,7 @@ def test_installer_registry_install_uv_numpy() -> None:
 
 
 def test_installer_registry_install_pip_numpy_with_args() -> None:
-    with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         InstallerRegistry.install(
             installer=InstallerSpec(name="pip", arguments="-U"),
             package=PackageSpec(name="numpy", version="2.0.0"),
