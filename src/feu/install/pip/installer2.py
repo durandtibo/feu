@@ -34,7 +34,6 @@ class BasePipInstaller(BaseInstaller):
     def install(self, package: PackageSpec) -> None:
         deps = DependencyResolverRegistry.find_resolver(package).resolve(package)
         cmd = self._generate_command(deps=deps, args=self._arguments)
-        cmd = " ".join(cmd.split())  # remove duplicate spaces
         run_bash_command(cmd)
 
     @abstractmethod
