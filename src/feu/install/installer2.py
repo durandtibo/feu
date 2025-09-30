@@ -8,7 +8,6 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-
 if TYPE_CHECKING:
     from feu.utils.package import PackageSpec
 
@@ -88,4 +87,15 @@ class BaseInstaller(ABC):
 
         Returns:
             An instantiated installer.
+
+        Example usage:
+
+        ```pycon
+
+        >>> from feu.install.pip.installer2 import PipInstaller
+        >>> installer = PipInstaller.instantiate_with_arguments("-U")
+        >>> installer
+        PipInstaller(arguments='-U')
+
+        ```
         """

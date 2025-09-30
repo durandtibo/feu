@@ -57,7 +57,9 @@ def test_pip_installer_install_numpy_with_args() -> None:
 
 
 def test_pip_installer_instantiate_with_arguments() -> None:
-    assert PipInstaller.instantiate_with_arguments(arguments="-U").equal(PipInstaller(arguments="-U"))
+    assert PipInstaller.instantiate_with_arguments(arguments="-U").equal(
+        PipInstaller(arguments="-U")
+    )
 
 
 ###################################
@@ -107,6 +109,12 @@ def test_pipx_installer_install_numpy_with_args() -> None:
         run_mock.assert_called_once_with("pipx install -U numpy==2.0.0")
 
 
+def test_pipx_installer_instantiate_with_arguments() -> None:
+    assert PipxInstaller.instantiate_with_arguments(arguments="-U").equal(
+        PipxInstaller(arguments="-U")
+    )
+
+
 #################################
 #     Tests for UvInstaller     #
 #################################
@@ -152,3 +160,7 @@ def test_uv_installer_install_numpy_with_args() -> None:
     with patch("feu.install.pip.installer2.run_bash_command") as run_mock:
         UvInstaller(arguments="-U").install(PackageSpec(name="numpy", version="2.0.0"))
         run_mock.assert_called_once_with("uv pip install -U numpy==2.0.0")
+
+
+def test_uv_installer_instantiate_with_arguments() -> None:
+    assert UvInstaller.instantiate_with_arguments(arguments="-U").equal(UvInstaller(arguments="-U"))

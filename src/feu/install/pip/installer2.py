@@ -5,8 +5,7 @@ from __future__ import annotations
 __all__ = ["BasePipInstaller", "PipInstaller", "PipxInstaller", "UvInstaller"]
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from feu.install.installer2 import BaseInstaller
 from feu.install.pip.resolver2 import (
