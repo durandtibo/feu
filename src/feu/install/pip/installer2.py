@@ -27,15 +27,19 @@ class BasePipInstaller(BaseInstaller):
         arguments: Optional arguments to pass to the package installer.
             The valid arguments depend on the package installer.
 
-    Example usage:
+    Example usage (subclassing):
 
     ```pycon
 
-    >>> from feu.install.pip.installer2 import PipInstaller
-    >>> from feu.utils.package import PackageSpec
-    >>> installer = PipInstaller()
+    >>> from feu.install.pip.installer2 import BasePipInstaller
+    >>> from feu.utils.package import PackageSpec, PackageDependency
+    >>> class MyInstaller(BasePipInstaller):
+    ...     def _generate_command(self, deps, args):
+    ...         return f"echo Installing {', '.join(map(str, deps))} with args: {args}"
+    ...
+    >>> installer = MyInstaller(arguments="--verbose")
     >>> installer
-    PipInstaller(arguments='')
+    MyInstaller(arguments='--verbose')
     >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
     ```
