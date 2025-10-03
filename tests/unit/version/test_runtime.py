@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from packaging.version import Version
 
-from feu.versio import get_package_version, get_python_major_minor
+from feu.version import get_package_version, get_python_major_minor
 
 
 @pytest.fixture(autouse=True)

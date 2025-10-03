@@ -24,7 +24,7 @@ def get_package_version(package: str) -> Version | None:
 
     ```pycon
 
-    >>> from feu.versio import get_package_version
+    >>> from feu.version import get_package_version
     >>> get_package_version("pytest")
     <Version('...')>
 
@@ -47,7 +47,7 @@ def get_python_major_minor() -> str:
 
     ```pycon
 
-    >>> from feu.versio import get_python_major_minor
+    >>> from feu.version import get_python_major_minor
     >>> get_python_major_minor()  # doctest: +SKIP
 
     ```
