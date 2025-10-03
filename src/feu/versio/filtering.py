@@ -32,7 +32,7 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
 
     ```pycon
 
-    >>> from feu.version import filter_stable_versions
+    >>> from feu.versio import filter_stable_versions
     >>> versions = filter_stable_versions(
     ...     ["1.0.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"]
     ... )
@@ -65,7 +65,7 @@ def filter_valid_versions(versions: Sequence[str]) -> list[str]:
 
     ```pycon
 
-    >>> from feu.version import filter_valid_versions
+    >>> from feu.versio import filter_valid_versions
     >>> versions = filter_valid_versions(
     ...     [
     ...         "1.0.0",

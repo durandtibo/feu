@@ -24,7 +24,7 @@ def get_package_version(package: str) -> Version | None:
 
     ```pycon
 
-    >>> from feu.version import get_package_version
+    >>> from feu.versio import get_package_version
     >>> get_package_version("pytest")
     <Version('...')>
 
