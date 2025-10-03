@@ -43,7 +43,6 @@ click = [
 gitpython = { version = ">=3.1.41,<4.0", optional = true }
 requests = { version = ">=2.30.0,<3.0", optional = true }
 
-
 [tool.poetry.extras]
 all = ["click", "git", "requests"]
 cli = ["click"]
