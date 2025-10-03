@@ -31,4 +31,4 @@ def test_get_package_version_missing() -> None:
 
 
 def test_get_python_major_minor() -> None:
-    isinstance(get_python_major_minor(), str)
+    assert isinstance(get_python_major_minor(), str)
