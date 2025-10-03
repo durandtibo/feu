@@ -173,7 +173,13 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        packaging-version: [ '25.0', '24.2', '23.2', '22.0', '21.3' ]
+        packaging-version: [
+          '25.0',
+          '24.2',
+          '23.2',
+          '22.0',
+          '21.3',
+        ]
 
     steps:
       - name: Checkout
@@ -193,6 +199,49 @@ jobs:
         with:
           package-name: 'packaging'
           package-version: ${{ matrix.packaging-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  typing-extensions:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.10', '3.9' ]
+        typing-extensions-version: [
+          '4.15.0',
+          '4.14.1',
+          '4.13.2',
+          '4.12.2',
+          '4.11.0',
+          '4.10.0',
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install feu
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.4
+        with:
+          package-name: 'typing-extensions'
+          package-version: ${{ matrix.typing-extensions-version }}
           python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
