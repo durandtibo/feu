@@ -11,7 +11,7 @@ from feu.install import (
 from feu.package import find_closest_version
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
-from feu.utils.version import get_python_major_minor
+from feu.versio import get_python_major_minor
 
 
 @pytest.fixture(autouse=True)
