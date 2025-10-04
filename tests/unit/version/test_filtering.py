@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from feu.versio import filter_stable_versions, filter_valid_versions
+from feu.version import filter_stable_versions, filter_valid_versions
 
 ############################################
 #     Tests for filter_stable_versions     #

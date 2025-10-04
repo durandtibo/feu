@@ -10,6 +10,6 @@ __all__ = [
     "get_python_major_minor",
 ]
 
-from feu.versio.comparison import compare_version
-from feu.versio.filtering import filter_stable_versions, filter_valid_versions
-from feu.versio.runtime import get_package_version, get_python_major_minor
+from feu.version.comparison import compare_version
+from feu.version.filtering import filter_stable_versions, filter_valid_versions
+from feu.version.runtime import get_package_version, get_python_major_minor

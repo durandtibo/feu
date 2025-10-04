@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import operator
 
-from feu.versio import compare_version
+from feu.version import compare_version
 
 #####################################
 #     Tests for compare_version     #

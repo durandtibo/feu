@@ -7,7 +7,7 @@ from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 from feu.package import find_closest_version
 from feu.testing import pip_available, pipx_available, uv_available
 from feu.utils.package import PackageSpec
-from feu.versio import get_python_major_minor
+from feu.version import get_python_major_minor
 
 
 @pytest.fixture(autouse=True)
