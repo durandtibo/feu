@@ -26,7 +26,7 @@ jobs:
           macos-14,
           macos-13,
         ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
 
     steps:
       - name: Checkout
@@ -64,7 +64,7 @@ jobs:
           macos-14,
           macos-13,
         ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
 
     steps:
       - name: Checkout
@@ -102,7 +102,7 @@ jobs:
           macos-14,
           macos-13,
         ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
 
     steps:
       - name: Checkout
@@ -140,7 +140,7 @@ jobs:
           macos-14,
           macos-13,
         ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
 
     steps:
       - name: Checkout
@@ -172,7 +172,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
         packaging-version: [
           '25.0',
           '24.2',
@@ -214,7 +214,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.10', '3.9' ]
+        python-version: [ '3.10' ]
         typing-extensions-version: [
           '4.15.0',
           '4.14.1',
@@ -261,7 +261,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
         click-version: [
           '8.3.0',
           '8.2.1',
@@ -302,7 +302,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
         gitpython-version: [ '3.1.45', '3.1.41' ]
 
     steps:
@@ -338,7 +338,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.13', '3.12', '3.11', '3.10' ]
+        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
         requests-version: [
           '2.32.5',
           '2.31.0',
