@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class PackageConfig:
     """Implement the main package config registry."""
 
-    registry: ClassVar[dict[str, dict[str, dict[str, str]]]] = {
+    registry: ClassVar[dict[str, dict[str, dict[str, str | None]]]] = {
         # https://click.palletsprojects.com/en/stable/changes/
         "click": {
             "3.14": {"min": None, "max": None},
