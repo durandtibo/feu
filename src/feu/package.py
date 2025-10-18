@@ -104,7 +104,7 @@ class PackageConfig:
             "3.12": {"min": "2.4.0", "max": None},
             "3.11": {"min": "2.0.0", "max": None},
             "3.10": {"min": "1.11.0", "max": None},
-            "3.9": {"min": None, "max": None},
+            "3.9": {"min": None, "max": "2.8.0"},
         },
         # https://docs.xarray.dev/en/stable/whats-new.html
         "xarray": {
