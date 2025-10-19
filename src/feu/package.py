@@ -27,7 +27,7 @@ class PackageConfig:
         },
         # https://pypi.org/project/jaxlib/#history
         "jax": {
-            "3.14": {"min": None, "max": None},
+            "3.14": {"min": "0.7.1", "max": None},
             "3.13": {"min": "0.4.34", "max": None},
             "3.12": {"min": "0.4.17", "max": None},
             "3.11": {"min": "0.4.6", "max": None},
@@ -64,7 +64,7 @@ class PackageConfig:
         },
         # https://arrow.apache.org/release/
         "pyarrow": {
-            "3.14": {"min": "22.0.0", "max": None},
+            "3.14": {"min": None, "max": None},
             "3.13": {"min": "18.0.0", "max": None},
             "3.12": {"min": "14.0.0", "max": None},
             "3.11": {"min": "10.0.1", "max": None},
@@ -90,7 +90,7 @@ class PackageConfig:
         },
         # https://github.com/scipy/scipy/releases/
         "scipy": {
-            "3.14": {"min": None, "max": None},
+            "3.14": {"min": "1.16.1", "max": None},
             "3.13": {"min": "1.14.1", "max": None},
             "3.12": {"min": "1.12.0", "max": None},
             "3.11": {"min": "1.10.0", "max": None},
