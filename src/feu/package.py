@@ -64,7 +64,7 @@ class PackageConfig:
         },
         # https://arrow.apache.org/release/
         "pyarrow": {
-            "3.14": {"min": None, "max": None},
+            "3.14": {"min": "22.0.0", "max": None},
             "3.13": {"min": "18.0.0", "max": None},
             "3.12": {"min": "14.0.0", "max": None},
             "3.11": {"min": "10.0.1", "max": None},
