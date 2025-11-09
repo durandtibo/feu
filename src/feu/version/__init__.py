@@ -7,8 +7,11 @@ __all__ = [
     "filter_range_versions",
     "filter_stable_versions",
     "filter_valid_versions",
+    "get_latest_major_versions",
+    "get_latest_minor_versions",
     "get_package_version",
     "get_python_major_minor",
+    "get_versions",
     "latest_major_versions",
     "latest_minor_versions",
     "sort_versions",
@@ -23,5 +26,10 @@ from feu.version.filtering import (
     latest_major_versions,
     latest_minor_versions,
     unique_versions,
+)
+from feu.version.package import (
+    get_latest_major_versions,
+    get_latest_minor_versions,
+    get_versions,
 )
 from feu.version.runtime import get_package_version, get_python_major_minor
