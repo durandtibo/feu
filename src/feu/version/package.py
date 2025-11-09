@@ -6,7 +6,7 @@ __all__ = ["get_latest_major_versions", "get_latest_minor_versions", "get_versio
 
 
 from feu.pypi import get_pypi_versions
-from feu.version import sort_versions
+from feu.version.comparison import sort_versions
 from feu.version.filtering import (
     filter_range_versions,
     filter_stable_versions,
