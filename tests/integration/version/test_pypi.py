@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from feu.pypi import get_pypi_versions
 from feu.testing import requests_available
+from feu.version import get_pypi_versions
 
 
 @pytest.fixture(autouse=True)
