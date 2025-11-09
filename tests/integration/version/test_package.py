@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from feu.testing import requests_available
 from feu.version import (
     get_latest_major_versions,
     get_latest_minor_versions,
@@ -11,6 +12,7 @@ from feu.version import (
 ##################################
 
 
+@requests_available
 def test_get_versions_requests() -> None:
     assert get_versions("requests", lower="2.25", upper="2.30") == (
         "2.25.0",
@@ -25,6 +27,7 @@ def test_get_versions_requests() -> None:
     )
 
 
+@requests_available
 def test_get_versions_torch() -> None:
     assert get_versions("torch", lower="2.5", upper="2.9") == (
         "2.5.0",
@@ -41,10 +44,12 @@ def test_get_versions_torch() -> None:
 ###############################################
 
 
+@requests_available
 def test_get_latest_major_versions_requests() -> None:
     assert get_latest_major_versions("requests", upper="2.30") == ("0.14.2", "1.2.3", "2.29.0")
 
 
+@requests_available
 def test_get_latest_major_versions_torch() -> None:
     assert get_latest_major_versions("torch", upper="2.9") == ("1.13.1", "2.8.0")
 
@@ -54,6 +59,7 @@ def test_get_latest_major_versions_torch() -> None:
 ###############################################
 
 
+@requests_available
 def test_get_latest_minor_versions_requests() -> None:
     assert get_latest_minor_versions("requests", lower="2.10", upper="2.30") == (
         "2.10.0",
@@ -79,6 +85,7 @@ def test_get_latest_minor_versions_requests() -> None:
     )
 
 
+@requests_available
 def test_get_latest_minor_versions_torch() -> None:
     assert get_latest_minor_versions("torch", lower="2.0", upper="2.9") == (
         "2.0.1",
