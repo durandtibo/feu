@@ -13,16 +13,18 @@ if is_requests_available():  # pragma: no cover
 
 
 @lru_cache
-def get_pypi_versions(package: str) -> tuple[str, ...]:
+def get_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
     r"""Get the package versions available on PyPI.
 
     The package versions are read from PyPI.
 
     Args:
         package: The package name.
+        reverse: If ``False``, sort in ascending order; if ``True``,
+            sort in descending order.
 
     Returns:
-        A list containing the version strings.
+        A list containing the sorted version strings.
 
     Example usage:
 
@@ -35,4 +37,4 @@ def get_pypi_versions(package: str) -> tuple[str, ...]:
     """
     check_requests()
     data = requests.get(url=f"https://pypi.org/pypi/{package}/json", timeout=10).json()
-    return tuple(sorted(data["releases"].keys(), reverse=True))
+    return tuple(sorted(data["releases"].keys(), reverse=reverse))
