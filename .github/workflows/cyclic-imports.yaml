@@ -49,3 +49,7 @@ jobs:
       - name: check feu.utils
         run: |
           python -c "from feu import utils"
+
+      - name: check feu.version
+        run: |
+          python -c "from feu import version"
