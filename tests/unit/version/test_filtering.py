@@ -1,6 +1,49 @@
 from __future__ import annotations
 
-from feu.version import filter_stable_versions, filter_valid_versions
+from feu.version import (
+    filter_range_versions,
+    filter_stable_versions,
+    filter_valid_versions,
+    latest_major_versions,
+    latest_minor_versions,
+    sort_versions,
+    unique_versions,
+)
+
+###########################################
+#     Tests for filter_range_versions     #
+###########################################
+
+
+def test_filter_range_versions() -> None:
+    assert filter_range_versions(
+        ["0.9.0", "1.0.0", "1.2.0", "1.3.0", "2.0.0"], lower="1.1.0", upper="2.0.0"
+    ) == [
+        "1.2.0",
+        "1.3.0",
+    ]
+
+
+def test_filter_range_versions_lower() -> None:
+    assert filter_range_versions(["0.9.0", "1.0.0", "1.2.0", "1.3.0", "2.0.0"], lower="1.1.0") == [
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+    ]
+
+
+def test_filter_range_versions_upper() -> None:
+    assert filter_range_versions(["0.9.0", "1.0.0", "1.2.0", "1.3.0", "2.0.0"], upper="2.0.0") == [
+        "0.9.0",
+        "1.0.0",
+        "1.2.0",
+        "1.3.0",
+    ]
+
+
+def test_filter_range_versions_empty() -> None:
+    assert filter_range_versions([]) == []
+
 
 ############################################
 #     Tests for filter_stable_versions     #
@@ -109,3 +152,92 @@ def test_filter_valid_versions_mixed() -> None:
 
 def test_filter_valid_versions_empty() -> None:
     assert filter_valid_versions([]) == []
+
+
+###########################################
+#     Tests for latest_major_versions     #
+###########################################
+
+
+def test_latest_major_versions() -> None:
+    assert latest_major_versions(["1.0.0", "1.1.0", "1.2.0", "1.2.1", "2.0.0"]) == [
+        "1.2.1",
+        "2.0.0",
+    ]
+
+
+def test_latest_major_versions_sort() -> None:
+    assert latest_major_versions(["1.0.0", "1.2.1", "2.0.0", "1.1.0", "1.2.0"]) == [
+        "1.2.1",
+        "2.0.0",
+    ]
+
+
+def test_latest_major_versions_missing_version() -> None:
+    assert latest_major_versions(["1.0.0", "2.0.0", "3.0", "5"]) == [
+        "1.0.0",
+        "2.0.0",
+        "3.0",
+        "5",
+    ]
+
+
+def test_latest_major_versions_empty() -> None:
+    assert latest_major_versions([]) == []
+
+
+###########################################
+#     Tests for latest_minor_versions     #
+###########################################
+
+
+def test_latest_minor_versions() -> None:
+    assert latest_minor_versions(["1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"]) == [
+        "1.0.1",
+        "1.1.2",
+        "2.0.3",
+    ]
+
+
+def test_latest_minor_versions_sort() -> None:
+    assert latest_minor_versions(["2.0.3", "1.0.0", "1.0.1", "1.1.2", "1.1.0", "2.0.0"]) == [
+        "1.0.1",
+        "1.1.2",
+        "2.0.3",
+    ]
+
+
+def test_latest_minor_versions_missing_version() -> None:
+    assert latest_minor_versions(
+        ["1.0.0", "1.1.0", "1.1.1", "1.2.0", "1.2.1", "1.2.2", "1.4.1"]
+    ) == [
+        "1.0.0",
+        "1.1.1",
+        "1.2.2",
+        "1.4.1",
+    ]
+
+
+def test_latest_minor_versions_empty() -> None:
+    assert latest_minor_versions([]) == []
+
+
+#####################################
+#     Tests for unique_versions     #
+#####################################
+
+
+def test_unique_versions() -> None:
+    assert sort_versions(unique_versions(["1.0.0", "1.0.1", "1.0.0", "1.2.0"])) == [
+        "1.0.0",
+        "1.0.1",
+        "1.2.0",
+    ]
+
+
+def test_unique_versions_single_item() -> None:
+    assert sort_versions(unique_versions(["1.0.0"])) == ["1.0.0"]
+
+
+def test_unique_versions_empty() -> None:
+    assert unique_versions([]) == []
