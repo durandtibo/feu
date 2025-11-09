@@ -8,8 +8,9 @@ __all__ = [
     "filter_valid_versions",
     "get_package_version",
     "get_python_major_minor",
+    "sort_versions",
 ]
 
-from feu.version.comparison import compare_version
+from feu.version.comparison import compare_version, sort_versions
 from feu.version.filtering import filter_stable_versions, filter_valid_versions
 from feu.version.runtime import get_package_version, get_python_major_minor
