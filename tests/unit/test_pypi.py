@@ -25,8 +25,20 @@ def test_get_pypi_versions() -> None:
             json=Mock(return_value={"releases": {"1.2.0": None, "1.2.3": None, "2.0.0": None}})
         )
     )
-    with patch("feu.pypi.requests.get", mock):
-        assert get_pypi_versions("my_package") == ("2.0.0", "1.2.3", "1.2.0")
+    with patch("ghflowgen.utils.pypi.requests.get", mock):
+        assert get_pypi_versions("my_package") == ("1.2.0", "1.2.3", "2.0.0")
+        mock.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10)
+
+
+@requests_available
+def test_get_pypi_versions_reverse() -> None:
+    mock = Mock(
+        return_value=Mock(
+            json=Mock(return_value={"releases": {"1.2.0": None, "1.2.3": None, "2.0.0": None}})
+        )
+    )
+    with patch("ghflowgen.utils.pypi.requests.get", mock):
+        assert get_pypi_versions("my_package", reverse=True) == ("2.0.0", "1.2.3", "1.2.0")
         mock.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10)
 
 
