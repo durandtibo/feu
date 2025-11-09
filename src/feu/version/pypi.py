@@ -30,7 +30,7 @@ def get_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
 
     ```pycon
 
-    >>> from feu.pypi import get_pypi_versions
+    >>> from feu.version import get_pypi_versions
     >>> versions = get_pypi_versions("requests")  # doctest: +SKIP
 
     ```
