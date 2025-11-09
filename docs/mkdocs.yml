@@ -25,7 +25,6 @@ nav:
       - refs/imports.md
       - refs/install.md
       - refs/package.md
-      - refs/pypi.md
       - refs/testing.md
       - refs/utils.md
       - refs/version.md
