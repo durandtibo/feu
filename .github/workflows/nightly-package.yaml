@@ -195,7 +195,7 @@ jobs:
           pip install feu
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'packaging'
           package-version: ${{ matrix.packaging-version }}
@@ -238,7 +238,7 @@ jobs:
           pip install feu
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'typing-extensions'
           package-version: ${{ matrix.typing-extensions-version }}
@@ -283,7 +283,7 @@ jobs:
           pip install feu
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'click'
           package-version: ${{ matrix.click-version }}
@@ -319,7 +319,7 @@ jobs:
           pip install feu
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'gitpython'
           package-version: ${{ matrix.gitpython-version }}
@@ -359,7 +359,7 @@ jobs:
           pip install feu
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.0
+        uses: durandtibo/pip-install-package-action@v0.4.1
         with:
           package-name: 'requests'
           package-version: ${{ matrix.requests-version }}
