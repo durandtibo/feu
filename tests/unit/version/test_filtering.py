@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import pytest
+
 from feu.version import (
+    filter_every_n_versions,
     filter_range_versions,
     filter_stable_versions,
     filter_valid_versions,
@@ -9,6 +12,49 @@ from feu.version import (
     sort_versions,
     unique_versions,
 )
+
+#############################################
+#     Tests for filter_every_n_versions     #
+#############################################
+
+
+def test_filter_every_n_versions_keep_every_second_version() -> None:
+    versions = ["1.0", "1.1", "1.2", "1.3", "1.4"]
+    assert filter_every_n_versions(versions, n=2) == ["1.0", "1.2", "1.4"]
+
+
+def test_filter_every_n_versions_keep_every_third_version() -> None:
+    versions = ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6"]
+    assert filter_every_n_versions(versions, n=3) == ["0.1", "0.4"]
+
+
+def test_filter_every_n_versions_n_equals_one() -> None:
+    versions = ["1.0", "1.1", "1.2", "1.3", "1.4"]
+    assert filter_every_n_versions(versions, n=1) == ["1.0", "1.1", "1.2", "1.3", "1.4"]
+
+
+def test_filter_every_n_versions_empty_list() -> None:
+    assert filter_every_n_versions([], n=2) == []
+
+
+def test_filter_every_n_versions_n_greater_than_list_length() -> None:
+    versions = ["1.0", "1.1", "1.2", "1.3"]
+    assert filter_every_n_versions(versions, n=5) == ["1.0"]
+
+
+def test_filter_every_n_versions_invalid_n_raises() -> None:
+    with pytest.raises(ValueError, match=r"n must be >= 1 but receive 0"):
+        filter_every_n_versions(["1.0", "1.1"], n=0)
+
+
+def test_filter_every_n_versions_single_item_list() -> None:
+    assert filter_every_n_versions(["1.1"], n=2) == ["1.1"]
+
+
+def test_filter_every_n_versions_large_n() -> None:
+    versions = [str(i) for i in range(100)]
+    assert filter_every_n_versions(versions, n=50) == ["0", "50"]
+
 
 ###########################################
 #     Tests for filter_range_versions     #

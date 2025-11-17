@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "compare_version",
+    "filter_every_n_versions",
     "filter_range_versions",
     "filter_stable_versions",
     "filter_valid_versions",
@@ -21,6 +22,7 @@ __all__ = [
 
 from feu.version.comparison import compare_version, sort_versions
 from feu.version.filtering import (
+    filter_every_n_versions,
     filter_range_versions,
     filter_stable_versions,
     filter_valid_versions,
