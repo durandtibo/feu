@@ -62,7 +62,7 @@ def test_filter_every_n_versions_single_item_list() -> None:
 
 
 def test_filter_every_n_versions_large_n() -> None:
-    assert filter_every_n_versions([str(i) for i in range(100)], n=50) == ["0", "50"]
+    assert filter_every_n_versions([f"{i}.0" for i in range(100)], n=50) == ["0.0", "50.0"]
 
 
 ############################################
@@ -96,8 +96,12 @@ def test_filter_last_n_versions_single_item_list() -> None:
 
 
 def test_filter_last_n_versions_large_n() -> None:
-    assert filter_last_n_versions([str(i) for i in range(100)], n=10) == [
-        str(i) for i in range(90, 100)
+    assert filter_last_n_versions([f"{i}.0" for i in range(100)], n=5) == [
+        "95.0",
+        "96.0",
+        "97.0",
+        "98.0",
+        "99.0",
     ]
 
 
