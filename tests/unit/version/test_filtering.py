@@ -4,6 +4,7 @@ import pytest
 
 from feu.version import (
     filter_every_n_versions,
+    filter_last_n_versions,
     filter_range_versions,
     filter_stable_versions,
     filter_valid_versions,
@@ -54,6 +55,59 @@ def test_filter_every_n_versions_single_item_list() -> None:
 def test_filter_every_n_versions_large_n() -> None:
     versions = [str(i) for i in range(100)]
     assert filter_every_n_versions(versions, n=50) == ["0", "50"]
+
+
+############################################
+#     Tests for filter_last_n_versions     #
+############################################
+
+
+def test_filter_last_n_versions_keep_last_three() -> None:
+    versions = ["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"]
+    assert filter_last_n_versions(versions, n=3) == ["1.3", "1.5", "1.6"]
+
+
+def test_filter_last_n_versions_keep_last_one() -> None:
+    versions = ["1.0", "1.1", "1.2", "1.3", "1.4"]
+    assert filter_last_n_versions(versions, n=1) == ["1.4"]
+
+
+def test_filter_last_n_versions_n_equals_list_length() -> None:
+    versions = ["1.0", "1.1", "1.2", "1.3", "1.4"]
+    assert filter_last_n_versions(versions, n=5) == ["1.0", "1.1", "1.2", "1.3", "1.4"]
+
+
+def test_filter_last_n_versions_n_greater_than_list_length() -> None:
+    versions = ["1.0", "1.1", "1.2"]
+    assert filter_last_n_versions(versions, n=10) == ["1.0", "1.1", "1.2"]
+
+
+def test_filter_last_n_versions_empty_list() -> None:
+    assert filter_last_n_versions([], n=3) == []
+
+
+def test_filter_last_n_versions_single_item() -> None:
+    assert filter_last_n_versions(["1.0"], n=1) == ["1.0"]
+
+
+def test_filter_last_n_versions_single_item_n_greater() -> None:
+    assert filter_last_n_versions(["1.0"], n=5) == ["1.0"]
+
+
+def test_filter_last_n_versions_invalid_n_raises() -> None:
+    with pytest.raises(ValueError, match=r"n must be >= 1 but receive 0"):
+        filter_last_n_versions(["1.0", "1.1"], n=0)
+
+
+def test_filter_last_n_versions_invalid_n_negative_raises() -> None:
+    with pytest.raises(ValueError, match=r"n must be >= 1 but receive -1"):
+        filter_last_n_versions(["1.0", "1.1"], n=-1)
+
+
+def test_filter_last_n_versions_large_list() -> None:
+    versions = [f"{i}.0" for i in range(100)]
+    result = filter_last_n_versions(versions, n=5)
+    assert result == ["95.0", "96.0", "97.0", "98.0", "99.0"]
 
 
 ###########################################
