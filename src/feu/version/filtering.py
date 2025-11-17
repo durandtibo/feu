@@ -3,6 +3,7 @@ r"""Contain functions to manage package versions."""
 from __future__ import annotations
 
 __all__ = [
+    "filter_every_n_versions",
     "filter_range_versions",
     "filter_stable_versions",
     "filter_valid_versions",
@@ -18,6 +19,46 @@ from packaging.version import InvalidVersion, Version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
+    """Filter a list of version strings, keeping only every n-th version
+    using **0-based indexing**.
+
+    This function preserves the original order of the input list and returns
+    a new list containing only the versions at positions that are multiples of
+    `n` (using 0-based indexing). For example, if `n = 2`, the function keeps
+    the 0th, 2nd, 4th, ... versions from the list.
+
+    Args:
+        versions: A list of version strings.
+        n: The interval for selecting versions. Must be >= 1.
+
+    Returns:
+        A new list containing only every n-th version in ``versions``,
+            starting from index 0.
+
+    Raises:
+        ValueError: If `n` is less than 1.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.version import filter_range_versions
+    >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=2)
+    >>> versions
+    ['1.0', '1.2', '1.5']
+    >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=1)
+    >>> versions
+    ['1.0', '1.1', '1.2', '1.3', '1.5', '1.6']
+
+    ```
+    """
+    if n < 1:
+        msg = f"n must be >= 1 but receive {n}"
+        raise ValueError(msg)
+    return [v for i, v in enumerate(versions) if i % n == 0]
 
 
 def filter_range_versions(
