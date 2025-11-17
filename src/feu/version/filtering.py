@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "filter_every_n_versions",
+    "filter_last_n_versions",
     "filter_range_versions",
     "filter_stable_versions",
     "filter_valid_versions",
@@ -27,7 +28,7 @@ def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
 
     This function preserves the original order of the input list and returns
     a new list containing only the versions at positions that are multiples of
-    `n` (using 0-based indexing). For example, if `n = 2`, the function keeps
+    ``n`` (using 0-based indexing). For example, if ``n = 2``, the function keeps
     the 0th, 2nd, 4th, ... versions from the list.
 
     Args:
@@ -39,13 +40,13 @@ def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
             starting from index 0.
 
     Raises:
-        ValueError: If `n` is less than 1.
+        ValueError: If ``n`` is less than 1.
 
     Example usage:
 
     ```pycon
 
-    >>> from feu.version import filter_range_versions
+    >>> from feu.version import filter_every_n_versions
     >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=2)
     >>> versions
     ['1.0', '1.2', '1.5']
@@ -56,9 +57,46 @@ def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
     ```
     """
     if n < 1:
-        msg = f"n must be >= 1 but receive {n}"
+        msg = f"n must be >= 1 but received {n}"
         raise ValueError(msg)
     return [v for i, v in enumerate(versions) if i % n == 0]
+
+
+def filter_last_n_versions(versions: Sequence[str], n: int) -> list[str]:
+    """Return only the last n versions from a list of version strings.
+
+    This function preserves the original ordering of the final n elements.
+    If ``n`` is greater than the number of versions available, the entire list
+    is returned. If ``n`` is zero, an empty list is returned.
+
+    Args:
+        versions: A list of version strings.
+        n: Number of versions to keep from the end of the list. Must be >= 0.
+
+    Returns:
+        A new list containing only the last n versions, in order.
+
+    Raises:
+        ValueError: If ``n`` is less than 1.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.version import filter_last_n_versions
+    >>> versions = filter_last_n_versions(["1.0", "1.1", "1.2", "1.3"], n=2)
+    >>> versions
+    ['1.2', '1.3']
+    >>> versions = filter_last_n_versions(["1.0", "1.1", "1.2", "1.3"], n=5)
+    >>> versions
+    ['1.0', '1.1', '1.2', '1.3']
+
+    ```
+    """
+    if n <= 0:
+        msg = f"n must be > 0 but received {n}"
+        raise ValueError(msg)
+    return list(versions[-n:])
 
 
 def filter_range_versions(
