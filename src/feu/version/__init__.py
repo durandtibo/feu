@@ -1,4 +1,4 @@
-r"""Contain functions to compare package versions."""
+r"""Contain functions to manage package versions."""
 
 from __future__ import annotations
 
