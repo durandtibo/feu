@@ -25,6 +25,7 @@ nav:
       - refs/imports.md
       - refs/install.md
       - refs/package.md
+      - refs/repo.md
       - refs/testing.md
       - refs/utils.md
       - refs/version.md
