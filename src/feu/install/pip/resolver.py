@@ -424,7 +424,7 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
 
 
 class DependencyResolverRegistry:
-    """Implement the main dependency resolver registry.
+    r"""Implement the main dependency resolver registry.
 
     The dependency resolvers are indexed by name.
     """

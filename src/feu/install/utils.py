@@ -84,7 +84,7 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
 
 @lru_cache(1)
 def is_pip_available() -> bool:
-    """Check if ``pip`` is available.
+    r"""Check if ``pip`` is available.
 
     Returns:
         ``True`` if ``pip`` is available, otherwise ``False``.
@@ -103,7 +103,7 @@ def is_pip_available() -> bool:
 
 @lru_cache(1)
 def is_pipx_available() -> bool:
-    """Check if ``pipx`` is available.
+    r"""Check if ``pipx`` is available.
 
     Returns:
         ``True`` if ``pipx`` is available, otherwise ``False``.
@@ -122,7 +122,7 @@ def is_pipx_available() -> bool:
 
 @lru_cache(1)
 def is_uv_available() -> bool:
-    """Check if ``uv`` is available.
+    r"""Check if ``uv`` is available.
 
     Returns:
         ``True`` if ``uv`` is available, otherwise ``False``.

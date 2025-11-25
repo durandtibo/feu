@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
-    """Filter a list of version strings, keeping only every n-th version
+    r"""Filter a list of version strings, keeping only every n-th version
     using **0-based indexing**.
 
     This function preserves the original order of the input list and returns
@@ -63,7 +63,7 @@ def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
 
 
 def filter_last_n_versions(versions: Sequence[str], n: int) -> list[str]:
-    """Return only the last n versions from a list of version strings.
+    r"""Return only the last n versions from a list of version strings.
 
     This function preserves the original ordering of the final n elements.
     If ``n`` is greater than the number of versions available, the entire list
@@ -102,7 +102,7 @@ def filter_last_n_versions(versions: Sequence[str], n: int) -> list[str]:
 def filter_range_versions(
     versions: Sequence[str], lower: str | None = None, upper: str | None = None
 ) -> list[str]:
-    """Filter a list of version strings to include only versions within
+    r"""Filter a list of version strings to include only versions within
     optional bounds.
 
     Args:
@@ -143,7 +143,7 @@ def filter_range_versions(
 
 
 def filter_stable_versions(versions: Sequence[str]) -> list[str]:
-    """Filter out pre-release, post-release, and dev-release versions
+    r"""Filter out pre-release, post-release, and dev-release versions
     from a list of version strings.
 
     A stable version is defined as:
@@ -179,7 +179,7 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
 
 
 def filter_valid_versions(versions: Sequence[str]) -> list[str]:
-    """Filter out invalid version strings based on PEP 440.
+    r"""Filter out invalid version strings based on PEP 440.
 
     A valid version is one that can be parsed by `packaging.version.Version`.
     Invalid versions include strings that don't conform to semantic versioning rules.
@@ -259,7 +259,7 @@ def latest_major_versions(versions: Sequence[str]) -> list[str]:
 
 
 def latest_minor_versions(versions: Sequence[str]) -> list[str]:
-    """Return the latest version for each minor version in a list of
+    r"""Return the latest version for each minor version in a list of
     semantic versions.
 
     This function takes a list of semantic version strings
@@ -296,7 +296,7 @@ def latest_minor_versions(versions: Sequence[str]) -> list[str]:
 
 
 def unique_versions(versions: Sequence[str]) -> list[str]:
-    """Return a list of unique versions while preserving order.
+    r"""Return a list of unique versions while preserving order.
 
     Args:
         versions: A list of version strings.
