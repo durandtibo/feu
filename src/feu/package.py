@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class PackageConfig:
-    """Implement the main package config registry."""
+    r"""Implement the main package config registry."""
 
     registry: ClassVar[dict[str, dict[str, dict[str, str | None]]]] = {
         # https://click.palletsprojects.com/en/stable/changes/

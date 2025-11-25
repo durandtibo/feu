@@ -21,7 +21,7 @@ from importlib.util import find_spec
 
 @lru_cache
 def is_package_available(package: str) -> bool:
-    """Check if a package is available.
+    r"""Check if a package is available.
 
     Args:
         package: The package name to check.
@@ -50,7 +50,7 @@ def is_package_available(package: str) -> bool:
 
 @lru_cache
 def is_module_available(module: str) -> bool:
-    """Check if a module path is available.
+    r"""Check if a module path is available.
 
     Args:
         module: The module to check.

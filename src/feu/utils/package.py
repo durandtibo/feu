@@ -177,7 +177,7 @@ def extract_package_name(requirement: str) -> str:
 
 
 def extract_package_extras(requirement: str) -> list[str]:
-    """Extract the optional extras from a requirement string.
+    r"""Extract the optional extras from a requirement string.
 
     The requirement string may include extras in square brackets, e.g.,
     'package[extra1,extra2]'. This function returns the list of extras.

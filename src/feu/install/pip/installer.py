@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class BasePipInstaller(BaseInstaller):
-    """Define an intermediate base class to implement pip compatible
+    r"""Define an intermediate base class to implement pip compatible
     package installer.
 
     Args:
@@ -88,7 +88,7 @@ class BasePipInstaller(BaseInstaller):
 
 
 class PipInstaller(BasePipInstaller):
-    """Implement a pip package installer.
+    r"""Implement a pip package installer.
 
     Example usage:
 
@@ -113,7 +113,7 @@ class PipInstaller(BasePipInstaller):
 
 
 class PipxInstaller(BasePipInstaller):
-    """Implement a pipx package installer.
+    r"""Implement a pipx package installer.
 
     Example usage:
 
@@ -138,7 +138,7 @@ class PipxInstaller(BasePipInstaller):
 
 
 class UvInstaller(BasePipInstaller):
-    """Implement a uv package installer.
+    r"""Implement a uv package installer.
 
     Example usage:
 

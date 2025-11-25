@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class InstallerRegistry:
-    """Implement the main installer registry."""
+    r"""Implement the main installer registry."""
 
     registry: ClassVar[dict[str, type[BaseInstaller]]] = {
         "pip": PipInstaller,

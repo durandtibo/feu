@@ -43,7 +43,7 @@ def compare_version(package: str, op: Callable, version: str) -> bool:
 
 
 def sort_versions(versions: Sequence[str], reverse: bool = False) -> list[str]:
-    """Sort a list of version strings in ascending or descending order.
+    r"""Sort a list of version strings in ascending or descending order.
 
     Args:
         versions: A list of version strings.
