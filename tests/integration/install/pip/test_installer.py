@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from importlib import metadata
+import subprocess
+import sys
 
 import pytest
 
@@ -28,12 +29,13 @@ def package() -> PackageSpec:
 
 
 def is_pip_installed(package_name: str) -> bool:
-    """Check whether a package is installed in the current environment.
+    """Check whether a package is installed via pip in the current
+    environment.
 
-    This version avoids subprocess entirely, eliminating security concerns
-    such as Bandit S603 (subprocess with untrusted input) and S607
-    (partial executable path). It uses ``importlib.metadata`` to inspect
-    installed distributions directly.
+    This function runs ``python -m pip list`` using the current interpreter
+    to determine whether the specified package is installed. This avoids
+    calling the ``pip`` executable directly, satisfying security linters
+    such as flake8-bandit (S607).
 
     Args:
         package_name: The name of the package to check.
@@ -43,11 +45,47 @@ def is_pip_installed(package_name: str) -> bool:
         otherwise False.
     """
     try:
-        metadata.version(package_name)
-    except metadata.PackageNotFoundError:
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "list"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
         return False
-    else:
-        return True
+
+    output = result.stdout.lower().splitlines()
+    package_name = package_name.lower()
+
+    return any(line.startswith(package_name + " ") for line in output)
+
+
+def is_pipx_installed(package_name: str) -> bool:
+    """Check whether a given package is installed via pipx.
+
+    This function runs ``pipx list`` and parses its output to determine
+    whether the specified package appears in the list of pipx-managed
+    environments.
+
+    Args:
+        package_name: The name of the package to check.
+
+    Returns:
+        True if the package is installed with pipx, otherwise False.
+    """
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pipx", "list"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return False
+
+    output = result.stdout.lower()
+    token = f"package {package_name.lower()} "
+    return token in output
 
 
 @pip_available
@@ -59,7 +97,7 @@ def test_pip_installer(package: PackageSpec) -> None:
 @pipx_available
 def test_pipx_installer(package: PackageSpec) -> None:
     PipxInstaller(arguments="--force").install(package)
-    assert is_pip_installed(package.name)
+    assert is_pipx_installed(package.name)
 
 
 @uv_available
