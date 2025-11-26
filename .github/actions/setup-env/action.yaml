@@ -35,6 +35,11 @@ runs:
     - name: Install invoke
       shell: bash
       run: |
+        uv python
+
+    - name: Install invoke
+      shell: bash
+      run: |
         make install-invoke
 
     - name: Install dependencies
