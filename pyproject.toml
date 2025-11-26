@@ -33,13 +33,10 @@ packages = [
 # Core dependencies
 python = ">=3.10,<3.15"
 packaging = ">=21.0,<26.0"
-typing_extensions = { version = ">=4.10,<5.0", python = ">=3.9,<3.11" }
+typing_extensions = { version = ">=4.10,<5.0", python = "<3.11" }
 
 # Optional dependencies
-click = [
-    { version = ">=8.1,<9.0", optional = true },
-    { version = ">=8.1,<8.2", python = ">=3.9,<3.10", optional = true },
-]
+click = { version = ">=8.1,<9.0", optional = true }
 gitpython = { version = ">=3.1.41,<4.0", optional = true }
 requests = { version = ">=2.30.0,<3.0", optional = true }
 
