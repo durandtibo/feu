@@ -18,9 +18,9 @@ def _reset_cache() -> None:
 @pytest.fixture(scope="module")
 def package() -> PackageSpec:
     return PackageSpec(
-        name="pytest",
+        name="mkdocs",
         version=find_closest_version(
-            pkg_name="pytest", pkg_version="9.0", python_version=get_python_major_minor()
+            pkg_name="mkdocs", pkg_version="1.6.1", python_version=get_python_major_minor()
         ),
     )
 
