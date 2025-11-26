@@ -1573,12 +1573,12 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more_it
 type = ["pytest-mypy"]
 
 [extras]
-all = ["click", "click", "requests"]
-cli = ["click", "click"]
+all = ["click", "requests"]
+cli = ["click"]
 git = ["gitpython"]
 requests = ["requests"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.15"
-content-hash = "83fb8569b32ba60543100078a0a953b8a5761d8e505dd4f237e7476b2477a515"
+content-hash = "e271f5a31b278c3cca4ca8b1b673b0808b9de46ee7280c830d8817e043da9068"
