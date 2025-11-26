@@ -48,6 +48,14 @@ integration-test :
 integration-test-cov :
 	inv integration-test --cov
 
+.PHONY : functional-test
+functional-test :
+	inv functional-test
+
+.PHONY : functional-test-cov
+functional-test-cov :
+	inv functional-test --cov
+
 .PHONY : publish-pypi
 publish-pypi :
 	inv publish-pypi
