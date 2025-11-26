@@ -21,48 +21,29 @@ jobs:
           ubuntu-24.04-arm,
           ubuntu-22.04-arm,
           macos-latest,
+          macos-26,
           macos-15,
           macos-14,
           macos-15-intel,
         ]
         python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
 
-
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Setup python environment
+        uses: ./.github/actions/setup-env
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Set environment variable
-        run: |
-          echo $(poetry run poetry env info --path)/bin >> $GITHUB_PATH
-
-      - name: Install packages
-        run: |
-          make install-all
-
-      - name: Show installed packages
-        run: |
-          poetry show
-          poetry show --tree
-
       - name: Run unit tests
         run: |
-          make unit-test-cov
+          inv unit-test --cov
 
       - name: Run integration tests
         run: |
-          make integration-test
-
+          inv integration-test --cov
 
   min:
     runs-on: ${{ matrix.os }}
@@ -78,6 +59,7 @@ jobs:
           ubuntu-24.04-arm,
           ubuntu-22.04-arm,
           macos-latest,
+          macos-26,
           macos-15,
           macos-14,
           macos-15-intel,
@@ -87,34 +69,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Setup python environment
+        uses: ./.github/actions/setup-env
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Set environment variable
-        run: |
-          echo $(poetry run poetry env info --path)/bin >> $GITHUB_PATH
-
-      - name: Install packages
-        run: |
-          make install
-
-      - name: Show installed packages
-        run: |
-          poetry show
-          poetry show --tree
+          install-args: '--no-optional-deps'
 
       - name: Run unit tests
         run: |
-          make unit-test-cov
+          inv unit-test --cov
 
       - name: Run integration tests
         run: |
-          make integration-test
+          inv integration-test --cov
