@@ -33,6 +33,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-tags: true
+          fetch-depth: 0
 
       - name: Setup python environment
         uses: ./.github/actions/setup-env
@@ -73,6 +74,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-tags: true
+          fetch-depth: 0
 
       - name: Setup python environment
         uses: ./.github/actions/setup-env
