@@ -1,163 +1,43 @@
 name: Nightly Package Tests
 on:
   schedule:
-    - cron: '30 11 * * *' # run at 11:30 AM UTC
+    - cron: '40 8 * * *' # run at 8:40 AM UTC
   workflow_dispatch:  # to trigger manually
 
 permissions:
   contents: read
 
 jobs:
+  get-versions:
+    uses: ./.github/workflows/get-versions.yaml
+
+  stable:
+    uses: ./.github/workflows/test-package.yaml
+    with:
+      install-cmd: 'uv pip install minrecord'
+
   stable-all:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [
-          ubuntu-latest,
-          ubuntu-24.04,
-          ubuntu-22.04,
-          ubuntu-24.04-arm,
-          ubuntu-22.04-arm,
-          macos-latest,
-          macos-15,
-          macos-14,
-          macos-15-intel,
-        ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
+    uses: ./.github/workflows/test-package.yaml
+    with:
+      install-cmd: 'uv pip install "minrecord[all]"'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+  stable-extras:
+    uses: ./.github/workflows/test-package-extras.yaml
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install "feu[all]"
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
-
-  stable-min:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [
-          ubuntu-latest,
-          ubuntu-24.04,
-          ubuntu-22.04,
-          ubuntu-24.04-arm,
-          ubuntu-22.04-arm,
-          macos-latest,
-          macos-15,
-          macos-14,
-          macos-15-intel,
-        ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install feu
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
+  latest:
+    uses: ./.github/workflows/test-package.yaml
+    with:
+      install-cmd: 'uv pip install --pre minrecord'
 
   latest-all:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [
-          ubuntu-latest,
-          ubuntu-24.04,
-          ubuntu-22.04,
-          ubuntu-24.04-arm,
-          ubuntu-22.04-arm,
-          macos-latest,
-          macos-15,
-          macos-14,
-          macos-15-intel,
-        ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
+    uses: ./.github/workflows/test-package.yaml
+    with:
+      install-cmd: 'uv pip install --pre "minrecord[all]"'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install --pre "feu[all]"
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
-
-  latest-min:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [
-          ubuntu-latest,
-          ubuntu-24.04,
-          ubuntu-22.04,
-          ubuntu-24.04-arm,
-          ubuntu-22.04-arm,
-          macos-latest,
-          macos-15,
-          macos-14,
-          macos-15-intel,
-        ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install --pre feu
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
+  latest-extras:
+    uses: ./.github/workflows/test-package-extras.yaml
+    with:
+      install-args: '--pre'
 
 
   ########################
@@ -165,88 +45,18 @@ jobs:
   ########################
 
   packaging:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-        packaging-version: [
-          '25.0',
-          '24.2',
-          '23.2',
-          '22.0',
-          '21.3',
-        ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install feu
-
-      - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.1
-        with:
-          package-name: 'packaging'
-          package-version: ${{ matrix.packaging-version }}
-          python-version: ${{ matrix.python-version }}
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
+    needs: get-versions
+    uses: ./.github/workflows/test-package-dep.yaml
+    with:
+      package-name: packaging
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).packaging) }}
 
   typing-extensions:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.10' ]
-        typing-extensions-version: [
-          '4.15.0',
-          '4.14.1',
-          '4.13.2',
-          '4.12.2',
-          '4.11.0',
-          '4.10.0',
-        ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install feu
-
-      - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.1
-        with:
-          package-name: 'typing-extensions'
-          package-version: ${{ matrix.typing-extensions-version }}
-          python-version: ${{ matrix.python-version }}
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
+    needs: get-versions
+    uses: ./.github/workflows/test-package-dep.yaml
+    with:
+      package-name: typing-extensions
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).typing-extensions) }}
 
 
   #################################
@@ -254,117 +64,22 @@ jobs:
   #################################
 
   click:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-        click-version: [
-          '8.3.0',
-          '8.2.1',
-          '8.1.8',
-          '8.1.0',
-        ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install feu
-
-      - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.1
-        with:
-          package-name: 'click'
-          package-version: ${{ matrix.click-version }}
-          python-version: ${{ matrix.python-version }}
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
+    needs: get-versions
+    uses: ./.github/workflows/test-package-dep.yaml
+    with:
+      package-name: click
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).click) }}
 
   gitpython:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-        gitpython-version: [ '3.1.45', '3.1.41' ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install feu
-
-      - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.1
-        with:
-          package-name: 'gitpython'
-          package-version: ${{ matrix.gitpython-version }}
-          python-version: ${{ matrix.python-version }}
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
-
+    needs: get-versions
+    uses: ./.github/workflows/test-package-dep.yaml
+    with:
+      package-name: gitpython
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).gitpython) }}
 
   requests:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
-    strategy:
-      max-parallel: 8
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-        requests-version: [
-          '2.32.5',
-          '2.31.0',
-          '2.30.0',
-        ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install package
-        run: |
-          pip install feu
-
-      - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.4.1
-        with:
-          package-name: 'requests'
-          package-version: ${{ matrix.requests-version }}
-          python-version: ${{ matrix.python-version }}
-
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
+    needs: get-versions
+    uses: ./.github/workflows/test-package-dep.yaml
+    with:
+      package-name: requests
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).requests) }}
