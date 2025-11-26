@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.14', '3.13', '3.12', '3.11', '3.10' ]
-        extra: [ 'objectory' ]
+        extra: [ 'cli', 'git', 'requests' ]
 
     steps:
       - name: Checkout
