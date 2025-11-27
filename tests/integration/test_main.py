@@ -5,7 +5,12 @@ from subprocess import CalledProcessError
 
 import pytest
 
-from feu.testing import click_available, pip_available, uv_available
+from feu.testing import (
+    click_available,
+    click_not_available,
+    pip_available,
+    uv_available,
+)
 from feu.utils.command import run_bash_command
 
 ################################
@@ -58,3 +63,11 @@ def test_find_closest_version() -> None:
 def test_invalid() -> None:
     with pytest.raises(CalledProcessError):
         run_bash_command("python -m feu invalid")
+
+
+@click_not_available
+def test_install_not_click() -> None:
+    with pytest.raises(CalledProcessError):
+        run_bash_command(
+            "python -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=pip"
+        )
