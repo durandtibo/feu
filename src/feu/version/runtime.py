@@ -15,7 +15,7 @@ def get_package_version(package: str) -> Version | None:
     r"""Get the package version.
 
     Args:
-        package: Specifies the package name.
+        package: The package name.
 
     Returns:
         The package version.
