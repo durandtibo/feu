@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "click_available",
     "git_available",
+    "git_not_available",
     "jax_available",
     "matplotlib_available",
     "numpy_available",
@@ -33,6 +34,7 @@ from feu.install import is_pip_available, is_pipx_available, is_uv_available
 
 click_available = pytest.mark.skipif(not is_click_available(), reason="Requires click")
 git_available = pytest.mark.skipif(not is_git_available(), reason="Requires git")
+git_not_available = pytest.mark.skipif(is_git_available(), reason="Skip if git is available")
 jax_available = pytest.mark.skipif(not is_package_available("jax"), reason="Requires JAX")
 matplotlib_available = pytest.mark.skipif(
     not is_package_available("matplotlib"), reason="Requires matplotlib"
