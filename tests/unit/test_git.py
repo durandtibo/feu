@@ -1,39 +1,50 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from unittest.mock import Mock, patch
 
 import pytest
 
 from feu.git import get_last_tag_name, get_last_version_tag_name, get_tags
+from feu.imports import is_git_available
 from feu.testing import git_available
+
+if is_git_available():
+    import git
+
 
 ##############################
 #     Tests for get_tags     #
 ##############################
 
 
+def create_repo_mock() -> Mock:
+    now = datetime.now(UTC)
+
+    tag1 = Mock(
+        spec=git.TagReference,
+        commit=Mock(committed_datetime=now - timedelta(hours=1)),
+    )
+    tag1.configure_mock(name="v1")
+
+    tag2 = Mock(spec=git.TagReference, commit=Mock(committed_datetime=now))
+    tag2.configure_mock(name="v2")
+
+    return Mock(tags=[tag2, tag1])
+
+
 @git_available
-def test_get_tags() -> None:
-    tags = get_tags()
-    assert [t.name for t in tags[:17]] == [
-        "v0.0.1",
-        "v0.0.2",
-        "v0.0.3",
-        "v0.0.4",
-        "v0.0.5",
-        "v0.0.6",
-        "v0.0.7",
-        "v0.1.0",
-        "v0.1.1",
-        "v0.2.0",
-        "v0.2.1",
-        "v0.2.2",
-        "v0.2.3",
-        "v0.2.4",
-        "v0.3.0",
-        "v0.3.1",
-        "v0.3.2",
-    ]
+def test_get_tags_sorted() -> None:
+    with patch("feu.git.git.Repo", Mock(return_value=create_repo_mock())):
+        result = get_tags()
+    assert [t.name for t in result] == ["v1", "v2"]
+
+
+@git_available
+def test_get_tags_empty() -> None:
+    with patch("feu.git.git.Repo", Mock(return_value=Mock(tags=[]))):
+        result = get_tags()
+    assert result == []
 
 
 @patch("feu.imports.is_git_available", lambda: False)
@@ -49,11 +60,6 @@ def test_get_tags_no_git() -> None:
 
 @git_available
 def test_get_last_tag_name() -> None:
-    assert isinstance(get_last_tag_name(), str)
-
-
-@git_available
-def test_get_last_tag_name_mock() -> None:
     m1 = Mock()
     m1.configure_mock(name="v1.0.0")
     m2 = Mock()
@@ -86,11 +92,6 @@ def test_get_last_tag_name_no_git() -> None:
 
 @git_available
 def test_get_last_version_tag_name() -> None:
-    assert isinstance(get_last_version_tag_name(), str)
-
-
-@git_available
-def test_get_last_version_tag_name_mock() -> None:
     m1 = Mock()
     m1.configure_mock(name="v1.0.0")
     m2 = Mock()
