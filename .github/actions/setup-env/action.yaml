@@ -32,17 +32,11 @@ runs:
         python-version: ${{ inputs.python-version }}
         activate-environment: true
 
-    - name: Activate virtual environment
-      shell: bash
-      run: |
-        source .venv/bin/activate
-
     - name: Check tools
       shell: bash
       run: |
         which uv
         which python
-        which pip
 
     - name: Install invoke
       shell: bash

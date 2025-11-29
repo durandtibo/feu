@@ -41,19 +41,19 @@ def test_pip_installer_equal_false_different_type() -> None:
 def test_pip_installer_install_numpy() -> None:
     with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         PipInstaller().install(PackageSpec(name="numpy", version="2.0.0"))
-        run_mock.assert_called_once_with("pip install numpy==2.0.0")
+        run_mock.assert_called_once_with("python -m pip install numpy==2.0.0")
 
 
 def test_pip_installer_install_pandas() -> None:
     with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         PipInstaller().install(PackageSpec(name="pandas", version="2.1.1"))
-        run_mock.assert_called_once_with("pip install pandas==2.1.1 numpy<2.0.0")
+        run_mock.assert_called_once_with("python -m pip install pandas==2.1.1 numpy<2.0.0")
 
 
 def test_pip_installer_install_numpy_with_args() -> None:
     with patch("feu.install.pip.installer.run_bash_command") as run_mock:
         PipInstaller(arguments="-U").install(PackageSpec(name="numpy", version="2.0.0"))
-        run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+        run_mock.assert_called_once_with("python -m pip install -U numpy==2.0.0")
 
 
 def test_pip_installer_instantiate_with_arguments() -> None:

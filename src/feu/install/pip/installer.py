@@ -105,7 +105,7 @@ class PipInstaller(BasePipInstaller):
     """
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
-        cmd_parts = ["pip", "install"]
+        cmd_parts = ["python", "-m", "pip", "install"]
         if args:
             cmd_parts.append(args)
         cmd_parts.extend(map(str, deps))
