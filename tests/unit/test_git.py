@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
 import pytest
@@ -19,15 +19,16 @@ if is_git_available():
 
 
 def create_repo_mock() -> Mock:
-    now = datetime.now(UTC)
+    tz = timezone(timedelta(hours=0))  # UTC+2
+    dt = datetime(year=2025, month=5, day=17, hour=14, minute=30, second=0, tzinfo=tz)
 
     tag1 = Mock(
         spec=git.TagReference,
-        commit=Mock(committed_datetime=now - timedelta(hours=1)),
+        commit=Mock(committed_datetime=dt - timedelta(hours=1)),
     )
     tag1.configure_mock(name="v1")
 
-    tag2 = Mock(spec=git.TagReference, commit=Mock(committed_datetime=now))
+    tag2 = Mock(spec=git.TagReference, commit=Mock(committed_datetime=dt))
     tag2.configure_mock(name="v2")
 
     return Mock(tags=[tag2, tag1])
