@@ -129,3 +129,9 @@ def test_get_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> No
 def test_get_github_metadata_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         get_github_metadata(owner="my_name", repo="my_package")
+
+
+@patch("feu.imports.is_urllib3_available", lambda: False)
+def test_get_github_metadata_no_urllib3() -> None:
+    with pytest.raises(RuntimeError, match=r"'urllib3' package is required but not installed."):
+        get_github_metadata(owner="my_name", repo="my_package")

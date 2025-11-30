@@ -7,7 +7,12 @@ __all__ = ["get_github_metadata"]
 import os
 from functools import lru_cache
 
-from feu.imports import check_requests, is_requests_available, is_urllib3_available
+from feu.imports import (
+    check_requests,
+    check_urllib3,
+    is_requests_available,
+    is_urllib3_available,
+)
 
 if is_requests_available():  # pragma: no cover
     import requests
@@ -40,6 +45,7 @@ def get_github_metadata(owner: str, repo: str) -> dict:
     ```
     """
     check_requests()
+    check_urllib3()
     session = requests.Session()
 
     retry = Retry(
