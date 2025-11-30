@@ -6,10 +6,7 @@ __all__ = ["fetch_pypi_versions"]
 
 from functools import lru_cache
 
-from feu.imports import check_requests, is_requests_available
-
-if is_requests_available():  # pragma: no cover
-    import requests
+from feu.utils.http import fetch_data
 
 
 @lru_cache
@@ -35,6 +32,5 @@ def fetch_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
 
     ```
     """
-    check_requests()
-    data = requests.get(url=f"https://pypi.org/pypi/{package}/json", timeout=10).json()
-    return tuple(sorted(data["releases"].keys(), reverse=reverse))
+    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
+    return tuple(sorted(metadata["releases"].keys(), reverse=reverse))
