@@ -6,11 +6,13 @@ __all__ = [
     "check_click",
     "check_git",
     "check_requests",
+    "check_urllib3",
     "is_click_available",
     "is_git_available",
     "is_module_available",
     "is_package_available",
     "is_requests_available",
+    "is_urllib3_available",
 ]
 
 from contextlib import suppress
@@ -218,5 +220,53 @@ def check_requests() -> None:
             "'requests' package is required but not installed. "
             "You can install 'requests' package with the command:\n\n"
             "pip install requests\n"
+        )
+        raise RuntimeError(msg)
+
+
+###################
+#     urllib3     #
+###################
+
+
+@lru_cache
+def is_urllib3_available() -> bool:
+    r"""Indicate if the ``urllib3`` package is installed or not.
+
+    Returns:
+        ``True`` if ``urllib3`` is available otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import is_urllib3_available
+    >>> is_urllib3_available()
+
+    ```
+    """
+    return is_package_available("urllib3")
+
+
+def check_urllib3() -> None:
+    r"""Check if the ``urllib3`` package is installed.
+
+    Raises:
+        RuntimeError: if the ``urllib3`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.imports import check_urllib3
+    >>> check_urllib3()
+
+    ```
+    """
+    if not is_urllib3_available():
+        msg = (
+            "'urllib3' package is required but not installed. "
+            "You can install 'urllib3' package with the command:\n\n"
+            "pip install urllib3\n"
         )
         raise RuntimeError(msg)
