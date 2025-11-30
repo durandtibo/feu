@@ -132,8 +132,15 @@ def test_get_github_metadata_no_requests() -> None:
         get_github_metadata(owner="my_name", repo="my_package")
 
 
-@patch("feu.imports.is_requests_available", lambda: True)
+@requests_available
 @patch("feu.imports.is_urllib3_available", lambda: False)
-def test_get_github_metadata_no_urllib3() -> None:
-    with pytest.raises(RuntimeError, match=r"'urllib3' package is required but not installed."):
-        get_github_metadata(owner="my_name", repo="my_package")
+def test_get_github_metadata_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert get_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
+    session.get.assert_called_once_with(
+        url="https://api.github.com/repos/owner/repo",
+        timeout=10,
+        headers={"Accept": "application/vnd.github+json"},
+    )
