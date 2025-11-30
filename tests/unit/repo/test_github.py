@@ -87,6 +87,7 @@ def test_get_github_metadata_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
         get_github_metadata(owner="owner", repo="repo")
 
 
+@requests_available
 def test_get_github_metadata_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> HTTP error response (status >= 400)
@@ -131,6 +132,7 @@ def test_get_github_metadata_no_requests() -> None:
         get_github_metadata(owner="my_name", repo="my_package")
 
 
+@patch("feu.imports.is_requests_available", lambda: True)
 @patch("feu.imports.is_urllib3_available", lambda: False)
 def test_get_github_metadata_no_urllib3() -> None:
     with pytest.raises(RuntimeError, match=r"'urllib3' package is required but not installed."):
