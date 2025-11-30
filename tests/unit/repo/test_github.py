@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from feu.imports import is_requests_available
-from feu.repo import get_github_metadata
+from feu.repo import fetch_github_metadata
 from feu.testing import requests_available
 
 if is_requests_available():
@@ -18,12 +18,12 @@ else:
 
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
-    get_github_metadata.cache_clear()
+    fetch_github_metadata.cache_clear()
 
 
-#########################################
-#     Tests for get_github_metadata     #
-#########################################
+###########################################
+#     Tests for fetch_github_metadata     #
+###########################################
 
 
 def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
@@ -46,13 +46,13 @@ def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
 
 
 @requests_available
-def test_get_github_metadata_success(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_success(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
     session = Mock(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
-    assert get_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
+    assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
     session.get.assert_called_once_with(
         url="https://api.github.com/repos/owner/repo",
         timeout=10,
@@ -62,13 +62,13 @@ def test_get_github_metadata_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @requests_available
 @patch.dict(os.environ, {"GITHUB_TOKEN": "meow"}, clear=True)
-def test_get_github_metadata_success_with_token(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_success_with_token(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
     session = Mock(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
-    assert get_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
+    assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
     session.get.assert_called_once_with(
         url="https://api.github.com/repos/owner/repo",
         timeout=10,
@@ -77,18 +77,18 @@ def test_get_github_metadata_success_with_token(monkeypatch: pytest.MonkeyPatch)
 
 
 @requests_available
-def test_get_github_metadata_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Timeout error
     monkeypatch.setattr(
         requests, "Session", lambda: Mock(get=Mock(side_effect=requests.exceptions.Timeout()))
     )
     with pytest.raises(RuntimeError, match="timed out"):
-        get_github_metadata(owner="owner", repo="repo")
+        fetch_github_metadata(owner="owner", repo="repo")
 
 
 @requests_available
-def test_get_github_metadata_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> HTTP error response (status >= 400)
     monkeypatch.setattr(
@@ -97,11 +97,11 @@ def test_get_github_metadata_http_error(monkeypatch: pytest.MonkeyPatch) -> None
         lambda: Mock(get=Mock(return_value=make_mock_response(status=404))),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
-        get_github_metadata(owner="owner", repo="repo")
+        fetch_github_metadata(owner="owner", repo="repo")
 
 
 @requests_available
-def test_get_github_metadata_request_exception(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_request_exception(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Any other RequestException -> RuntimeError
     monkeypatch.setattr(
@@ -110,11 +110,11 @@ def test_get_github_metadata_request_exception(monkeypatch: pytest.MonkeyPatch) 
         lambda: Mock(get=Mock(side_effect=requests.exceptions.RequestException("boom"))),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
-        get_github_metadata(owner="owner", repo="repo")
+        fetch_github_metadata(owner="owner", repo="repo")
 
 
 @requests_available
-def test_get_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Invalid JSON response
     monkeypatch.setattr(
@@ -123,22 +123,22 @@ def test_get_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> No
         lambda: Mock(get=Mock(return_value=make_mock_response(raise_json=True))),
     )
     with pytest.raises(RuntimeError, match="Invalid JSON"):
-        get_github_metadata(owner="owner", repo="repo")
+        fetch_github_metadata(owner="owner", repo="repo")
 
 
 @patch("feu.imports.is_requests_available", lambda: False)
-def test_get_github_metadata_no_requests() -> None:
+def test_fetch_github_metadata_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
-        get_github_metadata(owner="my_name", repo="my_package")
+        fetch_github_metadata(owner="my_name", repo="my_package")
 
 
 @requests_available
 @patch("feu.imports.is_urllib3_available", lambda: False)
-def test_get_github_metadata_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fetch_github_metadata_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
     session = Mock(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
-    assert get_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
+    assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
     session.get.assert_called_once_with(
         url="https://api.github.com/repos/owner/repo",
         timeout=10,

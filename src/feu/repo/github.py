@@ -2,7 +2,7 @@ r"""Contain GitHub utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["get_github_metadata"]
+__all__ = ["fetch_github_metadata"]
 
 import os
 from functools import lru_cache
@@ -11,7 +11,7 @@ from feu.utils.http import fetch_data
 
 
 @lru_cache
-def get_github_metadata(owner: str, repo: str) -> dict:
+def fetch_github_metadata(owner: str, repo: str) -> dict:
     r"""Get the GitHub repo metadata.
 
     The metadata is read from GitHub API.
@@ -27,8 +27,8 @@ def get_github_metadata(owner: str, repo: str) -> dict:
 
     ```pycon
 
-    >>> from feu.repo import get_github_metadata
-    >>> metadata = get_github_metadata(owner="durandtibo", repo="feu")  # doctest: +SKIP
+    >>> from feu.repo import fetch_github_metadata
+    >>> metadata = fetch_github_metadata(owner="durandtibo", repo="feu")  # doctest: +SKIP
 
     ```
     """
