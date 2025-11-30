@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "compare_version",
+    "fetch_pypi_versions",
     "filter_every_n_versions",
     "filter_last_n_versions",
     "filter_range_versions",
@@ -12,7 +13,6 @@ __all__ = [
     "get_latest_major_versions",
     "get_latest_minor_versions",
     "get_package_version",
-    "get_pypi_versions",
     "get_python_major_minor",
     "get_versions",
     "latest_major_versions",
@@ -37,5 +37,5 @@ from feu.version.package import (
     get_latest_minor_versions,
     get_versions,
 )
-from feu.version.pypi import get_pypi_versions
+from feu.version.pypi import fetch_pypi_versions
 from feu.version.runtime import get_package_version, get_python_major_minor
