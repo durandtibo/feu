@@ -79,5 +79,5 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
     try:
         return resp.json()
     except ValueError as exc:
-        msg = "Invalid JSON received from GitHub"
+        msg = "Invalid JSON received"
         raise RuntimeError(msg) from exc

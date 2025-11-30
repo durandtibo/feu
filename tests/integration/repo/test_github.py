@@ -36,14 +36,16 @@ def test_get_github_metadata_pytorch() -> None:
     assert metadata["owner"]["login"] == "pytorch"
 
 
-@requests_not_available
-def test_get_github_metadata_no_requests() -> None:
-    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
-        get_github_metadata(owner="durandtibo", repo="feu")
-
-
 @requests_available
 @urllib3_not_available
 def test_get_github_metadata_no_urllib3() -> None:
-    with pytest.raises(RuntimeError, match=r"'urllib3' package is required but not installed."):
+    metadata = get_github_metadata(owner="durandtibo", repo="feu")
+    assert isinstance(metadata, dict)
+    assert metadata["name"] == "feu"
+    assert metadata["owner"]["login"] == "durandtibo"
+
+
+@requests_not_available
+def test_get_github_metadata_no_requests() -> None:
+    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         get_github_metadata(owner="durandtibo", repo="feu")
