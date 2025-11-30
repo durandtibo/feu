@@ -27,6 +27,7 @@ def get_package_versions() -> dict[str, list[str]]:
         "click": list(get_latest_minor_versions("click", lower="8.1")),
         "gitpython": list(get_latest_minor_versions("gitpython", lower="3.1.41")),
         "requests": list(get_latest_minor_versions("requests", lower="2.30")),
+        "urllib3": list(get_latest_minor_versions("urllib3", lower="2.0")),
     }
 
 
