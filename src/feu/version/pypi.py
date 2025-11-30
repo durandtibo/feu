@@ -2,7 +2,7 @@ r"""Contain PyPI utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["get_pypi_versions"]
+__all__ = ["fetch_pypi_versions"]
 
 from functools import lru_cache
 
@@ -13,7 +13,7 @@ if is_requests_available():  # pragma: no cover
 
 
 @lru_cache
-def get_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
+def fetch_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
     r"""Get the package versions available on PyPI.
 
     The package versions are read from PyPI.
@@ -30,8 +30,8 @@ def get_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
 
     ```pycon
 
-    >>> from feu.version import get_pypi_versions
-    >>> versions = get_pypi_versions("requests")  # doctest: +SKIP
+    >>> from feu.version import fetch_pypi_versions
+    >>> versions = fetch_pypi_versions("requests")  # doctest: +SKIP
 
     ```
     """

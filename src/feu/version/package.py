@@ -14,7 +14,7 @@ from feu.version.filtering import (
     latest_minor_versions,
     unique_versions,
 )
-from feu.version.pypi import get_pypi_versions
+from feu.version.pypi import fetch_pypi_versions
 
 
 def get_versions(
@@ -41,7 +41,7 @@ def get_versions(
 
     ```
     """
-    versions = get_pypi_versions(package)
+    versions = fetch_pypi_versions(package)
     versions = filter_valid_versions(versions)
     versions = filter_stable_versions(versions)
     versions = filter_range_versions(versions, lower=lower, upper=upper)
