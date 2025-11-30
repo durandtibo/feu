@@ -46,7 +46,10 @@ dependencies = [
 [project.optional-dependencies]
 cli = [ "click >=8.1,<9.0" ]
 git = [ "gitpython >=3.1.41,<4.0" ]
-requests = [ "requests >=2.30.0,<3.0" ]
+requests = [
+    "requests >=2.30.0,<3.0",
+    "urllib3 >=2.0,<3.0",
+]
 
 [dependency-groups]
 dev = [
