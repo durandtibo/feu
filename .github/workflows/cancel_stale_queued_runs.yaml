@@ -7,7 +7,7 @@ on:
 
 jobs:
   cancel-stale-runs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Cancel queued runs older than 24 hours
@@ -39,9 +39,5 @@ jobs:
 
             if [ "$age_hours" -gt 24 ]; then
               echo "Cancelling run $run_id..."
-#              gh api \
-#                -X POST \
-#                -H "Accept: application/vnd.github+json" \
-#                /repos/$REPO/actions/runs/$run_id/cancel
             fi
           done
