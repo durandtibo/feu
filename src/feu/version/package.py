@@ -2,7 +2,7 @@ r"""Contain functions to manage package versions."""
 
 from __future__ import annotations
 
-__all__ = ["get_latest_major_versions", "get_latest_minor_versions", "get_versions"]
+__all__ = ["fetch_versions", "get_latest_major_versions", "get_latest_minor_versions"]
 
 
 from feu.version.comparison import sort_versions
@@ -17,7 +17,7 @@ from feu.version.filtering import (
 from feu.version.pypi import fetch_pypi_versions
 
 
-def get_versions(
+def fetch_versions(
     package: str, lower: str | None = None, upper: str | None = None
 ) -> tuple[str, ...]:
     r"""Get the valid versions for a given package.
@@ -36,8 +36,8 @@ def get_versions(
 
     ```pycon
 
-    >>> from feu.version import get_versions
-    >>> versions = get_versions("requests")  # doctest: +SKIP
+    >>> from feu.version import fetch_versions
+    >>> versions = fetch_versions("requests")  # doctest: +SKIP
 
     ```
     """
@@ -76,7 +76,7 @@ def get_latest_major_versions(
 
     ```
     """
-    versions = get_versions(package, lower=lower, upper=upper)
+    versions = fetch_versions(package, lower=lower, upper=upper)
     return tuple(latest_major_versions(versions))
 
 
@@ -106,5 +106,5 @@ def get_latest_minor_versions(
 
     ```
     """
-    versions = get_versions(package, lower=lower, upper=upper)
+    versions = fetch_versions(package, lower=lower, upper=upper)
     return tuple(latest_minor_versions(versions))
