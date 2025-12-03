@@ -7,13 +7,13 @@ from feu.version import (
     get_latest_minor_versions,
 )
 
-##################################
-#     Tests for get_versions     #
-##################################
+####################################
+#     Tests for fetch_versions     #
+####################################
 
 
 @requests_available
-def test_get_versions_requests() -> None:
+def test_fetch_versions_requests() -> None:
     assert fetch_versions("requests", lower="2.25", upper="2.30") == (
         "2.25.0",
         "2.25.1",
@@ -28,7 +28,7 @@ def test_get_versions_requests() -> None:
 
 
 @requests_available
-def test_get_versions_torch() -> None:
+def test_fetch_versions_torch() -> None:
     assert fetch_versions("torch", lower="2.5", upper="2.9") == (
         "2.5.0",
         "2.5.1",
