@@ -2,7 +2,7 @@ r"""Contain functions to manage package versions."""
 
 from __future__ import annotations
 
-__all__ = ["fetch_versions", "get_latest_major_versions", "get_latest_minor_versions"]
+__all__ = ["fetch_latest_major_versions", "fetch_latest_minor_versions", "fetch_versions"]
 
 
 from feu.version.comparison import sort_versions
@@ -50,7 +50,7 @@ def fetch_versions(
     return tuple(versions)
 
 
-def get_latest_major_versions(
+def fetch_latest_major_versions(
     package: str, lower: str | None = None, upper: str | None = None
 ) -> tuple[str, ...]:
     r"""Get the latest version for each major version for a given
@@ -71,8 +71,8 @@ def get_latest_major_versions(
 
     ```pycon
 
-    >>> from feu.version import get_latest_major_versions
-    >>> versions = get_latest_major_versions("requests")  # doctest: +SKIP
+    >>> from feu.version import fetch_latest_major_versions
+    >>> versions = fetch_latest_major_versions("requests")  # doctest: +SKIP
 
     ```
     """
@@ -80,7 +80,7 @@ def get_latest_major_versions(
     return tuple(latest_major_versions(versions))
 
 
-def get_latest_minor_versions(
+def fetch_latest_minor_versions(
     package: str, lower: str | None = None, upper: str | None = None
 ) -> tuple[str, ...]:
     r"""Get the latest version for each minor version for a given
@@ -101,8 +101,8 @@ def get_latest_minor_versions(
 
     ```pycon
 
-    >>> from feu.version import get_latest_minor_versions
-    >>> versions = get_latest_minor_versions("requests")  # doctest: +SKIP
+    >>> from feu.version import fetch_latest_minor_versions
+    >>> versions = fetch_latest_minor_versions("requests")  # doctest: +SKIP
 
     ```
     """
