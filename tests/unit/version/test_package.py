@@ -4,42 +4,49 @@ from unittest.mock import Mock, patch
 
 from feu.testing import requests_available
 from feu.version import (
+    fetch_versions,
     get_latest_major_versions,
     get_latest_minor_versions,
-    get_versions,
 )
 
-##################################
-#     Tests for get_versions     #
-##################################
+####################################
+#     Tests for fetch_versions     #
+####################################
 
 
 @requests_available
-def test_get_versions() -> None:
+def test_fetch_versions() -> None:
     mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
     with patch("feu.version.package.fetch_pypi_versions", mock):
-        assert get_versions("my_package") == ("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3")
+        assert fetch_versions("my_package") == (
+            "1.0.0",
+            "1.0.1",
+            "1.1.0",
+            "1.1.2",
+            "2.0.0",
+            "2.0.3",
+        )
 
 
 @requests_available
-def test_get_versions_lower() -> None:
+def test_fetch_versions_lower() -> None:
     mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
     with patch("feu.version.package.fetch_pypi_versions", mock):
-        assert get_versions("my_package", lower="1.1.0") == ("1.1.0", "1.1.2", "2.0.0", "2.0.3")
+        assert fetch_versions("my_package", lower="1.1.0") == ("1.1.0", "1.1.2", "2.0.0", "2.0.3")
 
 
 @requests_available
-def test_get_versions_upper() -> None:
+def test_fetch_versions_upper() -> None:
     mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
     with patch("feu.version.package.fetch_pypi_versions", mock):
-        assert get_versions("my_package", upper="2.0.0") == ("1.0.0", "1.0.1", "1.1.0", "1.1.2")
+        assert fetch_versions("my_package", upper="2.0.0") == ("1.0.0", "1.0.1", "1.1.0", "1.1.2")
 
 
 @requests_available
-def test_get_versions_range() -> None:
+def test_fetch_versions_range() -> None:
     mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
     with patch("feu.version.package.fetch_pypi_versions", mock):
-        assert get_versions("my_package", lower="1.1.0", upper="2.0.0") == ("1.1.0", "1.1.2")
+        assert fetch_versions("my_package", lower="1.1.0", upper="2.0.0") == ("1.1.0", "1.1.2")
 
 
 ###############################################

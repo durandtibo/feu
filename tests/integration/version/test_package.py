@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from feu.testing import requests_available
 from feu.version import (
+    fetch_versions,
     get_latest_major_versions,
     get_latest_minor_versions,
-    get_versions,
 )
 
-##################################
-#     Tests for get_versions     #
-##################################
+####################################
+#     Tests for fetch_versions     #
+####################################
 
 
 @requests_available
-def test_get_versions_requests() -> None:
-    assert get_versions("requests", lower="2.25", upper="2.30") == (
+def test_fetch_versions_requests() -> None:
+    assert fetch_versions("requests", lower="2.25", upper="2.30") == (
         "2.25.0",
         "2.25.1",
         "2.26.0",
@@ -28,8 +28,8 @@ def test_get_versions_requests() -> None:
 
 
 @requests_available
-def test_get_versions_torch() -> None:
-    assert get_versions("torch", lower="2.5", upper="2.9") == (
+def test_fetch_versions_torch() -> None:
+    assert fetch_versions("torch", lower="2.5", upper="2.9") == (
         "2.5.0",
         "2.5.1",
         "2.6.0",
