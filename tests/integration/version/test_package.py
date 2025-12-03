@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from feu.testing import requests_available
 from feu.version import (
+    fetch_latest_major_versions,
+    fetch_latest_minor_versions,
     fetch_versions,
-    get_latest_major_versions,
-    get_latest_minor_versions,
 )
 
 ####################################
@@ -39,29 +39,29 @@ def test_fetch_versions_torch() -> None:
     )
 
 
-###############################################
-#     Tests for get_latest_major_versions     #
-###############################################
+#################################################
+#     Tests for fetch_latest_major_versions     #
+#################################################
 
 
 @requests_available
-def test_get_latest_major_versions_requests() -> None:
-    assert get_latest_major_versions("requests", upper="2.30") == ("0.14.2", "1.2.3", "2.29.0")
+def test_fetch_latest_major_versions_requests() -> None:
+    assert fetch_latest_major_versions("requests", upper="2.30") == ("0.14.2", "1.2.3", "2.29.0")
 
 
 @requests_available
-def test_get_latest_major_versions_torch() -> None:
-    assert get_latest_major_versions("torch", upper="2.9") == ("1.13.1", "2.8.0")
+def test_fetch_latest_major_versions_torch() -> None:
+    assert fetch_latest_major_versions("torch", upper="2.9") == ("1.13.1", "2.8.0")
 
 
-###############################################
-#     Tests for get_latest_minor_versions     #
-###############################################
+#################################################
+#     Tests for fetch_latest_minor_versions     #
+#################################################
 
 
 @requests_available
-def test_get_latest_minor_versions_requests() -> None:
-    assert get_latest_minor_versions("requests", lower="2.10", upper="2.30") == (
+def test_fetch_latest_minor_versions_requests() -> None:
+    assert fetch_latest_minor_versions("requests", lower="2.10", upper="2.30") == (
         "2.10.0",
         "2.11.1",
         "2.12.5",
@@ -86,8 +86,8 @@ def test_get_latest_minor_versions_requests() -> None:
 
 
 @requests_available
-def test_get_latest_minor_versions_torch() -> None:
-    assert get_latest_minor_versions("torch", lower="2.0", upper="2.9") == (
+def test_fetch_latest_minor_versions_torch() -> None:
+    assert fetch_latest_minor_versions("torch", lower="2.0", upper="2.9") == (
         "2.0.1",
         "2.1.2",
         "2.2.2",
