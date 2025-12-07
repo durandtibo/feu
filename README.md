@@ -86,6 +86,15 @@ version = find_closest_version(
 print(f"Closest valid version: {version}")
 ```
 
+### Why feu?
+
+Managing Python package versions across different Python versions can be challenging. Different Python versions support different package versions, and manually tracking compatibility can be error-prone. `feu` solves this by:
+
+1. **Automating version selection**: Automatically finds compatible package versions for your Python environment
+2. **Preventing installation failures**: Validates versions before installation to avoid runtime errors
+3. **Simplifying multi-version support**: Makes it easy to support multiple Python versions in your projects
+4. **Providing graceful fallbacks**: Check package availability and provide alternatives when packages aren't installed
+
 ### Documentation
 
 - 📚 [Full Documentation](https://durandtibo.github.io/feu/)
