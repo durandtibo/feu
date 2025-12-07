@@ -125,7 +125,6 @@ def functional_test(c: Context, cov: bool = False) -> None:
 def show_installed_packages(c: Context) -> None:
     r"""Show the installed packages."""
     c.run("uv pip list", pty=True)
-    c.run("uv pip check", pty=True)
 
 
 @task
