@@ -17,34 +17,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Set environment variable
-        run: |
-          echo $(poetry run poetry env info --path)/bin >> $GITHUB_PATH
+      - name: Setup python environment
+        uses: ./.github/actions/setup-env
 
       - name: Install packages
         run: |
-          make update
+          inv update
 
       - name: Install packages
         run: |
-          make install-all
+          inv install --docs-deps
 
-      - name: Show installed packages
+      - name: Show dependency tree
+        shell: bash
         run: |
-          poetry show
-          poetry show --tree
+          uv pip tree --show-version-specifiers
 
       - name: Run unit tests
         run: |
-          make unit-test-cov
+          inv unit-test --cov
 
       - uses: peter-evans/create-pull-request@v7
         if: always()
