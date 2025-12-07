@@ -70,3 +70,9 @@ runs:
       shell: bash
       run: |
         uv pip tree --show-version-specifiers
+
+    - name: Verify the current environment
+      shell: bash
+      continue-on-error: true
+      run: |
+        uv pip check
