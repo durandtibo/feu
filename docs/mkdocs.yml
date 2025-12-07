@@ -18,17 +18,19 @@ theme:
 
 nav:
   - Home: index.md
-  - get_started.md
-  - Reference:
-      - refs/root.md
-      - refs/git.md
-      - refs/imports.md
-      - refs/install.md
-      - refs/package.md
-      - refs/repo.md
-      - refs/testing.md
-      - refs/utils.md
-      - refs/version.md
+  - Get Started: get_started.md
+  - Usage Guide: usage.md
+  - CLI Reference: cli.md
+  - API Reference:
+      - Main Functions: refs/root.md
+      - Git: refs/git.md
+      - Imports: refs/imports.md
+      - Install: refs/install.md
+      - Package: refs/package.md
+      - Repository: refs/repo.md
+      - Testing: refs/testing.md
+      - Utils: refs/utils.md
+      - Version: refs/version.md
   - GitHub: https://github.com/durandtibo/feu
 
 repo_url: https://github.com/durandtibo/feu
