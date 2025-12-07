@@ -27,7 +27,7 @@ make setup-venv
 
 # Or manually:
 uv venv --python 3.13
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 uv sync --all-extras --group dev --group docs
 ```
 
@@ -37,19 +37,16 @@ Run the test suite to ensure everything works:
 
 ```bash
 # Run all tests with coverage
-make unit-test-cov
-
-# Or use pytest directly
-python -m pytest tests/ -v
+inv unit-test --cov
 
 # Run only unit tests
-make unit-test
+inv unit-test
 
 # Run integration tests
-make integration-test
+inv integration-test
 
 # Run functional tests
-make functional-test
+inv functional-test
 ```
 
 ### Code Quality
@@ -62,10 +59,7 @@ We use `black` for code formatting:
 
 ```bash
 # Check formatting
-make format
-
-# Or directly
-black --check .
+inv check-format
 ```
 
 #### Linting
@@ -74,13 +68,7 @@ We use `ruff` for linting:
 
 ```bash
 # Check linting
-make lint
-
-# Or directly
-ruff check .
-
-# Auto-fix issues when possible
-ruff check --fix .
+inv check-lint
 ```
 
 #### Pre-commit Hooks
@@ -97,7 +85,7 @@ pre-commit run --all-files
 We follow Google-style docstrings. Run docformatter to ensure consistency:
 
 ```bash
-make docformat
+inv docformat
 ```
 
 ### Documentation
@@ -140,7 +128,7 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 
 4. **Run the test suite** and ensure all tests pass:
    ```bash
-   make unit-test-cov
+   inv unit-test --cov
    ```
 
 5. **Update documentation** if you've changed APIs or added features
@@ -164,8 +152,8 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 
 Before submitting, ensure your PR:
 
-- [ ] Passes all tests (`make unit-test-cov`)
-- [ ] Follows code style guidelines (`make format` and `make lint`)
+- [ ] Passes all tests (`inv unit-test --cov`)
+- [ ] Follows code style guidelines (`inv check-format` and `inv check-lint`)
 - [ ] Includes tests for new functionality
 - [ ] Updates documentation as needed
 - [ ] Has a clear description of changes

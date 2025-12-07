@@ -43,9 +43,6 @@ You can install `uv` using:
 # On macOS and Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# On Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-
 # Or with pip
 pip install uv
 ```
@@ -77,10 +74,7 @@ Alternatively, you can manually set up the environment:
 uv venv --python 3.13
 
 # Activate the virtual environment
-# On Unix/macOS:
 source .venv/bin/activate
-# On Windows:
-.venv\Scripts\activate
 
 # Install the package with all dependencies
 uv sync --all-extras --group dev --group docs
@@ -89,5 +83,5 @@ uv sync --all-extras --group dev --group docs
 After installation, you can verify everything is working by running the tests:
 
 ```shell
-make unit-test-cov
+inv unit-test --cov
 ```
