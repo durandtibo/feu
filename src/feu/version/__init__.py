@@ -17,11 +17,12 @@ __all__ = [
     "get_python_major_minor",
     "latest_major_versions",
     "latest_minor_versions",
+    "latest_version",
     "sort_versions",
     "unique_versions",
 ]
 
-from feu.version.comparison import compare_version, sort_versions
+from feu.version.comparison import compare_version, latest_version, sort_versions
 from feu.version.filtering import (
     filter_every_n_versions,
     filter_last_n_versions,
