@@ -4,6 +4,7 @@ from feu.testing import requests_available
 from feu.version import (
     fetch_latest_major_versions,
     fetch_latest_minor_versions,
+    fetch_latest_stable_version,
     fetch_latest_version,
     fetch_versions,
 )
@@ -114,3 +115,13 @@ def test_fetch_latest_version_stable() -> None:
 @requests_available
 def test_fetch_latest_version_dev() -> None:
     assert fetch_latest_version("gtaccelerate") == "0.0.1a6"
+
+
+#################################################
+#     Tests for fetch_latest_stable_version     #
+#################################################
+
+
+@requests_available
+def test_fetch_latest_stable_version() -> None:
+    assert fetch_latest_stable_version("gravitorch") == "0.0.23"

@@ -6,6 +6,7 @@ __all__ = [
     "compare_version",
     "fetch_latest_major_versions",
     "fetch_latest_minor_versions",
+    "fetch_latest_stable_version",
     "fetch_latest_version",
     "fetch_pypi_versions",
     "fetch_versions",
@@ -37,6 +38,7 @@ from feu.version.filtering import (
 from feu.version.package import (
     fetch_latest_major_versions,
     fetch_latest_minor_versions,
+    fetch_latest_stable_version,
     fetch_latest_version,
     fetch_versions,
 )
