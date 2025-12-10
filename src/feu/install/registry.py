@@ -104,5 +104,6 @@ class InstallerRegistry:
 
         ```
         """
-        installer = cls.registry[installer.name].instantiate_with_arguments(installer.arguments)
-        installer.install(package=package)
+        cls.registry[installer.name].instantiate_with_arguments(installer.arguments).install(
+            package=package
+        )

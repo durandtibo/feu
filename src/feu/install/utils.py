@@ -57,6 +57,9 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
         installer: The installer specification.
         package: The package specification.
 
+    Raises:
+        RuntimeError: If no package version is specified.
+
     Example usage:
 
     ```pycon
@@ -70,12 +73,16 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
 
     ```
     """
+    pkg_version = package.version
+    if pkg_version is None:
+        msg = f"A package version must be specified for {package.name}"
+        raise RuntimeError(msg)
     install_package(
         installer=installer,
         package=package.with_version(
             find_closest_version(
                 pkg_name=package.name,
-                pkg_version=package.version,
+                pkg_version=pkg_version,
                 python_version=get_python_major_minor(),
             )
         ),
