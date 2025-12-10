@@ -6,8 +6,6 @@ __all__ = ["fetch_data"]
 
 from typing import Any
 
-from urllib3 import Retry
-
 from feu.imports import (
     check_requests,
     is_requests_available,
@@ -59,7 +57,7 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
     session = requests.Session()  # pyright: ignore[reportPossiblyUnboundVariable]
 
     if is_urllib3_available():
-        retry = Retry(
+        retry = Retry(  # pyright: ignore[reportPossiblyUnboundVariable]
             total=5,
             backoff_factor=0.5,
             status_forcelist=[429, 500, 502, 503, 504],
