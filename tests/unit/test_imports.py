@@ -16,6 +16,8 @@ from feu.imports import (
     is_urllib3_available,
     raise_error_click_missing,
     raise_error_git_missing,
+    raise_error_requests_missing,
+    raise_error_urllib3_missing,
 )
 
 ##########################################
@@ -137,6 +139,11 @@ def test_is_requests_available() -> None:
     assert isinstance(is_requests_available(), bool)
 
 
+def test_raise_error_requests_missing() -> None:
+    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
+        raise_error_requests_missing()
+
+
 ###################
 #     urllib3     #
 ###################
@@ -157,3 +164,8 @@ def test_check_urllib3_without_package() -> None:
 
 def test_is_urllib3_available() -> None:
     assert isinstance(is_urllib3_available(), bool)
+
+
+def test_raise_error_urllib3_missing() -> None:
+    with pytest.raises(RuntimeError, match=r"'urllib3' package is required but not installed."):
+        raise_error_urllib3_missing()
