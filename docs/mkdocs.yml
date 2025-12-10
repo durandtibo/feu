@@ -31,7 +31,7 @@ nav:
       - Testing: refs/testing.md
       - Utils: refs/utils.md
       - Version: refs/version.md
-  - Contributing: contributing.md
+  - Contributing: https://github.com/durandtibo/feu/blob/main/.github/CONTRIBUTING.md
   - GitHub: https://github.com/durandtibo/feu
 
 repo_url: https://github.com/durandtibo/feu
