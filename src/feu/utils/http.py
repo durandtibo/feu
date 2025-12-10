@@ -16,6 +16,7 @@ if is_requests_available():  # pragma: no cover
     import requests
     from requests.adapters import HTTPAdapter
 
+
 if is_urllib3_available():  # pragma: no cover
     from urllib3.util.retry import Retry
 
@@ -53,26 +54,26 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
     ```
     """
     check_requests()
-    session = requests.Session()
+    session = requests.Session()  # pyright: ignore[reportPossiblyUnboundVariable]
 
     if is_urllib3_available():
-        retry = Retry(
+        retry = Retry(  # pyright: ignore[reportPossiblyUnboundVariable]
             total=5,
             backoff_factor=0.5,
             status_forcelist=[429, 500, 502, 503, 504],
             allowed_methods=["GET"],
             raise_on_status=False,
         )
-        adapter = HTTPAdapter(max_retries=retry)
+        adapter = HTTPAdapter(max_retries=retry)  # pyright: ignore[reportPossiblyUnboundVariable]
         session.mount("https://", adapter)
 
     try:
         resp = session.get(url=url, timeout=timeout, **kwargs)
         resp.raise_for_status()
-    except requests.exceptions.Timeout as exc:
+    except requests.exceptions.Timeout as exc:  # pyright: ignore[reportPossiblyUnboundVariable]
         msg = "GitHub API request timed out"
         raise RuntimeError(msg) from exc
-    except requests.exceptions.RequestException as exc:
+    except requests.exceptions.RequestException as exc:  # pyright: ignore[reportPossiblyUnboundVariable]
         msg = f"Network or HTTP error: {exc}"
         raise RuntimeError(msg) from exc
 

@@ -15,6 +15,8 @@ __all__ = [
     "is_urllib3_available",
     "raise_error_click_missing",
     "raise_error_git_missing",
+    "raise_error_requests_missing",
+    "raise_error_urllib3_missing",
 ]
 
 from contextlib import suppress
@@ -231,12 +233,18 @@ def check_requests() -> None:
     ```
     """
     if not is_requests_available():
-        msg = (
-            "'requests' package is required but not installed. "
-            "You can install 'requests' package with the command:\n\n"
-            "pip install requests\n"
-        )
-        raise RuntimeError(msg)
+        raise_error_requests_missing()
+
+
+def raise_error_requests_missing() -> NoReturn:
+    r"""Raise a RuntimeError to indicate the ``requests`` package is
+    missing."""
+    msg = (
+        "'requests' package is required but not installed. "
+        "You can install 'requests' package with the command:\n\n"
+        "pip install requests\n"
+    )
+    raise RuntimeError(msg)
 
 
 ###################
@@ -279,9 +287,15 @@ def check_urllib3() -> None:
     ```
     """
     if not is_urllib3_available():
-        msg = (
-            "'urllib3' package is required but not installed. "
-            "You can install 'urllib3' package with the command:\n\n"
-            "pip install urllib3\n"
-        )
-        raise RuntimeError(msg)
+        raise_error_urllib3_missing()
+
+
+def raise_error_urllib3_missing() -> NoReturn:
+    r"""Raise a RuntimeError to indicate the ``urllib3`` package is
+    missing."""
+    msg = (
+        "'urllib3' package is required but not installed. "
+        "You can install 'urllib3' package with the command:\n\n"
+        "pip install urllib3\n"
+    )
+    raise RuntimeError(msg)
