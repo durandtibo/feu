@@ -14,6 +14,8 @@ from feu.imports import (
     is_git_available,
     is_requests_available,
     is_urllib3_available,
+    raise_error_click_missing,
+    raise_error_git_missing,
 )
 
 ##########################################
@@ -81,6 +83,11 @@ def test_is_click_available() -> None:
     assert isinstance(is_click_available(), bool)
 
 
+def test_raise_error_click_missing() -> None:
+    with pytest.raises(RuntimeError, match=r"'click' package is required but not installed."):
+        raise_error_click_missing()
+
+
 ###############
 #     git     #
 ###############
@@ -101,6 +108,11 @@ def test_check_git_without_package() -> None:
 
 def test_is_git_available() -> None:
     assert isinstance(is_git_available(), bool)
+
+
+def test_raise_error_git_missing() -> None:
+    with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
+        raise_error_git_missing()
 
 
 ####################

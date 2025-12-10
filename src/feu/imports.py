@@ -13,6 +13,7 @@ __all__ = [
     "is_package_available",
     "is_requests_available",
     "is_urllib3_available",
+    "raise_error_click_missing",
     "raise_error_git_missing",
 ]
 
@@ -122,12 +123,18 @@ def check_click() -> None:
     ```
     """
     if not is_click_available():
-        msg = (
-            "'click' package is required but not installed. "
-            "You can install 'click' package with the command:\n\n"
-            "pip install click\n"
-        )
-        raise RuntimeError(msg)
+        raise_error_click_missing()
+
+
+def raise_error_click_missing() -> NoReturn:
+    r"""Raise a RuntimeError to indicate the ``click`` package is
+    missing."""
+    msg = (
+        "'click' package is required but not installed. "
+        "You can install 'click' package with the command:\n\n"
+        "pip install click\n"
+    )
+    raise RuntimeError(msg)
 
 
 ###############
