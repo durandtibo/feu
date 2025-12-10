@@ -131,6 +131,12 @@ def test_jax_dependency_resolver_resolve_with_extras() -> None:
     ]
 
 
+def test_jax_dependency_resolver_missing_version() -> None:
+    resolver = JaxDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for jax"):
+        resolver.resolve(PackageSpec(name="jax"))
+
+
 ##############################################
 #     Tests for Numpy2DependencyResolver     #
 ##############################################
@@ -191,6 +197,12 @@ def test_numpy2_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=["dev"])]
 
 
+def test_numpy2_dependency_resolver_missing_version() -> None:
+    resolver = Numpy2DependencyResolver(min_version="1.2.3")
+    with pytest.raises(RuntimeError, match="Missing package version for my_package"):
+        resolver.resolve(PackageSpec(name="my_package"))
+
+
 ##################################################
 #     Tests for MatplotlibDependencyResolver     #
 ##################################################
@@ -239,6 +251,12 @@ def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"], extras=["tk"])]
 
 
+def test_matplotlib_dependency_resolver_missing_version() -> None:
+    resolver = MatplotlibDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for matplotlib"):
+        resolver.resolve(PackageSpec(name="matplotlib"))
+
+
 ##############################################
 #     Tests for PandasDependencyResolver     #
 ##############################################
@@ -283,6 +301,12 @@ def test_pandas_dependency_resolver_resolve_with_extras() -> None:
     assert PandasDependencyResolver().resolve(
         PackageSpec(name="pandas", version="2.2.2", extras=["performance"])
     ) == [PackageDependency(name="pandas", version_specifiers=["==2.2.2"], extras=["performance"])]
+
+
+def test_pandas_dependency_resolver_missing_version() -> None:
+    resolver = PandasDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for pandas"):
+        resolver.resolve(PackageSpec(name="pandas"))
 
 
 ###############################################
@@ -331,6 +355,12 @@ def test_pyarrow_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="pyarrow", version_specifiers=["==16.0"], extras=["pandas"])]
 
 
+def test_pyarrow_dependency_resolver_missing_version() -> None:
+    resolver = PyarrowDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for pyarrow"):
+        resolver.resolve(PackageSpec(name="pyarrow"))
+
+
 #############################################
 #     Tests for ScipyDependencyResolver     #
 #############################################
@@ -369,6 +399,12 @@ def test_scipy_dependency_resolver_resolve_low() -> None:
         PackageDependency(name="scipy", version_specifiers=["==1.12.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
+
+
+def test_scipy_dependency_resolver_missing_version() -> None:
+    resolver = ScipyDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for scipy"):
+        resolver.resolve(PackageSpec(name="scipy"))
 
 
 ###############################################
@@ -421,6 +457,12 @@ def test_sklearn_dependency_resolver_resolve_with_extras() -> None:
     ]
 
 
+def test_sklearn_dependency_resolver_missing_version() -> None:
+    resolver = SklearnDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for scikit-learn"):
+        resolver.resolve(PackageSpec(name="scikit-learn"))
+
+
 #############################################
 #     Tests for TorchDependencyResolver     #
 #############################################
@@ -459,6 +501,12 @@ def test_torch_dependency_resolver_resolve_low() -> None:
         PackageDependency(name="torch", version_specifiers=["==2.2.0"]),
         PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
     ]
+
+
+def test_torch_dependency_resolver_missing_version() -> None:
+    resolver = TorchDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for torch"):
+        resolver.resolve(PackageSpec(name="torch"))
 
 
 ##############################################
@@ -507,6 +555,12 @@ def test_xarray_dependency_resolver_resolve_with_extras() -> None:
     ) == [
         PackageDependency(name="xarray", version_specifiers=["==2024.6.0"], extras=["performance"]),
     ]
+
+
+def test_xarray_dependency_resolver_missing_version() -> None:
+    resolver = XarrayDependencyResolver()
+    with pytest.raises(RuntimeError, match="Missing package version for xarray"):
+        resolver.resolve(PackageSpec(name="xarray"))
 
 
 ################################################
