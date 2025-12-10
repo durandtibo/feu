@@ -276,17 +276,15 @@ class PackageConfig:
 
         ```
         """
-        if cls.is_valid_version(
-            pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
-        ):
-            return pkg_version
+        version = Version(pkg_version)
         min_version, max_version = cls.get_min_and_max_versions(
             pkg_name=pkg_name, python_version=python_version
         )
-        version = Version(pkg_version)
         if min_version is not None and version < min_version:
             return min_version.base_version
-        return max_version.base_version
+        if max_version is not None and version > max_version:
+            return max_version.base_version
+        return pkg_version
 
     @classmethod
     def is_valid_version(cls, pkg_name: str, pkg_version: str, python_version: str) -> bool:
@@ -329,18 +327,12 @@ class PackageConfig:
             python_version=python_version,
         )
 
-        # Case 1 — no constraints
-        if min_version is None and max_version is None:
-            return True
-
-        # Case 2 — only min or max is defined
-        if min_version is None:
-            return version <= max_version
-        if max_version is None:
-            return min_version <= version
-
-        # Case 3 — both min and max are defined
-        return min_version <= version <= max_version
+        valid = True
+        if min_version is not None:
+            valid &= min_version <= version
+        if max_version is not None:
+            valid &= version <= max_version
+        return valid
 
 
 def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -> str:
