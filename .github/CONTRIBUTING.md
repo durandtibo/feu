@@ -306,7 +306,7 @@ Releases are managed by the project maintainers. The process includes:
 1. Update version in `pyproject.toml`
 2. Create a git tag
 3. Build and upload to PyPI
-4. Create a GitHub release
+4. Create a GitHub release with release notes
 
 ## Getting Help
 
