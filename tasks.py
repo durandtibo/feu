@@ -68,6 +68,7 @@ def install(
     if docs_deps:
         cmd.append("--group docs")
     c.run(" ".join(cmd), pty=True)
+    c.run("uv pip install -e .", pty=True)
 
 
 @task
