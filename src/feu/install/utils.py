@@ -58,7 +58,7 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
         package: The package specification.
 
     Raises:
-        RuntimeError: If no packageversion is specified.
+        RuntimeError: If no package version is specified.
 
     Example usage:
 
