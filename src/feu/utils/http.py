@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["fetch_data"]
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from feu.imports import (
     check_requests,
@@ -12,10 +12,17 @@ from feu.imports import (
     is_urllib3_available,
 )
 
+if TYPE_CHECKING:
+    from requests.adapters import HTTPAdapter
+    from requests.exceptions import RequestException, Timeout
+    from urllib3.util.retry import Retry
+
 if is_requests_available():  # pragma: no cover
     import requests
     from requests.adapters import HTTPAdapter
-
+    from requests.exceptions import RequestException, Timeout
+else:
+    from feu.utils.fallback.requests import requests
 
 if is_urllib3_available():  # pragma: no cover
     from urllib3.util.retry import Retry
@@ -54,26 +61,26 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
     ```
     """
     check_requests()
-    session = requests.Session()  # pyright: ignore[reportPossiblyUnboundVariable]
+    session = requests.Session()
 
     if is_urllib3_available():
-        retry = Retry(  # pyright: ignore[reportPossiblyUnboundVariable]
+        retry = Retry(
             total=5,
             backoff_factor=0.5,
             status_forcelist=[429, 500, 502, 503, 504],
             allowed_methods=["GET"],
             raise_on_status=False,
         )
-        adapter = HTTPAdapter(max_retries=retry)  # pyright: ignore[reportPossiblyUnboundVariable]
+        adapter = HTTPAdapter(max_retries=retry)
         session.mount("https://", adapter)
 
     try:
         resp = session.get(url=url, timeout=timeout, **kwargs)
         resp.raise_for_status()
-    except requests.exceptions.Timeout as exc:  # pyright: ignore[reportPossiblyUnboundVariable]
+    except Timeout as exc:
         msg = "GitHub API request timed out"
         raise RuntimeError(msg) from exc
-    except requests.exceptions.RequestException as exc:  # pyright: ignore[reportPossiblyUnboundVariable]
+    except RequestException as exc:
         msg = f"Network or HTTP error: {exc}"
         raise RuntimeError(msg) from exc
 
