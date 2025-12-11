@@ -1,0 +1,22 @@
+name: Types
+on:
+  workflow_call:
+  workflow_dispatch:  # to trigger manually
+
+permissions:
+  contents: read
+
+jobs:
+  types:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup python environment
+        uses: ./.github/actions/setup-env
+
+      - name: Check types
+        run: |
+          inv check-types
