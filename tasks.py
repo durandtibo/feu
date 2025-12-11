@@ -31,6 +31,12 @@ def check_lint(c: Context) -> None:
 
 
 @task
+def check_types(c: Context) -> None:
+    r"""Check code format."""
+    c.run("pyright src/", pty=True)
+
+
+@task
 def create_venv(c: Context) -> None:
     r"""Create a virtual environment."""
     c.run(f"uv venv --python {PYTHON_VERSION} --clear", pty=True)
@@ -42,11 +48,7 @@ def create_venv(c: Context) -> None:
 def doctest_src(c: Context) -> None:
     r"""Check the docstrings in source folder."""
     c.run(f"python -m pytest --xdoctest {SOURCE}", pty=True)
-    c.run(
-        'find . -type f -name "*.md" | xargs python -m doctest -o NORMALIZE_WHITESPACE '
-        "-o ELLIPSIS -o REPORT_NDIFF",
-        pty=True,
-    )
+    c.run("dev/check_markdown.sh", pty=True)
 
 
 @task
