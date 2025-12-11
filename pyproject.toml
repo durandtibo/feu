@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling >= 1.27", "hatchling-autoextras-hook>=0.0.2"]
+requires = ["hatchling >= 1.27", "hatchling-autoextras-hook>=0.1"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
@@ -21,6 +21,8 @@ authors = [
 keywords = ["package", "install", "dependency"]
 license = "BSD-3-Clause"
 
+dynamic = ["maintainers"]
+
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -37,10 +39,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 
-dynamic = ["maintainers"]
-
 requires-python = ">=3.10"
-
 dependencies = [
     "packaging >=21.0,<26.0",
     "typing_extensions >=4.10,<5.0; python_version < '3.11'"
