@@ -52,6 +52,10 @@ repos:
       - id: blacken-docs
         additional_dependencies:
           - black>=25.12
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.407
+    hooks:
+      - id: pyright
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.8
     hooks:

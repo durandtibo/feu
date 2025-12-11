@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from invoke import task
+from invoke.tasks import task
 
 if TYPE_CHECKING:
     from invoke.context import Context

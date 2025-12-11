@@ -284,3 +284,14 @@ max-doc-length = 72
 force-sort-within-sections = true
 combine-as-imports = true
 known-first-party = ["src"]
+
+[tool.pyright]
+include = ["src"]
+extraPaths = ["src"]
+exclude = [
+    "tests",
+    "build",
+    ".venv",
+]
+venvPath = "."
+venv = ".venv"
