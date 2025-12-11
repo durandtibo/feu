@@ -92,18 +92,21 @@ inv docformat
 
 #### Building Documentation
 
-The documentation is built using MkDocs:
+The documentation is built using MkDocs with `mike` for versioning:
 
 ```bash
 # Install documentation dependencies
 uv sync --group docs
 
-# Serve documentation locally
+# Serve documentation locally (for development)
 cd docs
 mkdocs serve
 
-# Build documentation
-mkdocs build
+# Deploy documentation with mike (for maintainers)
+# Development version:
+inv publish-doc-dev
+# Stable version:
+inv publish-doc-latest
 ```
 
 Visit `http://127.0.0.1:8000` to view the documentation locally.
