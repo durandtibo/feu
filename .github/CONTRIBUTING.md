@@ -100,7 +100,7 @@ uv sync --group docs
 
 # Serve documentation locally (for development)
 cd docs
-mkdocs serve
+mike serve
 
 # Deploy documentation with mike (for maintainers)
 # Development version:
