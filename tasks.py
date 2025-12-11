@@ -48,15 +48,7 @@ def create_venv(c: Context) -> None:
 def doctest_src(c: Context) -> None:
     r"""Check the docstrings in source folder."""
     c.run(f"python -m pytest --xdoctest {SOURCE}", pty=True)
-    c.run(
-        """files=$(find . -type f -name "*.md")
-count=$(echo "$files" | awk 'NF { c++ } END { print c }')
-echo "Found $count markdown files to check"
-echo "$files" | xargs python -m doctest -o NORMALIZE_WHITESPACE -o ELLIPSIS -o REPORT_NDIFF
-echo "All $count markdown files have been checked"
-""",
-        pty=True,
-    )
+    c.run("dev/check_markdown.sh", pty=True)
 
 
 @task
