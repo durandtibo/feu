@@ -17,6 +17,8 @@ jobs:
     secrets: inherit
   format:
     uses: ./.github/workflows/format.yaml
+  types:
+    uses: ./.github/workflows/types.yaml
   pre-commit:
     uses: ./.github/workflows/pre-commit.yaml
   test:
