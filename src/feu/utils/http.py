@@ -13,19 +13,18 @@ from feu.imports import (
 )
 
 if TYPE_CHECKING:
-    from requests.adapters import HTTPAdapter
-    from requests.exceptions import RequestException, Timeout
     from urllib3.util.retry import Retry
 
-if is_requests_available():  # pragma: no cover
+if is_requests_available():
     import requests
     from requests.adapters import HTTPAdapter
-    from requests.exceptions import RequestException, Timeout
-else:
-    from feu.utils.fallback.requests import requests
+else:  # pragma: no cover
+    from feu.utils.fallback.requests import HTTPAdapter, requests
 
-if is_urllib3_available():  # pragma: no cover
+if is_urllib3_available():
     from urllib3.util.retry import Retry
+else:  # pragma: no cover
+    from feu.utils.fallback.urllib3 import Retry
 
 
 def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
@@ -77,10 +76,10 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
     try:
         resp = session.get(url=url, timeout=timeout, **kwargs)
         resp.raise_for_status()
-    except Timeout as exc:
+    except requests.exceptions.Timeout as exc:
         msg = "GitHub API request timed out"
         raise RuntimeError(msg) from exc
-    except RequestException as exc:
+    except requests.exceptions.RequestException as exc:
         msg = f"Network or HTTP error: {exc}"
         raise RuntimeError(msg) from exc
 

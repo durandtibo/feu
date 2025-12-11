@@ -3,9 +3,14 @@ is not available."""
 
 from __future__ import annotations
 
-__all__ = ["requests"]
+__all__ = ["HTTPAdapter", "requests"]
 
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 # Create a fake requests package
-requests = SimpleNamespace(Session=lambda x: x, exceptions=SimpleNamespace())
+requests = SimpleNamespace()
+requests.Session = Mock()
+
+# Create a fake HTTPAdapter class
+HTTPAdapter = Mock()
