@@ -36,14 +36,14 @@ def create_repo_mock() -> Mock:
 
 @git_available
 def test_get_tags_sorted() -> None:
-    with patch("feu.git.git.Repo", Mock(return_value=create_repo_mock())):
+    with patch("feu.git.Repo", Mock(return_value=create_repo_mock())):
         result = get_tags()
     assert [t.name for t in result] == ["v1", "v2"]
 
 
 @git_available
 def test_get_tags_empty() -> None:
-    with patch("feu.git.git.Repo", Mock(return_value=Mock(tags=[]))):
+    with patch("feu.git.Repo", Mock(return_value=Mock(tags=[]))):
         result = get_tags()
     assert result == []
 

@@ -14,12 +14,12 @@ jobs:
   stable:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install minrecord'
+      install-cmd: 'uv pip install feu'
 
   stable-all:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install "minrecord[all]"'
+      install-cmd: 'uv pip install "feu[all]"'
 
   stable-extras:
     uses: ./.github/workflows/test-package-extras.yaml
@@ -27,12 +27,12 @@ jobs:
   latest:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install --pre minrecord'
+      install-cmd: 'uv pip install --pre feu'
 
   latest-all:
     uses: ./.github/workflows/test-package.yaml
     with:
-      install-cmd: 'uv pip install --pre "minrecord[all]"'
+      install-cmd: 'uv pip install --pre "feu[all]"'
 
   latest-extras:
     uses: ./.github/workflows/test-package-extras.yaml
@@ -56,7 +56,7 @@ jobs:
     uses: ./.github/workflows/test-package-dep.yaml
     with:
       package-name: typing-extensions
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).typing-extensions) }}
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).typing_extensions) }}
 
 
   #################################

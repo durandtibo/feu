@@ -6,6 +6,8 @@ __all__ = [
     "compare_version",
     "fetch_latest_major_versions",
     "fetch_latest_minor_versions",
+    "fetch_latest_stable_version",
+    "fetch_latest_version",
     "fetch_pypi_versions",
     "fetch_versions",
     "filter_every_n_versions",
@@ -17,11 +19,12 @@ __all__ = [
     "get_python_major_minor",
     "latest_major_versions",
     "latest_minor_versions",
+    "latest_version",
     "sort_versions",
     "unique_versions",
 ]
 
-from feu.version.comparison import compare_version, sort_versions
+from feu.version.comparison import compare_version, latest_version, sort_versions
 from feu.version.filtering import (
     filter_every_n_versions,
     filter_last_n_versions,
@@ -35,6 +38,8 @@ from feu.version.filtering import (
 from feu.version.package import (
     fetch_latest_major_versions,
     fetch_latest_minor_versions,
+    fetch_latest_stable_version,
+    fetch_latest_version,
     fetch_versions,
 )
 from feu.version.pypi import fetch_pypi_versions

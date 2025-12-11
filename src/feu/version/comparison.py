@@ -2,7 +2,7 @@ r"""Contain functions to compare package versions."""
 
 from __future__ import annotations
 
-__all__ = ["compare_version", "sort_versions"]
+__all__ = ["compare_version", "latest_version", "sort_versions"]
 
 from typing import TYPE_CHECKING
 
@@ -40,6 +40,43 @@ def compare_version(package: str, op: Callable, version: str) -> bool:
     if pkg_version is None:
         return False
     return op(pkg_version, Version(version))
+
+
+def latest_version(versions: Sequence[str]) -> str:
+    """Return the latest version string in a list of version
+    identifiers.
+
+    This function compares version strings according to the PEP 440
+    specification using :class:`packaging.version.Version`. It supports
+    standard releases, pre-releases (alpha, beta, release candidates),
+    development releases, post releases, and epoch-based versions.
+
+    Args:
+        versions: A list of version strings to compare.
+
+    Returns:
+        The highest (latest) version in the list based on PEP 440 ordering.
+
+    Raises:
+        ValueError: If ``versions`` is empty.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import operator
+    >>> from feu.version import latest_version
+    >>> latest_version(["1.0.0", "1.0.1rc1", "1.0.1"])
+    '1.0.1'
+    >>> latest_version(["1.2.0", "2.0.0a1"])
+    '2.0.0a1'
+
+    ```
+    """
+    if not versions:
+        msg = "versions list must not be empty"
+        raise ValueError(msg)
+    return str(max(Version(v) for v in versions))
 
 
 def sort_versions(versions: Sequence[str], reverse: bool = False) -> list[str]:

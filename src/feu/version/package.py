@@ -2,10 +2,16 @@ r"""Contain functions to manage package versions."""
 
 from __future__ import annotations
 
-__all__ = ["fetch_latest_major_versions", "fetch_latest_minor_versions", "fetch_versions"]
+__all__ = [
+    "fetch_latest_major_versions",
+    "fetch_latest_minor_versions",
+    "fetch_latest_stable_version",
+    "fetch_latest_version",
+    "fetch_versions",
+]
 
 
-from feu.version.comparison import sort_versions
+from feu.version.comparison import latest_version, sort_versions
 from feu.version.filtering import (
     filter_range_versions,
     filter_stable_versions,
@@ -108,3 +114,50 @@ def fetch_latest_minor_versions(
     """
     versions = fetch_versions(package, lower=lower, upper=upper)
     return tuple(latest_minor_versions(versions))
+
+
+def fetch_latest_version(package: str) -> str:
+    r"""Get the latest valid versions for a given package.
+
+    Args:
+        package: The package name.
+
+    Returns:
+        The latest valid versions.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.version import fetch_latest_version
+    >>> version = fetch_latest_version("requests")  # doctest: +SKIP
+
+    ```
+    """
+    versions = fetch_pypi_versions(package)
+    versions = filter_valid_versions(versions)
+    return latest_version(versions)
+
+
+def fetch_latest_stable_version(package: str) -> str:
+    r"""Get the latest stable valid versions for a given package.
+
+    Args:
+        package: The package name.
+
+    Returns:
+        The latest stable valid versions.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from feu.version import fetch_latest_stable_version
+    >>> version = fetch_latest_stable_version("requests")  # doctest: +SKIP
+
+    ```
+    """
+    versions = fetch_pypi_versions(package)
+    versions = filter_valid_versions(versions)
+    versions = filter_stable_versions(versions)
+    return latest_version(versions)

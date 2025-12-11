@@ -161,6 +161,9 @@ class JaxDependencyResolver(DependencyResolver):
 
     def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         deps = super().resolve(package)
+        if package.version is None:
+            msg = f"Missing package version for {package.name}"
+            raise RuntimeError(msg)
         deps.append(PackageDependency("jaxlib", version_specifiers=[f"=={package.version}"]))
         ver = Version(package.version)
         if ver < Version("0.4.26"):
@@ -215,6 +218,9 @@ class Numpy2DependencyResolver(DependencyResolver):
 
     def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         deps = super().resolve(package)
+        if package.version is None:
+            msg = f"Missing package version for {package.name}"
+            raise RuntimeError(msg)
         if Version(package.version) < Version(self._min_version):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
         return deps

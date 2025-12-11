@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["fetch_data"]
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from feu.imports import (
     check_requests,
@@ -12,12 +12,19 @@ from feu.imports import (
     is_urllib3_available,
 )
 
-if is_requests_available():  # pragma: no cover
+if TYPE_CHECKING:
+    from urllib3.util.retry import Retry
+
+if is_requests_available():
     import requests
     from requests.adapters import HTTPAdapter
+else:  # pragma: no cover
+    from feu.utils.fallback.requests import HTTPAdapter, requests
 
-if is_urllib3_available():  # pragma: no cover
+if is_urllib3_available():
     from urllib3.util.retry import Retry
+else:  # pragma: no cover
+    from feu.utils.fallback.urllib3 import Retry
 
 
 def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:

@@ -2,15 +2,17 @@ r"""Contain the main entry point."""
 
 from __future__ import annotations
 
-from feu.imports import is_click_available
+from feu.imports import check_click, is_click_available
 from feu.install import install_package_closest_version
 from feu.package import find_closest_version as find_closest_version_
 from feu.package import is_valid_version
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 
-if is_click_available():  # pragma: no cover
+if is_click_available():
     import click
+else:  # pragma: no cover
+    from feu.utils.fallback.click import click
 
 
 @click.group()
@@ -134,4 +136,5 @@ cli.add_command(check_valid_version)
 
 
 if __name__ == "__main__":  # pragma: no cover
+    check_click()
     cli()

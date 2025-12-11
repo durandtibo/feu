@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from invoke import task
+from invoke.tasks import task
 
 if TYPE_CHECKING:
     from invoke.context import Context
@@ -31,6 +31,12 @@ def check_lint(c: Context) -> None:
 
 
 @task
+def check_types(c: Context) -> None:
+    r"""Check code format."""
+    c.run("pyright src/", pty=True)
+
+
+@task
 def create_venv(c: Context) -> None:
     r"""Create a virtual environment."""
     c.run(f"uv venv --python {PYTHON_VERSION} --clear", pty=True)
@@ -42,11 +48,7 @@ def create_venv(c: Context) -> None:
 def doctest_src(c: Context) -> None:
     r"""Check the docstrings in source folder."""
     c.run(f"python -m pytest --xdoctest {SOURCE}", pty=True)
-    c.run(
-        'find . -type f -name "*.md" | xargs python -m doctest -o NORMALIZE_WHITESPACE '
-        "-o ELLIPSIS -o REPORT_NDIFF",
-        pty=True,
-    )
+    c.run("dev/check_markdown.sh", pty=True)
 
 
 @task
@@ -68,6 +70,7 @@ def install(
     if docs_deps:
         cmd.append("--group docs")
     c.run(" ".join(cmd), pty=True)
+    c.run("uv pip install -e .", pty=True)
 
 
 @task
@@ -125,7 +128,6 @@ def functional_test(c: Context, cov: bool = False) -> None:
 def show_installed_packages(c: Context) -> None:
     r"""Show the installed packages."""
     c.run("uv pip list", pty=True)
-    c.run("uv pip check", pty=True)
 
 
 @task

@@ -5,19 +5,18 @@ from __future__ import annotations
 __all__ = ["get_last_tag_name", "get_last_version_tag_name", "get_tags"]
 
 from contextlib import suppress
-from unittest.mock import Mock
 
 from packaging.version import InvalidVersion, Version
 
 from feu.imports import check_git, is_git_available
 
 if is_git_available():
-    import git
+    from git import Repo, TagReference
 else:  # pragma: no cover
-    git = Mock()
+    from feu.utils.fallback.git import Repo, TagReference
 
 
-def get_tags() -> list[git.TagReference]:
+def get_tags() -> list[TagReference]:
     r"""Get the list of git tags sorted by date/time for the current
     repository.
 
@@ -35,7 +34,7 @@ def get_tags() -> list[git.TagReference]:
     ```
     """
     check_git()
-    repo = git.Repo(search_parent_directories=True)
+    repo = Repo(search_parent_directories=True)
     return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
 

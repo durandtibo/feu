@@ -111,6 +111,16 @@ def test_install_package_closest_version_pip_numpy_with_args() -> None:
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 
 
+def test_install_package_closest_version_missing_package_version() -> None:
+    with (
+        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        pytest.raises(RuntimeError, match="A package version must be specified for numpy"),
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("uv"), package=PackageSpec(name="numpy")
+        )
+
+
 ######################################
 #     Tests for is_pip_available     #
 ######################################

@@ -35,7 +35,7 @@ jobs:
 
       - name: Install package
         run: |
-          uv pip install ${{ inputs.install-args }} "minrecord[${{ matrix.extra }}]"
+          uv pip install ${{ inputs.install-args }} "feu[${{ matrix.extra }}]"
 
       - name: Show dependency tree
         run: |
