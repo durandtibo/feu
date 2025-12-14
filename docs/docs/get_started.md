@@ -19,58 +19,69 @@ It is possible to install all the optional dependencies by running the following
 pip install 'feu[all]'
 ```
 
-This command also installed PyTorch.
-It is also possible to install the optional packages manually or to select the packages to install.
+It is also possible to install specific optional dependencies:
+
+- `feu[cli]` - Install CLI support (click)
+- `feu[git]` - Install git support (gitpython)
+- `feu[requests]` - Install HTTP request support (requests, urllib3)
+
+For example:
 
 ```shell
-pip install feu torch
+pip install 'feu[cli,git]'
 ```
 
 ## Installing from source
 
 To install `feu` from source, you can follow the steps below. First, you will need to
-install [`poetry`](https://python-poetry.org/docs/master/). `poetry` is used to manage and install
-the dependencies.
-If `poetry` is already installed on your machine, you can skip this step. There are several ways to
-install `poetry` so you can use the one that you prefer. You can check the `poetry` installation by
-running the following command:
+install [`uv`](https://docs.astral.sh/uv/). `uv` is a fast Python package installer and resolver
+used to manage dependencies in this project.
+
+You can install `uv` using:
 
 ```shell
-poetry --version
+# On macOS and Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Or with pip
+pip install uv
 ```
 
-Then, you can clone the git repository:
+Then, clone the git repository:
 
 ```shell
 git clone git@github.com:durandtibo/feu.git
+cd feu
 ```
 
-It is recommended to create a Python 3.8+ virtual environment. This step is optional so you
-can skip it. To create a virtual environment, you can use the following command:
+It is recommended to create a Python 3.10+ virtual environment. The easiest way is to use the
+provided Makefile command:
 
 ```shell
-make conda
+make setup-venv
 ```
 
-It automatically creates a conda virtual environment. When the virtual environment is created, you
-can activate it with the following command:
+This command automatically:
+1. Updates `uv` to the latest version
+2. Creates a Python 3.13 virtual environment
+3. Installs `invoke` task runner
+4. Installs all dependencies including development and documentation dependencies
+
+Alternatively, you can manually set up the environment:
 
 ```shell
-conda activate feu
+# Create a virtual environment with uv
+uv venv --python 3.13
+
+# Activate the virtual environment
+source .venv/bin/activate
+
+# Install the package with all dependencies
+uv sync --all-extras --group dev --group docs
 ```
 
-This example uses `conda` to create a virtual environment, but you can use other tools or
-configurations. Then, you should install the required package to use `feu` with the following
-command:
+After installation, you can verify everything is working by running the tests:
 
 ```shell
-make install
-```
-
-This command will install all the required packages. You can also use this command to update the
-required packages. This command will check if there is a more recent package available and will
-install it. Finally, you can test the installation with the following command:
-
-```shell
-make unit-test-cov
+inv unit-test --cov
 ```

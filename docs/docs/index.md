@@ -55,16 +55,47 @@
 
 ## Overview
 
-TODO
+`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python packages and their versions across different Python environments. It provides utilities to:
+
+- **Check package availability**: Verify if packages and modules are available in your environment
+- **Install packages intelligently**: Install packages with version compatibility checks for your Python version
+- **Version management**: Find the closest valid package version for your Python environment
+- **Package configuration**: Maintain a registry of known package version compatibility with different Python versions
+
+The library is particularly useful for projects that need to support multiple Python versions and want to ensure they install compatible package versions.
+
+## Key Features
+
+- **Python version-aware**: Automatically selects compatible package versions based on your Python version
+- **CLI interface**: Command-line tools for package management tasks
+- **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
+- **Extensible**: Registry of common packages (numpy, pandas, torch, etc.) with known version constraints
+
+## Quick Example
+
+```python
+from feu import is_package_available, install_package_closest_version
+from feu.package import find_closest_version
+
+# Check if a package is available
+if is_package_available("numpy"):
+    print("NumPy is installed!")
+
+# Find the closest valid version for your Python version
+version = find_closest_version(
+    pkg_name="numpy", pkg_version="2.0.2", python_version="3.10"
+)
+print(f"Closest valid version: {version}")
+```
 
 ## API stability
 
-:warning: While `hya` is in development stage, no API is guaranteed to be stable from one
+:warning: While `feu` is in development stage, no API is guaranteed to be stable from one
 release to the next. In fact, it is very likely that the API will change multiple times before a
-stable 1.0.0 release. In practice, this means that upgrading `hya` to a new version will
-possibly break any code that was using the old version of `hya`.
+stable 1.0.0 release. In practice, this means that upgrading `feu` to a new version will
+possibly break any code that was using the old version of `feu`.
 
 ## License
 
-`hya` is licensed under BSD 3-Clause "New" or "Revised" license available
-in [LICENSE](https://github.com/durandtibo/hya/blob/main/LICENSE) file.
+`feu` is licensed under BSD 3-Clause "New" or "Revised" license available
+in [LICENSE](https://github.com/durandtibo/feu/blob/main/LICENSE) file.

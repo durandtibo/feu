@@ -55,9 +55,53 @@
 
 ## Overview
 
-`feu` is a light Python library to help to manage packages.
+`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python packages and their versions across different Python environments.
 
-- [Documentation](https://durandtibo.github.io/feu/)
+### Key Features
+
+- ✅ **Check package availability**: Verify if packages and modules are installed
+- 🔄 **Version-aware installation**: Install packages with automatic version compatibility checks
+- 🎯 **Smart version resolution**: Find the closest valid package version for your Python environment
+- 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas, torch, etc.)
+- 🖥️ **CLI tools**: Command-line interface for package management tasks
+- 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
+
+### Quick Example
+
+```python
+from feu import is_package_available, get_package_version
+from feu.package import find_closest_version
+
+# Check if a package is available
+if is_package_available("numpy"):
+    version = get_package_version("numpy")
+    print(f"NumPy {version} is installed!")
+
+# Find the closest valid version for your Python version
+version = find_closest_version(
+    pkg_name="numpy", pkg_version="2.0.2", python_version="3.10"
+)
+print(f"Closest valid version: {version}")
+```
+
+### Why feu?
+
+Managing Python package versions across different Python versions can be challenging. Different Python versions support different package versions, and manually tracking compatibility can be error-prone. `feu` solves this by:
+
+1. **Automating version selection**: Automatically finds compatible package versions for your Python environment
+2. **Preventing installation failures**: Validates versions before installation to avoid runtime errors
+3. **Simplifying multi-version support**: Makes it easy to support multiple Python versions in your projects
+4. **Providing graceful fallbacks**: Check package availability and provide alternatives when packages aren't installed
+
+### Documentation
+
+- 📚 [Full Documentation](https://durandtibo.github.io/feu/)
+- 🚀 [Get Started Guide](https://durandtibo.github.io/feu/get_started)
+- 📖 [Usage Examples](https://durandtibo.github.io/feu/usage)
+- 🖥️ [CLI Reference](https://durandtibo.github.io/feu/cli)
+
+### Quick Links
+
 - [Installation](#installation)
 - [Contributing](#contributing)
 - [API stability](#api-stability)
