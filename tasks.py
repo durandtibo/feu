@@ -171,7 +171,12 @@ def integration_test(c: Context, cov: bool = False) -> None:
 
 @task
 def functional_test(c: Context, cov: bool = False) -> None:
-    r"""Run the functional tests."""
+    r"""Run functional tests.
+
+    Args:
+        c: The invoke context.
+        cov: If True, generate coverage reports.
+    """
     cmd = ["python -m pytest --xdoctest --timeout 10"]
     if cov:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
