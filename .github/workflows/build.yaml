@@ -24,6 +24,6 @@ jobs:
       - name: Verify Build
         uses: durandtibo/verify-uv-build-action@v0.0.3
         with:
-          package-name: objectory
+          package-name: feu
           package-extra: ${{ matrix.package-extra }}
           dist-type: ${{ matrix.dist-type }}
