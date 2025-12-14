@@ -194,14 +194,14 @@ PYTHON_VERSION="3.10"
 
 for pkg in "${PACKAGES[@]}"; do
   IFS=':' read -r name version <<< "$pkg"
-  
+
   echo "Processing $name $version..."
-  
+
   closest=$(python -m feu find-closest-version \
     --pkg-name=$name \
     --pkg-version=$version \
     --python-version=$PYTHON_VERSION)
-  
+
   echo "Installing $name $closest"
   python -m feu install --pkg-name=$name --pkg-version=$closest
 done
@@ -223,18 +223,18 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Install feu
         run: pip install 'feu[cli]'
-      
+
       - name: Install numpy with version check
         run: |
           python -m feu install \

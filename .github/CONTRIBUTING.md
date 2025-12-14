@@ -266,10 +266,10 @@ def test_feature_description():
     """Test that feature does what it should."""
     # Arrange: Set up test data
     input_data = ...
-    
+
     # Act: Execute the functionality
     result = function_to_test(input_data)
-    
+
     # Assert: Verify the results
     assert result == expected_value
 ```

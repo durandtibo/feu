@@ -79,9 +79,7 @@ if is_package_available("numpy"):
 
 # Find the closest valid version for your Python version
 version = find_closest_version(
-    pkg_name="numpy",
-    pkg_version="2.0.2",
-    python_version="3.10"
+    pkg_name="numpy", pkg_version="2.0.2", python_version="3.10"
 )
 print(f"Closest valid version: {version}")
 ```

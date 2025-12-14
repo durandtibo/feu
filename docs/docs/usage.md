@@ -59,9 +59,7 @@ from feu.package import find_closest_version, is_valid_version
 
 # Check if a specific version is valid for your Python version
 is_valid = is_valid_version(
-    pkg_name="numpy",
-    pkg_version="2.0.2",
-    python_version="3.10"
+    pkg_name="numpy", pkg_version="2.0.2", python_version="3.10"
 )
 print(f"NumPy 2.0.2 is valid for Python 3.10: {is_valid}")
 
@@ -69,7 +67,7 @@ print(f"NumPy 2.0.2 is valid for Python 3.10: {is_valid}")
 closest = find_closest_version(
     pkg_name="numpy",
     pkg_version="1.0.0",  # This is too old for Python 3.11
-    python_version="3.11"
+    python_version="3.11",
 )
 print(f"Closest valid version: {closest}")  # Will return "1.23.2"
 ```
@@ -86,13 +84,13 @@ from feu.utils.installer import InstallerSpec
 # Install a package with a specific version
 install_package(
     installer=InstallerSpec(name="pip"),
-    package=PackageSpec(name="numpy", version="2.0.2")
+    package=PackageSpec(name="numpy", version="2.0.2"),
 )
 
 # Install the closest valid version for your Python environment
 install_package_closest_version(
     installer=InstallerSpec(name="pip"),
-    package=PackageSpec(name="numpy", version="2.0.2")
+    package=PackageSpec(name="numpy", version="2.0.2"),
 )
 ```
 
@@ -113,16 +111,12 @@ PackageConfig.add_config(
 )
 
 # Get the configuration for a package
-config = PackageConfig.get_config(
-    pkg_name="my_package",
-    python_version="3.11"
-)
+config = PackageConfig.get_config(pkg_name="my_package", python_version="3.11")
 print(config)  # {'min': '1.2.0', 'max': '2.0.0'}
 
 # Get min and max versions
 min_version, max_version = PackageConfig.get_min_and_max_versions(
-    pkg_name="numpy",
-    python_version="3.11"
+    pkg_name="numpy", python_version="3.11"
 )
 print(f"Min: {min_version}, Max: {max_version}")
 ```
@@ -166,16 +160,19 @@ from feu.testing import (
     requests_available,
 )
 
+
 # Use as decorators in pytest
 @click_available
 def test_click_feature():
     # This test only runs if click is available
     pass
 
+
 @gitpython_available
 def test_git_feature():
     # This test only runs if gitpython is available
     pass
+
 
 @requests_available
 def test_http_feature():
@@ -197,9 +194,7 @@ python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
 
 # Find compatible numpy version
 numpy_version = find_closest_version(
-    pkg_name="numpy",
-    pkg_version="2.0.0",
-    python_version=python_version
+    pkg_name="numpy", pkg_version="2.0.0", python_version=python_version
 )
 print(f"Installing numpy {numpy_version} for Python {python_version}")
 ```
@@ -221,7 +216,7 @@ desired_version = "2.0.2"
 if is_valid_version("numpy", desired_version, python_version):
     install_package(
         installer=InstallerSpec(name="pip"),
-        package=PackageSpec(name="numpy", version=desired_version)
+        package=PackageSpec(name="numpy", version=desired_version),
     )
 else:
     print(f"Version {desired_version} is not compatible with Python {python_version}")
@@ -236,6 +231,7 @@ from feu import is_package_available
 
 if is_package_available("torch"):
     import torch
+
     USE_PYTORCH = True
 else:
     USE_PYTORCH = False
