@@ -20,25 +20,41 @@ PYTHON_VERSION = "3.13"
 
 @task
 def check_format(c: Context) -> None:
-    r"""Check code format."""
+    r"""Check code format with black.
+
+    Args:
+        c: The invoke context.
+    """
     c.run("black --check .", pty=True)
 
 
 @task
 def check_lint(c: Context) -> None:
-    r"""Check code format."""
+    r"""Check code linting with ruff.
+
+    Args:
+        c: The invoke context.
+    """
     c.run("ruff check --output-format=github .", pty=True)
 
 
 @task
 def check_types(c: Context) -> None:
-    r"""Check code format."""
-    c.run("pyright src/", pty=True)
+    r"""Check type hints with pyright.
+
+    Args:
+        c: The invoke context.
+    """
+    c.run(f"pyright {SOURCE}", pty=True)
 
 
 @task
 def create_venv(c: Context) -> None:
-    r"""Create a virtual environment."""
+    r"""Create a virtual environment and install invoke.
+
+    Args:
+        c: The invoke context.
+    """
     c.run(f"uv venv --python {PYTHON_VERSION} --clear", pty=True)
     c.run("source .venv/bin/activate", pty=True)
     c.run("make install-invoke", pty=True)
@@ -46,14 +62,27 @@ def create_venv(c: Context) -> None:
 
 @task
 def doctest_src(c: Context) -> None:
-    r"""Check the docstrings in source folder."""
+    r"""Run doctests on source code and validate markdown code examples.
+
+    This function performs two types of validation:
+    1. Runs doctests on Python source code files using xdoctest
+    2. Validates code examples embedded in markdown files (via check_markdown.sh
+       which internally uses doctest)
+
+    Args:
+        c: The invoke context.
+    """
     c.run(f"python -m pytest --xdoctest {SOURCE}", pty=True)
     c.run("dev/check_markdown.sh", pty=True)
 
 
 @task
 def docformat(c: Context) -> None:
-    r"""Check the docstrings in source folder."""
+    r"""Format docstrings in source code.
+
+    Args:
+        c: The invoke context.
+    """
     c.run(f"docformatter --config ./pyproject.toml --in-place {SOURCE}", pty=True)
 
 
@@ -61,7 +90,14 @@ def docformat(c: Context) -> None:
 def install(
     c: Context, optional_deps: bool = True, dev_deps: bool = True, docs_deps: bool = False
 ) -> None:
-    r"""Install packages."""
+    r"""Install project dependencies and the package in editable mode.
+
+    Args:
+        c: The invoke context.
+        optional_deps: If True, install all optional dependencies.
+        dev_deps: If True, install development dependencies.
+        docs_deps: If True, install dependencies to generate documentation.
+    """
     cmd = ["uv sync --frozen"]
     if optional_deps:
         cmd.append("--all-extras")
@@ -75,7 +111,11 @@ def install(
 
 @task
 def update(c: Context) -> None:
-    r"""Update the dependencies and pre-commit hooks."""
+    r"""Update the dependencies and pre-commit hooks.
+
+    Args:
+        c: The invoke context.
+    """
     c.run("uv sync --upgrade", pty=True)
     c.run("uv tool upgrade --all", pty=True)
     c.run("pre-commit autoupdate", pty=True)
@@ -84,7 +124,12 @@ def update(c: Context) -> None:
 
 @task
 def all_test(c: Context, cov: bool = False) -> None:
-    r"""Run the unit tests."""
+    r"""Run all tests (unit and integration).
+
+    Args:
+        c: The invoke context.
+        cov: If True, generate coverage reports.
+    """
     cmd = ["python -m pytest --xdoctest --timeout 10"]
     if cov:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
@@ -94,7 +139,12 @@ def all_test(c: Context, cov: bool = False) -> None:
 
 @task
 def unit_test(c: Context, cov: bool = False) -> None:
-    r"""Run the unit tests."""
+    r"""Run unit tests.
+
+    Args:
+        c: The invoke context.
+        cov: If True, generate coverage reports.
+    """
     cmd = ["python -m pytest --xdoctest --timeout 10"]
     if cov:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
@@ -104,7 +154,12 @@ def unit_test(c: Context, cov: bool = False) -> None:
 
 @task
 def integration_test(c: Context, cov: bool = False) -> None:
-    r"""Run the unit tests."""
+    r"""Run integration tests.
+
+    Args:
+        c: The invoke context.
+        cov: If True, generate coverage reports.
+    """
     cmd = ["python -m pytest --xdoctest --timeout 60"]
     if cov:
         cmd.append(
@@ -116,7 +171,12 @@ def integration_test(c: Context, cov: bool = False) -> None:
 
 @task
 def functional_test(c: Context, cov: bool = False) -> None:
-    r"""Run the functional tests."""
+    r"""Run functional tests.
+
+    Args:
+        c: The invoke context.
+        cov: If True, generate coverage reports.
+    """
     cmd = ["python -m pytest --xdoctest --timeout 10"]
     if cov:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
@@ -126,13 +186,21 @@ def functional_test(c: Context, cov: bool = False) -> None:
 
 @task
 def show_installed_packages(c: Context) -> None:
-    r"""Show the installed packages."""
+    r"""Show the installed packages.
+
+    Args:
+        c: The invoke context.
+    """
     c.run("uv pip list", pty=True)
 
 
 @task
 def show_python_config(c: Context) -> None:
-    r"""Show the python configuration."""
+    r"""Show the python configuration.
+
+    Args:
+        c: The invoke context.
+    """
     c.run("uv python list --only-installed", pty=True)
     c.run("uv python find", pty=True)
     c.run("which python", pty=True)
@@ -140,7 +208,11 @@ def show_python_config(c: Context) -> None:
 
 @task
 def publish_pypi(c: Context) -> None:
-    r"""Publish the package to PyPI."""
+    r"""Publish the package to PyPI.
+
+    Args:
+        c: The invoke context.
+    """
     c.run("uv build", pty=True)
     c.run(
         f'uv run --with {NAME} --refresh-package {NAME} --no-project -- python -c "import {NAME}"',
