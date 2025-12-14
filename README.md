@@ -55,14 +55,16 @@
 
 ## Overview
 
-`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python packages and their versions across different Python environments.
+`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python
+packages and their versions across different Python environments.
 
 ### Key Features
 
 - ✅ **Check package availability**: Verify if packages and modules are installed
 - 🔄 **Version-aware installation**: Install packages with automatic version compatibility checks
 - 🎯 **Smart version resolution**: Find the closest valid package version for your Python environment
-- 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas, torch, etc.)
+- 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas,
+  torch, etc.)
 - 🖥️ **CLI tools**: Command-line interface for package management tasks
 - 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
 
@@ -86,12 +88,18 @@ print(f"Closest valid version: {version}")
 
 ### Why feu?
 
-Managing Python package versions across different Python versions can be challenging. Different Python versions support different package versions, and manually tracking compatibility can be error-prone. `feu` solves this by:
+Managing Python package versions across different Python versions can be challenging. Different
+Python versions support different package versions, and manually tracking compatibility can be
+error-prone. `feu` solves this by:
 
-1. **Automating version selection**: Automatically finds compatible package versions for your Python environment
-2. **Preventing installation failures**: Validates versions before installation to avoid runtime errors
-3. **Simplifying multi-version support**: Makes it easy to support multiple Python versions in your projects
-4. **Providing graceful fallbacks**: Check package availability and provide alternatives when packages aren't installed
+1. **Automating version selection**: Automatically finds compatible package versions for your Python
+   environment
+2. **Preventing installation failures**: Validates versions before installation to avoid runtime
+   errors
+3. **Simplifying multi-version support**: Makes it easy to support multiple Python versions in your
+   projects
+4. **Providing graceful fallbacks**: Check package availability and provide alternatives when
+   packages aren't installed
 
 ### Documentation
 
@@ -132,6 +140,7 @@ The following is the corresponding `feu` versions and supported dependencies.
 | `feu`   | `packaging`    | `python`       | `click`<sup>*</sup> | `gitpython`<sup>*</sup> | `requests`<sup>*</sup> |
 |---------|----------------|----------------|---------------------|-------------------------|------------------------|
 | `main`  | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |
+| `0.6.0` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |
 | `0.5.0` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |
 | `0.4.2` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |
 | `0.4.1` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |
