@@ -207,36 +207,7 @@ For significant changes, please open an issue first to discuss the proposed chan
 
 ### Docstrings
 
-We use Google-style docstrings:
-
-```python
-def example_function(param1: str, param2: int) -> bool:
-    """Short description of the function.
-
-    Longer description if needed, explaining the function's purpose,
-    behavior, and any important details.
-
-    Args:
-        param1: Description of param1.
-        param2: Description of param2.
-
-    Returns:
-        Description of return value.
-
-    Raises:
-        ValueError: When param2 is negative.
-
-    Example usage:
-
-    ```pycon
-
-    >>> example_function("test", 42)
-    True
-
-    ```
-    """
-    ...
-```
+We use Google-style docstrings.
 
 ### Import Order
 
@@ -259,20 +230,6 @@ Use absolute imports and separate groups with blank lines.
 - Include both positive and negative test cases
 - Test edge cases and error conditions
 
-### Test Structure
-
-```python
-def test_feature_description():
-    """Test that feature does what it should."""
-    # Arrange: Set up test data
-    input_data = ...
-
-    # Act: Execute the functionality
-    result = function_to_test(input_data)
-
-    # Assert: Verify the results
-    assert result == expected_value
-```
 
 ### Test Coverage
 
