@@ -33,7 +33,7 @@ def check_lint(c: Context) -> None:
 @task
 def check_types(c: Context) -> None:
     r"""Check code format."""
-    c.run("pyright .", pty=True)
+    c.run(f"pyright {SOURCE}", pty=True)
 
 
 @task
