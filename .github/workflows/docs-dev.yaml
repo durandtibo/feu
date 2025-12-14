@@ -28,7 +28,7 @@ jobs:
           CI_BOT_EMAIL: ${{secrets.CI_BOT_EMAIL}}
         run: |
           git config --global user.name ci-docs-bot
-          git config --global user.email $CI_BOT_EMAIL
+          git config --global user.email "$CI_BOT_EMAIL"
           git fetch origin gh-pages --depth=1 --tags
 
       - name: Build and deploy documentation
