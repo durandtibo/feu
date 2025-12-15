@@ -5,12 +5,11 @@ from __future__ import annotations
 
 __all__ = ["HTTPAdapter", "requests"]
 
-from types import SimpleNamespace
+from types import ModuleType
 from unittest.mock import Mock
 
 # Create a fake requests package
-requests = SimpleNamespace()
-requests.Session = Mock()
+requests = ModuleType("requests")
 
 # Create a fake HTTPAdapter class
 HTTPAdapter = Mock()
