@@ -12,16 +12,13 @@ from feu.imports import (
     is_urllib3_available,
 )
 
-if TYPE_CHECKING:
-    from urllib3.util.retry import Retry
-
-if is_requests_available():
+if TYPE_CHECKING or is_requests_available():
     import requests
     from requests.adapters import HTTPAdapter
 else:  # pragma: no cover
     from feu.utils.fallback.requests import HTTPAdapter, requests
 
-if is_urllib3_available():
+if TYPE_CHECKING or is_urllib3_available():
     from urllib3.util.retry import Retry
 else:  # pragma: no cover
     from feu.utils.fallback.urllib3 import Retry
