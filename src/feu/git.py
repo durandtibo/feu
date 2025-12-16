@@ -5,18 +5,19 @@ from __future__ import annotations
 __all__ = ["get_last_tag_name", "get_last_version_tag_name", "get_tags"]
 
 from contextlib import suppress
+from typing import TYPE_CHECKING
 
 from packaging.version import InvalidVersion, Version
 
 from feu.imports import check_git, is_git_available
 
-if is_git_available():
-    from git import Repo, TagReference
+if TYPE_CHECKING or is_git_available():
+    import git
 else:  # pragma: no cover
-    from feu.utils.fallback.git import Repo, TagReference
+    from feu.utils.fallback.git import git
 
 
-def get_tags() -> list[TagReference]:
+def get_tags() -> list[git.TagReference]:
     r"""Get the list of git tags sorted by date/time for the current
     repository.
 
@@ -34,7 +35,7 @@ def get_tags() -> list[TagReference]:
     ```
     """
     check_git()
-    repo = Repo(search_parent_directories=True)
+    repo = git.Repo(search_parent_directories=True)
     return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
 

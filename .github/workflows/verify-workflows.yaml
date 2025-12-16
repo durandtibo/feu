@@ -1,7 +1,3 @@
-# Workflow validation workflow.
-# Verifies GitHub Actions workflow files are valid and follow best practices.
-# Triggers on changes to workflow files to catch issues early.
-
 name: Verify Workflows
 
 on:

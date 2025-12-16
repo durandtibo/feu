@@ -7,7 +7,7 @@ __all__ = ["run_bash_command"]
 import logging
 import subprocess
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 def run_bash_command(cmd: str) -> None:
