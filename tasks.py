@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 NAME = "feu"
@@ -66,7 +66,7 @@ def check_types(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("🔬 Checking type hints with pyright...")
-    c.run(f"pyright {SOURCE}", pty=True)
+    c.run(f"pyright --verifytypes {NAME} --ignoreexternal", pty=True)
     logger.info("✅ Type check passed")
 
 

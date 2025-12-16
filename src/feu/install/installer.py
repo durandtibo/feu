@@ -17,7 +17,7 @@ else:  # pragma: no cover
 if TYPE_CHECKING:
     from feu.utils.package import PackageSpec
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class BaseInstaller(ABC):

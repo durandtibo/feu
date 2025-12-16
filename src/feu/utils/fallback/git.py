@@ -8,4 +8,4 @@ __all__ = ["git"]
 from types import ModuleType
 
 # Create a fake git package
-git = ModuleType("git")
+git: ModuleType = ModuleType("git")

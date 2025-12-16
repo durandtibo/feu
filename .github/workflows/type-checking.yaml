@@ -1,4 +1,8 @@
-name: Types
+# Type checking workflow.
+# Validates type annotations using pyright to ensure type safety.
+# Helps catch type-related bugs before runtime.
+
+name: Type Checking
 on:
   workflow_call:
   workflow_dispatch:  # to trigger manually
@@ -7,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  types:
+  type-checking:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
