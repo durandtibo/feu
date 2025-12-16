@@ -11,7 +11,7 @@ from typing import Any
 from feu.imports import raise_error_requests_missing
 
 # Create a fake requests package
-requests = ModuleType("requests")
+requests: ModuleType = ModuleType("requests")
 
 
 class HTTPAdapter:

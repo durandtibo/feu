@@ -12,7 +12,7 @@ from feu import (
     is_package_available,
 )
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 def check_imports() -> None:

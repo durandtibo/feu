@@ -24,7 +24,7 @@ else:  # pragma: no cover
     from feu.utils.fallback.urllib3 import Retry
 
 
-def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict:
+def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]:
     r"""Retrieve data for a given URL.
 
     This function performs an HTTP GET request to fetch repository information.

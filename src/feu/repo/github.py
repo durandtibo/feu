@@ -6,12 +6,13 @@ __all__ = ["fetch_github_metadata"]
 
 import os
 from functools import lru_cache
+from typing import Any
 
 from feu.utils.http import fetch_data
 
 
 @lru_cache
-def fetch_github_metadata(owner: str, repo: str) -> dict:
+def fetch_github_metadata(owner: str, repo: str) -> dict[str, Any]:
     r"""Get the GitHub repo metadata.
 
     The metadata is read from GitHub API.
