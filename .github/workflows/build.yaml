@@ -26,8 +26,17 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Verify Build
-        uses: durandtibo/verify-uv-build-action@v0.0.3
+        uses: durandtibo/verify-uv-build-action@v0.0.5
         with:
           package-name: feu
           package-extra: ${{ matrix.package-extra }}
+          package-dependencies: "packaging"
           dist-type: ${{ matrix.dist-type }}
+
+      - name: Run package checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "🔍 Running package checks..."
+          python tests/package_checks.py
+          echo "✅ Package checks passed"

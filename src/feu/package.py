@@ -9,7 +9,7 @@ from typing import ClassVar
 
 from packaging.version import Version
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class PackageConfig:

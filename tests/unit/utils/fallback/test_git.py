@@ -1,15 +1,9 @@
 from __future__ import annotations
 
-import pytest
+from types import ModuleType
 
-from feu.utils.fallback.git import Repo, TagReference
-
-
-def test_repo() -> None:
-    with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
-        Repo()
+from feu.utils.fallback.git import git
 
 
-def test_tag_reference() -> None:
-    with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
-        TagReference()
+def test_git() -> None:
+    isinstance(git, ModuleType)

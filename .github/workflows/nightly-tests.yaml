@@ -18,7 +18,7 @@ jobs:
   format:
     uses: ./.github/workflows/format.yaml
   types:
-    uses: ./.github/workflows/types.yaml
+    uses: ./.github/workflows/type-checking.yaml
   pre-commit:
     uses: ./.github/workflows/pre-commit.yaml
   test:

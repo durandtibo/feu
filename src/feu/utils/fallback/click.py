@@ -31,7 +31,7 @@ def noop_decorator(*args: Any, **kwargs: Any) -> Callable:  # noqa: ARG001
 
 
 # Create a fake click package
-click = SimpleNamespace(
+click: SimpleNamespace = SimpleNamespace(
     group=noop_decorator,
     command=noop_decorator,
     option=noop_decorator,
