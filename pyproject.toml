@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling >= 1.27", "hatchling-autoextras-hook>=0.1"]
+requires = ["hatchling >= 1.27", "hatchling-autoextras-hook>=0.1.1"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
