@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import pytest
-import requests
 
+from feu.imports import is_requests_available
 from feu.testing import (
     requests_available,
     requests_not_available,
     urllib3_not_available,
 )
 from feu.utils.http import fetch_data, fetch_response
+
+if is_requests_available():
+    import requests
 
 ################################
 #     Tests for fetch_data     #
