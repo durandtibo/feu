@@ -6,7 +6,7 @@ import pytest
 
 from feu.imports import is_requests_available
 from feu.testing import requests_available
-from feu.utils.http import fetch_data
+from feu.utils.http import fetch_data, fetch_response
 
 if is_requests_available():
     import requests
@@ -139,4 +139,99 @@ def test_fetch_data_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_data(url="https://my_url") == {"key": "value"}
+    session.get.assert_called_once_with(url="https://my_url", timeout=10)
+
+
+####################################
+#     Tests for fetch_response     #
+####################################
+
+
+@requests_available
+def test_fetch_response_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Patch requests.Session() to return a mock session
+    #  -> Successful request (200 OK)
+    session = Mock(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_response(url="https://my_url").json() == {"key": "value"}
+    session.get.assert_called_once_with(url="https://my_url", timeout=10.0)
+
+
+@requests_available
+def test_fetch_response_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Patch requests.Session() to return a mock session
+    #  -> Successful request (200 OK)
+    session = Mock(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_response(url="https://my_url", timeout=5.0).json() == {"key": "value"}
+    session.get.assert_called_once_with(url="https://my_url", timeout=5.0)
+
+
+@requests_available
+def test_fetch_response_headers(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Patch requests.Session() to return a mock session
+    #  -> Successful request (200 OK)
+    session = Mock(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_response(
+        url="https://my_url", headers={"Accept": "application/vnd.github+json"}
+    ).json() == {"key": "value"}
+    session.get.assert_called_once_with(
+        url="https://my_url", timeout=10.0, headers={"Accept": "application/vnd.github+json"}
+    )
+
+
+@requests_available
+def test_fetch_response_timeout_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Patch requests.Session() to return a mock session
+    #  -> Timeout error
+    monkeypatch.setattr(
+        requests, "Session", lambda: Mock(get=Mock(side_effect=requests.exceptions.Timeout()))
+    )
+    with pytest.raises(RuntimeError, match="timed out"):
+        fetch_response(url="https://my_url")
+
+
+@requests_available
+def test_fetch_response_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Patch requests.Session() to return a mock session
+    #  -> HTTP error response (status >= 400)
+    monkeypatch.setattr(
+        requests,
+        "Session",
+        lambda: Mock(get=Mock(return_value=make_mock_response(status=404))),
+    )
+    with pytest.raises(RuntimeError, match="Network or HTTP error"):
+        fetch_response(url="https://my_url")
+
+
+@requests_available
+def test_fetch_response_request_exception(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Patch requests.Session() to return a mock session
+    #  -> Any other RequestException -> RuntimeError
+    monkeypatch.setattr(
+        requests,
+        "Session",
+        lambda: Mock(get=Mock(side_effect=requests.exceptions.RequestException("boom"))),
+    )
+    with pytest.raises(RuntimeError, match="Network or HTTP error"):
+        fetch_response(url="https://my_url")
+
+
+@patch("feu.imports.is_requests_available", lambda: False)
+def test_fetch_response_no_requests() -> None:
+    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
+        fetch_response(url="https://my_url")
+
+
+@requests_available
+@patch("feu.utils.http.is_urllib3_available", lambda: False)
+def test_fetch_response_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_response(url="https://my_url").json() == {"key": "value"}
     session.get.assert_called_once_with(url="https://my_url", timeout=10)
