@@ -15,19 +15,17 @@ class InstallerSpec:
         name: The installer name.
         arguments: A string containing optional installer arguments.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.installer import InstallerSpec
+        >>> installer1 = InstallerSpec("pip")
+        >>> installer1
+        InstallerSpec(name='pip', arguments='')
+        >>> installer2 = InstallerSpec("pip", arguments="-U")
+        >>> installer2
+        InstallerSpec(name='pip', arguments='-U')
 
-    ```pycon
-
-    >>> from feu.utils.installer import InstallerSpec
-    >>> installer1 = InstallerSpec("pip")
-    >>> installer1
-    InstallerSpec(name='pip', arguments='')
-    >>> installer2 = InstallerSpec("pip", arguments="-U")
-    >>> installer2
-    InstallerSpec(name='pip', arguments='-U')
-
-    ```
+        ```
     """
 
     name: str

@@ -36,19 +36,17 @@ def is_package_available(package: str) -> bool:
     Returns:
         ``True`` if the package is available, otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu import is_package_available
+        >>> is_package_available("os")
+        True
+        >>> is_package_available("os.path")
+        True
+        >>> is_package_available("my_missing_package")
+        False
 
-    ```pycon
-
-    >>> from feu import is_package_available
-    >>> is_package_available("os")
-    True
-    >>> is_package_available("os.path")
-    True
-    >>> is_package_available("my_missing_package")
-    False
-
-    ```
+        ```
     """
     with suppress(Exception):
         return find_spec(package) is not None
@@ -62,19 +60,17 @@ def is_module_available(module: str) -> bool:
     Args:
         module: The module to check.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu import is_module_available
+        >>> is_module_available("os")
+        True
+        >>> is_module_available("os.path")
+        True
+        >>> is_module_available("missing.module")
+        False
 
-    ```pycon
-
-    >>> from feu import is_module_available
-    >>> is_module_available("os")
-    True
-    >>> is_module_available("os.path")
-    True
-    >>> is_module_available("missing.module")
-    False
-
-    ```
+        ```
     """
     if not is_package_available(str(module).split(".", maxsplit=1)[0]):
         return False
@@ -97,14 +93,12 @@ def is_click_available() -> bool:
     Returns:
         ``True`` if ``click`` is available otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import is_click_available
+        >>> is_click_available()
 
-    ```pycon
-
-    >>> from feu.imports import is_click_available
-    >>> is_click_available()
-
-    ```
+        ```
     """
     return is_package_available("click")
 
@@ -115,14 +109,12 @@ def check_click() -> None:
     Raises:
         RuntimeError: if the ``click`` package is not installed.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import check_click
+        >>> check_click()
 
-    ```pycon
-
-    >>> from feu.imports import check_click
-    >>> check_click()
-
-    ```
+        ```
     """
     if not is_click_available():
         raise_error_click_missing()
@@ -151,14 +143,12 @@ def is_git_available() -> bool:
     Returns:
         ``True`` if ``git`` is available otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import is_git_available
+        >>> is_git_available()
 
-    ```pycon
-
-    >>> from feu.imports import is_git_available
-    >>> is_git_available()
-
-    ```
+        ```
     """
     return is_package_available("git")
 
@@ -169,14 +159,12 @@ def check_git() -> None:
     Raises:
         RuntimeError: if the ``git`` package is not installed.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import check_git
+        >>> check_git()
 
-    ```pycon
-
-    >>> from feu.imports import check_git
-    >>> check_git()
-
-    ```
+        ```
     """
     if not is_git_available():
         raise_error_git_missing()
@@ -205,14 +193,12 @@ def is_requests_available() -> bool:
     Returns:
         ``True`` if ``requests`` is available otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import is_requests_available
+        >>> is_requests_available()
 
-    ```pycon
-
-    >>> from feu.imports import is_requests_available
-    >>> is_requests_available()
-
-    ```
+        ```
     """
     return is_package_available("requests")
 
@@ -223,14 +209,12 @@ def check_requests() -> None:
     Raises:
         RuntimeError: if the ``requests`` package is not installed.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import check_requests
+        >>> check_requests()
 
-    ```pycon
-
-    >>> from feu.imports import check_requests
-    >>> check_requests()
-
-    ```
+        ```
     """
     if not is_requests_available():
         raise_error_requests_missing()
@@ -259,14 +243,12 @@ def is_urllib3_available() -> bool:
     Returns:
         ``True`` if ``urllib3`` is available otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import is_urllib3_available
+        >>> is_urllib3_available()
 
-    ```pycon
-
-    >>> from feu.imports import is_urllib3_available
-    >>> is_urllib3_available()
-
-    ```
+        ```
     """
     return is_package_available("urllib3")
 
@@ -277,14 +259,12 @@ def check_urllib3() -> None:
     Raises:
         RuntimeError: if the ``urllib3`` package is not installed.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.imports import check_urllib3
+        >>> check_urllib3()
 
-    ```pycon
-
-    >>> from feu.imports import check_urllib3
-    >>> check_urllib3()
-
-    ```
+        ```
     """
     if not is_urllib3_available():
         raise_error_urllib3_missing()

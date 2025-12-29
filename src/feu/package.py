@@ -146,20 +146,18 @@ class PackageConfig:
             RuntimeError: if a package configuration is already
                 registered and ``exist_ok=False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.package import PackageConfig
+            >>> PackageConfig.add_config(
+            ...     pkg_name="my_package",
+            ...     python_version="3.11",
+            ...     pkg_version_min="1.2.0",
+            ...     pkg_version_max="2.0.2",
+            ...     exist_ok=True,
+            ... )
 
-        ```pycon
-
-        >>> from feu.package import PackageConfig
-        >>> PackageConfig.add_config(
-        ...     pkg_name="my_package",
-        ...     python_version="3.11",
-        ...     pkg_version_min="1.2.0",
-        ...     pkg_version_max="2.0.2",
-        ...     exist_ok=True,
-        ... )
-
-        ```
+            ```
         """
         cls.registry[pkg_name] = cls.registry.get(pkg_name, {})
 
@@ -188,18 +186,16 @@ class PackageConfig:
         Returns:
             The package configuration.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.package import PackageConfig
+            >>> PackageConfig.get_config(
+            ...     pkg_name="numpy",
+            ...     python_version="3.11",
+            ... )
+            {'min': '1.23.2', 'max': None}
 
-        ```pycon
-
-        >>> from feu.package import PackageConfig
-        >>> PackageConfig.get_config(
-        ...     pkg_name="numpy",
-        ...     python_version="3.11",
-        ... )
-        {'min': '1.23.2', 'max': None}
-
-        ```
+            ```
         """
         if pkg_name not in cls.registry:
             return {}
@@ -221,18 +217,16 @@ class PackageConfig:
                 The version is set to ``None`` if there is no minimum
                 or maximum version.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.package import PackageConfig
+            >>> PackageConfig.get_min_and_max_versions(
+            ...     pkg_name="numpy",
+            ...     python_version="3.11",
+            ... )
+            (<Version('1.23.2')>, None)
 
-        ```pycon
-
-        >>> from feu.package import PackageConfig
-        >>> PackageConfig.get_min_and_max_versions(
-        ...     pkg_name="numpy",
-        ...     python_version="3.11",
-        ... )
-        (<Version('1.23.2')>, None)
-
-        ```
+            ```
         """
         config = cls.get_config(pkg_name=pkg_name, python_version=python_version)
         min_version = config.get("min", None)
@@ -256,25 +250,23 @@ class PackageConfig:
         Returns:
             The closest valid version.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.package import PackageConfig
+            >>> PackageConfig.find_closest_version(
+            ...     pkg_name="numpy",
+            ...     pkg_version="2.0.2",
+            ...     python_version="3.11",
+            ... )
+            2.0.2
+            >>> PackageConfig.find_closest_version(
+            ...     pkg_name="numpy",
+            ...     pkg_version="1.0.2",
+            ...     python_version="3.11",
+            ... )
+            1.23.2
 
-        ```pycon
-
-        >>> from feu.package import PackageConfig
-        >>> PackageConfig.find_closest_version(
-        ...     pkg_name="numpy",
-        ...     pkg_version="2.0.2",
-        ...     python_version="3.11",
-        ... )
-        2.0.2
-        >>> PackageConfig.find_closest_version(
-        ...     pkg_name="numpy",
-        ...     pkg_version="1.0.2",
-        ...     python_version="3.11",
-        ... )
-        1.23.2
-
-        ```
+            ```
         """
         version = Version(pkg_version)
         min_version, max_version = cls.get_min_and_max_versions(
@@ -300,25 +292,23 @@ class PackageConfig:
             ``True`` if the specified package version is valid for the
                 given Python version, otherwise ``False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.package import PackageConfig
+            >>> PackageConfig.is_valid_version(
+            ...     pkg_name="numpy",
+            ...     pkg_version="2.0.2",
+            ...     python_version="3.11",
+            ... )
+            True
+            >>> PackageConfig.is_valid_version(
+            ...     pkg_name="numpy",
+            ...     pkg_version="1.0.2",
+            ...     python_version="3.11",
+            ... )
+            False
 
-        ```pycon
-
-        >>> from feu.package import PackageConfig
-        >>> PackageConfig.is_valid_version(
-        ...     pkg_name="numpy",
-        ...     pkg_version="2.0.2",
-        ...     python_version="3.11",
-        ... )
-        True
-        >>> PackageConfig.is_valid_version(
-        ...     pkg_name="numpy",
-        ...     pkg_version="1.0.2",
-        ...     python_version="3.11",
-        ... )
-        False
-
-        ```
+            ```
         """
         version = Version(pkg_version)
 
@@ -347,25 +337,23 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
     Returns:
         The closest valid version.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.package import find_closest_version
+        >>> find_closest_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="2.0.2",
+        ...     python_version="3.11",
+        ... )
+        2.0.2
+        >>> find_closest_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="1.0.2",
+        ...     python_version="3.11",
+        ... )
+        1.23.2
 
-    ```pycon
-
-    >>> from feu.package import find_closest_version
-    >>> find_closest_version(
-    ...     pkg_name="numpy",
-    ...     pkg_version="2.0.2",
-    ...     python_version="3.11",
-    ... )
-    2.0.2
-    >>> find_closest_version(
-    ...     pkg_name="numpy",
-    ...     pkg_version="1.0.2",
-    ...     python_version="3.11",
-    ... )
-    1.23.2
-
-    ```
+        ```
     """
     return PackageConfig.find_closest_version(
         pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version
@@ -385,25 +373,23 @@ def is_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> bo
         ``True`` if the specified package version is valid for the
             given Python version, otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.package import is_valid_version
+        >>> is_valid_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="2.0.2",
+        ...     python_version="3.11",
+        ... )
+        True
+        >>> is_valid_version(
+        ...     pkg_name="numpy",
+        ...     pkg_version="1.0.2",
+        ...     python_version="3.11",
+        ... )
+        False
 
-    ```pycon
-
-    >>> from feu.package import is_valid_version
-    >>> is_valid_version(
-    ...     pkg_name="numpy",
-    ...     pkg_version="2.0.2",
-    ...     python_version="3.11",
-    ... )
-    True
-    >>> is_valid_version(
-    ...     pkg_name="numpy",
-    ...     pkg_version="1.0.2",
-    ...     python_version="3.11",
-    ... )
-    False
-
-    ```
+        ```
     """
     return PackageConfig.is_valid_version(
         pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version

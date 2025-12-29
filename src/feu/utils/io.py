@@ -19,22 +19,20 @@ def load_json(path: Path) -> Any:
     Returns:
         The data from the JSON file.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.utils.io import save_json, load_json
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = Path(tmpdir).joinpath("data.json")
+        ...     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
+        ...     data = load_json(path)
+        ...     data
+        ...
+        {'key1': [1, 2, 3], 'key2': 'abc'}
 
-    ```pycon
-
-    >>> import tempfile
-    >>> from pathlib import Path
-    >>> from feu.utils.io import save_json, load_json
-    >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     path = Path(tmpdir).joinpath("data.json")
-    ...     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
-    ...     data = load_json(path)
-    ...     data
-    ...
-    {'key1': [1, 2, 3], 'key2': 'abc'}
-
-    ```
+        ```
     """
     with Path.open(path, mode="rb") as file:
         return json.load(file)
@@ -56,22 +54,20 @@ def save_json(to_save: Any, path: Path, *, exist_ok: bool = False) -> None:
     Raises:
         FileExistsError: if the file already exists.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.utils.io import save_json
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = Path(tmpdir).joinpath("data.json")
+        ...     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
+        ...     data = load_json(path)
+        ...     data
+        ...
+        {'key1': [1, 2, 3], 'key2': 'abc'}
 
-    ```pycon
-
-    >>> import tempfile
-    >>> from pathlib import Path
-    >>> from feu.utils.io import save_json
-    >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     path = Path(tmpdir).joinpath("data.json")
-    ...     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
-    ...     data = load_json(path)
-    ...     data
-    ...
-    {'key1': [1, 2, 3], 'key2': 'abc'}
-
-    ```
+        ```
     """
     if path.is_dir():
         msg = f"path ({path}) is a directory"
@@ -104,20 +100,18 @@ def generate_unique_tmp_path(path: Path) -> Path:
     Returns:
         The unique name.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.utils.io import generate_unique_tmp_path
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = generate_unique_tmp_path(Path(tmpdir).joinpath("data.json"))
+        ...     path
+        ...
+        PosixPath('/.../data-....json')
 
-    ```pycon
-
-    >>> import tempfile
-    >>> from pathlib import Path
-    >>> from feu.utils.io import generate_unique_tmp_path
-    >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     path = generate_unique_tmp_path(Path(tmpdir).joinpath("data.json"))
-    ...     path
-    ...
-    PosixPath('/.../data-....json')
-
-    ```
+        ```
     """
     h = uuid.uuid4().hex
     extension = "".join(path.suffixes)[1:]

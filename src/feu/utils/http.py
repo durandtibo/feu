@@ -47,14 +47,12 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
         RuntimeError: If the request times out, if a network or HTTP error occurs,
             or if the response body contains invalid JSON.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.http import fetch_data
+        >>> data = fetch_data("https://pypi.org/pypi/requests/json")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.utils.http import fetch_data
-    >>> data = fetch_data("https://pypi.org/pypi/requests/json")  # doctest: +SKIP
-
-    ```
+        ```
     """
     resp = fetch_response(url=url, timeout=timeout, **kwargs)
     try:
@@ -84,7 +82,7 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
     Raises:
         RuntimeError: If the request times out or if a network/HTTP error occurs.
 
-    Example usage:
+    Example:
         ```pycon
         >>> from feu.utils.http import fetch_response
         >>> response = fetch_response("https://pypi.org/pypi/requests/json")  # doctest: +SKIP

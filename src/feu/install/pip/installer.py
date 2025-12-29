@@ -33,22 +33,20 @@ class BasePipInstaller(BaseInstaller):
         arguments: Optional arguments to pass to the package installer.
             The valid arguments depend on the package installer.
 
-    Example usage (subclassing):
+    Example:
+        ```pycon
+        >>> from feu.install.pip.installer import BasePipInstaller
+        >>> from feu.utils.package import PackageSpec, PackageDependency
+        >>> class MyInstaller(BasePipInstaller):
+        ...     def _generate_command(self, deps, args):
+        ...         return f"echo Installing {', '.join(map(str, deps))} with args: {args}"
+        ...
+        >>> installer = MyInstaller(arguments="--verbose")
+        >>> installer
+        MyInstaller(arguments='--verbose')
+        >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install.pip.installer import BasePipInstaller
-    >>> from feu.utils.package import PackageSpec, PackageDependency
-    >>> class MyInstaller(BasePipInstaller):
-    ...     def _generate_command(self, deps, args):
-    ...         return f"echo Installing {', '.join(map(str, deps))} with args: {args}"
-    ...
-    >>> installer = MyInstaller(arguments="--verbose")
-    >>> installer
-    MyInstaller(arguments='--verbose')
-    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
-
-    ```
+        ```
     """
 
     def __init__(self, arguments: str = "") -> None:
@@ -90,18 +88,16 @@ class BasePipInstaller(BaseInstaller):
 class PipInstaller(BasePipInstaller):
     r"""Implement a pip package installer.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip import PipInstaller
+        >>> from feu.utils.package import PackageSpec
+        >>> installer = PipInstaller()
+        >>> installer
+        PipInstaller(arguments='')
+        >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install.pip import PipInstaller
-    >>> from feu.utils.package import PackageSpec
-    >>> installer = PipInstaller()
-    >>> installer
-    PipInstaller(arguments='')
-    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
-
-    ```
+        ```
     """
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
@@ -115,18 +111,16 @@ class PipInstaller(BasePipInstaller):
 class PipxInstaller(BasePipInstaller):
     r"""Implement a pipx package installer.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip import PipxInstaller
+        >>> from feu.utils.package import PackageSpec
+        >>> installer = PipxInstaller()
+        >>> installer
+        PipxInstaller(arguments='')
+        >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install.pip import PipxInstaller
-    >>> from feu.utils.package import PackageSpec
-    >>> installer = PipxInstaller()
-    >>> installer
-    PipxInstaller(arguments='')
-    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
-
-    ```
+        ```
     """
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:
@@ -140,18 +134,16 @@ class PipxInstaller(BasePipInstaller):
 class UvInstaller(BasePipInstaller):
     r"""Implement a uv package installer.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip import UvInstaller
+        >>> from feu.utils.package import PackageSpec
+        >>> installer = UvInstaller()
+        >>> installer
+        UvInstaller(arguments='')
+        >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install.pip import UvInstaller
-    >>> from feu.utils.package import PackageSpec
-    >>> installer = UvInstaller()
-    >>> installer
-    UvInstaller(arguments='')
-    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
-
-    ```
+        ```
     """
 
     def _generate_command(self, deps: Sequence[PackageDependency], args: str) -> str:

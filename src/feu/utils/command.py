@@ -16,14 +16,12 @@ def run_bash_command(cmd: str) -> None:
     Args:
         cmd: The command to run.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.command import run_bash_command
+        >>> run_bash_command("ls -l")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.utils.command import run_bash_command
-    >>> run_bash_command("ls -l")  # doctest: +SKIP
-
-    ```
+        ```
     """
     logger.info(f"execute the following command: {cmd}")
     subprocess.run(cmd.split(), check=True)  # noqa: S603

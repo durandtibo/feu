@@ -20,15 +20,13 @@ def get_package_version(package: str) -> Version | None:
     Returns:
         The package version.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import get_package_version
+        >>> get_package_version("pytest")
+        <Version('...')>
 
-    ```pycon
-
-    >>> from feu.version import get_package_version
-    >>> get_package_version("pytest")
-    <Version('...')>
-
-    ```
+        ```
     """
     try:
         return Version(version(package))
@@ -43,13 +41,11 @@ def get_python_major_minor() -> str:
     Returns:
         The MAJOR.MINOR version of the current python.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import get_python_major_minor
+        >>> get_python_major_minor()  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import get_python_major_minor
-    >>> get_python_major_minor()  # doctest: +SKIP
-
-    ```
+        ```
     """
     return f"{sys.version_info.major}.{sys.version_info.minor}"
