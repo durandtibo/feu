@@ -2,7 +2,7 @@ r"""Contain utility functions to manage HTTP requests."""
 
 from __future__ import annotations
 
-__all__ = ["fetch_data"]
+__all__ = ["fetch_data", "fetch_response"]
 
 from typing import TYPE_CHECKING, Any
 
@@ -56,6 +56,42 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
 
     ```
     """
+    resp = fetch_response(url=url, timeout=timeout, **kwargs)
+    try:
+        return resp.json()
+    except ValueError as exc:
+        msg = "Invalid JSON received"
+        raise RuntimeError(msg) from exc
+
+
+def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.Response:
+    r"""Retrieve data from a given URL with automatic retry logic.
+
+    This function performs an HTTP GET request with a configured retry policy
+    for transient errors (429, 500, 502, 503, 504). If urllib3 is available,
+    it applies exponential backoff with up to 5 retry attempts. The function
+    validates the HTTP response and raises detailed errors for failures.
+
+    Args:
+        url: The URL to fetch.
+        timeout: The number of seconds to wait for the server to send
+            data before giving up. Defaults to 10.0.
+        **kwargs: Optional arguments that ``requests.get`` accepts.
+
+    Returns:
+        A requests.Response object containing the HTTP response.
+
+    Raises:
+        RuntimeError: If the request times out or if a network/HTTP error occurs.
+
+    Example usage:
+        ```pycon
+        >>> from feu.utils.http import fetch_response
+        >>> response = fetch_response("https://pypi.org/pypi/requests/json")  # doctest: +SKIP
+        >>> response.json()  # doctest: +SKIP
+
+        ```
+    """
     check_requests()
     session = requests.Session()
 
@@ -80,8 +116,4 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
         msg = f"Network or HTTP error: {exc}"
         raise RuntimeError(msg) from exc
 
-    try:
-        return resp.json()
-    except ValueError as exc:
-        msg = "Invalid JSON received"
-        raise RuntimeError(msg) from exc
+    return resp
