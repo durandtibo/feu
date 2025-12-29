@@ -107,6 +107,24 @@ def test_sort_repos_by_key_with_duplicate_names() -> None:
     ]
 
 
+def test_sort_repos_by_key_with_missing_names() -> None:
+    """Test that repositories without names are placed at the end."""
+    assert sort_repos_by_key(
+        [
+            {"name": "zebra", "id": 1},
+            {"id": 2},  # No name
+            {"name": "alpha", "id": 3},
+            {"id": 4},  # No name
+        ],
+        key="name",
+    ) == [
+        {"name": "alpha", "id": 3},
+        {"name": "zebra", "id": 1},
+        {"id": 2},
+        {"id": 4},
+    ]
+
+
 def test_sort_repos_by_key_reverse_parameter_must_be_keyword() -> None:
     """Test that reverse parameter must be passed as keyword
     argument."""
