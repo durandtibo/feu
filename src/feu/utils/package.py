@@ -28,22 +28,20 @@ class PackageSpec:
         version: An optional package version.
         extras: Optional package extra dependencies.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.package import PackageSpec
+        >>> pkg1 = PackageSpec("my_package")
+        >>> pkg1
+        PackageSpec(name='my_package', version=None, extras=None)
+        >>> pkg2 = PackageSpec("my_package", version="1.2.3")
+        >>> pkg2
+        PackageSpec(name='my_package', version='1.2.3', extras=None)
+        >>> pkg3 = PackageSpec("my_package", version="1.2.3", extras=["security", "socks"])
+        >>> pkg3
+        PackageSpec(name='my_package', version='1.2.3', extras=['security', 'socks'])
 
-    ```pycon
-
-    >>> from feu.utils.package import PackageSpec
-    >>> pkg1 = PackageSpec("my_package")
-    >>> pkg1
-    PackageSpec(name='my_package', version=None, extras=None)
-    >>> pkg2 = PackageSpec("my_package", version="1.2.3")
-    >>> pkg2
-    PackageSpec(name='my_package', version='1.2.3', extras=None)
-    >>> pkg3 = PackageSpec("my_package", version="1.2.3", extras=["security", "socks"])
-    >>> pkg3
-    PackageSpec(name='my_package', version='1.2.3', extras=['security', 'socks'])
-
-    ```
+        ```
     """
 
     name: str
@@ -61,17 +59,15 @@ class PackageSpec:
         Returns:
             The current package as a package dependency.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.utils.package import PackageSpec
+            >>> pkg = PackageSpec("my_package")
+            >>> dep = pkg.to_package_dependency()
+            >>> dep
+            PackageDependency(name='my_package', version_specifiers=None, extras=None)
 
-        ```pycon
-
-        >>> from feu.utils.package import PackageSpec
-        >>> pkg = PackageSpec("my_package")
-        >>> dep = pkg.to_package_dependency()
-        >>> dep
-        PackageDependency(name='my_package', version_specifiers=None, extras=None)
-
-        ```
+            ```
         """
         return PackageDependency(
             name=self.name,
@@ -88,19 +84,17 @@ class PackageSpec:
         Returns:
             A new instance of PackageSpec with the updated version.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.utils.package import PackageSpec
+            >>> pkg = PackageSpec("my_package", version="1.2.0")
+            >>> pkg
+            PackageSpec(name='my_package', version='1.2.0', extras=None)
+            >>> pkg2 = pkg.with_version("1.2.3")
+            >>> pkg2
+            PackageSpec(name='my_package', version='1.2.3', extras=None)
 
-        ```pycon
-
-        >>> from feu.utils.package import PackageSpec
-        >>> pkg = PackageSpec("my_package", version="1.2.0")
-        >>> pkg
-        PackageSpec(name='my_package', version='1.2.0', extras=None)
-        >>> pkg2 = pkg.with_version("1.2.3")
-        >>> pkg2
-        PackageSpec(name='my_package', version='1.2.3', extras=None)
-
-        ```
+            ```
         """
         return self.__class__(name=self.name, version=version, extras=copy.deepcopy(self.extras))
 
@@ -114,24 +108,22 @@ class PackageDependency:
         version_specifiers: Optional package version specifies.
         extras: Optional package extra dependencies.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.package import PackageDependency
+        >>> pkg1 = PackageDependency("my_package")
+        >>> pkg1
+        PackageDependency(name='my_package', version_specifiers=None, extras=None)
+        >>> pkg2 = PackageDependency("my_package", version_specifiers=["==1.2.3"])
+        >>> pkg2
+        PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)
+        >>> pkg3 = PackageDependency(
+        ...     "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
+        ... )
+        >>> pkg3
+        PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=['security', 'socks'])
 
-    ```pycon
-
-    >>> from feu.utils.package import PackageDependency
-    >>> pkg1 = PackageDependency("my_package")
-    >>> pkg1
-    PackageDependency(name='my_package', version_specifiers=None, extras=None)
-    >>> pkg2 = PackageDependency("my_package", version_specifiers=["==1.2.3"])
-    >>> pkg2
-    PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)
-    >>> pkg3 = PackageDependency(
-    ...     "my_package", version_specifiers=["==1.2.3"], extras=["security", "socks"]
-    ... )
-    >>> pkg3
-    PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=['security', 'socks'])
-
-    ```
+        ```
     """
 
     name: str
@@ -158,19 +150,17 @@ def extract_package_name(requirement: str) -> str:
     Returns:
         The base package name without extras.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.package import extract_package_name
+        >>> extract_package_name("numpy")
+        'numpy'
+        >>> extract_package_name("pandas[performance]")
+        'pandas'
+        >>> extract_package_name("requests[security,socks]")
+        'requests'
 
-    ```pycon
-
-    >>> from feu.utils.package import extract_package_name
-    >>> extract_package_name("numpy")
-    'numpy'
-    >>> extract_package_name("pandas[performance]")
-    'pandas'
-    >>> extract_package_name("requests[security,socks]")
-    'requests'
-
-    ```
+        ```
     """
     match = re.match(r"^([a-zA-Z0-9_\-\.]+)", requirement)
     return match.group(1) if match else requirement
@@ -189,19 +179,17 @@ def extract_package_extras(requirement: str) -> list[str]:
     Returns:
         A list of extra requirements, or an empty list if none exist.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.package import extract_package_extras
+        >>> extract_package_extras("numpy")
+        []
+        >>> extract_package_extras("pandas[performance]")
+        ['performance']
+        >>> extract_package_extras("requests[security,socks]")
+        ['security', 'socks']
 
-    ```pycon
-
-    >>> from feu.utils.package import extract_package_extras
-    >>> extract_package_extras("numpy")
-    []
-    >>> extract_package_extras("pandas[performance]")
-    ['performance']
-    >>> extract_package_extras("requests[security,socks]")
-    ['security', 'socks']
-
-    ```
+        ```
     """
     match = re.search(r"\[([^\]]+)\]", requirement)
     if not match:
@@ -219,19 +207,17 @@ def generate_extras_string(extras: Sequence[str]) -> str:
     Returns:
         A string with the package extras.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.utils.package import generate_extras_string
+        >>> generate_extras_string(["security"])
+        '[security]'
+        >>> generate_extras_string(["security", "socks"])
+        '[security,socks]'
+        >>> generate_extras_string([])
+        ''
 
-    ```pycon
-
-    >>> from feu.utils.package import generate_extras_string
-    >>> generate_extras_string(["security"])
-    '[security]'
-    >>> generate_extras_string(["security", "socks"])
-    '[security,socks]'
-    >>> generate_extras_string([])
-    ''
-
-    ```
+        ```
     """
     if not extras:
         return ""

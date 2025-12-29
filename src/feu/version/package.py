@@ -38,14 +38,12 @@ def fetch_versions(
     Returns:
         A tuple containing the valid versions.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_versions
+        >>> versions = fetch_versions("requests")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import fetch_versions
-    >>> versions = fetch_versions("requests")  # doctest: +SKIP
-
-    ```
+        ```
     """
     versions = fetch_pypi_versions(package)
     versions = filter_valid_versions(versions)
@@ -73,14 +71,12 @@ def fetch_latest_major_versions(
         A tuple containing the latest version for each major version,
             sorted by major version number.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_latest_major_versions
+        >>> versions = fetch_latest_major_versions("requests")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import fetch_latest_major_versions
-    >>> versions = fetch_latest_major_versions("requests")  # doctest: +SKIP
-
-    ```
+        ```
     """
     versions = fetch_versions(package, lower=lower, upper=upper)
     return tuple(latest_major_versions(versions))
@@ -103,14 +99,12 @@ def fetch_latest_minor_versions(
         A tuple containing the latest version for each minor version,
             sorted by minor version number.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_latest_minor_versions
+        >>> versions = fetch_latest_minor_versions("requests")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import fetch_latest_minor_versions
-    >>> versions = fetch_latest_minor_versions("requests")  # doctest: +SKIP
-
-    ```
+        ```
     """
     versions = fetch_versions(package, lower=lower, upper=upper)
     return tuple(latest_minor_versions(versions))
@@ -125,14 +119,12 @@ def fetch_latest_version(package: str) -> str:
     Returns:
         The latest valid versions.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_latest_version
+        >>> version = fetch_latest_version("requests")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import fetch_latest_version
-    >>> version = fetch_latest_version("requests")  # doctest: +SKIP
-
-    ```
+        ```
     """
     versions = fetch_pypi_versions(package)
     versions = filter_valid_versions(versions)
@@ -148,14 +140,12 @@ def fetch_latest_stable_version(package: str) -> str:
     Returns:
         The latest stable valid versions.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_latest_stable_version
+        >>> version = fetch_latest_stable_version("requests")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import fetch_latest_stable_version
-    >>> version = fetch_latest_stable_version("requests")  # doctest: +SKIP
-
-    ```
+        ```
     """
     versions = fetch_pypi_versions(package)
     versions = filter_valid_versions(versions)

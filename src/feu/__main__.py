@@ -63,11 +63,11 @@ def install(
             installer. The valid arguments depend on the package
             installer.
 
-    Example usage:
+    Example:
+        ```console
+        $ python -m feu install --installer-name=pip --pkg-name=numpy --pkg-version=2.0.2
 
-    ```
-    python -m feu install --installer-name=pip --pkg-name=numpy --pkg-version=2.0.2
-    ```
+        ```
     """
     pkg_extras = pkg_extras.strip()
     install_package_closest_version(
@@ -95,9 +95,11 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
         pkg_version: The package version to check.
         python_version: The python version.
 
-    Example usage:
+    Example:
+        ```console
+        $ python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
 
-    python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+        ```
     """
     print(  # noqa: T201
         find_closest_version_(
@@ -121,9 +123,11 @@ def check_valid_version(pkg_name: str, pkg_version: str, python_version: str) ->
         pkg_version: The package version to check.
         python_version: The python version.
 
-    Example usage:
+    Example:
+        ```console
+        $ python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
 
-    python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+        ```
     """
     print(  # noqa: T201
         is_valid_version(pkg_name=pkg_name, pkg_version=pkg_version, python_version=python_version)

@@ -30,18 +30,16 @@ def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
         installer: The installer specification.
         package: The package specification.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install import install_package
+        >>> from feu.utils.installer import InstallerSpec
+        >>> from feu.utils.package import PackageSpec
+        >>> install_package(
+        ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
+        ... )  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install import install_package
-    >>> from feu.utils.installer import InstallerSpec
-    >>> from feu.utils.package import PackageSpec
-    >>> install_package(
-    ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
-    ... )  # doctest: +SKIP
-
-    ```
+        ```
     """
     InstallerRegistry.install(installer=installer, package=package)
 
@@ -60,18 +58,16 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
     Raises:
         RuntimeError: If no package version is specified.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install import install_package_closest_version
+        >>> from feu.utils.installer import InstallerSpec
+        >>> from feu.utils.package import PackageSpec
+        >>> install_package_closest_version(
+        ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
+        ... )  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install import install_package_closest_version
-    >>> from feu.utils.installer import InstallerSpec
-    >>> from feu.utils.package import PackageSpec
-    >>> install_package_closest_version(
-    ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
-    ... )  # doctest: +SKIP
-
-    ```
+        ```
     """
     pkg_version = package.version
     if pkg_version is None:
@@ -96,14 +92,12 @@ def is_pip_available() -> bool:
     Returns:
         ``True`` if ``pip`` is available, otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install import is_pip_available
+        >>> is_pip_available()
 
-    ```pycon
-
-    >>> from feu.install import is_pip_available
-    >>> is_pip_available()
-
-    ```
+        ```
     """
     return shutil.which("pip") is not None
 
@@ -115,14 +109,12 @@ def is_pipx_available() -> bool:
     Returns:
         ``True`` if ``pipx`` is available, otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install import is_pipx_available
+        >>> is_pipx_available()
 
-    ```pycon
-
-    >>> from feu.install import is_pipx_available
-    >>> is_pipx_available()
-
-    ```
+        ```
     """
     return shutil.which("pipx") is not None
 
@@ -134,14 +126,12 @@ def is_uv_available() -> bool:
     Returns:
         ``True`` if ``uv`` is available, otherwise ``False``.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install import is_uv_available
+        >>> is_uv_available()
 
-    ```pycon
-
-    >>> from feu.install import is_uv_available
-    >>> is_uv_available()
-
-    ```
+        ```
     """
     return shutil.which("uv") is not None
 
@@ -153,15 +143,13 @@ def get_available_installers() -> tuple[str, ...]:
     Returns:
         The available installers.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install import get_available_installers
+        >>> get_available_installers()
+        (...)
 
-    ```pycon
-
-    >>> from feu.install import get_available_installers
-    >>> get_available_installers()
-    (...)
-
-    ```
+        ```
     """
     installers = []
     if is_pip_available():

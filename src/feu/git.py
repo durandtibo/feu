@@ -24,15 +24,13 @@ def get_tags() -> list[git.TagReference]:
     Returns:
         The list of git tags sorted by date/time.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.git import get_tags
+        >>> tags = get_tags()
+        >>> tags
 
-    ```pycon
-
-    >>> from feu.git import get_tags
-    >>> tags = get_tags()
-    >>> tags
-
-    ```
+        ```
     """
     check_git()
     repo = git.Repo(search_parent_directories=True)
@@ -45,15 +43,13 @@ def get_last_tag_name() -> str:
     Returns:
         The tag name.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.git import get_last_tag_name
+        >>> tag = get_last_tag_name()
+        >>> tag
 
-    ```pycon
-
-    >>> from feu.git import get_last_tag_name
-    >>> tag = get_last_tag_name()
-    >>> tag
-
-    ```
+        ```
     """
     tags = get_tags()
     if not tags:
@@ -71,15 +67,13 @@ def get_last_version_tag_name() -> str:
     Returns:
         The tag name.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.git import get_last_version_tag_name
+        >>> tag = get_last_version_tag_name()
+        >>> tag
 
-    ```pycon
-
-    >>> from feu.git import get_last_version_tag_name
-    >>> tag = get_last_version_tag_name()
-    >>> tag
-
-    ```
+        ```
     """
     tags = get_tags()
     for tag in tags[::-1]:

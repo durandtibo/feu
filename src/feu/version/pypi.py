@@ -23,14 +23,12 @@ def fetch_pypi_versions(package: str, reverse: bool = False) -> tuple[str, ...]:
     Returns:
         A list containing the sorted version strings.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_pypi_versions
+        >>> versions = fetch_pypi_versions("requests")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.version import fetch_pypi_versions
-    >>> versions = fetch_pypi_versions("requests")  # doctest: +SKIP
-
-    ```
+        ```
     """
     metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
     return tuple(sorted(metadata["releases"].keys(), reverse=reverse))

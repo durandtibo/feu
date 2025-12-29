@@ -27,14 +27,12 @@ def fetch_github_metadata(owner: str, repo: str) -> dict[str, Any]:
     Returns:
         The repo metadata.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.repo import fetch_github_metadata
+        >>> metadata = fetch_github_metadata(owner="durandtibo", repo="feu")  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.repo import fetch_github_metadata
-    >>> metadata = fetch_github_metadata(owner="durandtibo", repo="feu")  # doctest: +SKIP
-
-    ```
+        ```
     """
     headers = {"Accept": "application/vnd.github+json"}
     token = os.getenv("GITHUB_TOKEN")

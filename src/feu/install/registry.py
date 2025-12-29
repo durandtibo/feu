@@ -40,15 +40,13 @@ class InstallerRegistry:
             RuntimeError: if an installer is already registered for the
                 package name and ``exist_ok=False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install import InstallerRegistry
+            >>> from feu.install.pip import PipInstaller
+            >>> InstallerRegistry.add_installer("pip", PipInstaller, exist_ok=True)
 
-        ```pycon
-
-        >>> from feu.install import InstallerRegistry
-        >>> from feu.install.pip import PipInstaller
-        >>> InstallerRegistry.add_installer("pip", PipInstaller, exist_ok=True)
-
-        ```
+            ```
         """
         if name in cls.registry and not exist_ok:
             msg = (
@@ -70,15 +68,13 @@ class InstallerRegistry:
             ``True`` if an installer is registered,
                 otherwise ``False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install import InstallerRegistry
+            >>> InstallerRegistry.has_installer("pip")
+            True
 
-        ```pycon
-
-        >>> from feu.install import InstallerRegistry
-        >>> InstallerRegistry.has_installer("pip")
-        True
-
-        ```
+            ```
         """
         return name in cls.registry
 
@@ -91,18 +87,16 @@ class InstallerRegistry:
             installer: The installer specification.
             package: The package specification.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install import InstallerRegistry
+            >>> from feu.utils.installer import InstallerSpec
+            >>> from feu.utils.package import PackageSpec
+            >>> InstallerRegistry.install(
+            ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
+            ... )  # doctest: +SKIP
 
-        ```pycon
-
-        >>> from feu.install import InstallerRegistry
-        >>> from feu.utils.installer import InstallerSpec
-        >>> from feu.utils.package import PackageSpec
-        >>> InstallerRegistry.install(
-        ...     installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.2.2")
-        ... )  # doctest: +SKIP
-
-        ```
+            ```
         """
         cls.registry[installer.name].instantiate_with_arguments(installer.arguments).install(
             package=package

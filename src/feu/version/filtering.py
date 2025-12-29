@@ -42,19 +42,17 @@ def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
     Raises:
         ValueError: If ``n`` is less than 1.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import filter_every_n_versions
+        >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=2)
+        >>> versions
+        ['1.0', '1.2', '1.5']
+        >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=1)
+        >>> versions
+        ['1.0', '1.1', '1.2', '1.3', '1.5', '1.6']
 
-    ```pycon
-
-    >>> from feu.version import filter_every_n_versions
-    >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=2)
-    >>> versions
-    ['1.0', '1.2', '1.5']
-    >>> versions = filter_every_n_versions(["1.0", "1.1", "1.2", "1.3", "1.5", "1.6"], n=1)
-    >>> versions
-    ['1.0', '1.1', '1.2', '1.3', '1.5', '1.6']
-
-    ```
+        ```
     """
     if n < 1:
         msg = f"n must be >= 1 but received {n}"
@@ -79,19 +77,17 @@ def filter_last_n_versions(versions: Sequence[str], n: int) -> list[str]:
     Raises:
         ValueError: If ``n`` is less than 1.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import filter_last_n_versions
+        >>> versions = filter_last_n_versions(["1.0", "1.1", "1.2", "1.3"], n=2)
+        >>> versions
+        ['1.2', '1.3']
+        >>> versions = filter_last_n_versions(["1.0", "1.1", "1.2", "1.3"], n=5)
+        >>> versions
+        ['1.0', '1.1', '1.2', '1.3']
 
-    ```pycon
-
-    >>> from feu.version import filter_last_n_versions
-    >>> versions = filter_last_n_versions(["1.0", "1.1", "1.2", "1.3"], n=2)
-    >>> versions
-    ['1.2', '1.3']
-    >>> versions = filter_last_n_versions(["1.0", "1.1", "1.2", "1.3"], n=5)
-    >>> versions
-    ['1.0', '1.1', '1.2', '1.3']
-
-    ```
+        ```
     """
     if n <= 0:
         msg = f"n must be > 0 but received {n}"
@@ -115,21 +111,19 @@ def filter_range_versions(
     Returns:
         A list of version strings that fall within the specified bounds.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import filter_range_versions
+        >>> versions = filter_range_versions(
+        ...     ["1.0.0", "1.2.0", "1.3.0", "2.0.0"], lower="1.1.0", upper="2.0.0"
+        ... )
+        >>> versions
+        ['1.2.0', '1.3.0']
+        >>> versions = filter_range_versions(["0.9.0", "1.0.0", "1.1.0"], lower="1.0.0")
+        >>> versions
+        ['1.0.0', '1.1.0']
 
-    ```pycon
-
-    >>> from feu.version import filter_range_versions
-    >>> versions = filter_range_versions(
-    ...     ["1.0.0", "1.2.0", "1.3.0", "2.0.0"], lower="1.1.0", upper="2.0.0"
-    ... )
-    >>> versions
-    ['1.2.0', '1.3.0']
-    >>> versions = filter_range_versions(["0.9.0", "1.0.0", "1.1.0"], lower="1.0.0")
-    >>> versions
-    ['1.0.0', '1.1.0']
-
-    ```
+        ```
     """
     lower_v = Version(lower) if lower else None
     upper_v = Version(upper) if upper else None
@@ -157,18 +151,16 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
     Returns:
         A list containing only stable version strings.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import filter_stable_versions
+        >>> versions = filter_stable_versions(
+        ...     ["1.0.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"]
+        ... )
+        >>> versions
+        ['1.0.0', '2.0.0']
 
-    ```pycon
-
-    >>> from feu.version import filter_stable_versions
-    >>> versions = filter_stable_versions(
-    ...     ["1.0.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"]
-    ... )
-    >>> versions
-    ['1.0.0', '2.0.0']
-
-    ```
+        ```
     """
     stable_versions = []
     for v in versions:
@@ -190,29 +182,27 @@ def filter_valid_versions(versions: Sequence[str]) -> list[str]:
     Returns:
         A list containing only valid version strings.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import filter_valid_versions
+        >>> versions = filter_valid_versions(
+        ...     [
+        ...         "1.0.0",
+        ...         "1.0.0a1",
+        ...         "2.0.0.post1",
+        ...         "not-a-version",
+        ...         "",
+        ...         "2",
+        ...         "3.0",
+        ...         "v1.0.0",
+        ...         "1.0.0.0.0",
+        ...         "4.0.0.dev1",
+        ...     ]
+        ... )
+        >>> versions
+        ['1.0.0', '1.0.0a1', '2.0.0.post1', '2', '3.0', 'v1.0.0', '1.0.0.0.0', '4.0.0.dev1']
 
-    ```pycon
-
-    >>> from feu.version import filter_valid_versions
-    >>> versions = filter_valid_versions(
-    ...     [
-    ...         "1.0.0",
-    ...         "1.0.0a1",
-    ...         "2.0.0.post1",
-    ...         "not-a-version",
-    ...         "",
-    ...         "2",
-    ...         "3.0",
-    ...         "v1.0.0",
-    ...         "1.0.0.0.0",
-    ...         "4.0.0.dev1",
-    ...     ]
-    ... )
-    >>> versions
-    ['1.0.0', '1.0.0a1', '2.0.0.post1', '2', '3.0', 'v1.0.0', '1.0.0.0.0', '4.0.0.dev1']
-
-    ```
+        ```
     """
     valid_versions = []
     for v in versions:
@@ -238,16 +228,14 @@ def latest_major_versions(versions: Sequence[str]) -> list[str]:
         A list containing the latest version for each major version,
             sorted by major version number.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import latest_major_versions
+        >>> versions = latest_major_versions(["1.0.0", "1.1.0", "1.2.0", "1.2.1", "2.0.0"])
+        >>> versions
+        ['1.2.1', '2.0.0']
 
-    ```pycon
-
-    >>> from feu.version import latest_major_versions
-    >>> versions = latest_major_versions(["1.0.0", "1.1.0", "1.2.0", "1.2.1", "2.0.0"])
-    >>> versions
-    ['1.2.1', '2.0.0']
-
-    ```
+        ```
     """
     by_major = {}
     for v_str in versions:
@@ -274,16 +262,14 @@ def latest_minor_versions(versions: Sequence[str]) -> list[str]:
         A list containing the latest version for each minor version,
             sorted by major and minor version numbers.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import latest_major_versions
+        >>> versions = latest_minor_versions(["1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"])
+        >>> versions
+        ['1.0.1', '1.1.2', '2.0.3']
 
-    ```pycon
-
-    >>> from feu.version import latest_major_versions
-    >>> versions = latest_minor_versions(["1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"])
-    >>> versions
-    ['1.0.1', '1.1.2', '2.0.3']
-
-    ```
+        ```
     """
     by_minor = {}
     for v_str in versions:
@@ -305,15 +291,13 @@ def unique_versions(versions: Sequence[str]) -> list[str]:
         A list containing only unique version strings, preserving the
             original order of first occurrence.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.version import unique_versions, sort_versions
+        >>> versions = sort_versions(unique_versions(["1.0.0", "1.0.1", "1.0.0", "1.2.0"]))
+        >>> versions
+        ['1.0.0', '1.0.1', '1.2.0']
 
-    ```pycon
-
-    >>> from feu.version import unique_versions, sort_versions
-    >>> versions = sort_versions(unique_versions(["1.0.0", "1.0.1", "1.0.0", "1.2.0"]))
-    >>> versions
-    ['1.0.0', '1.0.1', '1.2.0']
-
-    ```
+        ```
     """
     return list(set(versions))

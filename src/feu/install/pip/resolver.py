@@ -35,20 +35,18 @@ class BaseDependencyResolver(ABC):
     r"""Define the base class for pip-compatible package dependency
     resolvers.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import DependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = DependencyResolver()
+        >>> resolver
+        DependencyResolver()
+        >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
+        >>> deps
+        [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import DependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = DependencyResolver()
-    >>> resolver
-    DependencyResolver()
-    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
-    >>> deps
-    [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
-
-    ```
+        ```
     """
 
     @abstractmethod
@@ -61,21 +59,19 @@ class BaseDependencyResolver(ABC):
         Returns:
             ``True`` if the two dependency resolvers are equal, otherwise ``False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip.resolver import DependencyResolver, TorchDependencyResolver
+            >>> from feu.utils.package import PackageSpec
+            >>> obj1 = DependencyResolver()
+            >>> obj2 = DependencyResolver()
+            >>> obj3 = TorchDependencyResolver()
+            >>> obj1.equal(obj2)
+            True
+            >>> obj1.equal(obj3)
+            False
 
-        ```pycon
-
-        >>> from feu.install.pip.resolver import DependencyResolver, TorchDependencyResolver
-        >>> from feu.utils.package import PackageSpec
-        >>> obj1 = DependencyResolver()
-        >>> obj2 = DependencyResolver()
-        >>> obj3 = TorchDependencyResolver()
-        >>> obj1.equal(obj2)
-        True
-        >>> obj1.equal(obj3)
-        False
-
-        ```
+            ```
         """
 
     @abstractmethod
@@ -88,38 +84,34 @@ class BaseDependencyResolver(ABC):
         Returns:
             The list of package dependencies.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip.resolver import DependencyResolver
+            >>> from feu.utils.package import PackageSpec
+            >>> resolver = DependencyResolver()
+            >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
+            >>> deps
+            [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
-        ```pycon
-
-        >>> from feu.install.pip.resolver import DependencyResolver
-        >>> from feu.utils.package import PackageSpec
-        >>> resolver = DependencyResolver()
-        >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
-        >>> deps
-        [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
-
-        ```
+            ```
         """
 
 
 class DependencyResolver(BaseDependencyResolver):
     r"""Define the default package dependency resolver.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import DependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = DependencyResolver()
+        >>> resolver
+        DependencyResolver()
+        >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
+        >>> deps
+        [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import DependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = DependencyResolver()
-    >>> resolver
-    DependencyResolver()
-    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
-    >>> deps
-    [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
-
-    ```
+        ```
     """
 
     def __repr__(self) -> str:
@@ -137,26 +129,24 @@ class JaxDependencyResolver(DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``jax`` 0.4.26.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import JaxDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = JaxDependencyResolver()
+        >>> resolver
+        JaxDependencyResolver()
+        >>> deps = resolver.resolve(PackageSpec(name="jax", version="0.4.26"))
+        >>> deps
+        [PackageDependency(name='jax', version_specifiers=['==0.4.26'], extras=None),
+         PackageDependency(name='jaxlib', version_specifiers=['==0.4.26'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="jax", version="0.4.25"))
+        >>> deps
+        [PackageDependency(name='jax', version_specifiers=['==0.4.25'], extras=None),
+         PackageDependency(name='jaxlib', version_specifiers=['==0.4.25'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import JaxDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = JaxDependencyResolver()
-    >>> resolver
-    JaxDependencyResolver()
-    >>> deps = resolver.resolve(PackageSpec(name="jax", version="0.4.26"))
-    >>> deps
-    [PackageDependency(name='jax', version_specifiers=['==0.4.26'], extras=None),
-     PackageDependency(name='jaxlib', version_specifiers=['==0.4.26'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="jax", version="0.4.25"))
-    >>> deps
-    [PackageDependency(name='jax', version_specifiers=['==0.4.25'], extras=None),
-     PackageDependency(name='jaxlib', version_specifiers=['==0.4.25'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def resolve(self, package: PackageSpec) -> list[PackageDependency]:
@@ -185,24 +175,22 @@ class Numpy2DependencyResolver(DependencyResolver):
         min_version: The first version that is fully compatible with
             numpy 2.0.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import Numpy2DependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = Numpy2DependencyResolver(min_version="1.2.3")
+        >>> resolver
+        Numpy2DependencyResolver(min_version=1.2.3)
+        >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
+        >>> deps
+        [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.2"))
+        >>> deps
+        [PackageDependency(name='my_package', version_specifiers=['==1.2.2'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import Numpy2DependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = Numpy2DependencyResolver(min_version="1.2.3")
-    >>> resolver
-    Numpy2DependencyResolver(min_version=1.2.3)
-    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.3"))
-    >>> deps
-    [PackageDependency(name='my_package', version_specifiers=['==1.2.3'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="my_package", version="1.2.2"))
-    >>> deps
-    [PackageDependency(name='my_package', version_specifiers=['==1.2.2'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self, min_version: str) -> None:
@@ -231,24 +219,22 @@ class MatplotlibDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``matplotlib`` 3.8.4.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import MatplotlibDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = MatplotlibDependencyResolver()
+        >>> resolver
+        MatplotlibDependencyResolver(min_version=3.8.4)
+        >>> deps = resolver.resolve(PackageSpec(name="matplotlib", version="3.8.4"))
+        >>> deps
+        [PackageDependency(name='matplotlib', version_specifiers=['==3.8.4'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="matplotlib", version="3.8.3"))
+        >>> deps
+        [PackageDependency(name='matplotlib', version_specifiers=['==3.8.3'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import MatplotlibDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = MatplotlibDependencyResolver()
-    >>> resolver
-    MatplotlibDependencyResolver(min_version=3.8.4)
-    >>> deps = resolver.resolve(PackageSpec(name="matplotlib", version="3.8.4"))
-    >>> deps
-    [PackageDependency(name='matplotlib', version_specifiers=['==3.8.4'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="matplotlib", version="3.8.3"))
-    >>> deps
-    [PackageDependency(name='matplotlib', version_specifiers=['==3.8.3'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -260,24 +246,22 @@ class PandasDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``pandas`` 2.2.2.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import PandasDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = PandasDependencyResolver()
+        >>> resolver
+        PandasDependencyResolver(min_version=2.2.2)
+        >>> deps = resolver.resolve(PackageSpec(name="pandas", version="2.2.2"))
+        >>> deps
+        [PackageDependency(name='pandas', version_specifiers=['==2.2.2'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="pandas", version="2.2.1"))
+        >>> deps
+        [PackageDependency(name='pandas', version_specifiers=['==2.2.1'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import PandasDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = PandasDependencyResolver()
-    >>> resolver
-    PandasDependencyResolver(min_version=2.2.2)
-    >>> deps = resolver.resolve(PackageSpec(name="pandas", version="2.2.2"))
-    >>> deps
-    [PackageDependency(name='pandas', version_specifiers=['==2.2.2'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="pandas", version="2.2.1"))
-    >>> deps
-    [PackageDependency(name='pandas', version_specifiers=['==2.2.1'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -289,24 +273,22 @@ class PyarrowDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``pyarrow`` 16.0.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import PyarrowDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = PyarrowDependencyResolver()
+        >>> resolver
+        PyarrowDependencyResolver(min_version=16.0)
+        >>> deps = resolver.resolve(PackageSpec(name="pyarrow", version="16.0"))
+        >>> deps
+        [PackageDependency(name='pyarrow', version_specifiers=['==16.0'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="pyarrow", version="15.0"))
+        >>> deps
+        [PackageDependency(name='pyarrow', version_specifiers=['==15.0'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import PyarrowDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = PyarrowDependencyResolver()
-    >>> resolver
-    PyarrowDependencyResolver(min_version=16.0)
-    >>> deps = resolver.resolve(PackageSpec(name="pyarrow", version="16.0"))
-    >>> deps
-    [PackageDependency(name='pyarrow', version_specifiers=['==16.0'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="pyarrow", version="15.0"))
-    >>> deps
-    [PackageDependency(name='pyarrow', version_specifiers=['==15.0'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -318,24 +300,22 @@ class ScipyDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``scipy`` 1.13.0.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import ScipyDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = ScipyDependencyResolver()
+        >>> resolver
+        ScipyDependencyResolver(min_version=1.13.0)
+        >>> deps = resolver.resolve(PackageSpec(name="scipy", version="1.13.0"))
+        >>> deps
+        [PackageDependency(name='scipy', version_specifiers=['==1.13.0'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="scipy", version="1.12.0"))
+        >>> deps
+        [PackageDependency(name='scipy', version_specifiers=['==1.12.0'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import ScipyDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = ScipyDependencyResolver()
-    >>> resolver
-    ScipyDependencyResolver(min_version=1.13.0)
-    >>> deps = resolver.resolve(PackageSpec(name="scipy", version="1.13.0"))
-    >>> deps
-    [PackageDependency(name='scipy', version_specifiers=['==1.13.0'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="scipy", version="1.12.0"))
-    >>> deps
-    [PackageDependency(name='scipy', version_specifiers=['==1.12.0'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -347,24 +327,22 @@ class SklearnDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``scikit-learn`` 1.4.2.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import SklearnDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = SklearnDependencyResolver()
+        >>> resolver
+        SklearnDependencyResolver(min_version=1.4.2)
+        >>> deps = resolver.resolve(PackageSpec(name="scikit-learn", version="1.4.2"))
+        >>> deps
+        [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.2'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="scikit-learn", version="1.4.1"))
+        >>> deps
+        [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.1'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import SklearnDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = SklearnDependencyResolver()
-    >>> resolver
-    SklearnDependencyResolver(min_version=1.4.2)
-    >>> deps = resolver.resolve(PackageSpec(name="scikit-learn", version="1.4.2"))
-    >>> deps
-    [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.2'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="scikit-learn", version="1.4.1"))
-    >>> deps
-    [PackageDependency(name='scikit-learn', version_specifiers=['==1.4.1'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -376,24 +354,22 @@ class TorchDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``torch`` 2.3.0.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import TorchDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = TorchDependencyResolver()
+        >>> resolver
+        TorchDependencyResolver(min_version=2.3.0)
+        >>> deps = resolver.resolve(PackageSpec(name="torch", version="2.3.0"))
+        >>> deps
+        [PackageDependency(name='torch', version_specifiers=['==2.3.0'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="torch", version="2.2.0"))
+        >>> deps
+        [PackageDependency(name='torch', version_specifiers=['==2.2.0'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import TorchDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = TorchDependencyResolver()
-    >>> resolver
-    TorchDependencyResolver(min_version=2.3.0)
-    >>> deps = resolver.resolve(PackageSpec(name="torch", version="2.3.0"))
-    >>> deps
-    [PackageDependency(name='torch', version_specifiers=['==2.3.0'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="torch", version="2.2.0"))
-    >>> deps
-    [PackageDependency(name='torch', version_specifiers=['==2.2.0'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -405,24 +381,22 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
 
     ``numpy`` 2.0 support was added in ``xarray`` 2024.6.0.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip.resolver import XarrayDependencyResolver
+        >>> from feu.utils.package import PackageSpec
+        >>> resolver = XarrayDependencyResolver()
+        >>> resolver
+        XarrayDependencyResolver(min_version=2024.6.0)
+        >>> deps = resolver.resolve(PackageSpec(name="xarray", version="2024.6.0"))
+        >>> deps
+        [PackageDependency(name='xarray', version_specifiers=['==2024.6.0'], extras=None)]
+        >>> deps = resolver.resolve(PackageSpec(name="xarray", version="2024.5.0"))
+        >>> deps
+        [PackageDependency(name='xarray', version_specifiers=['==2024.5.0'], extras=None),
+         PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
 
-    ```pycon
-
-    >>> from feu.install.pip.resolver import XarrayDependencyResolver
-    >>> from feu.utils.package import PackageSpec
-    >>> resolver = XarrayDependencyResolver()
-    >>> resolver
-    XarrayDependencyResolver(min_version=2024.6.0)
-    >>> deps = resolver.resolve(PackageSpec(name="xarray", version="2024.6.0"))
-    >>> deps
-    [PackageDependency(name='xarray', version_specifiers=['==2024.6.0'], extras=None)]
-    >>> deps = resolver.resolve(PackageSpec(name="xarray", version="2024.5.0"))
-    >>> deps
-    [PackageDependency(name='xarray', version_specifiers=['==2024.5.0'], extras=None),
-     PackageDependency(name='numpy', version_specifiers=['<2.0.0'], extras=None)]
-
-    ```
+        ```
     """
 
     def __init__(self) -> None:
@@ -464,20 +438,18 @@ class DependencyResolverRegistry:
             RuntimeError: if a dependency resolver is already registered for the
                 package name and ``exist_ok=False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip.resolver import (
+            ...     DependencyResolverRegistry,
+            ...     TorchDependencyResolver,
+            ... )
+            >>> from feu.utils.package import PackageSpec
+            >>> DependencyResolverRegistry.add_resolver(
+            ...     PackageSpec("torch"), TorchDependencyResolver(), exist_ok=True
+            ... )
 
-        ```pycon
-
-        >>> from feu.install.pip.resolver import (
-        ...     DependencyResolverRegistry,
-        ...     TorchDependencyResolver,
-        ... )
-        >>> from feu.utils.package import PackageSpec
-        >>> DependencyResolverRegistry.add_resolver(
-        ...     PackageSpec("torch"), TorchDependencyResolver(), exist_ok=True
-        ... )
-
-        ```
+            ```
         """
         if package.name in cls.registry and not exist_ok:
             msg = (
@@ -500,16 +472,14 @@ class DependencyResolverRegistry:
             ``True`` if a dependency resolver is registered,
                 otherwise ``False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip.resolver import DependencyResolverRegistry
+            >>> from feu.utils.package import PackageSpec
+            >>> DependencyResolverRegistry.has_resolver(PackageSpec("torch"))
+            True
 
-        ```pycon
-
-        >>> from feu.install.pip.resolver import DependencyResolverRegistry
-        >>> from feu.utils.package import PackageSpec
-        >>> DependencyResolverRegistry.has_resolver(PackageSpec("torch"))
-        True
-
-        ```
+            ```
         """
         return package.name in cls.registry
 
@@ -523,16 +493,14 @@ class DependencyResolverRegistry:
         Returns:
             The dependency resolver for the package.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip.resolver import DependencyResolverRegistry
+            >>> from feu.utils.package import PackageSpec
+            >>> resolver = DependencyResolverRegistry.find_resolver(PackageSpec("torch"))
+            >>> resolver
+            TorchDependencyResolver(min_version=2.3.0)
 
-        ```pycon
-
-        >>> from feu.install.pip.resolver import DependencyResolverRegistry
-        >>> from feu.utils.package import PackageSpec
-        >>> resolver = DependencyResolverRegistry.find_resolver(PackageSpec("torch"))
-        >>> resolver
-        TorchDependencyResolver(min_version=2.3.0)
-
-        ```
+            ```
         """
         return cls.registry.get(package.name, DependencyResolver())

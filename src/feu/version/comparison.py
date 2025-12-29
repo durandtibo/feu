@@ -25,16 +25,14 @@ def compare_version(package: str, op: Callable, version: str) -> bool:
     Returns:
         The comparison status.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> import operator
+        >>> from feu.version import compare_version
+        >>> compare_version("pytest", op=operator.ge, version="7.3.0")
+        True
 
-    ```pycon
-
-    >>> import operator
-    >>> from feu.version import compare_version
-    >>> compare_version("pytest", op=operator.ge, version="7.3.0")
-    True
-
-    ```
+        ```
     """
     pkg_version = get_package_version(package)
     if pkg_version is None:
@@ -60,18 +58,16 @@ def latest_version(versions: Sequence[str]) -> str:
     Raises:
         ValueError: If ``versions`` is empty.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> import operator
+        >>> from feu.version import latest_version
+        >>> latest_version(["1.0.0", "1.0.1rc1", "1.0.1"])
+        '1.0.1'
+        >>> latest_version(["1.2.0", "2.0.0a1"])
+        '2.0.0a1'
 
-    ```pycon
-
-    >>> import operator
-    >>> from feu.version import latest_version
-    >>> latest_version(["1.0.0", "1.0.1rc1", "1.0.1"])
-    '1.0.1'
-    >>> latest_version(["1.2.0", "2.0.0a1"])
-    '2.0.0a1'
-
-    ```
+        ```
     """
     if not versions:
         msg = "versions list must not be empty"
@@ -91,17 +87,15 @@ def sort_versions(versions: Sequence[str], reverse: bool = False) -> list[str]:
         A new list of version strings sorted according to semantic
             version order.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> import operator
+        >>> from feu.version import sort_versions
+        >>> sort_versions(["1.0.0", "1.2.0", "1.1.0"])
+        ['1.0.0', '1.1.0', '1.2.0']
+        >>> sort_versions(["1.0.0", "1.2.0", "1.1.0"], reverse=True)
+        ['1.2.0', '1.1.0', '1.0.0']
 
-    ```pycon
-
-    >>> import operator
-    >>> from feu.version import sort_versions
-    >>> sort_versions(["1.0.0", "1.2.0", "1.1.0"])
-    ['1.0.0', '1.1.0', '1.2.0']
-    >>> sort_versions(["1.0.0", "1.2.0", "1.1.0"], reverse=True)
-    ['1.2.0', '1.1.0', '1.0.0']
-
-    ```
+        ```
     """
     return sorted(versions, key=Version, reverse=reverse)

@@ -23,18 +23,16 @@ logger: logging.Logger = logging.getLogger(__name__)
 class BaseInstaller(ABC):
     r"""Define the base class to implement a package installer.
 
-    Example usage:
+    Example:
+        ```pycon
+        >>> from feu.install.pip import PipInstaller
+        >>> from feu.utils.package import PackageSpec
+        >>> installer = PipInstaller()
+        >>> installer
+        PipInstaller(arguments='')
+        >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
-    ```pycon
-
-    >>> from feu.install.pip import PipInstaller
-    >>> from feu.utils.package import PackageSpec
-    >>> installer = PipInstaller()
-    >>> installer
-    PipInstaller(arguments='')
-    >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
-
-    ```
+        ```
     """
 
     @abstractmethod
@@ -47,21 +45,19 @@ class BaseInstaller(ABC):
         Returns:
             ``True`` if the two installers are equal, otherwise ``False``.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip import PipInstaller
+            >>> from feu.utils.package import PackageSpec
+            >>> obj1 = PipInstaller()
+            >>> obj2 = PipInstaller()
+            >>> obj3 = PipInstaller("-U")
+            >>> obj1.equal(obj2)
+            True
+            >>> obj1.equal(obj3)
+            False
 
-        ```pycon
-
-        >>> from feu.install.pip import PipInstaller
-        >>> from feu.utils.package import PackageSpec
-        >>> obj1 = PipInstaller()
-        >>> obj2 = PipInstaller()
-        >>> obj3 = PipInstaller("-U")
-        >>> obj1.equal(obj2)
-        True
-        >>> obj1.equal(obj3)
-        False
-
-        ```
+            ```
         """
 
     @abstractmethod
@@ -71,16 +67,14 @@ class BaseInstaller(ABC):
         Args:
             package: The package specification of the package to install.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip import PipInstaller
+            >>> from feu.utils.package import PackageSpec
+            >>> installer = PipInstaller()
+            >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
-        ```pycon
-
-        >>> from feu.install.pip import PipInstaller
-        >>> from feu.utils.package import PackageSpec
-        >>> installer = PipInstaller()
-        >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
-
-        ```
+            ```
         """
 
     @classmethod
@@ -94,14 +88,12 @@ class BaseInstaller(ABC):
         Returns:
             An instantiated installer.
 
-        Example usage:
+        Example:
+            ```pycon
+            >>> from feu.install.pip import PipInstaller
+            >>> installer = PipInstaller.instantiate_with_arguments("-U")
+            >>> installer
+            PipInstaller(arguments='-U')
 
-        ```pycon
-
-        >>> from feu.install.pip import PipInstaller
-        >>> installer = PipInstaller.instantiate_with_arguments("-U")
-        >>> installer
-        PipInstaller(arguments='-U')
-
-        ```
+            ```
         """
