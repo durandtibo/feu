@@ -17,7 +17,7 @@ def run_bash_command(cmd: str) -> None:
         cmd: The command to run.
 
     Returns:
-        ``None``.
+        ``None``. Executes the specified bash command and logs the output.
 
     Example:
         ```pycon

@@ -78,7 +78,7 @@ def display_repos_summary(repos: Sequence[dict[str, Any]]) -> None:
         repos: List of repository dictionaries from GitHub API.
 
     Returns:
-        ``None``.
+        ``None``. Prints repository statistics and details to the logger.
 
     Example:
         ```pycon
