@@ -16,6 +16,9 @@ def run_bash_command(cmd: str) -> None:
     Args:
         cmd: The command to run.
 
+    Returns:
+        ``None``.
+
     Example:
         ```pycon
         >>> from feu.utils.command import run_bash_command

@@ -1,4 +1,4 @@
-r"""Contain to check if a package or module is available."""
+r"""Contain functions to check if a package or module is available."""
 
 from __future__ import annotations
 

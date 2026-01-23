@@ -75,7 +75,7 @@ def filter_last_n_versions(versions: Sequence[str], n: int) -> list[str]:
         A new list containing only the last n versions, in order.
 
     Raises:
-        ValueError: If ``n`` is less than 1.
+        ValueError: If ``n`` is less than or equal to 0.
 
     Example:
         ```pycon

@@ -41,7 +41,7 @@ def compare_version(package: str, op: Callable, version: str) -> bool:
 
 
 def latest_version(versions: Sequence[str]) -> str:
-    """Return the latest version string in a list of version
+    r"""Return the latest version string in a list of version
     identifiers.
 
     This function compares version strings according to the PEP 440

@@ -16,7 +16,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 def sort_repos_by_key(
     repos: Sequence[dict[str, Any]], *, key: str, reverse: bool = False
 ) -> list[dict[str, Any]]:
-    """Sort repositories by a given key.
+    r"""Sort repositories by a given key.
 
     Repositories without the key are placed at the end in their
     original order.
@@ -31,7 +31,7 @@ def sort_repos_by_key(
         (or descending if reverse=True). Repositories without the key appear
         at the end in their original order.
 
-    Examples:
+    Example:
         ```pycon
         >>> from feu.github import sort_repos_by_key
         >>> repos = [{"name": "zoo"}, {"name": "alpha"}, {"id": 1}]
