@@ -77,6 +77,9 @@ def display_repos_summary(repos: Sequence[dict[str, Any]]) -> None:
     Args:
         repos: List of repository dictionaries from GitHub API.
 
+    Returns:
+        ``None``.
+
     Example:
         ```pycon
         >>> from feu.github import fetch_github_repos, display_repos_summary

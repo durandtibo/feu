@@ -60,6 +60,9 @@ def is_module_available(module: str) -> bool:
     Args:
         module: The module to check.
 
+    Returns:
+        ``True`` if the module is available, otherwise ``False``.
+
     Example:
         ```pycon
         >>> from feu import is_module_available
