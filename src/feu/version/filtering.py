@@ -65,11 +65,11 @@ def filter_last_n_versions(versions: Sequence[str], n: int) -> list[str]:
 
     This function preserves the original ordering of the final n elements.
     If ``n`` is greater than the number of versions available, the entire list
-    is returned. If ``n`` is zero, an empty list is returned.
+    is returned.
 
     Args:
         versions: A list of version strings.
-        n: Number of versions to keep from the end of the list. Must be >= 0.
+        n: Number of versions to keep from the end of the list. Must be > 0.
 
     Returns:
         A new list containing only the last n versions, in order.
