@@ -45,7 +45,7 @@ def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
 
 
 def install_package_closest_version(installer: InstallerSpec, package: PackageSpec) -> None:
-    r"""Install a package and associated packages by using the secified
+    r"""Install a package and associated packages by using the specified
     installer.
 
     This function finds the closest valid version if the specified

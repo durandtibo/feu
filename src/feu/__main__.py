@@ -24,7 +24,7 @@ def cli() -> None:
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
 @click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
 @click.option(
-    "-e", "--pkg-extras", "pkg_extras", help="Package version", required=True, type=str, default=""
+    "-e", "--pkg-extras", "pkg_extras", help="Package extra dependencies", required=True, type=str, default=""
 )
 @click.option(
     "-i",

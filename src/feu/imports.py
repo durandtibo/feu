@@ -48,7 +48,9 @@ def is_package_available(package: str) -> bool:
 
         ```
     """
-    with suppress(ModuleNotFoundError, ImportError, AttributeError, ValueError, TypeError):
+    # AttributeError is included for defensive programming, though it's not a documented
+    # exception from find_spec and may indicate a real bug if raised
+    with suppress(ModuleNotFoundError, ImportError, AttributeError):
         return find_spec(package) is not None
     return False
 

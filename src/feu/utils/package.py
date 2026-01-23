@@ -10,7 +10,6 @@ __all__ = [
     "generate_extras_string",
 ]
 
-import copy
 import re
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -96,7 +95,9 @@ class PackageSpec:
 
             ```
         """
-        return self.__class__(name=self.name, version=version, extras=copy.deepcopy(self.extras))
+        return self.__class__(
+            name=self.name, version=version, extras=self.extras[:] if self.extras else None
+        )
 
 
 @dataclass
