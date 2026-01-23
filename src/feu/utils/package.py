@@ -96,7 +96,7 @@ class PackageSpec:
             ```
         """
         return self.__class__(
-            name=self.name, version=version, extras=self.extras[:] if self.extras else None
+            name=self.name, version=version, extras=self.extras[:] if self.extras is not None else None
         )
 
 
