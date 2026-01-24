@@ -17,6 +17,7 @@ __all__ = [
     "raise_error_git_missing",
     "raise_error_requests_missing",
     "raise_error_urllib3_missing",
+    "raise_package_missing_error",
 ]
 
 from contextlib import suppress
@@ -83,7 +84,7 @@ def is_module_available(module: str) -> bool:
     return True
 
 
-def _raise_package_missing_error(package_name: str, install_cmd: str) -> NoReturn:
+def raise_package_missing_error(package_name: str, install_cmd: str) -> NoReturn:
     r"""Raise a RuntimeError for a missing package.
 
     Args:
@@ -143,7 +144,7 @@ def check_click() -> None:
 def raise_error_click_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``click`` package is
     missing."""
-    _raise_package_missing_error("click", "click")
+    raise_package_missing_error("click", "click")
 
 
 ###############
@@ -188,7 +189,7 @@ def check_git() -> None:
 def raise_error_git_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``git`` package is
     missing."""
-    _raise_package_missing_error("git", "gitpython")
+    raise_package_missing_error("git", "gitpython")
 
 
 ####################
@@ -233,7 +234,7 @@ def check_requests() -> None:
 def raise_error_requests_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``requests`` package is
     missing."""
-    _raise_package_missing_error("requests", "requests")
+    raise_package_missing_error("requests", "requests")
 
 
 ###################
@@ -278,4 +279,4 @@ def check_urllib3() -> None:
 def raise_error_urllib3_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``urllib3`` package is
     missing."""
-    _raise_package_missing_error("urllib3", "urllib3")
+    raise_package_missing_error("urllib3", "urllib3")
