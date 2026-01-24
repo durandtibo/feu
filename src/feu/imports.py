@@ -1,4 +1,4 @@
-r"""Contain to check if a package or module is available."""
+r"""Contain functions to check if a package or module is available."""
 
 from __future__ import annotations
 
@@ -59,6 +59,9 @@ def is_module_available(module: str) -> bool:
 
     Args:
         module: The module to check.
+
+    Returns:
+        ``True`` if the module is available, otherwise ``False``.
 
     Example:
         ```pycon

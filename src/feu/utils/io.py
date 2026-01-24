@@ -75,7 +75,7 @@ def save_json(to_save: Any, path: Path, *, exist_ok: bool = False) -> None:
     if path.is_file() and not exist_ok:
         msg = (
             f"path ({path}) already exists. "
-            f"Please use `exist_ok=True` if you want to overwrite the setter for this name"
+            f"Please use `exist_ok=True` if you want to overwrite the file for this name"
         )
         raise FileExistsError(msg)
     path.parent.mkdir(exist_ok=True, parents=True)
