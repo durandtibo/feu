@@ -59,6 +59,9 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
     try:
         return resp.json()
     except (json.JSONDecodeError, ValueError) as exc:
+        # Note: json.JSONDecodeError is a subclass of ValueError, but we catch both
+        # for defensive programming in case requests.Response.json() raises ValueError
+        # in edge cases not covered by JSONDecodeError
         msg = f"Invalid JSON received from {url}: {exc}"
         raise RuntimeError(msg) from exc
 
