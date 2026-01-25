@@ -108,10 +108,10 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         resp = session.get(url=url, timeout=timeout, **kwargs)
         resp.raise_for_status()
     except requests.exceptions.Timeout as exc:
-        msg = "GitHub API request timed out"
+        msg = f"Request to {url} timed out after {timeout}s"
         raise RuntimeError(msg) from exc
     except requests.exceptions.RequestException as exc:
-        msg = f"Network or HTTP error: {exc}"
+        msg = f"Network or HTTP error when accessing {url}: {exc}"
         raise RuntimeError(msg) from exc
 
     return resp
