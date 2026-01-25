@@ -272,10 +272,13 @@ class PackageConfig:
         min_version, max_version = cls.get_min_and_max_versions(
             pkg_name=pkg_name, python_version=python_version
         )
+        # If version is below minimum, use the minimum version
         if min_version is not None and version < min_version:
             return min_version.base_version
+        # If version is above maximum, use the maximum version
         if max_version is not None and version > max_version:
             return max_version.base_version
+        # Version is within valid range, return as-is
         return pkg_version
 
     @classmethod
@@ -317,6 +320,7 @@ class PackageConfig:
             python_version=python_version,
         )
 
+        # Check version is within valid range using bitwise AND for combining conditions
         valid = True
         if min_version is not None:
             valid &= min_version <= version

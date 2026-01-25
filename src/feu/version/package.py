@@ -45,11 +45,17 @@ def fetch_versions(
 
         ```
     """
+    # Fetch all versions from PyPI
     versions = fetch_pypi_versions(package)
+    # Remove pre-releases, dev versions, and post-releases
     versions = filter_valid_versions(versions)
+    # Keep only stable (non-pre-release) versions
     versions = filter_stable_versions(versions)
+    # Filter versions within the specified range [lower, upper)
     versions = filter_range_versions(versions, lower=lower, upper=upper)
+    # Remove duplicate versions
     versions = unique_versions(versions)
+    # Sort versions in ascending order
     versions = sort_versions(versions)
     return tuple(versions)
 
