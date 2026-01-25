@@ -58,7 +58,8 @@ def test_base_installer_install() -> None:
 
 def test_base_installer_instantiate_with_arguments() -> None:
     installer = MockInstaller.instantiate_with_arguments(arguments="--verbose")
-    assert installer._arguments == "--verbose"
+    expected = MockInstaller(arguments="--verbose")
+    assert installer.equal(expected)
 
 
 def test_base_installer_instantiate_with_arguments_equal() -> None:

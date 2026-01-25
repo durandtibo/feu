@@ -26,9 +26,9 @@ from feu.testing import (
     xarray_available,
 )
 
-##########################################
-#     Tests for click_available         #
-##########################################
+##############################################
+#     Tests for click availability markers     #
+##############################################
 
 
 def test_click_available_is_mark_decorator() -> None:
@@ -39,9 +39,9 @@ def test_click_not_available_is_mark_decorator() -> None:
     assert isinstance(click_not_available, pytest.MarkDecorator)
 
 
-#######################################
-#     Tests for git_available        #
-#######################################
+############################################
+#     Tests for git availability markers     #
+############################################
 
 
 def test_git_available_is_mark_decorator() -> None:
@@ -97,9 +97,9 @@ def test_xarray_available_is_mark_decorator() -> None:
     assert isinstance(xarray_available, pytest.MarkDecorator)
 
 
-###########################################
-#     Tests for requests_available       #
-###########################################
+###################################################
+#     Tests for requests availability markers     #
+###################################################
 
 
 def test_requests_available_is_mark_decorator() -> None:
@@ -110,9 +110,9 @@ def test_requests_not_available_is_mark_decorator() -> None:
     assert isinstance(requests_not_available, pytest.MarkDecorator)
 
 
-###########################################
-#     Tests for urllib3_available        #
-###########################################
+##################################################
+#     Tests for urllib3 availability markers     #
+##################################################
 
 
 def test_urllib3_available_is_mark_decorator() -> None:
