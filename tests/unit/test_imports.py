@@ -18,6 +18,7 @@ from feu.imports import (
     raise_error_git_missing,
     raise_error_requests_missing,
     raise_error_urllib3_missing,
+    raise_package_missing_error,
 )
 
 ##########################################
@@ -169,3 +170,27 @@ def test_is_urllib3_available() -> None:
 def test_raise_error_urllib3_missing() -> None:
     with pytest.raises(RuntimeError, match=r"'urllib3' package is required but not installed."):
         raise_error_urllib3_missing()
+
+
+##############################################
+#     Tests for raise_package_missing_error  #
+##############################################
+
+
+def test_raise_package_missing_error_basic() -> None:
+    with pytest.raises(RuntimeError, match=r"'mypackage' package is required but not installed."):
+        raise_package_missing_error("mypackage", "mypackage")
+
+
+def test_raise_package_missing_error_different_install_cmd() -> None:
+    with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
+        raise_package_missing_error("git", "gitpython")
+
+
+def test_raise_package_missing_error_message_format() -> None:
+    try:
+        raise_package_missing_error("testpkg", "test-package")
+    except RuntimeError as e:
+        msg = str(e)
+        assert "'testpkg' package is required but not installed." in msg
+        assert "pip install test-package" in msg

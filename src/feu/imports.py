@@ -17,6 +17,7 @@ __all__ = [
     "raise_error_git_missing",
     "raise_error_requests_missing",
     "raise_error_urllib3_missing",
+    "raise_package_missing_error",
 ]
 
 from contextlib import suppress
@@ -48,7 +49,9 @@ def is_package_available(package: str) -> bool:
 
         ```
     """
-    with suppress(Exception):
+    # AttributeError is included for defensive programming, though it's not a documented
+    # exception from find_spec and may indicate a real bug if raised
+    with suppress(ModuleNotFoundError, ImportError, AttributeError):
         return find_spec(package) is not None
     return False
 
@@ -82,6 +85,24 @@ def is_module_available(module: str) -> bool:
     except (ImportError, ModuleNotFoundError):
         return False
     return True
+
+
+def raise_package_missing_error(package_name: str, install_cmd: str) -> NoReturn:
+    r"""Raise a RuntimeError for a missing package.
+
+    Args:
+        package_name: The name of the missing package.
+        install_cmd: The pip install command for the package.
+
+    Raises:
+        RuntimeError: Always raised to indicate the package is missing.
+    """
+    msg = (
+        f"'{package_name}' package is required but not installed. "
+        f"You can install '{package_name}' package with the command:\n\n"
+        f"pip install {install_cmd}\n"
+    )
+    raise RuntimeError(msg)
 
 
 #################
@@ -126,12 +147,7 @@ def check_click() -> None:
 def raise_error_click_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``click`` package is
     missing."""
-    msg = (
-        "'click' package is required but not installed. "
-        "You can install 'click' package with the command:\n\n"
-        "pip install click\n"
-    )
-    raise RuntimeError(msg)
+    raise_package_missing_error("click", "click")
 
 
 ###############
@@ -176,12 +192,7 @@ def check_git() -> None:
 def raise_error_git_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``git`` package is
     missing."""
-    msg = (
-        "'git' package is required but not installed. "
-        "You can install 'git' package with the command:\n\n"
-        "pip install gitpython\n"
-    )
-    raise RuntimeError(msg)
+    raise_package_missing_error("git", "gitpython")
 
 
 ####################
@@ -226,12 +237,7 @@ def check_requests() -> None:
 def raise_error_requests_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``requests`` package is
     missing."""
-    msg = (
-        "'requests' package is required but not installed. "
-        "You can install 'requests' package with the command:\n\n"
-        "pip install requests\n"
-    )
-    raise RuntimeError(msg)
+    raise_package_missing_error("requests", "requests")
 
 
 ###################
@@ -276,9 +282,4 @@ def check_urllib3() -> None:
 def raise_error_urllib3_missing() -> NoReturn:
     r"""Raise a RuntimeError to indicate the ``urllib3`` package is
     missing."""
-    msg = (
-        "'urllib3' package is required but not installed. "
-        "You can install 'urllib3' package with the command:\n\n"
-        "pip install urllib3\n"
-    )
-    raise RuntimeError(msg)
+    raise_package_missing_error("urllib3", "urllib3")
