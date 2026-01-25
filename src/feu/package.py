@@ -320,7 +320,7 @@ class PackageConfig:
             python_version=python_version,
         )
 
-        # Check version is within valid range using bitwise AND for combining conditions
+        # Check version is within valid range by updating the valid flag with each condition
         valid = True
         if min_version is not None:
             valid &= min_version <= version

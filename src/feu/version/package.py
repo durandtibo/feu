@@ -47,9 +47,9 @@ def fetch_versions(
     """
     # Fetch all versions from PyPI
     versions = fetch_pypi_versions(package)
-    # Remove pre-releases, dev versions, and post-releases
+    # Remove invalid version strings based on PEP 440
     versions = filter_valid_versions(versions)
-    # Keep only stable (non-pre-release) versions
+    # Keep only stable versions (filter out pre-releases, dev, and post-releases)
     versions = filter_stable_versions(versions)
     # Filter versions within the specified range [lower, upper)
     versions = filter_range_versions(versions, lower=lower, upper=upper)
