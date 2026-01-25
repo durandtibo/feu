@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["fetch_data", "fetch_response"]
 
+import json
 from typing import TYPE_CHECKING, Any
 
 from feu.imports import (
@@ -57,8 +58,8 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
     resp = fetch_response(url=url, timeout=timeout, **kwargs)
     try:
         return resp.json()
-    except ValueError as exc:
-        msg = "Invalid JSON received"
+    except (json.JSONDecodeError, ValueError) as exc:
+        msg = f"Invalid JSON received from {url}: {exc}"
         raise RuntimeError(msg) from exc
 
 
