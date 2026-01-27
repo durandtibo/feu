@@ -58,10 +58,10 @@ class PackageConfig:
         True
         >>> # Get version constraints
         >>> PackageConfig.get_config("numpy", "3.11")
-        {'min': '1.23.2', 'max': None}
+        {'min': '2.0.0', 'max': None}
         >>> # Find closest valid version
         >>> PackageConfig.find_closest_version("numpy", "1.0.0", "3.11")
-        '1.23.2'
+        '2.0.0'
 
         ```
 
@@ -266,7 +266,7 @@ class PackageConfig:
             >>> from feu.package import PackageConfig
             >>> # Get configuration for an existing package
             >>> PackageConfig.get_config(pkg_name="numpy", python_version="3.11")
-            {'min': '1.23.2', 'max': None}
+            {'min': '2.0.0', 'max': None}
             >>> # Query a non-existent configuration
             >>> PackageConfig.get_config(pkg_name="unknown_pkg", python_version="3.11")
             {}
@@ -304,7 +304,7 @@ class PackageConfig:
             ...     pkg_name="numpy",
             ...     python_version="3.11",
             ... )
-            (<Version('1.23.2')>, None)
+            (<Version('2.0.0')>, None)
 
             ```
         """
@@ -358,7 +358,7 @@ class PackageConfig:
             ...     pkg_version="1.0.2",
             ...     python_version="3.11",
             ... )
-            '1.23.2'
+            '2.0.0'
 
             ```
         """
@@ -466,7 +466,7 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
         ...     pkg_version="1.0.2",
         ...     python_version="3.11",
         ... )
-        '1.23.2'
+        '2.0.0'
 
         ```
     """
