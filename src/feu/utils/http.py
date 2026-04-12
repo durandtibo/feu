@@ -41,7 +41,7 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
         **kwargs: Optional arguments that ``requests.get`` takes.
 
     Returns:
-        dict: The parsed JSON object returned.
+        The parsed JSON object returned.
 
     Raises:
         RuntimeError: If the request times out, if a network or HTTP error occurs,
