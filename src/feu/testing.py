@@ -19,6 +19,10 @@ __all__ = [
     "requests_not_available",
     "scipy_available",
     "sklearn_available",
+    "tomli_available",
+    "tomli_not_available",
+    "tomllib_and_tomli_not_available",
+    "tomllib_or_tomli_available",
     "torch_available",
     "urllib3_available",
     "urllib3_not_available",
@@ -36,6 +40,7 @@ from feu.imports import (
     is_urllib3_available,
 )
 from feu.install import is_pip_available, is_pipx_available, is_uv_available
+from feu.utils.imports import is_tomli_available
 
 click_available: pytest.MarkDecorator = pytest.mark.skipif(
     not is_click_available(), reason="Requires click"
@@ -79,6 +84,22 @@ sklearn_available: pytest.MarkDecorator = pytest.mark.skipif(
 scipy_available: pytest.MarkDecorator = pytest.mark.skipif(
     not is_package_available("scipy"), reason="Requires scipy"
 )
+
+tomli_available: pytest.MarkDecorator = pytest.mark.skipif(
+    not is_tomli_available(), reason="Requires tomli"
+)
+tomli_not_available: pytest.MarkDecorator = pytest.mark.skipif(
+    is_tomli_available(), reason="Skip if tomli is available"
+)
+tomllib_or_tomli_available: pytest.MarkDecorator = pytest.mark.skipif(
+    not (is_package_available("tomllib") or is_tomli_available()),
+    reason="Requires tomllib or tomli",
+)
+tomllib_and_tomli_not_available: pytest.MarkDecorator = pytest.mark.skipif(
+    not (is_package_available("tomllib") or is_tomli_available()),
+    reason="Skip if tomllib or tomli is available",
+)
+
 torch_available: pytest.MarkDecorator = pytest.mark.skipif(
     not is_package_available("torch"), reason="Requires PyTorch"
 )

@@ -8,10 +8,14 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from feu.utils.imports import is_tomli_available
+
 if sys.version_info >= (3, 11):
     import tomllib
-else:  # pragma: no cover
+elif is_tomli_available():  # pragma: no cover
     import tomli as tomllib
+else:  # pragma: no cover
+    from feu.utils.fallback.tomli import tomli as tomllib
 
 from packaging.requirements import Requirement
 

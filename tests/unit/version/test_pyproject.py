@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from feu.testing import tomllib_or_tomli_available
+from feu.utils.imports import is_tomli_available
 from feu.version import PackageBounds, read_pyproject_package_bounds
 
 if TYPE_CHECKING:
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
 
 if sys.version_info >= (3, 11):
     import tomllib
-else:
+elif is_tomli_available():  # pragma: no cover
     import tomli as tomllib
 
 
@@ -112,6 +114,7 @@ def test_package_bounds_is_immutable() -> None:
 # --- project.dependencies ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_project_dependencies_lower_and_upper(
     pyproject: Path,
 ) -> None:
@@ -124,6 +127,7 @@ def test_read_pyproject_package_bounds_project_dependencies_lower_and_upper(
     ]
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_project_dependencies_lower_only(
     pyproject: Path,
 ) -> None:
@@ -132,6 +136,7 @@ def test_read_pyproject_package_bounds_project_dependencies_lower_only(
     ]
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_project_dependencies_no_bounds(
     pyproject: Path,
 ) -> None:
@@ -140,6 +145,7 @@ def test_read_pyproject_package_bounds_project_dependencies_no_bounds(
     ]
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_project_dependencies_with_extras(
     pyproject: Path,
 ) -> None:
@@ -152,6 +158,7 @@ def test_read_pyproject_package_bounds_project_dependencies_with_extras(
 # --- project.optional-dependencies ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_optional_dependencies(pyproject: Path) -> None:
     assert read_pyproject_package_bounds(pyproject, "pytest") == [
         PackageBounds(
@@ -160,6 +167,7 @@ def test_read_pyproject_package_bounds_optional_dependencies(pyproject: Path) ->
     ]
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_optional_dependencies_lower_only(
     pyproject: Path,
 ) -> None:
@@ -173,12 +181,14 @@ def test_read_pyproject_package_bounds_optional_dependencies_lower_only(
 # --- dependency-groups ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_dependency_groups(pyproject: Path) -> None:
     assert read_pyproject_package_bounds(pyproject, "mypy") == [
         PackageBounds(name="mypy", lower="1.0", upper="2.0", section="dependency-groups.dev"),
     ]
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_dependency_groups_skips_include_group(
     pyproject: Path,
 ) -> None:
@@ -186,6 +196,7 @@ def test_read_pyproject_package_bounds_dependency_groups_skips_include_group(
     assert read_pyproject_package_bounds(pyproject, "test") == []
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_dependency_groups_lower_only(
     pyproject: Path,
 ) -> None:
@@ -197,12 +208,14 @@ def test_read_pyproject_package_bounds_dependency_groups_lower_only(
 # --- name normalisation ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_case_insensitive(pyproject: Path) -> None:
     assert read_pyproject_package_bounds(pyproject, "numpy") == read_pyproject_package_bounds(
         pyproject, "NumPy"
     )
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_hyphen_underscore_equivalent(
     pyproject: Path,
 ) -> None:
@@ -214,6 +227,7 @@ def test_read_pyproject_package_bounds_hyphen_underscore_equivalent(
 # --- not found ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_package_not_found_returns_empty_list(
     pyproject: Path,
 ) -> None:
@@ -223,12 +237,14 @@ def test_read_pyproject_package_bounds_package_not_found_returns_empty_list(
 # --- accepts str and Path ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_accepts_str_path(pyproject: Path) -> None:
     assert read_pyproject_package_bounds(str(pyproject), "torch") == read_pyproject_package_bounds(
         pyproject, "torch"
     )
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_accepts_path_object(pyproject: Path) -> None:
     assert read_pyproject_package_bounds(pyproject, "torch") == [
         PackageBounds(name="torch", lower="2.0", upper=None, section="project.dependencies"),
@@ -238,11 +254,13 @@ def test_read_pyproject_package_bounds_accepts_path_object(pyproject: Path) -> N
 # --- error handling ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_file_not_found(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError, match="No such file or directory"):
         read_pyproject_package_bounds(tmp_path / "missing.toml", "numpy")
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_invalid_toml(tmp_path: Path) -> None:
     path = tmp_path / "pyproject.toml"
     path.write_text("this is not : valid [ toml")
@@ -253,6 +271,7 @@ def test_read_pyproject_package_bounds_invalid_toml(tmp_path: Path) -> None:
 # --- minimal file ---
 
 
+@tomllib_or_tomli_available
 def test_read_pyproject_package_bounds_minimal_file_returns_empty_list(
     pyproject_minimal: Path,
 ) -> None:
