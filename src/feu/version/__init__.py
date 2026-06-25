@@ -22,6 +22,7 @@ __all__ = [
     "latest_minor_versions",
     "latest_version",
     "read_pyproject_dependencies",
+    "read_pyproject_optional_dependencies",
     "read_pyproject_package_bounds",
     "sort_versions",
     "unique_versions",
@@ -49,6 +50,7 @@ from feu.version.pypi import fetch_pypi_versions
 from feu.version.pyproject import (
     PackageBounds,
     read_pyproject_dependencies,
+    read_pyproject_optional_dependencies,
     read_pyproject_package_bounds,
 )
 from feu.version.runtime import get_package_version, get_python_major_minor
