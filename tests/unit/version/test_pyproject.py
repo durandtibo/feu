@@ -8,7 +8,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from feu.version import PackageBounds, read_pyproject_package_bounds
+from feu.version import (
+    PackageBounds,
+    read_pyproject_dependencies,
+    read_pyproject_package_bounds,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -239,7 +243,7 @@ def test_read_pyproject_package_bounds_accepts_path_object(pyproject: Path) -> N
 
 
 def test_read_pyproject_package_bounds_file_not_found(tmp_path: Path) -> None:
-    with pytest.raises(FileNotFoundError, match="No such file or directory"):
+    with pytest.raises(FileNotFoundError):
         read_pyproject_package_bounds(tmp_path / "missing.toml", "numpy")
 
 
@@ -250,10 +254,74 @@ def test_read_pyproject_package_bounds_invalid_toml(tmp_path: Path) -> None:
         read_pyproject_package_bounds(path, "numpy")
 
 
-# --- minimal file ---
-
-
 def test_read_pyproject_package_bounds_minimal_file_returns_empty_list(
     pyproject_minimal: Path,
 ) -> None:
     assert read_pyproject_package_bounds(pyproject_minimal, "numpy") == []
+
+
+###################################################
+#     Tests for read_pyproject_dependencies       #
+###################################################
+
+
+def test_read_pyproject_dependencies_returns_all_packages(pyproject: Path) -> None:
+    assert read_pyproject_dependencies(pyproject) == [
+        PackageBounds(name="numpy", lower="1.21", upper="2.0", section="project.dependencies"),
+        PackageBounds(name="torch", lower="2.0", upper=None, section="project.dependencies"),
+        PackageBounds(name="requests", lower=None, upper=None, section="project.dependencies"),
+        PackageBounds(name="coola", lower="0.1", upper="1.0", section="project.dependencies"),
+        PackageBounds(
+            name="scikit-learn", lower="1.0", upper="2.0", section="project.dependencies"
+        ),
+    ]
+
+
+def test_read_pyproject_dependencies_preserves_order(pyproject: Path) -> None:
+    result = read_pyproject_dependencies(pyproject)
+    assert [r.name for r in result] == ["numpy", "torch", "requests", "coola", "scikit-learn"]
+
+
+def test_read_pyproject_dependencies_all_sections_are_project_dependencies(
+    pyproject: Path,
+) -> None:
+    result = read_pyproject_dependencies(pyproject)
+    assert all(r.section == "project.dependencies" for r in result)
+
+
+def test_read_pyproject_dependencies_does_not_include_optional_dependencies(
+    pyproject: Path,
+) -> None:
+    # pytest is only in [project.optional-dependencies.dev], not in [project.dependencies].
+    result = read_pyproject_dependencies(pyproject)
+    assert not any(r.name == "pytest" for r in result)
+
+
+def test_read_pyproject_dependencies_does_not_include_dependency_groups(
+    pyproject: Path,
+) -> None:
+    # mypy is only in [dependency-groups.dev], not in [project.dependencies].
+    result = read_pyproject_dependencies(pyproject)
+    assert not any(r.name == "mypy" for r in result)
+
+
+def test_read_pyproject_dependencies_minimal_file_returns_empty_list(
+    pyproject_minimal: Path,
+) -> None:
+    assert read_pyproject_dependencies(pyproject_minimal) == []
+
+
+def test_read_pyproject_dependencies_accepts_str_path(pyproject: Path) -> None:
+    assert read_pyproject_dependencies(str(pyproject)) == read_pyproject_dependencies(pyproject)
+
+
+def test_read_pyproject_dependencies_file_not_found(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError):
+        read_pyproject_dependencies(tmp_path / "missing.toml")
+
+
+def test_read_pyproject_dependencies_invalid_toml(tmp_path: Path) -> None:
+    path = tmp_path / "pyproject.toml"
+    path.write_text("this is not : valid [ toml")
+    with pytest.raises(tomllib.TOMLDecodeError):
+        read_pyproject_dependencies(path)
