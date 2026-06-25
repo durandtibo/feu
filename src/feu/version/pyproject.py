@@ -2,7 +2,12 @@ r"""Utilities for reading package version bounds from pyproject.toml."""
 
 from __future__ import annotations
 
-__all__ = ["PackageBounds", "read_pyproject_dependencies", "read_pyproject_package_bounds"]
+__all__ = [
+    "PackageBounds",
+    "read_pyproject_dependencies",
+    "read_pyproject_optional_dependencies",
+    "read_pyproject_package_bounds",
+]
 
 import sys
 from dataclasses import dataclass
@@ -70,6 +75,46 @@ def read_pyproject_dependencies(path: str | Path) -> list[PackageBounds]:
         bounds
         for spec in data.get("project", {}).get("dependencies", [])
         if (bounds := _parse_bounds_from_spec(spec, "project.dependencies")) is not None
+    ]
+
+
+def read_pyproject_optional_dependencies(path: str | Path) -> list[PackageBounds]:
+    """Read a ``pyproject.toml`` file and return the bounds for all
+    packages defined in ``[project.optional-dependencies]``.
+
+    All groups under ``[project.optional-dependencies]`` are included. The
+    ``section`` field of each returned ``PackageBounds`` identifies the group,
+    e.g. ``'project.optional-dependencies.dev'``.
+
+    Args:
+        path: Path to the ``pyproject.toml`` file.
+
+    Returns:
+        A list of ``PackageBounds`` instances, one per entry across all
+        optional-dependency groups, in the order they appear in the file.
+        Returns an empty list if the section is absent or empty.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        tomllib.TOMLDecodeError: If the file is not valid TOML.
+
+    Example:
+        ```python
+        bounds = read_pyproject_optional_dependencies("pyproject.toml")
+        for b in bounds:
+            print(b.name, b.section, b.lower, b.upper)
+        ```
+    """
+    path = Path(path)
+    with path.open("rb") as f:
+        data = tomllib.load(f)
+
+    return [
+        bounds
+        for group, specs in data.get("project", {}).get("optional-dependencies", {}).items()
+        for spec in specs
+        if (bounds := _parse_bounds_from_spec(spec, f"project.optional-dependencies.{group}"))
+        is not None
     ]
 
 

@@ -11,6 +11,7 @@ import pytest
 from feu.version import (
     PackageBounds,
     read_pyproject_dependencies,
+    read_pyproject_optional_dependencies,
     read_pyproject_package_bounds,
 )
 
@@ -325,3 +326,85 @@ def test_read_pyproject_dependencies_invalid_toml(tmp_path: Path) -> None:
     path.write_text("this is not : valid [ toml")
     with pytest.raises(tomllib.TOMLDecodeError):
         read_pyproject_dependencies(path)
+
+
+##########################################################
+#     Tests for read_pyproject_optional_dependencies     #
+##########################################################
+
+
+def test_read_pyproject_optional_dependencies_returns_all_packages(pyproject: Path) -> None:
+    assert read_pyproject_optional_dependencies(pyproject) == [
+        PackageBounds(
+            name="pytest", lower="7.0", upper="9.0", section="project.optional-dependencies.dev"
+        ),
+        PackageBounds(
+            name="numpy", lower="1.24", upper=None, section="project.optional-dependencies.dev"
+        ),
+        PackageBounds(
+            name="scipy", lower="1.0", upper=None, section="project.optional-dependencies.extra"
+        ),
+    ]
+
+
+def test_read_pyproject_optional_dependencies_preserves_order(pyproject: Path) -> None:
+    result = read_pyproject_optional_dependencies(pyproject)
+    assert [r.name for r in result] == ["pytest", "numpy", "scipy"]
+
+
+def test_read_pyproject_optional_dependencies_all_sections_are_optional_dependencies(
+    pyproject: Path,
+) -> None:
+    result = read_pyproject_optional_dependencies(pyproject)
+    assert all(r.section.startswith("project.optional-dependencies.") for r in result)
+
+
+def test_read_pyproject_optional_dependencies_does_not_include_project_dependencies(
+    pyproject: Path,
+) -> None:
+    # torch is only in [project.dependencies], not in [project.optional-dependencies].
+    result = read_pyproject_optional_dependencies(pyproject)
+    assert not any(r.name == "torch" for r in result)
+
+
+def test_read_pyproject_optional_dependencies_does_not_include_dependency_groups(
+    pyproject: Path,
+) -> None:
+    # mypy is only in [dependency-groups.dev], not in [project.optional-dependencies].
+    result = read_pyproject_optional_dependencies(pyproject)
+    assert not any(r.name == "mypy" for r in result)
+
+
+def test_read_pyproject_optional_dependencies_section_reflects_group(
+    pyproject: Path,
+) -> None:
+    result = read_pyproject_optional_dependencies(pyproject)
+    sections = {r.section for r in result}
+    assert sections == {
+        "project.optional-dependencies.dev",
+        "project.optional-dependencies.extra",
+    }
+
+
+def test_read_pyproject_optional_dependencies_minimal_file_returns_empty_list(
+    pyproject_minimal: Path,
+) -> None:
+    assert read_pyproject_optional_dependencies(pyproject_minimal) == []
+
+
+def test_read_pyproject_optional_dependencies_accepts_str_path(pyproject: Path) -> None:
+    assert read_pyproject_optional_dependencies(
+        str(pyproject)
+    ) == read_pyproject_optional_dependencies(pyproject)
+
+
+def test_read_pyproject_optional_dependencies_file_not_found(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError):
+        read_pyproject_optional_dependencies(tmp_path / "missing.toml")
+
+
+def test_read_pyproject_optional_dependencies_invalid_toml(tmp_path: Path) -> None:
+    path = tmp_path / "pyproject.toml"
+    path.write_text("this is not : valid [ toml")
+    with pytest.raises(tomllib.TOMLDecodeError):
+        read_pyproject_optional_dependencies(path)
