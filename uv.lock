@@ -368,6 +368,7 @@ version = "0.6.3a0"
 source = { editable = "." }
 dependencies = [
     { name = "packaging" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 
@@ -381,9 +382,6 @@ git = [
 requests = [
     { name = "requests" },
     { name = "urllib3" },
-]
-tomli = [
-    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.dev-dependencies]
@@ -414,11 +412,11 @@ requires-dist = [
     { name = "gitpython", marker = "extra == 'git'", specifier = ">=3.1.41,<4.0" },
     { name = "packaging", specifier = ">=21.0,<27.0" },
     { name = "requests", marker = "extra == 'requests'", specifier = ">=2.30.0,<3.0" },
-    { name = "tomli", marker = "python_full_version < '3.11' and extra == 'tomli'" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'", specifier = ">=4.10,<5.0" },
     { name = "urllib3", marker = "extra == 'requests'", specifier = ">=2.0,<3.0" },
 ]
-provides-extras = ["cli", "git", "requests", "tomli"]
+provides-extras = ["cli", "git", "requests"]
 
 [package.metadata.requires-dev]
 dev = [

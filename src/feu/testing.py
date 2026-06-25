@@ -79,6 +79,7 @@ sklearn_available: pytest.MarkDecorator = pytest.mark.skipif(
 scipy_available: pytest.MarkDecorator = pytest.mark.skipif(
     not is_package_available("scipy"), reason="Requires scipy"
 )
+
 torch_available: pytest.MarkDecorator = pytest.mark.skipif(
     not is_package_available("torch"), reason="Requires PyTorch"
 )
