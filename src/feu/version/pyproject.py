@@ -2,7 +2,7 @@ r"""Utilities for reading package version bounds from pyproject.toml."""
 
 from __future__ import annotations
 
-__all__ = ["PackageBounds", "read_pyproject_package_bounds"]
+__all__ = ["PackageBounds", "read_pyproject_dependencies", "read_pyproject_package_bounds"]
 
 import sys
 from dataclasses import dataclass
@@ -37,6 +37,40 @@ class PackageBounds:
     lower: str | None
     upper: str | None
     section: str
+
+
+def read_pyproject_dependencies(path: str | Path) -> list[PackageBounds]:
+    """Read a ``pyproject.toml`` file and return the bounds for all
+    packages defined in ``[project.dependencies]``.
+
+    Args:
+        path: Path to the ``pyproject.toml`` file.
+
+    Returns:
+        A list of ``PackageBounds`` instances, one per entry in
+        ``[project.dependencies]``. Returns an empty list if the section
+        is absent or empty.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        tomllib.TOMLDecodeError: If the file is not valid TOML.
+
+    Example:
+        ```python
+        bounds = read_pyproject_dependencies("pyproject.toml")
+        for b in bounds:
+            print(b.name, b.lower, b.upper)
+        ```
+    """
+    path = Path(path)
+    with path.open("rb") as f:
+        data = tomllib.load(f)
+
+    return [
+        bounds
+        for spec in data.get("project", {}).get("dependencies", [])
+        if (bounds := _parse_bounds_from_spec(spec, "project.dependencies")) is not None
+    ]
 
 
 def read_pyproject_package_bounds(
@@ -116,6 +150,28 @@ def _normalize_name(name: str) -> str:
     return name.lower().replace("-", "_")
 
 
+def _parse_bounds_from_spec(spec: str, section: str) -> PackageBounds:
+    """Parse a PEP 508 dependency specifier and return its bounds.
+
+    Args:
+        spec: A PEP 508 dependency specifier string.
+        section: The section label to include in the returned ``PackageBounds``.
+
+    Returns:
+        A ``PackageBounds`` instance for the given specifier.
+    """
+    req = Requirement(spec)
+    lower = next(
+        (s.version for s in req.specifier if s.operator in (">=", ">")),
+        None,
+    )
+    upper = next(
+        (s.version for s in req.specifier if s.operator in ("<", "<=")),
+        None,
+    )
+    return PackageBounds(name=req.name, lower=lower, upper=upper, section=section)
+
+
 def _parse_bounds(
     spec: str,
     normalized_package: str,
@@ -133,16 +189,5 @@ def _parse_bounds(
         A ``PackageBounds`` instance if the specifier matches the package,
         ``None`` otherwise.
     """
-    req = Requirement(spec)
-    if _normalize_name(req.name) != normalized_package:
-        return None
-
-    lower = next(
-        (s.version for s in req.specifier if s.operator in (">=", ">")),
-        None,
-    )
-    upper = next(
-        (s.version for s in req.specifier if s.operator in ("<", "<=")),
-        None,
-    )
-    return PackageBounds(name=req.name, lower=lower, upper=upper, section=section)
+    bounds = _parse_bounds_from_spec(spec, section)
+    return bounds if _normalize_name(bounds.name) == normalized_package else None
