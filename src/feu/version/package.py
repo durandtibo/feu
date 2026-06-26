@@ -9,6 +9,7 @@ __all__ = [
     "fetch_latest_minor_versions_map",
     "fetch_latest_stable_version",
     "fetch_latest_version",
+    "fetch_sampled_latest_minor_versions",
     "fetch_versions",
 ]
 
@@ -17,6 +18,8 @@ from typing import TYPE_CHECKING
 
 from feu.version.comparison import latest_version, sort_versions
 from feu.version.filtering import (
+    filter_every_n_versions,
+    filter_last_n_versions,
     filter_range_versions,
     filter_stable_versions,
     filter_valid_versions,
@@ -117,6 +120,49 @@ def fetch_latest_minor_versions(
     """
     versions = fetch_versions(package, lower=lower, upper=upper)
     return tuple(latest_minor_versions(versions))
+
+
+def fetch_sampled_latest_minor_versions(
+    package: str, lower: str | None = None, upper: str | None = None, n: int = 1
+) -> tuple[str, ...]:
+    r"""Get a sampled subset of the latest minor versions for a given
+    package.
+
+    Fetches the latest version for each minor release, then returns every
+    ``n``-th version plus the most recent one, deduplicated and sorted.
+    This is useful for generating a representative but not exhaustive set
+    of versions to test against.
+
+    Args:
+        package: The package name.
+        lower: The lower version bound (inclusive).
+            If ``None``, no lower limit is applied.
+        upper: The upper version bound (exclusive).
+            If ``None``, no upper limit is applied.
+        n: The sampling stride. Every ``n``-th version is kept, along
+            with the most recent version. Defaults to ``1``, which
+            keeps all versions.
+
+    Returns:
+        A sorted tuple of sampled version strings.
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_sampled_latest_minor_versions
+        >>> versions = fetch_sampled_latest_minor_versions(
+        ...     "requests", lower="2.28", n=2
+        ... )  # doctest: +SKIP
+
+        ```
+    """
+    versions = fetch_latest_minor_versions(package=package, lower=lower, upper=upper)
+    return tuple(
+        sort_versions(
+            unique_versions(
+                filter_every_n_versions(versions, n=n) + filter_last_n_versions(versions, n=1)
+            )
+        )
+    )
 
 
 def fetch_latest_version(package: str) -> str:
