@@ -48,7 +48,7 @@ def test_get_tags_empty() -> None:
     assert result == []
 
 
-@patch("feu.imports.is_git_available", lambda: False)
+@patch("feu.imports.git.is_git_available", lambda: False)
 def test_get_tags_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_tags()
@@ -80,7 +80,7 @@ def test_get_last_tag_name_empty() -> None:
         get_last_tag_name()
 
 
-@patch("feu.imports.is_git_available", lambda: False)
+@patch("feu.imports.git.is_git_available", lambda: False)
 def test_get_last_tag_name_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_last_tag_name()
@@ -126,7 +126,7 @@ def test_get_last_version_tag_name_empty() -> None:
         get_last_version_tag_name()
 
 
-@patch("feu.imports.is_git_available", lambda: False)
+@patch("feu.imports.git.is_git_available", lambda: False)
 def test_get_last_version_tag_name_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_last_version_tag_name()

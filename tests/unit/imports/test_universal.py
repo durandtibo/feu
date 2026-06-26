@@ -63,13 +63,13 @@ def test_module_available_false_submodule() -> None:
 
 
 def test_check_package_exist() -> None:
-    with patch(f"{MODULE}.package_available", lambda name: name != "missing"):
+    with patch(f"{MODULE}.is_package_available", lambda name: name != "missing"):
         check_package("exist")
 
 
 def test_check_package_missing() -> None:
     with (
-        patch(f"{MODULE}.package_available", lambda name: name != "missing"),
+        patch(f"{MODULE}.is_package_available", lambda name: name != "missing"),
         pytest.raises(RuntimeError, match=r"'missing' package is required but not installed."),
     ):
         check_package("missing")
@@ -81,7 +81,7 @@ def test_check_package_missing_with_command() -> None:
         "You can install 'missing' package with the command:\n\npip install missing"
     )
     with (
-        patch(f"{MODULE}.package_available", lambda name: name != "missing"),
+        patch(f"{MODULE}.is_package_available", lambda name: name != "missing"),
         pytest.raises(RuntimeError, match=msg),
     ):
         check_package("missing", command="pip install missing")

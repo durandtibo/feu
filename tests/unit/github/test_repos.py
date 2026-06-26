@@ -17,6 +17,9 @@ else:
     Response = Mock()
 
 
+MODULE = "feu.github.repos"
+
+
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
     fetch_github_repos.cache_clear()
@@ -52,7 +55,7 @@ def test_fetch_github_repos_single_page(
     """Test fetching repos with a single page of results."""
     mock_response.json.return_value = sample_repos
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response):
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response):
         result = fetch_github_repos("testowner")
 
     assert result == (
@@ -78,7 +81,7 @@ def test_fetch_github_repos_multiple_pages(sample_repos: list[dict[str, Any]]) -
     second_response.json.return_value = sample_repos[1:]
     second_response.headers = {}
 
-    with patch("feu.github.repos.fetch_response", side_effect=[first_response, second_response]):
+    with patch(f"{MODULE}.fetch_response", side_effect=[first_response, second_response]):
         result = fetch_github_repos("testowner")
 
     assert result == (
@@ -95,7 +98,7 @@ def test_fetch_github_repos_no_next_link(sample_repos: list[dict[str, Any]]) -> 
     response.json.return_value = sample_repos[:1]
     response.headers = {"Link": '<https://api.github.com/users/owner/repos?page=1>; rel="first"'}
 
-    with patch("feu.github.repos.fetch_response", return_value=response):
+    with patch(f"{MODULE}.fetch_response", return_value=response):
         result = fetch_github_repos("testowner")
 
     assert result == ({"id": 1, "name": "repo1", "full_name": "owner/repo1"},)
@@ -109,7 +112,7 @@ def test_fetch_github_repos_with_github_token(
     """Test that GitHub token is used when available."""
     mock_response.json.return_value = sample_repos
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response) as mock_fetch:
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response) as mock_fetch:
         fetch_github_repos("testowner")
 
         call_args = mock_fetch.call_args
@@ -127,7 +130,7 @@ def test_fetch_github_repos_without_github_token(
     missing."""
     mock_response.json.return_value = sample_repos
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response) as mock_fetch:
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response) as mock_fetch:
         fetch_github_repos("testowner")
 
         call_args = mock_fetch.call_args
@@ -142,7 +145,7 @@ def test_fetch_github_repos_api_error() -> None:
     error_response.status_code = 404
     error_response.json.return_value = {"message": "Not Found"}
 
-    with patch("feu.github.repos.fetch_response", return_value=error_response):
+    with patch(f"{MODULE}.fetch_response", return_value=error_response):
         result = fetch_github_repos("nonexistent")
 
     assert result == ()
@@ -155,7 +158,7 @@ def test_fetch_github_repos_rate_limit_error() -> None:
     error_response.status_code = 403
     error_response.json.return_value = {"message": "API rate limit exceeded"}
 
-    with patch("feu.github.repos.fetch_response", return_value=error_response):
+    with patch(f"{MODULE}.fetch_response", return_value=error_response):
         result = fetch_github_repos("testowner")
 
     assert result == ()
@@ -166,7 +169,7 @@ def test_fetch_github_repos_empty_results(mock_response: Response) -> None:
     """Test fetching repos when user has no repositories."""
     mock_response.json.return_value = []
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response):
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response):
         result = fetch_github_repos("emptyowner")
 
     assert result == ()
@@ -179,7 +182,7 @@ def test_fetch_github_repos_correct_url_and_params(
     """Test that correct URL and parameters are used."""
     mock_response.json.return_value = sample_repos
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response) as mock_fetch:
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response) as mock_fetch:
         fetch_github_repos("testowner")
 
         call_args = mock_fetch.call_args
@@ -194,7 +197,7 @@ def test_fetch_github_repos_headers(
     """Test that correct headers are set."""
     mock_response.json.return_value = sample_repos
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response) as mock_fetch:
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response) as mock_fetch:
         fetch_github_repos("testowner")
 
         call_args = mock_fetch.call_args
@@ -219,7 +222,7 @@ def test_fetch_github_repos_pagination_link_parsing(sample_repos: list[dict[str,
     second_response.headers = {}
 
     with patch(
-        "feu.github.repos.fetch_response", side_effect=[first_response, second_response]
+        f"{MODULE}.fetch_response", side_effect=[first_response, second_response]
     ) as mock_fetch:
         result = fetch_github_repos("testowner")
 
@@ -238,7 +241,7 @@ def test_fetch_github_repos_caching(
     """Test that lru_cache is working."""
     mock_response.json.return_value = sample_repos
 
-    with patch("feu.github.repos.fetch_response", return_value=mock_response) as mock_fetch:
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response) as mock_fetch:
         # First call
         result1 = fetch_github_repos("testowner")
         # Second call with same owner
@@ -250,7 +253,7 @@ def test_fetch_github_repos_caching(
         assert result1 is result2  # Same object due to caching
 
 
-@patch("feu.imports.is_requests_available", lambda: False)
+@patch("feu.imports.requests.is_requests_available", lambda: False)
 def test_fetch_github_repos_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_github_repos(owner="testowner")
