@@ -11,6 +11,7 @@ from feu.version import (
     fetch_latest_minor_versions_map,
     fetch_latest_stable_version,
     fetch_latest_version,
+    fetch_sampled_latest_minor_versions,
     fetch_versions,
 )
 
@@ -149,6 +150,102 @@ def test_fetch_latest_stable_version_random() -> None:
     mock = Mock(return_value=("2.1.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"))
     with patch(f"{MODULE}.fetch_pypi_versions", mock):
         assert fetch_latest_stable_version("my_package") == "2.1.0"
+
+
+##########################################################
+#     Tests for fetch_sampled_latest_minor_versions      #
+##########################################################
+
+
+def test_fetch_sampled_latest_minor_versions_default_n() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests") == (
+            "1.0.0",
+            "1.1.0",
+            "1.2.0",
+            "1.3.0",
+            "1.4.0",
+            "1.5.0",
+        )
+
+
+def test_fetch_sampled_latest_minor_versions_n2() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests", n=2) == (
+            "1.0.0",
+            "1.2.0",
+            "1.4.0",
+            "1.5.0",
+        )
+
+
+def test_fetch_sampled_latest_minor_versions_n3() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests", n=3) == ("1.0.0", "1.3.0", "1.5.0")
+
+
+def test_fetch_sampled_latest_minor_versions_n5() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests", n=5) == ("1.0.0", "1.5.0")
+
+
+def test_fetch_sampled_latest_minor_versions_n_larger_than_versions() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests", n=100) == ("1.0.0", "1.5.0")
+
+
+def test_fetch_sampled_latest_minor_versions_always_includes_last_version() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert "1.5.0" in fetch_sampled_latest_minor_versions("requests", n=100)
+
+
+def test_fetch_sampled_latest_minor_versions_empty_versions() -> None:
+    mock = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests") == ()
+
+
+def test_fetch_sampled_latest_minor_versions_single_version() -> None:
+    mock = Mock(return_value=("2.0.0",))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests") == ("2.0.0",)
+
+
+def test_fetch_sampled_latest_minor_versions_with_lower_bound() -> None:
+    mock = Mock(return_value=("1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions("requests", lower="1.2", n=2) == (
+            "1.2.0",
+            "1.4.0",
+            "1.5.0",
+        )
+
+
+def test_fetch_sampled_latest_minor_versions_passes_lower_bound() -> None:
+    mock = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        fetch_sampled_latest_minor_versions("requests", lower="1.2")
+    mock.assert_called_once_with(package="requests", lower="1.2", upper=None)
+
+
+def test_fetch_sampled_latest_minor_versions_passes_upper_bound() -> None:
+    mock = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        fetch_sampled_latest_minor_versions("requests", upper="2.0")
+    mock.assert_called_once_with(package="requests", lower=None, upper="2.0")
+
+
+def test_fetch_sampled_latest_minor_versions_passes_lower_and_upper_bounds() -> None:
+    mock = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        fetch_sampled_latest_minor_versions("requests", lower="1.2", upper="2.0")
+    mock.assert_called_once_with(package="requests", lower="1.2", upper="2.0")
 
 
 ##################################################

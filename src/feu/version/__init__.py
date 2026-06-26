@@ -12,6 +12,7 @@ __all__ = [
     "fetch_latest_stable_version",
     "fetch_latest_version",
     "fetch_pypi_versions",
+    "fetch_sampled_latest_minor_versions",
     "fetch_versions",
     "filter_every_n_versions",
     "filter_last_n_versions",
@@ -55,6 +56,7 @@ from feu.version.package import (
     fetch_latest_minor_versions_map,
     fetch_latest_stable_version,
     fetch_latest_version,
+    fetch_sampled_latest_minor_versions,
     fetch_versions,
 )
 from feu.version.pypi import fetch_pypi_versions
