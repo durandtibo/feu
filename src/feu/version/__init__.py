@@ -30,6 +30,7 @@ __all__ = [
     "unique_versions",
 ]
 
+from feu.version.bound import PackageBounds
 from feu.version.comparison import compare_version, latest_version, sort_versions
 from feu.version.filtering import (
     filter_every_n_versions,
@@ -52,7 +53,6 @@ from feu.version.package import (
 )
 from feu.version.pypi import fetch_pypi_versions
 from feu.version.pyproject import (
-    PackageBounds,
     read_pyproject_dependencies,
     read_pyproject_optional_dependencies,
     read_pyproject_package_bounds,
