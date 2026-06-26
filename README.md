@@ -71,8 +71,9 @@ packages and their versions across different Python environments.
 ### Quick Example
 
 ```python
-from feu import is_package_available, get_package_version
+from feu.imports import is_package_available
 from feu.package import find_closest_version
+from feu.version import get_package_version
 
 # Check if a package is available
 if is_package_available("numpy"):
