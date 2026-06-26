@@ -267,13 +267,8 @@ def test_fetch_latest_major_versions_map_single_package() -> None:
 
 
 def test_fetch_latest_major_versions_map_multiple_packages() -> None:
-    def side_effect(name: str, lower: str | None) -> Any:
-        return iter(
-            {
-                "numpy": ["1.21.6", "1.22.4"],
-                "torch": ["2.0.1", "2.1.0"],
-            }[name]
-        )
+    def side_effect(name: str, lower: str | None) -> Any:  # noqa: ARG001
+        return iter({"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}[name])
 
     with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
         result = fetch_latest_major_versions_map(
