@@ -41,7 +41,7 @@ def check_urllib3() -> None:
         raise_urllib3_missing_error()
 
 
-@lru_cache
+@lru_cache(1)
 def is_urllib3_available() -> bool:
     r"""Indicate if the ``urllib3`` package is installed or not.
 

@@ -41,7 +41,7 @@ def check_requests() -> None:
         raise_requests_missing_error()
 
 
-@lru_cache
+@lru_cache(1)
 def is_requests_available() -> bool:
     r"""Indicate if the ``requests`` package is installed or not.
 
