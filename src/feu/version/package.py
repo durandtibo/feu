@@ -11,6 +11,8 @@ __all__ = [
 ]
 
 
+from typing import TYPE_CHECKING
+
 from feu.version.comparison import latest_version, sort_versions
 from feu.version.filtering import (
     filter_range_versions,
@@ -21,6 +23,11 @@ from feu.version.filtering import (
     unique_versions,
 )
 from feu.version.pypi import fetch_pypi_versions
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from feu.version import PackageBounds
 
 
 def fetch_versions(
@@ -151,3 +158,38 @@ def fetch_latest_stable_version(package: str) -> str:
     versions = filter_valid_versions(versions)
     versions = filter_stable_versions(versions)
     return latest_version(versions)
+
+
+def fetch_latest_minor_versions_map(
+    packages: Sequence[PackageBounds],
+) -> dict[str, list[str]]:
+    """Fetch the latest minor versions for a sequence of packages.
+
+    For each ``PackageBounds`` in ``packages``, calls
+    ``fetch_latest_minor_versions`` with the package name and lower bound,
+    and collects the results into a dictionary.
+
+    If a package appears more than once in ``packages`` (e.g. because it
+    was found in multiple sections), the last entry wins.
+
+    Args:
+        packages: A sequence of ``PackageBounds`` instances, typically
+            obtained from ``read_pyproject_dependencies`` or
+            ``read_pyproject_optional_dependencies``.
+
+    Returns:
+        A dictionary mapping each package name to the list of latest minor
+        version strings returned by ``fetch_latest_minor_versions``.
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_latest_minor_versions_map, read_pyproject_dependencies
+        >>> bounds = read_pyproject_dependencies("pyproject.toml")  # doctest: +SKIP
+        >>> versions = fetch_latest_minor_versions_map(bounds)  # doctest: +SKIP
+
+        ```
+    """
+    return {
+        bounds.name: list(fetch_latest_minor_versions(bounds.name, lower=bounds.lower))
+        for bounds in packages
+    }
