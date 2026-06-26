@@ -36,7 +36,7 @@ def check_click() -> None:
         raise_click_missing_error()
 
 
-@lru_cache
+@lru_cache(1)
 def is_click_available() -> bool:
     r"""Indicate if the ``click`` package is installed or not.
 

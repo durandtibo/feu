@@ -36,7 +36,7 @@ def check_git() -> None:
         raise_git_missing_error()
 
 
-@lru_cache
+@lru_cache(1)
 def is_git_available() -> bool:
     r"""Indicate if the ``git`` package is installed or not.
 
