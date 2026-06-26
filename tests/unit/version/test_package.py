@@ -333,12 +333,12 @@ def test_fetch_latest_major_versions_map_single_package() -> None:
         f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.21.6", "1.22.4"])
     ) as mock:
         result = fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21")])
-    mock.assert_called_once_with("numpy", lower="1.21")
+    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
     assert result == {"numpy": ["1.21.6", "1.22.4"]}
 
 
 def test_fetch_latest_major_versions_map_multiple_packages() -> None:
-    def side_effect(name: str, lower: str | None) -> Any:  # noqa: ARG001
+    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
         return iter({"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}[name])
 
     with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
@@ -349,29 +349,26 @@ def test_fetch_latest_major_versions_map_multiple_packages() -> None:
             ]
         )
 
-    assert result == {
-        "numpy": ["1.21.6", "1.22.4"],
-        "torch": ["2.0.1", "2.1.0"],
-    }
+    assert result == {"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}
 
 
 def test_fetch_latest_major_versions_map_passes_lower_bound() -> None:
     with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
         fetch_latest_major_versions_map([make_bounds("numpy", lower="1.24")])
-    mock.assert_called_once_with("numpy", lower="1.24")
+    mock.assert_called_once_with("numpy", lower="1.24", include_lower_bound=False)
 
 
 def test_fetch_latest_major_versions_map_passes_none_lower_bound() -> None:
     with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
         fetch_latest_major_versions_map([make_bounds("numpy", lower=None)])
-    mock.assert_called_once_with("numpy", lower=None)
+    mock.assert_called_once_with("numpy", lower=None, include_lower_bound=False)
 
 
 def test_fetch_latest_major_versions_map_upper_bound_is_ignored() -> None:
     # upper is present in PackageBounds but not passed to fetch_latest_major_versions.
     with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.21.6"])) as mock:
         fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21", upper="2.0")])
-    mock.assert_called_once_with("numpy", lower="1.21")
+    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
 
 
 def test_fetch_latest_major_versions_map_returns_list_not_iterator() -> None:
@@ -390,7 +387,7 @@ def test_fetch_latest_major_versions_map_duplicate_package_last_wins() -> None:
     # If the same package name appears twice, the last entry overwrites the first.
     calls: list[tuple[str, str | None]] = []
 
-    def side_effect(name: str, lower: str | None) -> Any:
+    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
         calls.append((name, lower))
         return iter(["1.21.6"] if lower == "1.21" else ["1.24.0"])
 
@@ -408,12 +405,44 @@ def test_fetch_latest_major_versions_map_duplicate_package_last_wins() -> None:
 
 def test_fetch_latest_major_versions_map_preserves_package_names() -> None:
     with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.0", "2.0"])):
+        result = fetch_latest_major_versions_map([make_bounds("scikit-learn", lower="1.0")])
+    assert "scikit-learn" in result
+
+
+def test_fetch_latest_major_versions_map_include_lower_bound() -> None:
+    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
+        return iter(
+            {
+                "numpy": ["1.21.0", "1.21.6", "2.0.0"],
+                "torch": ["2.0.0", "2.0.1"],
+            }[name]
+        )
+
+    with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
         result = fetch_latest_major_versions_map(
             [
-                make_bounds("scikit-learn", lower="1.0"),
-            ]
+                make_bounds("numpy", lower="1.21"),
+                make_bounds("torch", lower="2.0"),
+            ],
+            include_lower_bound=True,
         )
-    assert "scikit-learn" in result
+
+    assert result == {"numpy": ["1.21.0", "1.21.6", "2.0.0"], "torch": ["2.0.0", "2.0.1"]}
+
+
+def test_fetch_latest_major_versions_map_passes_include_lower_bound() -> None:
+    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
+        fetch_latest_major_versions_map(
+            [make_bounds("numpy", lower="1.21")],
+            include_lower_bound=True,
+        )
+    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=True)
+
+
+def test_fetch_latest_major_versions_map_passes_include_lower_bound_false_by_default() -> None:
+    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
+        fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21")])
+    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
 
 
 ##################################################
@@ -446,10 +475,7 @@ def test_fetch_latest_minor_versions_map_multiple_packages() -> None:
             ]
         )
 
-    assert result == {
-        "numpy": ["1.21.6", "1.22.4"],
-        "torch": ["2.0.1", "2.1.0"],
-    }
+    assert result == {"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}
 
 
 def test_fetch_latest_minor_versions_map_passes_lower_bound() -> None:
@@ -531,10 +557,7 @@ def test_fetch_latest_minor_versions_map_include_lower_bound() -> None:
             include_lower_bound=True,
         )
 
-    assert result == {
-        "numpy": ["1.21.0", "1.21.6", "1.22.4"],
-        "torch": ["2.0.0", "2.0.1"],
-    }
+    assert result == {"numpy": ["1.21.0", "1.21.6", "1.22.4"], "torch": ["2.0.0", "2.0.1"]}
 
 
 def test_fetch_latest_minor_versions_map_passes_include_lower_bound() -> None:
