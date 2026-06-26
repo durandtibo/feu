@@ -126,7 +126,7 @@ def test_fetch_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> 
         fetch_github_metadata(owner="owner", repo="repo")
 
 
-@patch("feu.imports.is_requests_available", lambda: False)
+@patch("feu.imports.requests.is_requests_available", lambda: False)
 def test_fetch_github_metadata_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_github_metadata(owner="my_name", repo="my_package")

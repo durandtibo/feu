@@ -6,17 +6,17 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.utils.imports import (
+from feu.imports import (
     check_package,
     decorator_package_available,
-    module_available,
-    package_available,
+    is_module_available,
+    is_package_available,
     raise_package_missing_error,
 )
 
 logger = logging.getLogger(__name__)
 
-MODULE = "feu.utils.imports.universal"
+MODULE = "feu.imports.universal"
 
 
 def my_function(n: int = 0) -> int:
@@ -29,15 +29,15 @@ def my_function(n: int = 0) -> int:
 
 
 def test_package_available_true() -> None:
-    assert package_available("os")
+    assert is_package_available("os")
 
 
 def test_package_available_false() -> None:
-    assert not package_available("missing_package")
+    assert not is_package_available("missing_package")
 
 
 def test_package_available_false_subpackage() -> None:
-    assert not package_available("missing.package")
+    assert not is_package_available("missing.package")
 
 
 ######################################
@@ -46,15 +46,15 @@ def test_package_available_false_subpackage() -> None:
 
 
 def test_module_available_true() -> None:
-    assert module_available("os")
+    assert is_module_available("os")
 
 
 def test_module_available_false() -> None:
-    assert not module_available("os.missing")
+    assert not is_module_available("os.missing")
 
 
 def test_module_available_false_submodule() -> None:
-    assert not module_available("missing.module")
+    assert not is_module_available("missing.module")
 
 
 ###################################
@@ -63,13 +63,13 @@ def test_module_available_false_submodule() -> None:
 
 
 def test_check_package_exist() -> None:
-    with patch(f"{MODULE}.package_available", lambda name: name != "missing"):
+    with patch(f"{MODULE}.is_package_available", lambda name: name != "missing"):
         check_package("exist")
 
 
 def test_check_package_missing() -> None:
     with (
-        patch(f"{MODULE}.package_available", lambda name: name != "missing"),
+        patch(f"{MODULE}.is_package_available", lambda name: name != "missing"),
         pytest.raises(RuntimeError, match=r"'missing' package is required but not installed."),
     ):
         check_package("missing")
@@ -81,7 +81,7 @@ def test_check_package_missing_with_command() -> None:
         "You can install 'missing' package with the command:\n\npip install missing"
     )
     with (
-        patch(f"{MODULE}.package_available", lambda name: name != "missing"),
+        patch(f"{MODULE}.is_package_available", lambda name: name != "missing"),
         pytest.raises(RuntimeError, match=msg),
     ):
         check_package("missing", command="pip install missing")

@@ -5,8 +5,8 @@ from __future__ import annotations
 __all__ = [
     "check_package",
     "decorator_package_available",
-    "module_available",
-    "package_available",
+    "is_module_available",
+    "is_package_available",
     "raise_package_missing_error",
 ]
 
@@ -23,7 +23,7 @@ F = TypeVar("F", bound="Callable[..., Any]")
 
 
 @lru_cache
-def package_available(name: str) -> bool:
+def is_package_available(name: str) -> bool:
     r"""Indicate if a package is available or not.
 
     Args:
@@ -34,10 +34,10 @@ def package_available(name: str) -> bool:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import package_available
-        >>> package_available("os")
+        >>> from feu.imports import is_package_available
+        >>> is_package_available("os")
         True
-        >>> package_available("missing_package")
+        >>> is_package_available("missing_package")
         False
 
         ```
@@ -48,7 +48,7 @@ def package_available(name: str) -> bool:
 
 
 @lru_cache
-def module_available(name: str) -> bool:
+def is_module_available(name: str) -> bool:
     r"""Indicate if a module is available or not.
 
     Args:
@@ -59,12 +59,12 @@ def module_available(name: str) -> bool:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import module_available
-        >>> module_available("os")
+        >>> from feu.imports import is_module_available
+        >>> is_module_available("os")
         True
-        >>> module_available("os.missing")
+        >>> is_module_available("os.missing")
         False
-        >>> module_available("missing.module")
+        >>> is_module_available("missing.module")
         False
 
         ```
@@ -87,12 +87,12 @@ def check_package(package: str, command: str | None = None) -> None:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import check_package
+        >>> from feu.imports import check_package
         >>> check_package("os")
 
         ```
     """
-    if not package_available(package):
+    if not is_package_available(package):
         msg = f"'{package}' package is required but not installed."
         if command is not None:
             msg += f" You can install '{package}' package with the command:\n\n{command}"
@@ -116,7 +116,7 @@ def decorator_package_available(fn: F, condition: Callable[[], bool]) -> F:
         ```pycon
         >>> from functools import partial
         >>> from feu.imports import is_git_available
-        >>> from feu.utils.imports import decorator_package_available
+        >>> from feu.imports import decorator_package_available
         >>> decorator = partial(decorator_package_available, condition=is_git_available)
         >>> @decorator
         ... def my_function(n: int = 0) -> int:

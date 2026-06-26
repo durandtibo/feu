@@ -49,7 +49,7 @@ def test_fetch_pypi_versions_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
     session.get.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10.0)
 
 
-@patch("feu.imports.is_requests_available", lambda: False)
+@patch("feu.imports.requests.is_requests_available", lambda: False)
 def test_fetch_pypi_versions_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_versions("my_package")

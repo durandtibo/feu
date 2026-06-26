@@ -7,11 +7,11 @@ __all__ = ["Retry"]
 
 from typing import Any
 
-from feu.imports import raise_error_urllib3_missing
+from feu.imports import raise_urllib3_missing_error
 
 
 class Retry:
     r"""Create a fake Retry class."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ARG002
-        raise_error_urllib3_missing()
+        raise_urllib3_missing_error()

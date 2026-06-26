@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.utils.imports import (
+from feu.imports import (
     check_git,
     git_available,
     is_git_available,
@@ -14,7 +14,7 @@ from feu.utils.imports import (
 
 logger = logging.getLogger(__name__)
 
-MODULE = "feu.utils.imports.git"
+MODULE = "feu.imports.git"
 
 
 @pytest.fixture(autouse=True)

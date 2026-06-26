@@ -12,9 +12,9 @@ __all__ = [
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
 
-from feu.utils.imports.universal import (
+from feu.imports.universal import (
     decorator_package_available,
-    package_available,
+    is_package_available,
     raise_package_missing_error,
 )
 
@@ -32,7 +32,7 @@ def check_urllib3() -> None:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import check_urllib3
+        >>> from feu.imports import check_urllib3
         >>> check_urllib3()
 
         ```
@@ -50,12 +50,12 @@ def is_urllib3_available() -> bool:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import is_urllib3_available
+        >>> from feu.imports import is_urllib3_available
         >>> is_urllib3_available()
 
         ```
     """
-    return package_available("urllib3")
+    return is_package_available("urllib3")
 
 
 def urllib3_available(fn: F) -> F:
@@ -71,7 +71,7 @@ def urllib3_available(fn: F) -> F:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import urllib3_available
+        >>> from feu.imports import urllib3_available
         >>> @urllib3_available
         ... def my_function(n: int = 0) -> int:
         ...     return 42 + n

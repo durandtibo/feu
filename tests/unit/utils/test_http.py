@@ -126,7 +126,7 @@ def test_fetch_data_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
         fetch_data(url="https://my_url")
 
 
-@patch("feu.imports.is_requests_available", lambda: False)
+@patch("feu.imports.requests.is_requests_available", lambda: False)
 def test_fetch_data_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_data(url="https://my_url")
@@ -221,7 +221,7 @@ def test_fetch_response_request_exception(monkeypatch: pytest.MonkeyPatch) -> No
         fetch_response(url="https://my_url")
 
 
-@patch("feu.imports.is_requests_available", lambda: False)
+@patch("feu.imports.requests.is_requests_available", lambda: False)
 def test_fetch_response_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_response(url="https://my_url")

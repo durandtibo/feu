@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.utils.imports import (
+from feu.imports import (
     check_requests,
     is_requests_available,
     raise_requests_missing_error,
@@ -14,7 +14,7 @@ from feu.utils.imports import (
 
 logger = logging.getLogger(__name__)
 
-MODULE = "feu.utils.imports.requests"
+MODULE = "feu.imports.requests"
 
 
 @pytest.fixture(autouse=True)
