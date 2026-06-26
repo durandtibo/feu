@@ -19,6 +19,7 @@ __all__ = [
     "filter_range_versions",
     "filter_stable_versions",
     "filter_valid_versions",
+    "get_package_bounds",
     "get_package_version",
     "get_python_major_minor",
     "latest_major_versions",
@@ -35,6 +36,7 @@ __all__ = [
 
 from feu.version.bound import (
     PackageBounds,
+    get_package_bounds,
     normalize_package_name,
     partition_package_bounds,
 )

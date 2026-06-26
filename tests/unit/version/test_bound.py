@@ -4,11 +4,21 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from feu.version import PackageBounds, normalize_package_name, partition_package_bounds
+from feu.version import (
+    PackageBounds,
+    get_package_bounds,
+    normalize_package_name,
+    partition_package_bounds,
+)
 
 
-def make_bounds(name: str, lower: str | None = None, upper: str | None = None) -> PackageBounds:
-    return PackageBounds(name=name, lower=lower, upper=upper, section="project.dependencies")
+def make_bounds(
+    name: str,
+    lower: str | None = None,
+    upper: str | None = None,
+    section: str = "project.dependencies",
+) -> PackageBounds:
+    return PackageBounds(name=name, lower=lower, upper=upper, section=section)
 
 
 PACKAGES = [
@@ -51,6 +61,47 @@ def test_package_bounds_is_immutable() -> None:
     bounds = PackageBounds(name="numpy", lower="1.21", upper="2.0", section="project.dependencies")
     with pytest.raises(FrozenInstanceError, match=r"cannot assign to field 'lower'"):
         bounds.lower = "1.0"  # type: ignore[misc]
+
+
+########################################
+#     Tests for get_package_bounds     #
+########################################
+
+
+def test_get_package_bounds_first_match() -> None:
+    assert get_package_bounds(PACKAGES, "numpy") == make_bounds("numpy", lower="1.21", upper="2.0")
+
+
+def test_get_package_bounds_no_lower_no_upper() -> None:
+    assert get_package_bounds(PACKAGES, "requests") == make_bounds("requests")
+
+
+def test_get_package_bounds_returns_first_occurrence() -> None:
+    packages = [
+        make_bounds("numpy", lower="1.21", upper="2.0"),
+        make_bounds("numpy", lower="1.24", upper=None, section="project.optional-dependencies.dev"),
+    ]
+    assert get_package_bounds(packages, "numpy") == make_bounds("numpy", lower="1.21", upper="2.0")
+
+
+def test_get_package_bounds_case_insensitive() -> None:
+    assert get_package_bounds(PACKAGES, "NumPy") == make_bounds("numpy", lower="1.21", upper="2.0")
+
+
+def test_get_package_bounds_hyphen_underscore_equivalent() -> None:
+    assert get_package_bounds(PACKAGES, "scikit_learn") == make_bounds(
+        "scikit-learn", lower="1.0", upper="2.0"
+    )
+
+
+def test_get_package_bounds_not_found_raises_value_error() -> None:
+    with pytest.raises(ValueError, match="nonexistent"):
+        get_package_bounds(PACKAGES, "nonexistent")
+
+
+def test_get_package_bounds_empty_sequence_raises_value_error() -> None:
+    with pytest.raises(ValueError, match="numpy"):
+        get_package_bounds([], "numpy")
 
 
 ##############################################

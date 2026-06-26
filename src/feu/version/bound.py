@@ -2,7 +2,12 @@ r"""Contains the low and upper bounds for a package dependency."""
 
 from __future__ import annotations
 
-__all__ = ["PackageBounds", "normalize_package_name", "partition_package_bounds"]
+__all__ = [
+    "PackageBounds",
+    "get_package_bounds",
+    "normalize_package_name",
+    "partition_package_bounds",
+]
 
 
 from dataclasses import dataclass
@@ -33,6 +38,49 @@ class PackageBounds:
     lower: str | None
     upper: str | None
     section: str
+
+
+def get_package_bounds(
+    packages: Sequence[PackageBounds],
+    name: str,
+) -> PackageBounds:
+    """Return the first ``PackageBounds`` matching a given package name.
+
+    The name comparison is case-insensitive and treats hyphens and
+    underscores as equivalent, following PEP 508 normalisation rules.
+
+    Args:
+        packages: A sequence of ``PackageBounds`` instances to search.
+        name: The package name to look up.
+
+    Returns:
+        The first ``PackageBounds`` whose name matches ``name``.
+
+    Raises:
+        ValueError: If no entry matching ``name`` is found in ``packages``.
+
+    Example:
+        ```pycon
+        >>> from feu.version import PackageBounds, get_package_bounds
+        >>> packages = [
+        ...     PackageBounds(
+        ...         name="numpy", lower="1.21", upper="2.0", section="project.dependencies"
+        ...     ),
+        ...     PackageBounds(
+        ...         name="torch", lower="2.0", upper=None, section="project.dependencies"
+        ...     ),
+        ... ]
+        >>> get_package_bounds(packages, "numpy")
+        PackageBounds(name='numpy', lower='1.21', upper='2.0', section='project.dependencies')
+
+        ```
+    """
+    normalized = normalize_package_name(name)
+    for bounds in packages:
+        if normalize_package_name(bounds.name) == normalized:
+            return bounds
+    msg = f"Package {name!r} not found in the provided sequence."
+    raise ValueError(msg)
 
 
 def normalize_package_name(name: str) -> str:
