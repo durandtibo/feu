@@ -4,13 +4,17 @@ from __future__ import annotations
 
 __all__ = [
     "check_click",
+    "check_git",
     "check_package",
     "click_available",
     "decorator_package_available",
+    "git_available",
     "is_click_available",
+    "is_git_available",
     "module_available",
     "package_available",
     "raise_click_missing_error",
+    "raise_git_missing_error",
     "raise_package_missing_error",
 ]
 
@@ -19,6 +23,12 @@ from feu.utils.imports.click import (
     click_available,
     is_click_available,
     raise_click_missing_error,
+)
+from feu.utils.imports.git import (
+    check_git,
+    git_available,
+    is_git_available,
+    raise_git_missing_error,
 )
 from feu.utils.imports.universal import (
     check_package,
