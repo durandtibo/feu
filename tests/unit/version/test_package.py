@@ -285,6 +285,51 @@ def test_fetch_sampled_latest_minor_versions_passes_lower_and_upper_bounds() -> 
     mock.assert_called_once_with(package="requests", lower="1.2", upper="2.0")
 
 
+def test_fetch_sampled_latest_minor_versions_include_lower_bound() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions(
+            "requests", lower="1.0", n=2, include_lower_bound=True
+        ) == ("1.0.0", "1.2.0", "1.4.0", "1.5.0")
+
+
+def test_fetch_sampled_latest_minor_versions_include_lower_bound_not_in_sampled() -> None:
+    # 1.0.1 is the lower bound first version but not picked by every-2nd sampling.
+    mock = Mock(
+        return_value=("1.0.1", "1.0.2", "1.0.3", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0")
+    )
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions(
+            "requests", lower="1.0.1", n=2, include_lower_bound=True
+        ) == ("1.0.1", "1.0.3", "1.2.0", "1.4.0", "1.5.0")
+
+
+def test_fetch_sampled_latest_minor_versions_include_lower_bound_no_duplicate() -> None:
+    # 1.0.0 is both the lower bound and picked by sampling — must appear only once.
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions(
+            "requests", lower="1.0.0", n=3, include_lower_bound=True
+        ) == ("1.0.0", "1.3.0", "1.5.0")
+
+
+def test_fetch_sampled_latest_minor_versions_include_lower_bound_none_lower_has_no_effect() -> None:
+    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert fetch_sampled_latest_minor_versions(
+            "requests", lower=None, n=2, include_lower_bound=True
+        ) == fetch_sampled_latest_minor_versions("requests", lower=None, n=2)
+
+
+def test_fetch_sampled_latest_minor_versions_include_lower_bound_empty_range() -> None:
+    mock = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
+        assert (
+            fetch_sampled_latest_minor_versions("requests", lower="9.0.0", include_lower_bound=True)
+            == ()
+        )
+
+
 ##########################################
 #     Tests for fetch_latest_version     #
 ##########################################

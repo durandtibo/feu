@@ -151,7 +151,11 @@ def fetch_latest_minor_versions(
 
 
 def fetch_sampled_latest_minor_versions(
-    package: str, lower: str | None = None, upper: str | None = None, n: int = 1
+    package: str,
+    lower: str | None = None,
+    upper: str | None = None,
+    n: int = 1,
+    include_lower_bound: bool = False,
 ) -> tuple[str, ...]:
     r"""Get a sampled subset of the latest minor versions for a given
     package.
@@ -170,6 +174,10 @@ def fetch_sampled_latest_minor_versions(
         n: The sampling stride. Every ``n``-th version is kept, along
             with the most recent version. Defaults to ``1``, which
             keeps all versions.
+        include_lower_bound: If ``True`` and ``lower`` is not ``None``,
+            the first stable version at or above ``lower`` is included
+            in the result alongside the sampled versions. Has no effect
+            if ``lower`` is ``None``. Defaults to ``False``.
 
     Returns:
         A sorted tuple of sampled version strings.
@@ -184,13 +192,10 @@ def fetch_sampled_latest_minor_versions(
         ```
     """
     versions = fetch_latest_minor_versions(package=package, lower=lower, upper=upper)
-    return tuple(
-        sort_versions(
-            unique_versions(
-                filter_every_n_versions(versions, n=n) + filter_last_n_versions(versions, n=1)
-            )
-        )
-    )
+    sampled = filter_every_n_versions(versions, n=n) + filter_last_n_versions(versions, n=1)
+    if include_lower_bound and lower is not None and versions:
+        sampled = [*sampled, versions[0]]
+    return tuple(sort_versions(unique_versions(sampled)))
 
 
 def fetch_latest_version(package: str) -> str:
