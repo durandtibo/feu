@@ -7,19 +7,23 @@ __all__ = [
     "check_git",
     "check_package",
     "check_requests",
+    "check_urllib3",
     "click_available",
     "decorator_package_available",
     "git_available",
     "is_click_available",
     "is_git_available",
     "is_requests_available",
+    "is_urllib3_available",
     "module_available",
     "package_available",
     "raise_click_missing_error",
     "raise_git_missing_error",
     "raise_package_missing_error",
     "raise_requests_missing_error",
+    "raise_urllib3_missing_error",
     "requests_available",
+    "urllib3_available",
 ]
 
 from feu.utils.imports.click import (
@@ -46,4 +50,10 @@ from feu.utils.imports.universal import (
     module_available,
     package_available,
     raise_package_missing_error,
+)
+from feu.utils.imports.urllib3 import (
+    check_urllib3,
+    is_urllib3_available,
+    raise_urllib3_missing_error,
+    urllib3_available,
 )
