@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.utils.imports import (
+from feu.imports import (
     check_click,
     click_available,
     is_click_available,
@@ -14,7 +14,7 @@ from feu.utils.imports import (
 
 logger = logging.getLogger(__name__)
 
-MODULE = "feu.utils.imports.click"
+MODULE = "feu.imports.click"
 
 
 @pytest.fixture(autouse=True)

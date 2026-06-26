@@ -7,9 +7,9 @@ __all__ = ["check_git", "git_available", "is_git_available", "raise_git_missing_
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
 
-from feu.utils.imports.universal import (
+from feu.imports.universal import (
     decorator_package_available,
-    package_available,
+    is_package_available,
     raise_package_missing_error,
 )
 
@@ -27,7 +27,7 @@ def check_git() -> None:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import check_git
+        >>> from feu.imports import check_git
         >>> check_git()
 
         ```
@@ -45,12 +45,12 @@ def is_git_available() -> bool:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import is_git_available
+        >>> from feu.imports import is_git_available
         >>> is_git_available()
 
         ```
     """
-    return package_available("git")
+    return is_package_available("git")
 
 
 def git_available(fn: F) -> F:
@@ -66,7 +66,7 @@ def git_available(fn: F) -> F:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import git_available
+        >>> from feu.imports import git_available
         >>> @git_available
         ... def my_function(n: int = 0) -> int:
         ...     return 42 + n

@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.utils.imports import (
+from feu.imports import (
     check_urllib3,
     is_urllib3_available,
     raise_urllib3_missing_error,
@@ -14,7 +14,7 @@ from feu.utils.imports import (
 
 logger = logging.getLogger(__name__)
 
-MODULE = "feu.utils.imports.urllib3"
+MODULE = "feu.imports.urllib3"
 
 
 @pytest.fixture(autouse=True)

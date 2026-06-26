@@ -12,9 +12,9 @@ __all__ = [
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
 
-from feu.utils.imports.universal import (
+from feu.imports.universal import (
     decorator_package_available,
-    package_available,
+    is_package_available,
     raise_package_missing_error,
 )
 
@@ -32,7 +32,7 @@ def check_requests() -> None:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import check_requests
+        >>> from feu.imports import check_requests
         >>> check_requests()
 
         ```
@@ -50,12 +50,12 @@ def is_requests_available() -> bool:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import is_requests_available
+        >>> from feu.imports import is_requests_available
         >>> is_requests_available()
 
         ```
     """
-    return package_available("requests")
+    return is_package_available("requests")
 
 
 def requests_available(fn: F) -> F:
@@ -71,7 +71,7 @@ def requests_available(fn: F) -> F:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import requests_available
+        >>> from feu.imports import requests_available
         >>> @requests_available
         ... def my_function(n: int = 0) -> int:
         ...     return 42 + n

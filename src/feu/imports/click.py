@@ -7,9 +7,9 @@ __all__ = ["check_click", "click_available", "is_click_available", "raise_click_
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
 
-from feu.utils.imports.universal import (
+from feu.imports.universal import (
     decorator_package_available,
-    package_available,
+    is_package_available,
     raise_package_missing_error,
 )
 
@@ -27,7 +27,7 @@ def check_click() -> None:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import check_click
+        >>> from feu.imports import check_click
         >>> check_click()
 
         ```
@@ -45,12 +45,12 @@ def is_click_available() -> bool:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import is_click_available
+        >>> from feu.imports import is_click_available
         >>> is_click_available()
 
         ```
     """
-    return package_available("click")
+    return is_package_available("click")
 
 
 def click_available(fn: F) -> F:
@@ -66,7 +66,7 @@ def click_available(fn: F) -> F:
 
     Example:
         ```pycon
-        >>> from feu.utils.imports import click_available
+        >>> from feu.imports import click_available
         >>> @click_available
         ... def my_function(n: int = 0) -> int:
         ...     return 42 + n
