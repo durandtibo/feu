@@ -88,7 +88,7 @@ def check_package(package: str, command: str | None = None) -> None:
     Example:
         ```pycon
         >>> from feu.utils.imports import check_package
-        >>> check_package("numpy")
+        >>> check_package("os")
 
         ```
     """
@@ -115,8 +115,9 @@ def decorator_package_available(fn: F, condition: Callable[[], bool]) -> F:
     Example:
         ```pycon
         >>> from functools import partial
-        >>> from feu.utils.imports import decorator_package_available, is_numpy_available
-        >>> decorator = partial(decorator_package_available, condition=is_numpy_available)
+        >>> from feu.imports import is_git_available
+        >>> from feu.utils.imports import decorator_package_available
+        >>> decorator = partial(decorator_package_available, condition=is_git_available)
         >>> @decorator
         ... def my_function(n: int = 0) -> int:
         ...     return 42 + n
