@@ -51,6 +51,13 @@ jobs:
       package-name: packaging
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).packaging) }}
 
+  tomli:
+    needs: get-versions
+    uses: ./.github/workflows/test-package-dep.yaml
+    with:
+      package-name: tomli
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).tomli) }}
+
   typing-extensions:
     needs: get-versions
     uses: ./.github/workflows/test-package-dep.yaml
