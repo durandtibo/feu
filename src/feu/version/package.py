@@ -238,6 +238,7 @@ def fetch_latest_stable_version(package: str) -> str:
 
 def fetch_latest_major_versions_map(
     packages: Sequence[PackageBounds],
+    include_lower_bound: bool = False,
 ) -> dict[str, list[str]]:
     """Fetch the latest major versions for a sequence of packages.
 
@@ -252,10 +253,14 @@ def fetch_latest_major_versions_map(
         packages: A sequence of ``PackageBounds`` instances, typically
             obtained from ``read_pyproject_dependencies`` or
             ``read_pyproject_optional_dependencies``.
+        include_lower_bound: If ``True``, the first stable version at or
+            above each package's lower bound is included in its version
+            list. Has no effect for packages whose lower bound is
+            ``None``. Defaults to ``False``.
 
     Returns:
         A dictionary mapping each package name to the list of latest major
-        version strings returned by ``fetch_latest_major_versions``.
+            version strings returned by ``fetch_latest_major_versions``.
 
     Example:
         ```pycon
@@ -266,7 +271,11 @@ def fetch_latest_major_versions_map(
         ```
     """
     return {
-        bounds.name: list(fetch_latest_major_versions(bounds.name, lower=bounds.lower))
+        bounds.name: list(
+            fetch_latest_major_versions(
+                bounds.name, lower=bounds.lower, include_lower_bound=include_lower_bound
+            )
+        )
         for bounds in packages
     }
 
@@ -277,36 +286,36 @@ def fetch_latest_minor_versions_map(
 ) -> dict[str, list[str]]:
     """Fetch the latest minor versions for a sequence of packages.
 
-        For each ``PackageBounds`` in ``packages``, calls
-        ``fetch_latest_minor_versions`` with the package name and lower bound,
-        and collects the results into a dictionary.
+    For each ``PackageBounds`` in ``packages``, calls
+    ``fetch_latest_minor_versions`` with the package name and lower bound,
+    and collects the results into a dictionary.
 
-        If a package appears more than once in ``packages`` (e.g. because it
-        was found in multiple sections), the last entry wins.
+    If a package appears more than once in ``packages`` (e.g. because it
+    was found in multiple sections), the last entry wins.
 
     Args:
-            packages: A sequence of ``PackageBounds`` instances, typically
-                obtained from ``read_pyproject_dependencies`` or
-                ``read_pyproject_optional_dependencies``.
-            include_lower_bound: If ``True``, the first stable version at or
-                above each package's lower bound is included in its version
-                list. Has no effect for packages whose lower bound is
-                ``None``. Defaults to ``False``.
+        packages: A sequence of ``PackageBounds`` instances, typically
+            obtained from ``read_pyproject_dependencies`` or
+            ``read_pyproject_optional_dependencies``.
+        include_lower_bound: If ``True``, the first stable version at or
+            above each package's lower bound is included in its version
+            list. Has no effect for packages whose lower bound is
+            ``None``. Defaults to ``False``.
 
     Returns:
-            A dictionary mapping each package name to the list of latest minor
+        A dictionary mapping each package name to the list of latest minor
             version strings returned by ``fetch_latest_minor_versions``.
 
     Example:
-    ```pycon
-    >>> from feu.version import fetch_latest_minor_versions_map, read_pyproject_dependencies
-    >>> bounds = read_pyproject_dependencies("pyproject.toml")  # doctest: +SKIP
-    >>> versions = fetch_latest_minor_versions_map(bounds)  # doctest: +SKIP
-    >>> versions_with_lower = fetch_latest_minor_versions_map(
-    ...     bounds, include_lower_bound=True
-    ... )  # doctest: +SKIP
+        ```pycon
+        >>> from feu.version import fetch_latest_minor_versions_map, read_pyproject_dependencies
+        >>> bounds = read_pyproject_dependencies("pyproject.toml")  # doctest: +SKIP
+        >>> versions = fetch_latest_minor_versions_map(bounds)  # doctest: +SKIP
+        >>> versions_with_lower = fetch_latest_minor_versions_map(
+        ...     bounds, include_lower_bound=True
+        ... )  # doctest: +SKIP
 
-    ```
+        ```
     """
     return {
         bounds.name: list(
