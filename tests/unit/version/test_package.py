@@ -6,14 +6,15 @@ from unittest.mock import Mock, patch
 from feu.version import (
     PackageBounds,
     fetch_latest_major_versions,
+    fetch_latest_major_versions_map,
     fetch_latest_minor_versions,
     fetch_latest_minor_versions_map,
     fetch_latest_stable_version,
     fetch_latest_version,
-    fetch_versions, fetch_latest_major_versions_map,
+    fetch_versions,
 )
 
-MODULE = f"{MODULE}.package"
+MODULE = "feu.version.package"
 
 
 def make_bounds(name: str, lower: str | None = None, upper: str | None = None) -> PackageBounds:
@@ -257,8 +258,9 @@ def test_fetch_latest_major_versions_map_empty_sequence() -> None:
 
 
 def test_fetch_latest_major_versions_map_single_package() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions",
-               return_value=iter(["1.21.6", "1.22.4"])) as mock:
+    with patch(
+        f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.21.6", "1.22.4"])
+    ) as mock:
         result = fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21")])
     mock.assert_called_once_with("numpy", lower="1.21")
     assert result == {"numpy": ["1.21.6", "1.22.4"]}
@@ -266,16 +268,20 @@ def test_fetch_latest_major_versions_map_single_package() -> None:
 
 def test_fetch_latest_major_versions_map_multiple_packages() -> None:
     def side_effect(name: str, lower: str | None) -> Any:
-        return iter({
-                        "numpy": ["1.21.6", "1.22.4"],
-                        "torch": ["2.0.1", "2.1.0"],
-                    }[name])
+        return iter(
+            {
+                "numpy": ["1.21.6", "1.22.4"],
+                "torch": ["2.0.1", "2.1.0"],
+            }[name]
+        )
 
     with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
-        result = fetch_latest_major_versions_map([
-            make_bounds("numpy", lower="1.21"),
-            make_bounds("torch", lower="2.0"),
-        ])
+        result = fetch_latest_major_versions_map(
+            [
+                make_bounds("numpy", lower="1.21"),
+                make_bounds("torch", lower="2.0"),
+            ]
+        )
 
     assert result == {
         "numpy": ["1.21.6", "1.22.4"],
@@ -323,10 +329,12 @@ def test_fetch_latest_major_versions_map_duplicate_package_last_wins() -> None:
         return iter(["1.21.6"] if lower == "1.21" else ["1.24.0"])
 
     with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
-        result = fetch_latest_major_versions_map([
-            make_bounds("numpy", lower="1.21"),
-            make_bounds("numpy", lower="1.24"),
-        ])
+        result = fetch_latest_major_versions_map(
+            [
+                make_bounds("numpy", lower="1.21"),
+                make_bounds("numpy", lower="1.24"),
+            ]
+        )
 
     assert result == {"numpy": ["1.24.0"]}
     assert calls == [("numpy", "1.21"), ("numpy", "1.24")]
@@ -334,7 +342,9 @@ def test_fetch_latest_major_versions_map_duplicate_package_last_wins() -> None:
 
 def test_fetch_latest_major_versions_map_preserves_package_names() -> None:
     with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.0", "2.0"])):
-        result = fetch_latest_major_versions_map([
-            make_bounds("scikit-learn", lower="1.0"),
-        ])
+        result = fetch_latest_major_versions_map(
+            [
+                make_bounds("scikit-learn", lower="1.0"),
+            ]
+        )
     assert "scikit-learn" in result
