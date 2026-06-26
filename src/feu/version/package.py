@@ -67,7 +67,10 @@ def fetch_versions(
 
 
 def fetch_latest_major_versions(
-    package: str, lower: str | None = None, upper: str | None = None
+    package: str,
+    lower: str | None = None,
+    upper: str | None = None,
+    include_lower_bound: bool = False,
 ) -> tuple[str, ...]:
     r"""Get the latest version for each major version for a given
     package.
@@ -77,21 +80,32 @@ def fetch_latest_major_versions(
         lower: The lower version bound (inclusive).
             If ``None``, no lower limit is applied.
         upper: The upper version bound (exclusive).
-            If None, no upper limit is applied.
+            If ``None``, no upper limit is applied.
+        include_lower_bound: If ``True`` and ``lower`` is not ``None``,
+            the first stable version at or above ``lower`` is included
+            in the result. This ensures the lower bound itself is always
+            represented, even if it is not the latest patch for its
+            major release. If ``lower`` is ``None``, this argument has
+            no effect. Defaults to ``False``.
 
     Returns:
         A tuple containing the latest version for each major version,
-            sorted by major version number.
+            sorted by major version number. If ``include_lower_bound`` is
+            ``True`` and ``lower`` is not ``None``, the first stable version
+            at or above ``lower`` is also included.
 
     Example:
         ```pycon
         >>> from feu.version import fetch_latest_major_versions
-        >>> versions = fetch_latest_major_versions("requests")  # doctest: +SKIP
+        >>> versions = fetch_latest_major_versions("requests", lower="2.0")  # doctest: +SKIP
 
         ```
     """
     versions = fetch_versions(package, lower=lower, upper=upper)
-    return tuple(latest_major_versions(versions))
+    result = list(latest_major_versions(versions))
+    if include_lower_bound and versions:
+        result = unique_versions([versions[0], *result])
+    return tuple(sort_versions(result))
 
 
 def fetch_latest_minor_versions(
