@@ -6,6 +6,7 @@ __all__ = [
     "PackageBounds",
     "compare_version",
     "fetch_latest_major_versions",
+    "fetch_latest_major_versions_map",
     "fetch_latest_minor_versions",
     "fetch_latest_minor_versions_map",
     "fetch_latest_stable_version",
@@ -42,6 +43,7 @@ from feu.version.filtering import (
 )
 from feu.version.package import (
     fetch_latest_major_versions,
+    fetch_latest_major_versions_map,
     fetch_latest_minor_versions,
     fetch_latest_minor_versions_map,
     fetch_latest_stable_version,

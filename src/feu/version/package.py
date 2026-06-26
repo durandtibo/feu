@@ -4,7 +4,9 @@ from __future__ import annotations
 
 __all__ = [
     "fetch_latest_major_versions",
+    "fetch_latest_major_versions_map",
     "fetch_latest_minor_versions",
+    "fetch_latest_minor_versions_map",
     "fetch_latest_stable_version",
     "fetch_latest_version",
     "fetch_versions",
@@ -191,5 +193,40 @@ def fetch_latest_minor_versions_map(
     """
     return {
         bounds.name: list(fetch_latest_minor_versions(bounds.name, lower=bounds.lower))
+        for bounds in packages
+    }
+
+
+def fetch_latest_major_versions_map(
+    packages: Sequence[PackageBounds],
+) -> dict[str, list[str]]:
+    """Fetch the latest major versions for a sequence of packages.
+
+    For each ``PackageBounds`` in ``packages``, calls
+    ``fetch_latest_major_versions`` with the package name and lower bound,
+    and collects the results into a dictionary.
+
+    If a package appears more than once in ``packages`` (e.g. because it
+    was found in multiple sections), the last entry wins.
+
+    Args:
+        packages: A sequence of ``PackageBounds`` instances, typically
+            obtained from ``read_pyproject_dependencies`` or
+            ``read_pyproject_optional_dependencies``.
+
+    Returns:
+        A dictionary mapping each package name to the list of latest major
+        version strings returned by ``fetch_latest_major_versions``.
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_latest_major_versions_map, read_pyproject_dependencies
+        >>> bounds = read_pyproject_dependencies("pyproject.toml")  # doctest: +SKIP
+        >>> versions = fetch_latest_major_versions_map(bounds)  # doctest: +SKIP
+
+        ```
+    """
+    return {
+        bounds.name: list(fetch_latest_major_versions(bounds.name, lower=bounds.lower))
         for bounds in packages
     }
