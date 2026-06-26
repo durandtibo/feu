@@ -36,7 +36,8 @@ def fetch_package_versions(base_dir: Path) -> dict[str, list[str]]:
     major_deps, minor_deps = partition_package_bounds(deps, ["packaging"])
 
     return sort_by_keys(
-        fetch_latest_major_versions_map(major_deps) | fetch_latest_minor_versions_map(minor_deps)
+        fetch_latest_major_versions_map(major_deps, include_lower_bound=True)
+        | fetch_latest_minor_versions_map(minor_deps, include_lower_bound=True)
     )
 
 
