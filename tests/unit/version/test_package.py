@@ -118,6 +118,42 @@ def test_fetch_latest_minor_versions_range() -> None:
         assert fetch_latest_minor_versions("my_package", lower="1.1.0", upper="2.0.0") == ("1.1.2",)
 
 
+def test_fetch_latest_minor_versions_include_lower_bound() -> None:
+    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
+    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+        assert fetch_latest_minor_versions("my_package", include_lower_bound=True) == (
+            "1.0.0",
+            "1.0.1",
+            "1.1.2",
+            "2.0.3",
+        )
+
+
+def test_fetch_latest_minor_versions_include_lower_bound_with_lower() -> None:
+    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
+    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+        assert fetch_latest_minor_versions(
+            "my_package", lower="1.1.0", include_lower_bound=True
+        ) == ("1.1.0", "1.1.2", "2.0.3")
+
+
+def test_fetch_latest_minor_versions_include_lower_bound_no_duplicate() -> None:
+    # 1.1.0 is both the lower bound and the latest patch for 1.1.x — must appear only once.
+    mock = Mock(return_value=("1.1.0", "2.0.0", "2.0.3"))
+    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+        assert fetch_latest_minor_versions(
+            "my_package", lower="1.1.0", include_lower_bound=True
+        ) == ("1.1.0", "2.0.3")
+
+
+def test_fetch_latest_minor_versions_include_lower_bound_empty_range() -> None:
+    mock = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+        assert (
+            fetch_latest_minor_versions("my_package", lower="9.0.0", include_lower_bound=True) == ()
+        )
+
+
 ##########################################
 #     Tests for fetch_latest_version     #
 ##########################################
