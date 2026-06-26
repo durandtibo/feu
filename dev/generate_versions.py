@@ -7,35 +7,45 @@ import logging
 from pathlib import Path
 
 from feu.utils.io import save_json
+from feu.utils.mapping import sort_by_keys
 from feu.version import (
-    fetch_latest_major_versions,
-    fetch_latest_minor_versions,
+    fetch_latest_major_versions_map,
+    fetch_latest_minor_versions_map,
+    partition_package_bounds,
+    read_pyproject_dependencies,
+    read_pyproject_optional_dependencies,
 )
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def get_package_versions() -> dict[str, list[str]]:
+def fetch_package_versions(base_dir: Path) -> dict[str, list[str]]:
     r"""Get the versions for each package.
+
+    Args:
+        base_dir: Path to the base directory.
 
     Returns:
         A dictionary with the versions for each package.
     """
-    return {
-        "packaging": list(fetch_latest_major_versions("packaging", lower="21.0")),
-        "typing_extensions": list(fetch_latest_minor_versions("typing_extensions", lower="4.10")),
-        "click": list(fetch_latest_minor_versions("click", lower="8.1")),
-        "gitpython": list(fetch_latest_minor_versions("gitpython", lower="3.1.41")),
-        "requests": list(fetch_latest_minor_versions("requests", lower="2.30")),
-        "urllib3": list(fetch_latest_minor_versions("urllib3", lower="2.0")),
-    }
+    pyproject_path = base_dir.joinpath("pyproject.toml")
+
+    deps = read_pyproject_dependencies(pyproject_path) + read_pyproject_optional_dependencies(
+        pyproject_path
+    )
+    major_deps, minor_deps = partition_package_bounds(deps, ["packaging"])
+
+    return sort_by_keys(
+        fetch_latest_major_versions_map(major_deps) | fetch_latest_minor_versions_map(minor_deps)
+    )
 
 
 def main() -> None:
     r"""Generate the package versions and save them in a JSON file."""
-    versions = get_package_versions()
+    base_dir = Path(__file__).parent.parent
+    versions = fetch_package_versions(base_dir)
     logger.info(f"{versions=}")
-    path = Path(__file__).parent.parent.joinpath("dev/config").joinpath("package_versions.json")
+    path = base_dir.joinpath("dev/config").joinpath("package_versions.json")
     logger.info(f"Saving package versions to {path}")
     save_json(versions, path, exist_ok=True)
 
