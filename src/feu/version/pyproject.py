@@ -11,7 +11,7 @@ __all__ = [
 import sys
 from pathlib import Path
 
-from feu.version.bound import PackageBounds
+from feu.version.bound import PackageBounds, normalize_package_name
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -135,7 +135,7 @@ def read_pyproject_package_bounds(
     with path.open("rb") as f:
         data = tomllib.load(f)
 
-    normalized_package = _normalize_name(package)
+    normalized_package = normalize_package_name(package)
     results: list[PackageBounds] = []
 
     # [project.dependencies]
@@ -164,12 +164,6 @@ def read_pyproject_package_bounds(
                 results.append(bounds)
 
     return results
-
-
-def _normalize_name(name: str) -> str:
-    """Normalize a package name per PEP 508 (lowercase, hyphens to
-    underscores)."""
-    return name.lower().replace("-", "_")
 
 
 def _parse_bounds_from_spec(spec: str, section: str) -> PackageBounds:
@@ -212,4 +206,4 @@ def _parse_bounds(
         ``None`` otherwise.
     """
     bounds = _parse_bounds_from_spec(spec, section)
-    return bounds if _normalize_name(bounds.name) == normalized_package else None
+    return bounds if normalize_package_name(bounds.name) == normalized_package else None
