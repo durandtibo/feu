@@ -74,6 +74,7 @@ class PackageConfig:
     registry: ClassVar[dict[str, dict[str, dict[str, str | None]]]] = {
         # https://click.palletsprojects.com/en/stable/changes/
         "click": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": None, "max": None},
             "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
@@ -83,6 +84,7 @@ class PackageConfig:
         },
         # https://pypi.org/project/jaxlib/#history
         "jax": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "0.7.1", "max": None},
             "3.13": {"min": "0.4.34", "max": None},
             "3.12": {"min": "0.4.17", "max": None},
@@ -92,6 +94,7 @@ class PackageConfig:
         },
         # https://matplotlib.org/stable/users/release_notes.html
         "matplotlib": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "3.10.5", "max": None},
             "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
@@ -101,16 +104,18 @@ class PackageConfig:
         },
         # https://numpy.org/devdocs/release.html
         "numpy": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "2.3.0", "max": None},
             "3.13": {"min": "2.1.0", "max": None},
             "3.12": {"min": "1.26.0", "max": None},
-            "3.11": {"min": "1.23.2", "max": None},
+            "3.11": {"min": "1.23.2", "max": "2.4.6"},
             "3.10": {"min": "1.21.3", "max": "2.2.6"},
             "3.9": {"min": "1.19.3", "max": "2.0.2"},
         },
         # https://github.com/pandas-dev/pandas/releases
         # https://pandas.pydata.org/docs/whatsnew/index.html
         "pandas": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "2.3.3", "max": None},
             "3.13": {"min": "2.2.3", "max": None},
             "3.12": {"min": "2.1.1", "max": None},
@@ -120,6 +125,7 @@ class PackageConfig:
         },
         # https://arrow.apache.org/release/
         "pyarrow": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "22.0.0", "max": None},
             "3.13": {"min": "18.0.0", "max": None},
             "3.12": {"min": "14.0.0", "max": None},
@@ -128,6 +134,7 @@ class PackageConfig:
             "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
         "requests": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": None, "max": None},
             "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
@@ -137,6 +144,7 @@ class PackageConfig:
         },
         # https://github.com/scikit-learn/scikit-learn/releases
         "scikit-learn": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "1.7.2", "max": None},
             "3.13": {"min": "1.6.0", "max": None},
             "3.12": {"min": "1.3.1", "max": None},
@@ -146,6 +154,7 @@ class PackageConfig:
         },
         # https://github.com/scipy/scipy/releases/
         "scipy": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "1.16.1", "max": None},
             "3.13": {"min": "1.14.1", "max": None},
             "3.12": {"min": "1.12.0", "max": None},
@@ -155,6 +164,7 @@ class PackageConfig:
         },
         # https://github.com/pytorch/pytorch/releases
         "torch": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": "2.9.0", "max": None},
             "3.13": {"min": "2.6.0", "max": None},
             "3.12": {"min": "2.4.0", "max": None},
@@ -164,6 +174,7 @@ class PackageConfig:
         },
         # https://docs.xarray.dev/en/stable/whats-new.html
         "xarray": {
+            "3.15": {"min": None, "max": None},
             "3.14": {"min": None, "max": None},
             "3.13": {"min": None, "max": None},
             "3.12": {"min": None, "max": None},
