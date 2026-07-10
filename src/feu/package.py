@@ -133,6 +133,14 @@ class PackageConfig:
             "3.10": {"min": "6.0.0", "max": None},
             "3.9": {"min": "3.0.0", "max": "16.1.0"},
         },
+        "pydantic": {
+            "3.15": {"min": None, "max": None},
+            "3.14": {"min": "2.12.0", "max": None},
+            "3.13": {"min": "2.8.0", "max": None},
+            "3.12": {"min": None, "max": None},
+            "3.11": {"min": None, "max": None},
+            "3.10": {"min": None, "max": None},
+        },
         "requests": {
             "3.15": {"min": None, "max": None},
             "3.14": {"min": None, "max": None},
