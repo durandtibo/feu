@@ -82,6 +82,15 @@ class PackageConfig:
             "3.10": {"min": None, "max": None},
             "3.9": {"min": None, "max": "8.1.8"},
         },
+        # https://github.com/duckdb/duckdb-python/releases
+        "duckdb": {
+            "3.15": {"min": None, "max": None},
+            "3.14": {"min": "1.4.2", "max": None},
+            "3.13": {"min": None, "max": None},
+            "3.12": {"min": None, "max": None},
+            "3.11": {"min": None, "max": None},
+            "3.10": {"min": None, "max": None},
+        },
         # https://pypi.org/project/jaxlib/#history
         "jax": {
             "3.15": {"min": None, "max": None},
