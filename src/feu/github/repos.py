@@ -6,10 +6,10 @@ from __future__ import annotations
 __all__ = ["display_repos_summary", "fetch_github_repos"]
 
 import logging
-import os
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
+from feu.github.auth import build_github_headers
 from feu.utils.http import fetch_response
 
 if TYPE_CHECKING:
@@ -41,10 +41,7 @@ def fetch_github_repos(owner: str) -> tuple[dict[str, Any], ...]:
     url = f"https://api.github.com/users/{owner}/repos"
     params = {"per_page": 100, "type": "all"}
 
-    headers = {"Accept": "application/vnd.github+json"}
-    token = os.getenv("GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
+    headers = build_github_headers()
 
     while url:
         response = fetch_response(url=url, headers=headers, params=params)

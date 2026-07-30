@@ -300,4 +300,4 @@ def unique_versions(versions: Sequence[str]) -> list[str]:
 
         ```
     """
-    return list(set(versions))
+    return list(dict.fromkeys(versions))

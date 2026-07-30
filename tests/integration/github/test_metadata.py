@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from feu.repo import fetch_github_metadata
+from feu.github import fetch_github_metadata
 from feu.testing import requests_available, requests_not_available
 
 

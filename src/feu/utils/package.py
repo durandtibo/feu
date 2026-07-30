@@ -153,6 +153,10 @@ def extract_package_name(requirement: str) -> str:
     Returns:
         The base package name without extras.
 
+    Raises:
+        ValueError: if ``requirement`` does not start with a valid package
+            name.
+
     Example:
         ```pycon
         >>> from feu.utils.package import extract_package_name
@@ -166,7 +170,10 @@ def extract_package_name(requirement: str) -> str:
         ```
     """
     match = re.match(r"^([a-zA-Z0-9_\-\.]+)", requirement)
-    return match.group(1) if match else requirement
+    if not match:
+        msg = f"could not extract a package name from requirement: {requirement!r}"
+        raise ValueError(msg)
+    return match.group(1)
 
 
 def extract_package_extras(requirement: str) -> list[str]:
