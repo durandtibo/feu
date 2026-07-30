@@ -1,14 +1,15 @@
-r"""Contain GitHub utility functions."""
+r"""Contain GitHub utility functions to get information about a single
+repository."""
 
 from __future__ import annotations
 
 __all__ = ["fetch_github_metadata"]
 
 import logging
-import os
 from functools import lru_cache
 from typing import Any
 
+from feu.github.auth import build_github_headers
 from feu.utils.http import fetch_data
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -29,15 +30,10 @@ def fetch_github_metadata(owner: str, repo: str) -> dict[str, Any]:
 
     Example:
         ```pycon
-        >>> from feu.repo import fetch_github_metadata
+        >>> from feu.github import fetch_github_metadata
         >>> metadata = fetch_github_metadata(owner="durandtibo", repo="feu")  # doctest: +SKIP
 
         ```
     """
-    headers = {"Accept": "application/vnd.github+json"}
-    token = os.getenv("GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-
     url = f"https://api.github.com/repos/{owner}/{repo}"
-    return fetch_data(url=url, headers=headers)
+    return fetch_data(url=url, headers=build_github_headers())

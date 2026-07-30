@@ -24,10 +24,10 @@ nav:
   - API Reference:
       - Main Functions: refs/root.md
       - Git: refs/git.md
+      - GitHub: refs/github.md
       - Imports: refs/imports.md
       - Install: refs/install.md
       - Package: refs/package.md
-      - Repository: refs/repo.md
       - Testing: refs/testing.md
       - Utils: refs/utils.md
       - Version: refs/version.md

@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = ["run_bash_command"]
 
 import logging
+import shlex
 import subprocess
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -24,4 +25,4 @@ def run_bash_command(cmd: str) -> None:
         ```
     """
     logger.info(f"execute the following command: {cmd}")
-    subprocess.run(cmd.split(), check=True)  # noqa: S603
+    subprocess.run(shlex.split(cmd), check=True)  # noqa: S603

@@ -28,7 +28,7 @@ python -m feu install [OPTIONS]
 
 - `-n, --pkg-name TEXT` - Package name (required)
 - `-v, --pkg-version TEXT` - Package version (required)
-- `-e, --pkg-extras TEXT` - Package extra dependencies (optional, comma-separated)
+- `-e, --pkg-extras TEXT` - Package extra dependencies (required, comma-separated; pass an empty string for none)
 - `-i, --installer-name TEXT` - Installer name (default: "pip")
 - `-a, --installer-args TEXT` - Installer arguments (optional)
 
@@ -246,7 +246,7 @@ jobs:
 
 1. **Always specify Python version**: When using `find-closest-version` or `check-valid-version`, make sure to specify the correct Python version you're targeting.
 
-2. **Use extras for optional dependencies**: When installing packages with optional features, use the `--pkg-extras` flag to include them.
+2. **Use extras for optional dependencies**: The `--pkg-extras` flag is required; pass an empty string (`--pkg-extras=""`) when there are none, or a comma-separated list to include optional features.
 
 3. **Combine with pip options**: Use `--installer-args` to pass additional pip options like `--upgrade`, `--no-deps`, or `--no-cache-dir`.
 

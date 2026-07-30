@@ -249,6 +249,11 @@ def test_extract_package_name(requirement: str, expected: str) -> None:
     assert extract_package_name(requirement) == expected
 
 
+def test_extract_package_name_invalid() -> None:
+    with pytest.raises(ValueError, match="could not extract a package name from requirement"):
+        extract_package_name("[extra1,extra2]")
+
+
 ############################################
 #     Tests for extract_package_extras     #
 ############################################

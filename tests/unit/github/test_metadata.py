@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from feu.github import fetch_github_metadata
 from feu.imports import is_requests_available
-from feu.repo import fetch_github_metadata
 from feu.testing import requests_available
 
 if is_requests_available():
