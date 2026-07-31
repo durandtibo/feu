@@ -2,9 +2,7 @@ r"""Contain the main entry point."""
 
 from __future__ import annotations
 
-from feu.compat import find_closest_version as find_closest_version_
-from feu.compat import is_valid_version
-from feu.compat import Target
+from feu.compat import Target, find_closest_version as find_closest_version_, is_valid_version
 from feu.imports import check_click, is_click_available
 from feu.install import install_package_closest_version
 from feu.utils.installer import InstallerSpec
@@ -137,7 +135,9 @@ def check_valid_version(pkg_name: str, pkg_version: str, python_version: str) ->
         ```
     """
     print(  # noqa: T201
-        is_valid_version(pkg_name=pkg_name, pkg_version=pkg_version, target=Target(python_version=python_version))
+        is_valid_version(
+            pkg_name=pkg_name, pkg_version=pkg_version, target=Target(python_version=python_version)
+        )
     )
 
 
