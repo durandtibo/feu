@@ -715,6 +715,17 @@ class CompatRegistry:
                 best = ranges
         return best
 
+    def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
+        r"""Resolve the raw registered ranges for a package/target,
+        preserving the distinction between "no entry registered"
+        (``None``) and "an entry registered with zero ranges"
+        (``[]``, i.e. explicitly unsupported).
+        """
+        ranges = self._resolve_in_layer(self._overrides, pkg_name, target)
+        if ranges is not None:
+            return ranges
+        return self._resolve_in_layer(self._base, pkg_name, target)
+
     def get_config(self, pkg_name: str, target: Target) -> list[VersionRange]:
         r"""Get the list of valid version ranges for a package and
         compatibility target.
@@ -730,13 +741,16 @@ class CompatRegistry:
             The list of ``VersionRange`` for this target, or an empty
             list if no configuration matches.
         """
-        ranges = self._resolve_in_layer(self._overrides, pkg_name, target)
-        if ranges is not None:
-            return ranges
-        return self._resolve_in_layer(self._base, pkg_name, target) or []
+        return self._resolve_ranges(pkg_name, target) or []
 
     def is_unsupported(self, pkg_name: str, target: Target) -> bool:
         r"""Indicate if no package version is valid for a target.
+
+        This is distinct from a target having no registered
+        configuration at all: an unconfigured target is treated as
+        permissive (``False``), whereas a target explicitly
+        registered with an empty range list is unsupported
+        (``True``).
 
         Args:
             pkg_name: The package name to check (e.g., ``"numpy"``).
@@ -746,7 +760,8 @@ class CompatRegistry:
             ``True`` if the package has no valid version for the
             given target, ``False`` otherwise.
         """
-        return not self.get_config(pkg_name=pkg_name, target=target)
+        ranges = self._resolve_ranges(pkg_name, target)
+        return ranges is not None and not ranges
 
     def get_version_ranges(
         self, pkg_name: str, target: Target
@@ -765,10 +780,10 @@ class CompatRegistry:
             UnsupportedVersionError: If no package version is valid
                 for the given target.
         """
-        ranges = self.get_config(pkg_name=pkg_name, target=target)
-        if not ranges:
+        if self.is_unsupported(pkg_name=pkg_name, target=target):
             msg = f"No version of package {pkg_name} is compatible with target {target}"
             raise UnsupportedVersionError(msg)
+        ranges = self.get_config(pkg_name=pkg_name, target=target)
         return [
             (
                 Version(version_range.min) if version_range.min is not None else None,
