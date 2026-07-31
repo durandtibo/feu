@@ -2,7 +2,7 @@ r"""Contain PyPI utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["fetch_pypi_requires_python", "fetch_pypi_versions"]
+__all__ = ["fetch_pypi_requires_python", "fetch_pypi_versions", "fetch_pypi_wheel_filenames"]
 
 from functools import lru_cache
 
@@ -39,6 +39,34 @@ def fetch_pypi_requires_python(package: str) -> dict[str, str | None]:
             if requires_python:
                 break
         result[version] = requires_python
+    return result
+
+
+@lru_cache
+def fetch_pypi_wheel_filenames(package: str) -> dict[str, tuple[str, ...]]:
+    r"""Get the wheel filenames for each release of a package on PyPI.
+
+    Args:
+        package: The package name.
+
+    Returns:
+        A dictionary mapping each release version string to a tuple of
+            its ``bdist_wheel`` filenames (empty tuple if the release
+            has no wheel files).
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_pypi_wheel_filenames
+        >>> mapping = fetch_pypi_wheel_filenames("numpy")  # doctest: +SKIP
+
+        ```
+    """
+    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
+    result: dict[str, tuple[str, ...]] = {}
+    for version, files in metadata["releases"].items():
+        result[version] = tuple(
+            file["filename"] for file in (files or []) if file.get("packagetype") == "bdist_wheel"
+        )
     return result
 
 
