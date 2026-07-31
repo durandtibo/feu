@@ -27,7 +27,7 @@ nav:
       - GitHub: refs/github.md
       - Imports: refs/imports.md
       - Install: refs/install.md
-      - Package: refs/package.md
+      - Compat: refs/compat.md
       - Testing: refs/testing.md
       - Utils: refs/utils.md
       - Version: refs/version.md
