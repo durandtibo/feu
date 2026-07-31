@@ -14,8 +14,8 @@ import shutil
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
-from feu.install import InstallerRegistry
 from feu.compat import find_closest_version
+from feu.install import InstallerRegistry
 from feu.version import get_python_major_minor
 
 if TYPE_CHECKING:

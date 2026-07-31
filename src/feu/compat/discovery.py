@@ -22,9 +22,8 @@ DEFAULT_PYTHON_VERSIONS = ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"
 def discover_compat(
     pkg_name: str, python_versions: Sequence[str] = DEFAULT_PYTHON_VERSIONS
 ) -> dict[str, dict[str, str | None]]:
-    r"""Discover the min/max package version compatible with each
-    Python version, using the ``requires_python`` metadata published
-    on PyPI.
+    r"""Discover the min/max package version compatible with each Python
+    version, using the ``requires_python`` metadata published on PyPI.
 
     For each Python version, ``min`` is set to the earliest stable
     package release compatible with it, and ``max`` is set to the
@@ -72,8 +71,8 @@ def discover_compat(
 
 
 def _is_compatible(requires_python: str | None, python_version: str) -> bool:
-    r"""Indicate if a ``requires_python`` specifier allows a given
-    Python version.
+    r"""Indicate if a ``requires_python`` specifier allows a given Python
+    version.
 
     Args:
         requires_python: The ``requires_python`` specifier string, or

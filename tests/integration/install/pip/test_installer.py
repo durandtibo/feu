@@ -3,8 +3,8 @@ from __future__ import annotations
 import pytest
 
 from feu import is_package_available
-from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 from feu.compat import find_closest_version
+from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 from feu.testing import pip_available, pipx_available, uv_available
 from feu.utils.package import PackageSpec
 from feu.version import get_python_major_minor

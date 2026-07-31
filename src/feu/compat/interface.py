@@ -1,5 +1,5 @@
-r"""Define the public interface for package/Python-version
-compatibility resolution."""
+r"""Define the public interface for package/Python-version compatibility
+resolution."""
 
 from __future__ import annotations
 

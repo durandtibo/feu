@@ -153,8 +153,7 @@ class CompatRegistry:
     def get_min_and_max_versions(
         self, pkg_name: str, python_version: str
     ) -> tuple[Version | None, Version | None]:
-        r"""Get the minimum and maximum versions as ``Version``
-        objects.
+        r"""Get the minimum and maximum versions as ``Version`` objects.
 
         Args:
             pkg_name: The package name to query (e.g., ``"numpy"``).
