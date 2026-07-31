@@ -70,23 +70,33 @@ from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
     [
         (
             "numpy-2.3.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
-            WheelTags(python_version="3.12", free_threaded=False, os="linux", arch="x86_64"),
+            WheelTags(
+                python_version="3.12", free_threaded=False, os="linux", arch="x86_64"
+            ),
         ),
         (
             "numpy-2.3.0-cp314-cp314t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
-            WheelTags(python_version="3.14", free_threaded=True, os="linux", arch="x86_64"),
+            WheelTags(
+                python_version="3.14", free_threaded=True, os="linux", arch="x86_64"
+            ),
         ),
         (
             "numpy-2.3.0-cp312-cp312-macosx_11_0_arm64.whl",
-            WheelTags(python_version="3.12", free_threaded=False, os="macos", arch="arm64"),
+            WheelTags(
+                python_version="3.12", free_threaded=False, os="macos", arch="arm64"
+            ),
         ),
         (
             "numpy-2.3.0-cp39-cp39-win_amd64.whl",
-            WheelTags(python_version="3.9", free_threaded=False, os="windows", arch="x86_64"),
+            WheelTags(
+                python_version="3.9", free_threaded=False, os="windows", arch="x86_64"
+            ),
         ),
         (
             "numpy-2.3.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
-            WheelTags(python_version="3.10", free_threaded=False, os="linux", arch="arm64"),
+            WheelTags(
+                python_version="3.10", free_threaded=False, os="linux", arch="arm64"
+            ),
         ),
     ],
 )
@@ -99,7 +109,10 @@ def test_parse_wheel_filename_pure_python_returns_none() -> None:
 
 
 def test_parse_wheel_filename_pypy_returns_none() -> None:
-    assert parse_wheel_filename("numpy-2.3.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.whl") is None
+    assert (
+        parse_wheel_filename("numpy-2.3.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.whl")
+        is None
+    )
 
 
 def test_parse_wheel_filename_unrecognized_platform_returns_none() -> None:
@@ -107,7 +120,10 @@ def test_parse_wheel_filename_unrecognized_platform_returns_none() -> None:
 
 
 def test_parse_wheel_filename_universal2_returns_none() -> None:
-    assert parse_wheel_filename("numpy-2.3.0-cp312-cp312-macosx_11_0_universal2.whl") is None
+    assert (
+        parse_wheel_filename("numpy-2.3.0-cp312-cp312-macosx_11_0_universal2.whl")
+        is None
+    )
 
 
 def test_parse_wheel_filename_no_extension_match_returns_none() -> None:
@@ -243,7 +259,10 @@ def parse_wheel_filename(filename: str) -> WheelTags | None:
     free_threaded = abi_tag.endswith("t")
 
     return WheelTags(
-        python_version=python_version, free_threaded=free_threaded, os=os_name, arch=arch_name
+        python_version=python_version,
+        free_threaded=free_threaded,
+        os=os_name,
+        arch=arch_name,
     )
 ```
 
@@ -305,15 +324,21 @@ def make_mock_wheel_filenames_response() -> Response:
             return_value={
                 "releases": {
                     "1.0.0": [
-                        {"filename": "pkg-1.0.0-cp39-cp39-manylinux_2_17_x86_64.whl",
-                         "packagetype": "bdist_wheel"},
+                        {
+                            "filename": "pkg-1.0.0-cp39-cp39-manylinux_2_17_x86_64.whl",
+                            "packagetype": "bdist_wheel",
+                        },
                         {"filename": "pkg-1.0.0.tar.gz", "packagetype": "sdist"},
                     ],
                     "1.1.0": [
-                        {"filename": "pkg-1.1.0-cp39-cp39-manylinux_2_17_x86_64.whl",
-                         "packagetype": "bdist_wheel"},
-                        {"filename": "pkg-1.1.0-cp310-cp310-manylinux_2_17_x86_64.whl",
-                         "packagetype": "bdist_wheel"},
+                        {
+                            "filename": "pkg-1.1.0-cp39-cp39-manylinux_2_17_x86_64.whl",
+                            "packagetype": "bdist_wheel",
+                        },
+                        {
+                            "filename": "pkg-1.1.0-cp310-cp310-manylinux_2_17_x86_64.whl",
+                            "packagetype": "bdist_wheel",
+                        },
                     ],
                     "1.2.0": [{"filename": "pkg-1.2.0.tar.gz", "packagetype": "sdist"}],
                     "1.3.0": [],
@@ -339,12 +364,16 @@ def test_fetch_pypi_wheel_filenames(monkeypatch: pytest.MonkeyPatch) -> None:
         "1.2.0": (),
         "1.3.0": (),
     }
-    session.get.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10.0)
+    session.get.assert_called_once_with(
+        url="https://pypi.org/pypi/my_package/json", timeout=10.0
+    )
 
 
 @patch("feu.imports.requests.is_requests_available", lambda: False)
 def test_fetch_pypi_wheel_filenames_no_requests() -> None:
-    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
+    with pytest.raises(
+        RuntimeError, match=r"'requests' package is required but not installed."
+    ):
         fetch_pypi_wheel_filenames("my_package")
 ```
 
@@ -383,7 +412,9 @@ def fetch_pypi_wheel_filenames(package: str) -> dict[str, tuple[str, ...]]:
     result: dict[str, tuple[str, ...]] = {}
     for version, files in metadata["releases"].items():
         result[version] = tuple(
-            file["filename"] for file in (files or []) if file.get("packagetype") == "bdist_wheel"
+            file["filename"]
+            for file in (files or [])
+            if file.get("packagetype") == "bdist_wheel"
         )
     return result
 ```
@@ -446,7 +477,9 @@ git commit -m "feat(version): add fetch_pypi_wheel_filenames"
 def test_default_targets_shape() -> None:
     assert len(DEFAULT_TARGETS) == len(DEFAULT_PYTHON_VERSIONS) * 2 * 3 * 2
     assert all(isinstance(target, Target) for target in DEFAULT_TARGETS)
-    assert all(target.os is not None and target.arch is not None for target in DEFAULT_TARGETS)
+    assert all(
+        target.os is not None and target.arch is not None for target in DEFAULT_TARGETS
+    )
 
 
 ##############################################
@@ -462,7 +495,9 @@ def test_default_targets_shape() -> None:
             "pkg-1.1.0-cp311-cp311-manylinux_2_17_x86_64.whl",
             "pkg-1.1.0-cp314-cp314t-manylinux_2_17_x86_64.whl",
         ),
-        "1.1.0a1": ("pkg-1.1.0a1-cp311-cp311-manylinux_2_17_x86_64.whl",),  # pre-release, ignored
+        "1.1.0a1": (
+            "pkg-1.1.0a1-cp311-cp311-manylinux_2_17_x86_64.whl",
+        ),  # pre-release, ignored
         "not-a-version": ("pkg-bad.whl",),  # invalid, ignored
     },
 )
@@ -626,7 +661,9 @@ def discover_compat_targets(
             os=target.os,
             arch=target.arch,
         )
-        compatible = [version for version in versions if wanted in tags_by_version[version]]
+        compatible = [
+            version for version in versions if wanted in tags_by_version[version]
+        ]
         if not compatible:
             result[target] = {"min": UNSUPPORTED, "max": UNSUPPORTED}
             continue
@@ -692,7 +729,9 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
     # wheels once free-threaded CPython builds became available on PyPI;
     # assert a non-empty, internally consistent result rather than exact
     # version numbers, to stay resilient to upstream releases.
-    target = Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
+    target = Target(
+        python_version="3.14", free_threaded=True, os="linux", arch="x86_64"
+    )
     compat = discover_compat_targets("numpy", targets=(target,))
     assert set(compat) == {target}
     config = compat[target]
@@ -705,7 +744,9 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
 
 @requests_not_available
 def test_discover_compat_targets_no_requests() -> None:
-    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
+    with pytest.raises(
+        RuntimeError, match=r"'requests' package is required but not installed."
+    ):
         discover_compat_targets("numpy")
 ```
 
@@ -728,7 +769,9 @@ Add `"discover_compat_targets"`, `"WheelTags"`,
 `"parse_wheel_filename"` to `__all__` (alphabetically), and add:
 
 ```python
-from feu.compat.discovery import discover_compat_targets  # alongside existing discover_compat import
+from feu.compat.discovery import (
+    discover_compat_targets,
+)  # alongside existing discover_compat import
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 ```
 

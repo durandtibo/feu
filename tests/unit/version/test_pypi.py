@@ -6,7 +6,11 @@ import pytest
 
 from feu.imports import is_requests_available
 from feu.testing import requests_available
-from feu.version import fetch_pypi_requires_python, fetch_pypi_versions, fetch_pypi_wheel_filenames
+from feu.version import (
+    fetch_pypi_requires_python,
+    fetch_pypi_versions,
+    fetch_pypi_wheel_filenames,
+)
 
 if is_requests_available():
     import requests

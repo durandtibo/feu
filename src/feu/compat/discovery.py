@@ -112,8 +112,8 @@ DEFAULT_TARGETS: tuple[Target, ...] = tuple(
 def discover_compat_targets(
     pkg_name: str, targets: Sequence[Target] = DEFAULT_TARGETS
 ) -> dict[Target, dict[str, str | None]]:
-    r"""Discover the min/max package version compatible with each
-    target, using actual wheel filenames published on PyPI.
+    r"""Discover the min/max package version compatible with each target,
+    using actual wheel filenames published on PyPI.
 
     Unlike ``discover_compat``, which only inspects the
     ``requires_python`` metadata, this function parses each release's
