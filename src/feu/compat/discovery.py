@@ -3,7 +3,12 @@ compatibility constraints from PyPI metadata."""
 
 from __future__ import annotations
 
-__all__ = ["DEFAULT_PYTHON_VERSIONS", "discover_compat"]
+__all__ = [
+    "DEFAULT_PYTHON_VERSIONS",
+    "DEFAULT_TARGETS",
+    "discover_compat",
+    "discover_compat_targets",
+]
 
 from typing import TYPE_CHECKING
 
@@ -11,8 +16,10 @@ from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
 
 from feu.compat.registry import UNSUPPORTED
+from feu.compat.target import Target
+from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.version.filtering import filter_stable_versions, filter_valid_versions
-from feu.version.pypi import fetch_pypi_requires_python
+from feu.version.pypi import fetch_pypi_requires_python, fetch_pypi_wheel_filenames
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -91,3 +98,75 @@ def _is_compatible(requires_python: str | None, python_version: str) -> bool:
         return SpecifierSet(requires_python).contains(python_version, prereleases=True)
     except InvalidSpecifier:
         return True
+
+
+DEFAULT_TARGETS: tuple[Target, ...] = tuple(
+    Target(python_version=python_version, free_threaded=free_threaded, os=os, arch=arch)
+    for python_version in DEFAULT_PYTHON_VERSIONS
+    for free_threaded in (False, True)
+    for os in ("linux", "macos", "windows")
+    for arch in ("x86_64", "arm64")
+)
+
+
+def discover_compat_targets(
+    pkg_name: str, targets: Sequence[Target] = DEFAULT_TARGETS
+) -> dict[Target, dict[str, str | None]]:
+    r"""Discover the min/max package version compatible with each
+    target, using actual wheel filenames published on PyPI.
+
+    Unlike ``discover_compat``, which only inspects the
+    ``requires_python`` metadata, this function parses each release's
+    wheel filenames to determine whether it shipped a build matching
+    a target's free-threaded/OS/arch axes, not just its Python
+    version.
+
+    Args:
+        pkg_name: The package name to inspect (e.g., ``"numpy"``).
+        targets: The compatibility targets to compute constraints for.
+            Each target must have concrete (non-``None``) ``os`` and
+            ``arch``. Defaults to ``DEFAULT_TARGETS``.
+
+    Returns:
+        A mapping of ``Target`` to ``{"min": ..., "max": ...}``, in
+            the same shape expected by
+            ``CompatRegistry.register_many``.
+
+    Example:
+        ```pycon
+        >>> from feu.compat.discovery import discover_compat_targets
+        >>> compat = discover_compat_targets("numpy")  # doctest: +SKIP
+
+        ```
+    """
+    wheel_filenames = fetch_pypi_wheel_filenames(pkg_name)
+    versions = filter_stable_versions(filter_valid_versions(wheel_filenames.keys()))
+    versions = sorted(versions, key=Version)
+    latest = versions[-1] if versions else None
+
+    tags_by_version: dict[str, set[WheelTags]] = {
+        version: {
+            tags
+            for filename in wheel_filenames[version]
+            if (tags := parse_wheel_filename(filename)) is not None
+        }
+        for version in versions
+    }
+
+    result: dict[Target, dict[str, str | None]] = {}
+    for target in targets:
+        wanted = WheelTags(
+            python_version=target.python_version,
+            free_threaded=target.free_threaded,
+            os=target.os,
+            arch=target.arch,
+        )
+        compatible = [version for version in versions if wanted in tags_by_version[version]]
+        if not compatible:
+            result[target] = {"min": UNSUPPORTED, "max": UNSUPPORTED}
+            continue
+        result[target] = {
+            "min": compatible[0],
+            "max": None if compatible[-1] == latest else compatible[-1],
+        }
+    return result
