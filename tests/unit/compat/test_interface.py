@@ -10,10 +10,11 @@ from feu.compat.interface import (
     is_valid_version,
     register_compat,
 )
-from feu.compat.registry import CompatRegistry
+from feu.compat.registry import CompatRegistry, VersionRange
 from feu.compat.target import Target
 
 T311 = Target(python_version="3.11")
+
 
 ######################################
 #     Tests for get_default_registry #
@@ -42,10 +43,7 @@ def test_get_default_registry_is_singleton() -> None:
 
 def test_get_default_registry_populated_with_defaults() -> None:
     registry = get_default_registry()
-    assert registry.get_config(pkg_name="numpy", target=T311) == {
-        "min": "1.23.2",
-        "max": "2.4.6",
-    }
+    assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("1.23.2", "2.4.6")]
 
 
 #################################
@@ -54,28 +52,24 @@ def test_get_default_registry_populated_with_defaults() -> None:
 
 
 def test_register_compat_adds_to_override_layer() -> None:
-    register_compat({"my_package": {T311: {"min": "1.0.0", "max": None}}})
+    register_compat({"my_package": {T311: [VersionRange("1.0.0", None)]}})
     registry = get_default_registry()
-    assert registry.get_config(pkg_name="my_package", target=T311) == {
-        "min": "1.0.0",
-        "max": None,
-    }
-    assert registry.overrides == {"my_package": {T311: {"min": "1.0.0", "max": None}}}
+    assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("1.0.0", None)]
+    assert registry.overrides == {"my_package": {T311: [VersionRange("1.0.0", None)]}}
 
 
 def test_register_compat_exist_ok_false_raises() -> None:
-    register_compat({"my_package": {T311: {"min": "1.0.0", "max": None}}})
+    register_compat({"my_package": {T311: [VersionRange("1.0.0", None)]}})
     with pytest.raises(RuntimeError, match=r"A package configuration .* is already registered"):
-        register_compat({"my_package": {T311: {"min": "2.0.0", "max": None}}})
+        register_compat({"my_package": {T311: [VersionRange("2.0.0", None)]}})
 
 
 def test_register_compat_overrides_a_default_without_exist_ok() -> None:
     # numpy has a base entry for 3.11; overriding it must not require exist_ok=True.
-    register_compat({"numpy": {T311: {"min": "9.9.9", "max": None}}})
-    assert get_default_registry().get_config(pkg_name="numpy", target=T311) == {
-        "min": "9.9.9",
-        "max": None,
-    }
+    register_compat({"numpy": {T311: [VersionRange("9.9.9", None)]}})
+    assert get_default_registry().get_config(pkg_name="numpy", target=T311) == [
+        VersionRange("9.9.9", None)
+    ]
 
 
 ########################################

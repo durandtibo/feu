@@ -6,6 +6,7 @@ __all__ = ["DEFAULT_COMPAT", "register_defaults"]
 
 from typing import TYPE_CHECKING
 
+from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 if TYPE_CHECKING:
@@ -149,9 +150,11 @@ def register_defaults(registry: CompatRegistry) -> None:
     Args:
         registry: The registry to populate.
     """
-    mapping: dict[str, dict[Target, dict[str, str | None]]] = {
+    mapping: dict[str, dict[Target, list[VersionRange]]] = {
         pkg_name: {
-            Target(python_version=python_version): config
+            Target(python_version=python_version): [
+                VersionRange(config["min"], config["max"])
+            ]
             for python_version, config in versions.items()
         }
         for pkg_name, versions in DEFAULT_COMPAT.items()

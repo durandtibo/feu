@@ -16,6 +16,7 @@ from feu.compat.defaults import register_defaults
 from feu.compat.registry import CompatRegistry
 
 if TYPE_CHECKING:
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
 
 
@@ -47,7 +48,7 @@ def get_default_registry() -> CompatRegistry:
 
 
 def register_compat(
-    mapping: dict[str, dict[Target, dict[str, str | None]]],
+    mapping: dict[str, dict[Target, list[VersionRange]]],
     exist_ok: bool = False,
 ) -> None:
     r"""Register custom package configurations into the default global
@@ -58,8 +59,8 @@ def register_compat(
     correcting an inaccurate default never requires ``exist_ok=True``.
 
     Args:
-        mapping: Mapping of package name to ``Target`` to
-            ``{"min": ..., "max": ...}`` constraints.
+        mapping: Mapping of package name to ``Target`` to a list of
+            ``VersionRange``.
         exist_ok: If ``False`` (default), raises an error if any entry
             is already registered as an override. If ``True``,
             overwrites existing override registrations silently.
@@ -70,9 +71,9 @@ def register_compat(
 
     Example:
         ```pycon
-        >>> from feu.compat import register_compat, Target
+        >>> from feu.compat import register_compat, Target, VersionRange
         >>> register_compat(
-        ...     {"my_package": {Target(python_version="3.11"): {"min": "1.0.0", "max": None}}}
+        ...     {"my_package": {Target(python_version="3.11"): [VersionRange("1.0.0", None)]}}
         ... )
 
         ```
