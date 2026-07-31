@@ -48,16 +48,44 @@ def test_fetch_pypi_versions_no_requests() -> None:
 def test_fetch_pypi_requires_python_requests() -> None:
     mapping = fetch_pypi_requires_python("requests")
     assert isinstance(mapping, dict)
-    assert mapping["2.31.0"] == ">=3.7"
-    assert mapping["2.32.3"] == ">=3.8"
-    assert mapping["2.32.5"] == ">=3.9"
+    assert {
+        version: mapping[version]
+        for version in (
+            "2.28.0",
+            "2.28.1",
+            "2.28.2",
+            "2.29.0",
+            "2.30.0",
+            "2.31.0",
+            "2.32.0",
+            "2.32.3",
+            "2.32.4",
+            "2.32.5",
+        )
+    } == {
+        "2.28.0": ">=3.7, <4",
+        "2.28.1": ">=3.7, <4",
+        "2.28.2": ">=3.7, <4",
+        "2.29.0": ">=3.7",
+        "2.30.0": ">=3.7",
+        "2.31.0": ">=3.7",
+        "2.32.0": ">=3.8",
+        "2.32.3": ">=3.8",
+        "2.32.4": ">=3.8",
+        "2.32.5": ">=3.9",
+    }
 
 
 @requests_available
 def test_fetch_pypi_requires_python_torch() -> None:
     mapping = fetch_pypi_requires_python("torch")
     assert isinstance(mapping, dict)
-    assert "2.8.0" in mapping
+    assert {version: mapping[version] for version in ("2.6.0", "2.7.0", "2.7.1", "2.8.0")} == {
+        "2.6.0": ">=3.9.0",
+        "2.7.0": ">=3.9.0",
+        "2.7.1": ">=3.9.0",
+        "2.8.0": ">=3.9.0",
+    }
 
 
 @requests_not_available
