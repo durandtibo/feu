@@ -767,3 +767,22 @@ git commit -m "feat(compat): export discover_compat_targets and add integration 
   (`i686`, `win32`), and non-CPython wheels. Extending the
   `os`/`arch` tables is straightforward if a future package needs one
   of those.
+- `parse_wheel_filename` derives `python_version` solely from the
+  wheel's *python tag* (e.g. `cp39` -> `"3.9"`); it does not account
+  for `abi3` (stable ABI) wheels, which are forward-compatible with
+  every CPython version >= the tagged one, not just that exact
+  version. A wheel like `cryptography-...-cp39-abi3-...whl` is
+  actually installable on 3.9, 3.10, 3.11, etc., but the parser
+  currently reports it as supporting only `"3.9"`. As a result,
+  `discover_compat_targets` will under-report (be overly
+  conservative about) support for packages that ship stable-ABI
+  wheels — not a crash, just a wrong/too-narrow answer for that
+  specific case. The design spec only mentions `abi3` in the context
+  of free-threaded detection, not python-version semantics, so this
+  is a genuine gap that needs a deliberate design decision (e.g.
+  treat the tagged version as a floor and mark all newer target
+  versions as compatible too, vs. skip/flag `abi3` wheels
+  specially) before `discover_compat_targets` is used to regenerate
+  real `DEFAULT_COMPAT` data — otherwise packages using the stable
+  ABI (e.g. `cryptography`) will get incorrect, overly narrow compat
+  ranges.

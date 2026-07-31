@@ -119,9 +119,7 @@ def test_discover_compat_targets_basic() -> None:
     },
 )
 def test_discover_compat_targets_free_threaded() -> None:
-    free_threaded_314 = Target(
-        python_version="3.14", free_threaded=True, os="linux", arch="x86_64"
-    )
+    free_threaded_314 = Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(free_threaded_314,))
     assert compat == {free_threaded_314: {"min": "1.1.0", "max": None}}
 

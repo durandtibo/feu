@@ -110,15 +110,21 @@ def make_mock_wheel_filenames_response() -> Response:
             return_value={
                 "releases": {
                     "1.0.0": [
-                        {"filename": "pkg-1.0.0-cp39-cp39-manylinux_2_17_x86_64.whl",
-                         "packagetype": "bdist_wheel"},
+                        {
+                            "filename": "pkg-1.0.0-cp39-cp39-manylinux_2_17_x86_64.whl",
+                            "packagetype": "bdist_wheel",
+                        },
                         {"filename": "pkg-1.0.0.tar.gz", "packagetype": "sdist"},
                     ],
                     "1.1.0": [
-                        {"filename": "pkg-1.1.0-cp39-cp39-manylinux_2_17_x86_64.whl",
-                         "packagetype": "bdist_wheel"},
-                        {"filename": "pkg-1.1.0-cp310-cp310-manylinux_2_17_x86_64.whl",
-                         "packagetype": "bdist_wheel"},
+                        {
+                            "filename": "pkg-1.1.0-cp39-cp39-manylinux_2_17_x86_64.whl",
+                            "packagetype": "bdist_wheel",
+                        },
+                        {
+                            "filename": "pkg-1.1.0-cp310-cp310-manylinux_2_17_x86_64.whl",
+                            "packagetype": "bdist_wheel",
+                        },
                     ],
                     "1.2.0": [{"filename": "pkg-1.2.0.tar.gz", "packagetype": "sdist"}],
                     "1.3.0": [],

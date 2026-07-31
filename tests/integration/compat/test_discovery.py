@@ -8,6 +8,7 @@ from feu.compat.discovery import (
     discover_compat,
     discover_compat_targets,
 )
+from feu.compat.registry import UNSUPPORTED
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version import fetch_pypi_requires_python
@@ -115,9 +116,10 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
     assert set(compat) == {target}
     config = compat[target]
     assert set(config) == {"min", "max"}
-    if config["min"] not in (None, "unsupported"):
-        assert Version(config["min"])
-    if config["max"] not in (None, "unsupported"):
+    assert config["min"] not in (None, UNSUPPORTED)
+    assert Version(config["min"])
+    assert config["max"] != UNSUPPORTED
+    if config["max"] is not None:
         assert Version(config["max"])
 
 
