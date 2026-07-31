@@ -10,11 +10,12 @@ from __future__ import annotations
 __all__ = ["UNSUPPORTED", "CompatRegistry", "UnsupportedVersionError"]
 
 import copy
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from packaging.version import Version
 
-from feu.compat.target import Target
+if TYPE_CHECKING:
+    from feu.compat.target import Target
 
 UNSUPPORTED = "unsupported"
 r"""Sentinel used as the ``min``/``max`` value to mark a target for
@@ -112,6 +113,7 @@ class CompatRegistry:
         self,
         pkg_name: str,
         target: Target,
+        *,
         pkg_version_min: str | None,
         pkg_version_max: str | None,
         exist_ok: bool = False,

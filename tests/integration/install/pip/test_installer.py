@@ -4,6 +4,7 @@ import pytest
 
 from feu import is_package_available
 from feu.compat import find_closest_version
+from feu.compat import Target
 from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
 from feu.testing import pip_available, pipx_available, uv_available
 from feu.utils.package import PackageSpec
@@ -20,7 +21,7 @@ def package() -> PackageSpec:
     return PackageSpec(
         name="mkdocs",
         version=find_closest_version(
-            pkg_name="mkdocs", pkg_version="1.6.1", python_version=get_python_major_minor()
+            pkg_name="mkdocs", pkg_version="1.6.1", target=Target(python_version=get_python_major_minor())
         ),
     )
 

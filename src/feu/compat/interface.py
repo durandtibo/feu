@@ -10,9 +10,13 @@ __all__ = [
     "register_compat",
 ]
 
+from typing import TYPE_CHECKING
+
 from feu.compat.defaults import register_defaults
 from feu.compat.registry import CompatRegistry
-from feu.compat.target import Target
+
+if TYPE_CHECKING:
+    from feu.compat.target import Target
 
 
 def get_default_registry() -> CompatRegistry:

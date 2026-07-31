@@ -4,6 +4,7 @@ import pytest
 
 from feu import is_package_available
 from feu.compat import find_closest_version
+from feu.compat import Target
 from feu.install import (
     get_available_installers,
     install_package,
@@ -27,7 +28,7 @@ def pkg_name() -> str:
 @pytest.fixture(scope="module")
 def pkg_version(pkg_name: str) -> str:
     return find_closest_version(
-        pkg_name=pkg_name, pkg_version="1.6.1", python_version=get_python_major_minor()
+        pkg_name=pkg_name, pkg_version="1.6.1", target=Target(python_version=get_python_major_minor())
     )
 
 
