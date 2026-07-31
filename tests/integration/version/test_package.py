@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from packaging.version import Version
+
 from feu.testing import requests_available
 from feu.version import (
     fetch_latest_major_versions,
@@ -9,6 +11,12 @@ from feu.version import (
     fetch_versions,
 )
 
+# NOTE: these tests hit the real PyPI index. Bounds are asserted rather
+# than exact snapshots of version lists, because upstream projects keep
+# publishing new releases (e.g. a new torch/requests patch release, or a
+# new gravitorch/gtaccelerate release) that would otherwise silently
+# break these tests without any change to this codebase.
+
 ####################################
 #     Tests for fetch_versions     #
 ####################################
@@ -16,29 +24,18 @@ from feu.version import (
 
 @requests_available
 def test_fetch_versions_requests() -> None:
-    assert fetch_versions("requests", lower="2.25", upper="2.30") == (
-        "2.25.0",
-        "2.25.1",
-        "2.26.0",
-        "2.27.0",
-        "2.27.1",
-        "2.28.0",
-        "2.28.1",
-        "2.28.2",
-        "2.29.0",
-    )
+    versions = fetch_versions("requests", lower="2.25", upper="2.30")
+    assert list(versions) == sorted(versions, key=Version)
+    assert all(Version("2.25") <= Version(v) < Version("2.30") for v in versions)
+    assert {"2.25.0", "2.28.2"}.issubset(versions)
 
 
 @requests_available
 def test_fetch_versions_torch() -> None:
-    assert fetch_versions("torch", lower="2.5", upper="2.9") == (
-        "2.5.0",
-        "2.5.1",
-        "2.6.0",
-        "2.7.0",
-        "2.7.1",
-        "2.8.0",
-    )
+    versions = fetch_versions("torch", lower="2.5", upper="2.9")
+    assert list(versions) == sorted(versions, key=Version)
+    assert all(Version("2.5") <= Version(v) < Version("2.9") for v in versions)
+    assert {"2.5.0", "2.6.0", "2.7.0"}.issubset(versions)
 
 
 #################################################
@@ -48,12 +45,18 @@ def test_fetch_versions_torch() -> None:
 
 @requests_available
 def test_fetch_latest_major_versions_requests() -> None:
-    assert fetch_latest_major_versions("requests", upper="2.30") == ("0.14.2", "1.2.3", "2.29.0")
+    versions = fetch_latest_major_versions("requests", upper="2.30")
+    assert list(versions) == sorted(versions, key=Version)
+    assert all(Version(v) < Version("2.30") for v in versions)
+    assert {"0.14.2", "1.2.3"}.issubset(versions)
 
 
 @requests_available
 def test_fetch_latest_major_versions_torch() -> None:
-    assert fetch_latest_major_versions("torch", upper="2.9") == ("1.13.1", "2.8.0")
+    versions = fetch_latest_major_versions("torch", upper="2.9")
+    assert list(versions) == sorted(versions, key=Version)
+    assert all(Version(v) < Version("2.9") for v in versions)
+    assert "1.13.1" in versions
 
 
 #################################################
@@ -63,43 +66,18 @@ def test_fetch_latest_major_versions_torch() -> None:
 
 @requests_available
 def test_fetch_latest_minor_versions_requests() -> None:
-    assert fetch_latest_minor_versions("requests", lower="2.10", upper="2.30") == (
-        "2.10.0",
-        "2.11.1",
-        "2.12.5",
-        "2.13.0",
-        "2.14.2",
-        "2.15.1",
-        "2.16.5",
-        "2.17.3",
-        "2.18.4",
-        "2.19.1",
-        "2.20.1",
-        "2.21.0",
-        "2.22.0",
-        "2.23.0",
-        "2.24.0",
-        "2.25.1",
-        "2.26.0",
-        "2.27.1",
-        "2.28.2",
-        "2.29.0",
-    )
+    versions = fetch_latest_minor_versions("requests", lower="2.10", upper="2.30")
+    assert list(versions) == sorted(versions, key=Version)
+    assert all(Version("2.10") <= Version(v) < Version("2.30") for v in versions)
+    assert {"2.10.0", "2.20.1"}.issubset(versions)
 
 
 @requests_available
 def test_fetch_latest_minor_versions_torch() -> None:
-    assert fetch_latest_minor_versions("torch", lower="2.0", upper="2.9") == (
-        "2.0.1",
-        "2.1.2",
-        "2.2.2",
-        "2.3.1",
-        "2.4.1",
-        "2.5.1",
-        "2.6.0",
-        "2.7.1",
-        "2.8.0",
-    )
+    versions = fetch_latest_minor_versions("torch", lower="2.0", upper="2.9")
+    assert list(versions) == sorted(versions, key=Version)
+    assert all(Version("2.0") <= Version(v) < Version("2.9") for v in versions)
+    assert {"2.0.1", "2.5.1"}.issubset(versions)
 
 
 ##########################################
@@ -109,12 +87,14 @@ def test_fetch_latest_minor_versions_torch() -> None:
 
 @requests_available
 def test_fetch_latest_version_stable() -> None:
-    assert fetch_latest_version("gravitorch") == "0.0.23"
+    version = fetch_latest_version("gravitorch")
+    assert Version(version) >= Version("0.0.23")
 
 
 @requests_available
 def test_fetch_latest_version_dev() -> None:
-    assert fetch_latest_version("gtaccelerate") == "0.0.1a6"
+    version = fetch_latest_version("gtaccelerate")
+    assert Version(version) >= Version("0.0.1a6")
 
 
 #################################################
@@ -124,4 +104,6 @@ def test_fetch_latest_version_dev() -> None:
 
 @requests_available
 def test_fetch_latest_stable_version() -> None:
-    assert fetch_latest_stable_version("gravitorch") == "0.0.23"
+    version = fetch_latest_stable_version("gravitorch")
+    assert Version(version) >= Version("0.0.23")
+    assert not Version(version).is_prerelease
