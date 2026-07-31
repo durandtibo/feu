@@ -89,9 +89,7 @@ def test_compat_registry_register_exist_ok_false_same_layer() -> None:
     with pytest.raises(
         RuntimeError, match=r"A package configuration .* is already registered for package"
     ):
-        registry.register(
-            "my_package", T311, ranges=[VersionRange("1.2.0", "2.0.2")], layer="base"
-        )
+        registry.register("my_package", T311, ranges=[VersionRange("1.2.0", "2.0.2")], layer="base")
 
 
 def test_compat_registry_register_override_never_conflicts_with_base() -> None:
@@ -233,7 +231,9 @@ def test_compat_registry_most_recent_wins_among_ties() -> None:
     target = Target(python_version="3.11", os="linux", arch="x86_64")
     # Both entries match with equal specificity (one non-None field each);
     # the most recently registered one wins.
-    assert registry.get_config(pkg_name="my_package", target=target) == [VersionRange("2.0.0", None)]
+    assert registry.get_config(pkg_name="my_package", target=target) == [
+        VersionRange("2.0.0", None)
+    ]
 
 
 ########################################

@@ -89,9 +89,7 @@ class CompatRegistry:
     def __init__(
         self, initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None
     ) -> None:
-        self._base: dict[str, dict[Target, list[VersionRange]]] = copy.deepcopy(
-            initial_state or {}
-        )
+        self._base: dict[str, dict[Target, list[VersionRange]]] = copy.deepcopy(initial_state or {})
         self._overrides: dict[str, dict[Target, list[VersionRange]]] = {}
 
     def __repr__(self) -> str:
@@ -217,9 +215,8 @@ class CompatRegistry:
     def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
         r"""Resolve the raw registered ranges for a package/target,
         preserving the distinction between "no entry registered"
-        (``None``) and "an entry registered with zero ranges"
-        (``[]``, i.e. explicitly unsupported).
-        """
+        (``None``) and "an entry registered with zero ranges" (``[]``,
+        i.e. explicitly unsupported)."""
         ranges = self._resolve_in_layer(self._overrides, pkg_name, target)
         if ranges is not None:
             return ranges
