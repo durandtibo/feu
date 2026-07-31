@@ -175,7 +175,7 @@ class PackageConfig:
             "3.14": {"min": "1.16.1", "max": None},
             "3.13": {"min": "1.14.1", "max": None},
             "3.12": {"min": "1.12.0", "max": None},
-            "3.11": {"min": "1.10.0", "max": None},
+            "3.11": {"min": "1.10.0", "max": "1.17.1"},
             "3.10": {"min": "1.8.0", "max": "1.15.3"},
             "3.9": {"min": None, "max": "1.13.1"},
         },
@@ -448,12 +448,9 @@ class PackageConfig:
             python_version=python_version,
         )
 
-        valid = True
-        if min_version is not None:
-            valid &= min_version <= version
-        if max_version is not None:
-            valid &= version <= max_version
-        return valid
+        return (min_version is None or min_version <= version) and (
+            max_version is None or version <= max_version
+        )
 
 
 def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -> str:
