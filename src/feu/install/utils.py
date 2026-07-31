@@ -14,7 +14,7 @@ import shutil
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
-from feu.compat import find_closest_version
+from feu.compat import Target, find_closest_version
 from feu.install import InstallerRegistry
 from feu.version import get_python_major_minor
 
@@ -79,7 +79,7 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
             find_closest_version(
                 pkg_name=package.name,
                 pkg_version=pkg_version,
-                python_version=get_python_major_minor(),
+                target=Target(python_version=get_python_major_minor()),
             )
         ),
     )

@@ -75,7 +75,7 @@ The library is particularly useful for projects that need to support multiple Py
 
 ```python
 from feu import is_package_available, install_package_closest_version
-from feu.compat import find_closest_version
+from feu.compat import Target, find_closest_version
 
 # Check if a package is available
 if is_package_available("numpy"):
@@ -83,7 +83,7 @@ if is_package_available("numpy"):
 
 # Find the closest valid version for your Python version
 version = find_closest_version(
-    pkg_name="numpy", pkg_version="2.0.2", python_version="3.10"
+    pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
 )
 print(f"Closest valid version: {version}")
 ```

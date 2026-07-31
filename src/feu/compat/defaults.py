@@ -6,6 +6,8 @@ __all__ = ["DEFAULT_COMPAT", "register_defaults"]
 
 from typing import TYPE_CHECKING
 
+from feu.compat.target import Target
+
 if TYPE_CHECKING:
     from feu.compat.registry import CompatRegistry
 
@@ -141,10 +143,17 @@ DEFAULT_COMPAT: dict[str, dict[str, dict[str, str | None]]] = {
 
 
 def register_defaults(registry: CompatRegistry) -> None:
-    r"""Populate a registry with the default package compatibility
-    constraints.
+    r"""Populate a registry's base layer with the default package
+    compatibility constraints.
 
     Args:
         registry: The registry to populate.
     """
-    registry.register_many(DEFAULT_COMPAT)
+    mapping: dict[str, dict[Target, dict[str, str | None]]] = {
+        pkg_name: {
+            Target(python_version=python_version): config
+            for python_version, config in versions.items()
+        }
+        for pkg_name, versions in DEFAULT_COMPAT.items()
+    }
+    registry.register_many(mapping, layer="base")

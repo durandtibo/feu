@@ -55,11 +55,11 @@ print(f"NumPy version: {version}")
 Find the closest valid package version for your Python version:
 
 ```python
-from feu.compat import find_closest_version, is_valid_version
+from feu.compat import Target, find_closest_version, is_valid_version
 
 # Check if a specific version is valid for your Python version
 is_valid = is_valid_version(
-    pkg_name="numpy", pkg_version="2.0.2", python_version="3.10"
+    pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
 )
 print(f"NumPy 2.0.2 is valid for Python 3.10: {is_valid}")
 
@@ -67,7 +67,7 @@ print(f"NumPy 2.0.2 is valid for Python 3.10: {is_valid}")
 closest = find_closest_version(
     pkg_name="numpy",
     pkg_version="1.0.0",  # This is too old for Python 3.11
-    python_version="3.11",
+    target=Target(python_version="3.11"),
 )
 print(f"Closest valid version: {closest}")  # Will return "1.23.2"
 ```
@@ -99,26 +99,26 @@ install_package_closest_version(
 Add custom package configurations to the default compatibility registry:
 
 ```python
-from feu.compat import get_default_registry
+from feu.compat import Target, get_default_registry
 
 registry = get_default_registry()
 
 # Add a custom package configuration
 registry.register(
     pkg_name="my_package",
-    python_version="3.11",
+    target=Target(python_version="3.11"),
     pkg_version_min="1.2.0",
     pkg_version_max="2.0.0",
     exist_ok=True,
 )
 
 # Get the configuration for a package
-config = registry.get_config(pkg_name="my_package", python_version="3.11")
+config = registry.get_config(pkg_name="my_package", target=Target(python_version="3.11"))
 print(config)  # {'min': '1.2.0', 'max': '2.0.0'}
 
 # Get min and max versions
 min_version, max_version = registry.get_min_and_max_versions(
-    pkg_name="numpy", python_version="3.11"
+    pkg_name="numpy", target=Target(python_version="3.11")
 )
 print(f"Min: {min_version}, Max: {max_version}")
 ```
@@ -190,13 +190,13 @@ If you're maintaining a project that supports multiple Python versions:
 
 ```python
 import sys
-from feu.compat import find_closest_version
+from feu.compat import Target, find_closest_version
 
 python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
 
 # Find compatible numpy version
 numpy_version = find_closest_version(
-    pkg_name="numpy", pkg_version="2.0.0", python_version=python_version
+    pkg_name="numpy", pkg_version="2.0.0", target=Target(python_version=python_version)
 )
 print(f"Installing numpy {numpy_version} for Python {python_version}")
 ```
@@ -207,7 +207,7 @@ Before installing a package, check if the version is compatible:
 
 ```python
 import sys
-from feu.compat import is_valid_version
+from feu.compat import Target, is_valid_version
 from feu import install_package
 from feu.utils.package import PackageSpec
 from feu.utils.installer import InstallerSpec
@@ -215,7 +215,7 @@ from feu.utils.installer import InstallerSpec
 python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
 desired_version = "2.0.2"
 
-if is_valid_version("numpy", desired_version, python_version):
+if is_valid_version("numpy", desired_version, Target(python_version=python_version)):
     install_package(
         installer=InstallerSpec(name="pip"),
         package=PackageSpec(name="numpy", version=desired_version),
