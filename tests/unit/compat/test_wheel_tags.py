@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
+from feu.compat.wheel_tags import (
+    WheelTags,
+    parse_arch,
+    parse_os,
+    parse_python_tag,
+    parse_wheel_filename,
+)
 
 #################################################
 #     Tests for parse_wheel_filename            #
@@ -64,3 +70,71 @@ def test_wheel_tags_is_frozen_and_comparable() -> None:
     assert a == b
     with pytest.raises(AttributeError):
         a.os = "macos"  # type: ignore[misc]
+
+
+#################################################
+#     Tests for parse_python_tag               #
+#################################################
+
+
+@pytest.mark.parametrize(
+    ("python_tag", "expected"),
+    [
+        ("cp312", "3.12"),
+        ("cp39", "3.9"),
+        ("cp314", "3.14"),
+    ],
+)
+def test_parse_python_tag_recognized(python_tag: str, expected: str) -> None:
+    assert parse_python_tag(python_tag) == expected
+
+
+@pytest.mark.parametrize("python_tag", ["py3", "pp310", "cpython312", "cp3x"])
+def test_parse_python_tag_unrecognized_returns_none(python_tag: str) -> None:
+    assert parse_python_tag(python_tag) is None
+
+
+#################################################
+#     Tests for parse_os                       #
+#################################################
+
+
+@pytest.mark.parametrize(
+    ("platform_tag", "expected"),
+    [
+        ("manylinux_2_17_x86_64", "linux"),
+        ("linux_x86_64", "linux"),
+        ("macosx_11_0_arm64", "macos"),
+        ("win_amd64", "windows"),
+        ("win_arm64", "windows"),
+        ("win32", "windows"),
+    ],
+)
+def test_parse_os_recognized(platform_tag: str, expected: str) -> None:
+    assert parse_os(platform_tag) == expected
+
+
+def test_parse_os_unrecognized_returns_none() -> None:
+    assert parse_os("freebsd_x86_64") is None
+
+
+#################################################
+#     Tests for parse_arch                     #
+#################################################
+
+
+@pytest.mark.parametrize(
+    ("platform_tag", "expected"),
+    [
+        ("manylinux_2_17_x86_64", "x86_64"),
+        ("win_amd64", "x86_64"),
+        ("manylinux_2_17_aarch64", "arm64"),
+        ("macosx_11_0_arm64", "arm64"),
+    ],
+)
+def test_parse_arch_recognized(platform_tag: str, expected: str) -> None:
+    assert parse_arch(platform_tag) == expected
+
+
+def test_parse_arch_unrecognized_returns_none() -> None:
+    assert parse_arch("manylinux_2_17_i686") is None
