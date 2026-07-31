@@ -69,7 +69,7 @@ rather than preserving the old shape.
 `DEFAULT_COMPAT` literals switch from
 `{"min": ..., "max": ...}` to `[VersionRange(min, max)]` per Python version:
 
-```python
+```text
 "pydantic": {
     "3.15": [VersionRange(None, None)],
     "3.14": [VersionRange("2.12.0", None)],
