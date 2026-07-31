@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from packaging.version import Version
 
-from feu.compat.registry import CompatRegistry
+from feu.compat.registry import UNSUPPORTED, CompatRegistry, UnsupportedVersionError
 
 ##################################
 #     Tests for CompatRegistry     #
@@ -243,4 +243,45 @@ def test_compat_registry_is_valid_version_empty() -> None:
     registry = CompatRegistry()
     assert registry.is_valid_version(
         pkg_name="my_package", pkg_version="2.0.0", python_version="3.11"
+    )
+
+
+###################################
+#     Tests for UNSUPPORTED       #
+###################################
+
+
+def test_compat_registry_is_unsupported_true() -> None:
+    registry = CompatRegistry({"my_package": {"3.15": {"min": UNSUPPORTED, "max": UNSUPPORTED}}})
+    assert registry.is_unsupported(pkg_name="my_package", python_version="3.15")
+
+
+def test_compat_registry_is_unsupported_false() -> None:
+    registry = CompatRegistry({"my_package": {"3.11": {"min": "1.2.0", "max": "2.2.0"}}})
+    assert not registry.is_unsupported(pkg_name="my_package", python_version="3.11")
+
+
+def test_compat_registry_is_unsupported_unconfigured() -> None:
+    registry = CompatRegistry()
+    assert not registry.is_unsupported(pkg_name="my_package", python_version="3.11")
+
+
+def test_compat_registry_get_min_and_max_versions_unsupported_raises() -> None:
+    registry = CompatRegistry({"my_package": {"3.15": {"min": UNSUPPORTED, "max": UNSUPPORTED}}})
+    with pytest.raises(UnsupportedVersionError, match=r"No version of package my_package"):
+        registry.get_min_and_max_versions(pkg_name="my_package", python_version="3.15")
+
+
+def test_compat_registry_find_closest_version_unsupported_raises() -> None:
+    registry = CompatRegistry({"my_package": {"3.15": {"min": UNSUPPORTED, "max": UNSUPPORTED}}})
+    with pytest.raises(UnsupportedVersionError, match=r"No version of package my_package"):
+        registry.find_closest_version(
+            pkg_name="my_package", pkg_version="2.0.0", python_version="3.15"
+        )
+
+
+def test_compat_registry_is_valid_version_unsupported_false() -> None:
+    registry = CompatRegistry({"my_package": {"3.15": {"min": UNSUPPORTED, "max": UNSUPPORTED}}})
+    assert not registry.is_valid_version(
+        pkg_name="my_package", pkg_version="2.0.0", python_version="3.15"
     )

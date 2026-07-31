@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
 
+from feu.compat.registry import UNSUPPORTED
 from feu.version.filtering import filter_stable_versions, filter_valid_versions
 from feu.version.pypi import fetch_pypi_requires_python
 
@@ -30,7 +31,8 @@ def discover_compat(
     latest compatible release, or ``None`` if the newest stable
     release overall is still compatible (i.e. no upper bound has been
     hit yet). If no stable release is compatible with a given Python
-    version, both ``min`` and ``max`` are ``None``.
+    version, both ``min`` and ``max`` are set to
+    ``feu.compat.registry.UNSUPPORTED``.
 
     Args:
         pkg_name: The package name to inspect (e.g., ``"numpy"``).
@@ -61,7 +63,7 @@ def discover_compat(
             if _is_compatible(requires_python[version], python_version)
         ]
         if not compatible:
-            result[python_version] = {"min": None, "max": None}
+            result[python_version] = {"min": UNSUPPORTED, "max": UNSUPPORTED}
             continue
         result[python_version] = {
             "min": compatible[0],

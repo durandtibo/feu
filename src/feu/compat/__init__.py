@@ -4,7 +4,9 @@ compatibility resolution."""
 from __future__ import annotations
 
 __all__ = [
+    "UNSUPPORTED",
     "CompatRegistry",
+    "UnsupportedVersionError",
     "discover_compat",
     "find_closest_version",
     "get_default_registry",
@@ -19,4 +21,4 @@ from feu.compat.interface import (
     is_valid_version,
     register_compat,
 )
-from feu.compat.registry import CompatRegistry
+from feu.compat.registry import UNSUPPORTED, CompatRegistry, UnsupportedVersionError
