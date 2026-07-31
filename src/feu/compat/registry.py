@@ -7,11 +7,24 @@ closest valid version and validation of a given version.
 
 from __future__ import annotations
 
-__all__ = ["CompatRegistry"]
+__all__ = ["UNSUPPORTED", "CompatRegistry", "UnsupportedVersionError"]
 
 import copy
 
 from packaging.version import Version
+
+UNSUPPORTED = "unsupported"
+r"""Sentinel used as the ``min``/``max`` value to mark a Python version
+for which no package version is valid.
+
+This is distinct from ``None``, which means "unconstrained" (i.e. any
+version is valid).
+"""
+
+
+class UnsupportedVersionError(Exception):
+    r"""Raised when no package version is compatible with a given Python
+    version."""
 
 
 class CompatRegistry:
@@ -150,6 +163,20 @@ class CompatRegistry:
             return {}
         return self.registry[pkg_name].get(python_version, {})
 
+    def is_unsupported(self, pkg_name: str, python_version: str) -> bool:
+        r"""Indicate if no package version is valid for a Python version.
+
+        Args:
+            pkg_name: The package name to check (e.g., ``"numpy"``).
+            python_version: The Python version (e.g., ``"3.11"``).
+
+        Returns:
+            ``True`` if the package has no valid version for the given
+            Python version, ``False`` otherwise.
+        """
+        config = self.get_config(pkg_name=pkg_name, python_version=python_version)
+        return config.get("min") == UNSUPPORTED or config.get("max") == UNSUPPORTED
+
     def get_min_and_max_versions(
         self, pkg_name: str, python_version: str
     ) -> tuple[Version | None, Version | None]:
@@ -162,7 +189,14 @@ class CompatRegistry:
         Returns:
             A tuple ``(min_version, max_version)``, either value being
             ``None`` if unconstrained or unconfigured.
+
+        Raises:
+            UnsupportedVersionError: If no package version is valid for
+                the given Python version.
         """
+        if self.is_unsupported(pkg_name=pkg_name, python_version=python_version):
+            msg = f"No version of package {pkg_name} is compatible with Python {python_version}"
+            raise UnsupportedVersionError(msg)
         config = self.get_config(pkg_name=pkg_name, python_version=python_version)
         min_version = config.get("min", None)
         max_version = config.get("max", None)
@@ -182,6 +216,10 @@ class CompatRegistry:
 
         Returns:
             The closest valid version as a string.
+
+        Raises:
+            UnsupportedVersionError: If no package version is valid for
+                the given Python version.
         """
         version = Version(pkg_version)
         min_version, max_version = self.get_min_and_max_versions(
@@ -202,8 +240,12 @@ class CompatRegistry:
             python_version: The Python version (e.g., ``"3.11"``).
 
         Returns:
-            ``True`` if valid or unconfigured, ``False`` otherwise.
+            ``True`` if valid or unconfigured, ``False`` otherwise,
+            including when no package version is valid for the given
+            Python version.
         """
+        if self.is_unsupported(pkg_name=pkg_name, python_version=python_version):
+            return False
         version = Version(pkg_version)
         min_version, max_version = self.get_min_and_max_versions(
             pkg_name=pkg_name, python_version=python_version

@@ -3,6 +3,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 from feu.compat.discovery import discover_compat
+from feu.compat.registry import UNSUPPORTED
 
 
 @patch(
@@ -31,7 +32,7 @@ def test_discover_compat() -> None:
 )
 def test_discover_compat_no_compatible_version() -> None:
     compat = discover_compat("my_package", python_versions=("3.7",))
-    assert compat == {"3.7": {"min": None, "max": None}}
+    assert compat == {"3.7": {"min": UNSUPPORTED, "max": UNSUPPORTED}}
 
 
 @patch(
@@ -55,7 +56,7 @@ def test_discover_compat_invalid_specifier() -> None:
 @patch("feu.compat.discovery.fetch_pypi_requires_python", lambda *_args: {})
 def test_discover_compat_empty() -> None:
     compat = discover_compat("my_package", python_versions=("3.9",))
-    assert compat == {"3.9": {"min": None, "max": None}}
+    assert compat == {"3.9": {"min": UNSUPPORTED, "max": UNSUPPORTED}}
 
 
 def test_discover_compat_default_python_versions() -> None:
