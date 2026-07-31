@@ -8,7 +8,7 @@ from feu.install import (
     install_package,
     install_package_closest_version,
 )
-from feu.package import find_closest_version
+from feu.compat import find_closest_version
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 from feu.version import get_python_major_minor

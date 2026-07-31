@@ -75,7 +75,7 @@ The library is particularly useful for projects that need to support multiple Py
 
 ```python
 from feu import is_package_available, install_package_closest_version
-from feu.package import find_closest_version
+from feu.compat import find_closest_version
 
 # Check if a package is available
 if is_package_available("numpy"):
