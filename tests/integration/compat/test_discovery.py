@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 from packaging.version import Version
 
@@ -8,10 +10,12 @@ from feu.compat.discovery import (
     discover_compat,
     discover_compat_targets,
 )
-from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version import fetch_pypi_requires_python
+
+if TYPE_CHECKING:
+    from feu.compat.registry import VersionRange
 
 # NOTE: these tests hit the real PyPI index. Bounds are asserted rather
 # than exact snapshots, because upstream projects keep publishing new
