@@ -8,7 +8,7 @@ from feu.compat.discovery import (
     discover_compat,
     discover_compat_targets,
 )
-from feu.compat.registry import UNSUPPORTED
+from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version import fetch_pypi_requires_python
@@ -27,11 +27,11 @@ def _reset_cache() -> None:
     fetch_pypi_requires_python.cache_clear()
 
 
-def _assert_valid_compat(compat: dict[str, dict[str, str | None]]) -> None:
-    for config in compat.values():
-        assert set(config) == {"min", "max"}
-        if config["min"] is not None and config["max"] is not None:
-            assert Version(config["min"]) <= Version(config["max"])
+def _assert_valid_compat(compat: dict[str, list[VersionRange]]) -> None:
+    for ranges in compat.values():
+        for version_range in ranges:
+            if version_range.min is not None and version_range.max is not None:
+                assert Version(version_range.min) <= Version(version_range.max)
 
 
 ####################################
@@ -49,12 +49,12 @@ def test_discover_compat_requests() -> None:
     compat = discover_compat("requests", python_versions=("3.9", "3.10", "3.11"))
     assert set(compat) == {"3.9", "3.10", "3.11"}
     _assert_valid_compat(compat)
-    for config in compat.values():
-        assert config["min"] == "0.0.1"
-    assert compat["3.9"]["max"] is not None
-    assert Version(compat["3.9"]["max"]) >= Version("2.32.5")
-    assert compat["3.10"]["max"] is None
-    assert compat["3.11"]["max"] is None
+    for ranges in compat.values():
+        assert ranges[0].min == "0.0.1"
+    assert compat["3.9"][0].max is not None
+    assert Version(compat["3.9"][0].max) >= Version("2.32.5")
+    assert compat["3.10"][0].max is None
+    assert compat["3.11"][0].max is None
 
 
 @requests_available
@@ -66,12 +66,12 @@ def test_discover_compat_torch() -> None:
     compat = discover_compat("torch", python_versions=("3.9", "3.10", "3.11"))
     assert set(compat) == {"3.9", "3.10", "3.11"}
     _assert_valid_compat(compat)
-    for config in compat.values():
-        assert config["min"] == "1.0.0"
-    assert compat["3.9"]["max"] is not None
-    assert Version(compat["3.9"]["max"]) >= Version("2.8.0")
-    assert compat["3.10"]["max"] is None
-    assert compat["3.11"]["max"] is None
+    for ranges in compat.values():
+        assert ranges[0].min == "1.0.0"
+    assert compat["3.9"][0].max is not None
+    assert Version(compat["3.9"][0].max) >= Version("2.8.0")
+    assert compat["3.10"][0].max is None
+    assert compat["3.11"][0].max is None
 
 
 @requests_available
@@ -79,12 +79,12 @@ def test_discover_compat_default_python_versions() -> None:
     compat = discover_compat("requests")
     assert set(compat) == set(DEFAULT_PYTHON_VERSIONS)
     _assert_valid_compat(compat)
-    for config in compat.values():
-        assert config["min"] == "0.0.1"
-    assert compat["3.9"]["max"] is not None
-    assert Version(compat["3.9"]["max"]) >= Version("2.32.5")
+    for ranges in compat.values():
+        assert ranges[0].min == "0.0.1"
+    assert compat["3.9"][0].max is not None
+    assert Version(compat["3.9"][0].max) >= Version("2.32.5")
     for python_version in ("3.10", "3.11", "3.12", "3.13", "3.14", "3.15"):
-        assert compat[python_version]["max"] is None
+        assert compat[python_version][0].max is None
 
 
 @requests_not_available
@@ -114,13 +114,12 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
     target = Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
     compat = discover_compat_targets("numpy", targets=(target,))
     assert set(compat) == {target}
-    config = compat[target]
-    assert set(config) == {"min", "max"}
-    assert config["min"] not in (None, UNSUPPORTED)
-    assert Version(config["min"])
-    assert config["max"] != UNSUPPORTED
-    if config["max"] is not None:
-        assert Version(config["max"])
+    ranges = compat[target]
+    assert len(ranges) == 1
+    assert ranges[0].min is not None
+    assert Version(ranges[0].min)
+    if ranges[0].max is not None:
+        assert Version(ranges[0].max)
 
 
 @requests_not_available

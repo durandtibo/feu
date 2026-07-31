@@ -8,7 +8,7 @@ from feu.compat.discovery import (
     discover_compat,
     discover_compat_targets,
 )
-from feu.compat.registry import UNSUPPORTED
+from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 
@@ -26,9 +26,9 @@ from feu.compat.target import Target
 def test_discover_compat() -> None:
     compat = discover_compat("my_package", python_versions=("3.8", "3.9", "3.10"))
     assert compat == {
-        "3.8": {"min": "1.0.0", "max": "1.5.0"},
-        "3.9": {"min": "1.0.0", "max": None},
-        "3.10": {"min": "1.0.0", "max": None},
+        "3.8": [VersionRange("1.0.0", "1.5.0")],
+        "3.9": [VersionRange("1.0.0", None)],
+        "3.10": [VersionRange("1.0.0", None)],
     }
 
 
@@ -38,7 +38,7 @@ def test_discover_compat() -> None:
 )
 def test_discover_compat_no_compatible_version() -> None:
     compat = discover_compat("my_package", python_versions=("3.7",))
-    assert compat == {"3.7": {"min": UNSUPPORTED, "max": UNSUPPORTED}}
+    assert compat == {"3.7": []}
 
 
 @patch(
@@ -47,7 +47,7 @@ def test_discover_compat_no_compatible_version() -> None:
 )
 def test_discover_compat_no_requires_python() -> None:
     compat = discover_compat("my_package", python_versions=("3.9",))
-    assert compat == {"3.9": {"min": "1.0.0", "max": None}}
+    assert compat == {"3.9": [VersionRange("1.0.0", None)]}
 
 
 @patch(
@@ -56,13 +56,13 @@ def test_discover_compat_no_requires_python() -> None:
 )
 def test_discover_compat_invalid_specifier() -> None:
     compat = discover_compat("my_package", python_versions=("3.5",))
-    assert compat == {"3.5": {"min": "1.0.0", "max": "1.0.0"}}
+    assert compat == {"3.5": [VersionRange("1.0.0", "1.0.0")]}
 
 
 @patch("feu.compat.discovery.fetch_pypi_requires_python", lambda *_args: {})
 def test_discover_compat_empty() -> None:
     compat = discover_compat("my_package", python_versions=("3.9",))
-    assert compat == {"3.9": {"min": UNSUPPORTED, "max": UNSUPPORTED}}
+    assert compat == {"3.9": []}
 
 
 def test_discover_compat_default_python_versions() -> None:
@@ -105,7 +105,7 @@ def test_default_targets_shape() -> None:
 def test_discover_compat_targets_basic() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(linux_311,))
-    assert compat == {linux_311: {"min": "1.0.0", "max": None}}
+    assert compat == {linux_311: [VersionRange("1.0.0", None)]}
 
 
 @patch(
@@ -121,7 +121,7 @@ def test_discover_compat_targets_basic() -> None:
 def test_discover_compat_targets_free_threaded() -> None:
     free_threaded_314 = Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(free_threaded_314,))
-    assert compat == {free_threaded_314: {"min": "1.1.0", "max": None}}
+    assert compat == {free_threaded_314: [VersionRange("1.1.0", None)]}
 
 
 @patch(
@@ -134,7 +134,7 @@ def test_discover_compat_targets_free_threaded() -> None:
 def test_discover_compat_targets_max_is_last_compatible() -> None:
     macos_arm = Target(python_version="3.11", os="macos", arch="arm64")
     compat = discover_compat_targets("pkg", targets=(macos_arm,))
-    assert compat == {macos_arm: {"min": UNSUPPORTED, "max": UNSUPPORTED}}
+    assert compat == {macos_arm: []}
 
 
 @patch(
@@ -148,14 +148,14 @@ def test_discover_compat_targets_max_is_last_compatible() -> None:
 def test_discover_compat_targets_upper_bound() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(linux_311,))
-    assert compat == {linux_311: {"min": "1.0.0", "max": "1.0.0"}}
+    assert compat == {linux_311: [VersionRange("1.0.0", "1.0.0")]}
 
 
 @patch("feu.compat.discovery.fetch_pypi_wheel_filenames", lambda *_args: {})
 def test_discover_compat_targets_empty() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(linux_311,))
-    assert compat == {linux_311: {"min": UNSUPPORTED, "max": UNSUPPORTED}}
+    assert compat == {linux_311: []}
 
 
 @patch(
@@ -167,6 +167,6 @@ def test_discover_compat_targets_multiple_targets() -> None:
     macos_311 = Target(python_version="3.11", os="macos", arch="arm64")
     compat = discover_compat_targets("pkg", targets=(linux_311, macos_311))
     assert compat == {
-        linux_311: {"min": "1.0.0", "max": None},
-        macos_311: {"min": UNSUPPORTED, "max": UNSUPPORTED},
+        linux_311: [VersionRange("1.0.0", None)],
+        macos_311: [],
     }
