@@ -19,18 +19,6 @@ if TYPE_CHECKING:
 
 _Layer = Literal["base", "override"]
 
-UNSUPPORTED = "unsupported"
-r"""Sentinel used as the ``min``/``max`` value to mark a target for which
-no package version is valid.
-
-This is distinct from ``None``, which means "unconstrained" (i.e. any
-version is valid).
-
-Note: This is kept for backward compatibility with discovery.py which will
-be updated in a later task. It is not part of the public API and should not
-be used in new code.
-"""
-
 
 class VersionRange(NamedTuple):
     r"""Represent one contiguous range of valid package versions.
