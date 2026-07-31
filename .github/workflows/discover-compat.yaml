@@ -1,0 +1,37 @@
+name: Discover compat
+
+on:
+  schedule:
+    - cron: "0 6 * * 5" # run every Friday at 6:00 AM UTC
+  workflow_call:
+  workflow_dispatch: # to trigger manually
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  discover-compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup python environment
+        uses: durandtibo/setup-venv-uv-action@v0.0.5
+
+      - name: Discover package compatibility
+        run: |
+          python dev/discover_compat.py
+
+      - uses: peter-evans/create-pull-request@v8
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update/compat
+          title: Update default compatibility constraints
+          commit-message: "Update default compatibility constraints"
+          body: Update default package/Python-version compatibility constraints.
+          author: ci-bot <${{secrets.CI_BOT_EMAIL}}>
