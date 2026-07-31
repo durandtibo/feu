@@ -53,9 +53,10 @@ def test_get_default_registry_populated_with_defaults() -> None:
 
 def test_register_compat_adds_to_default_registry() -> None:
     register_compat({"my_package": {"3.11": {"min": "1.0.0", "max": None}}})
-    assert get_default_registry().get_config(
-        pkg_name="my_package", python_version="3.11"
-    ) == {"min": "1.0.0", "max": None}
+    assert get_default_registry().get_config(pkg_name="my_package", python_version="3.11") == {
+        "min": "1.0.0",
+        "max": None,
+    }
 
 
 def test_register_compat_exist_ok_false_raises() -> None:
@@ -70,16 +71,10 @@ def test_register_compat_exist_ok_false_raises() -> None:
 
 
 def test_find_closest_version_delegates_to_default_registry() -> None:
-    with patch.object(
-        CompatRegistry, "find_closest_version", return_value="1.2.3"
-    ) as mock_find:
-        result = find_closest_version(
-            pkg_name="numpy", pkg_version="2.0.2", python_version="3.11"
-        )
+    with patch.object(CompatRegistry, "find_closest_version", return_value="1.2.3") as mock_find:
+        result = find_closest_version(pkg_name="numpy", pkg_version="2.0.2", python_version="3.11")
     assert result == "1.2.3"
-    mock_find.assert_called_once_with(
-        pkg_name="numpy", pkg_version="2.0.2", python_version="3.11"
-    )
+    mock_find.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", python_version="3.11")
 
 
 def test_find_closest_version_uses_defaults() -> None:
@@ -98,9 +93,7 @@ def test_is_valid_version_delegates_to_default_registry() -> None:
     with patch.object(CompatRegistry, "is_valid_version", return_value=False) as mock_valid:
         result = is_valid_version(pkg_name="numpy", pkg_version="2.0.2", python_version="3.11")
     assert result is False
-    mock_valid.assert_called_once_with(
-        pkg_name="numpy", pkg_version="2.0.2", python_version="3.11"
-    )
+    mock_valid.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", python_version="3.11")
 
 
 def test_is_valid_version_uses_defaults() -> None:

@@ -119,9 +119,7 @@ def test_compat_registry_register_many_exist_ok_false() -> None:
 
 def test_compat_registry_register_many_exist_ok_true() -> None:
     registry = CompatRegistry({"numpy": {"3.11": {"min": "1.0.0", "max": None}}})
-    registry.register_many(
-        {"numpy": {"3.11": {"min": "2.0.0", "max": None}}}, exist_ok=True
-    )
+    registry.register_many({"numpy": {"3.11": {"min": "2.0.0", "max": None}}}, exist_ok=True)
     assert registry.registry == {"numpy": {"3.11": {"min": "2.0.0", "max": None}}}
 
 

@@ -72,7 +72,7 @@ packages and their versions across different Python environments.
 
 ```python
 from feu.imports import is_package_available
-from feu.package import find_closest_version
+from feu.compat import find_closest_version
 from feu.version import get_package_version
 
 # Check if a package is available
