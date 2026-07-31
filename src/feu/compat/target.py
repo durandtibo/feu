@@ -1,5 +1,5 @@
-r"""Define the compatibility target key used to look up package
-version constraints."""
+r"""Define the compatibility target key used to look up package version
+constraints."""
 
 from __future__ import annotations
 

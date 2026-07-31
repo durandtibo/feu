@@ -1,8 +1,8 @@
 r"""Define the compatibility registry for package version resolution.
 
 This module provides a registry system that manages and resolves valid
-package version ranges per compatibility target, enabling lookup of
-the closest valid version and validation of a given version.
+package version ranges per compatibility target, enabling lookup of the
+closest valid version and validation of a given version.
 """
 
 from __future__ import annotations
@@ -18,8 +18,8 @@ if TYPE_CHECKING:
     from feu.compat.target import Target
 
 UNSUPPORTED = "unsupported"
-r"""Sentinel used as the ``min``/``max`` value to mark a target for
-which no package version is valid.
+r"""Sentinel used as the ``min``/``max`` value to mark a target for which
+no package version is valid.
 
 This is distinct from ``None``, which means "unconstrained" (i.e. any
 version is valid).
@@ -119,8 +119,7 @@ class CompatRegistry:
         exist_ok: bool = False,
         layer: _Layer = "override",
     ) -> None:
-        r"""Register a package configuration for a compatibility
-        target.
+        r"""Register a package configuration for a compatibility target.
 
         Args:
             pkg_name: The package name to register (e.g., ``"numpy"``).
@@ -248,8 +247,7 @@ class CompatRegistry:
     def get_min_and_max_versions(
         self, pkg_name: str, target: Target
     ) -> tuple[Version | None, Version | None]:
-        r"""Get the minimum and maximum versions as ``Version``
-        objects.
+        r"""Get the minimum and maximum versions as ``Version`` objects.
 
         Args:
             pkg_name: The package name to query (e.g., ``"numpy"``).

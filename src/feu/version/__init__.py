@@ -13,6 +13,7 @@ __all__ = [
     "fetch_latest_version",
     "fetch_pypi_requires_python",
     "fetch_pypi_versions",
+    "fetch_pypi_wheel_filenames",
     "fetch_sampled_latest_minor_versions",
     "fetch_versions",
     "filter_every_n_versions",
@@ -62,7 +63,11 @@ from feu.version.package import (
     fetch_sampled_latest_minor_versions,
     fetch_versions,
 )
-from feu.version.pypi import fetch_pypi_requires_python, fetch_pypi_versions
+from feu.version.pypi import (
+    fetch_pypi_requires_python,
+    fetch_pypi_versions,
+    fetch_pypi_wheel_filenames,
+)
 from feu.version.pyproject import (
     read_pyproject_dependencies,
     read_pyproject_optional_dependencies,

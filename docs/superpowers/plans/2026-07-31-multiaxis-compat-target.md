@@ -249,7 +249,9 @@ def test_compat_registry_str() -> None:
 def test_compat_registry_register_default_layer_is_override() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.0.2")
-    assert registry.overrides == {"my_package": {T311: {"min": "1.2.0", "max": "2.0.2"}}}
+    assert registry.overrides == {
+        "my_package": {T311: {"min": "1.2.0", "max": "2.0.2"}}
+    }
     assert registry.base == {}
 
 
@@ -276,7 +278,8 @@ def test_compat_registry_register_exist_ok_false_same_layer() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.1.0", "1.5.2", layer="base")
     with pytest.raises(
-        RuntimeError, match=r"A package configuration .* is already registered for package"
+        RuntimeError,
+        match=r"A package configuration .* is already registered for package",
     ):
         registry.register("my_package", T311, "1.2.0", "2.0.2", layer="base")
 
@@ -314,16 +317,23 @@ def test_compat_registry_register_many() -> None:
 
 def test_compat_registry_register_many_exist_ok_false() -> None:
     registry = CompatRegistry()
-    registry.register_many({"numpy": {T311: {"min": "1.0.0", "max": None}}}, layer="base")
+    registry.register_many(
+        {"numpy": {T311: {"min": "1.0.0", "max": None}}}, layer="base"
+    )
     with pytest.raises(
-        RuntimeError, match=r"A package configuration .* is already registered for package"
+        RuntimeError,
+        match=r"A package configuration .* is already registered for package",
     ):
-        registry.register_many({"numpy": {T311: {"min": "2.0.0", "max": None}}}, layer="base")
+        registry.register_many(
+            {"numpy": {T311: {"min": "2.0.0", "max": None}}}, layer="base"
+        )
 
 
 def test_compat_registry_register_many_exist_ok_true() -> None:
     registry = CompatRegistry()
-    registry.register_many({"numpy": {T311: {"min": "1.0.0", "max": None}}}, layer="base")
+    registry.register_many(
+        {"numpy": {T311: {"min": "1.0.0", "max": None}}}, layer="base"
+    )
     registry.register_many(
         {"numpy": {T311: {"min": "2.0.0", "max": None}}}, layer="base", exist_ok=True
     )
@@ -400,7 +410,10 @@ def test_compat_registry_more_specific_entry_wins() -> None:
 def test_compat_registry_free_threaded_must_match_exactly() -> None:
     registry = CompatRegistry()
     registry.register(
-        "my_package", Target(python_version="3.14", free_threaded=True), "1.0.0", None,
+        "my_package",
+        Target(python_version="3.14", free_threaded=True),
+        "1.0.0",
+        None,
         layer="base",
     )
     non_free_threaded = Target(python_version="3.14", free_threaded=False)
@@ -410,10 +423,18 @@ def test_compat_registry_free_threaded_must_match_exactly() -> None:
 def test_compat_registry_most_recent_wins_among_ties() -> None:
     registry = CompatRegistry()
     registry.register(
-        "my_package", Target(python_version="3.11", os="linux"), "1.0.0", None, layer="base"
+        "my_package",
+        Target(python_version="3.11", os="linux"),
+        "1.0.0",
+        None,
+        layer="base",
     )
     registry.register(
-        "my_package", Target(python_version="3.11", arch="x86_64"), "2.0.0", None, layer="base"
+        "my_package",
+        Target(python_version="3.11", arch="x86_64"),
+        "2.0.0",
+        None,
+        layer="base",
     )
     target = Target(python_version="3.11", os="linux", arch="x86_64")
     # Both entries match with equal specificity (one non-None field each);
@@ -440,14 +461,19 @@ def test_compat_registry_get_min_and_max_versions() -> None:
 
 def test_compat_registry_get_min_and_max_versions_empty() -> None:
     registry = CompatRegistry()
-    assert registry.get_min_and_max_versions(pkg_name="my_package", target=T311) == (None, None)
+    assert registry.get_min_and_max_versions(pkg_name="my_package", target=T311) == (
+        None,
+        None,
+    )
 
 
 def test_compat_registry_find_closest_version_valid() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.2.0", layer="base")
     assert (
-        registry.find_closest_version(pkg_name="my_package", pkg_version="2.0.0", target=T311)
+        registry.find_closest_version(
+            pkg_name="my_package", pkg_version="2.0.0", target=T311
+        )
         == "2.0.0"
     )
 
@@ -455,7 +481,9 @@ def test_compat_registry_find_closest_version_valid() -> None:
 def test_compat_registry_find_closest_version_missing() -> None:
     registry = CompatRegistry()
     assert (
-        registry.find_closest_version(pkg_name="my_package", pkg_version="2.0.0", target=T311)
+        registry.find_closest_version(
+            pkg_name="my_package", pkg_version="2.0.0", target=T311
+        )
         == "2.0.0"
     )
 
@@ -464,7 +492,9 @@ def test_compat_registry_find_closest_version_lower() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.2.0", layer="base")
     assert (
-        registry.find_closest_version(pkg_name="my_package", pkg_version="1.0.0", target=T311)
+        registry.find_closest_version(
+            pkg_name="my_package", pkg_version="1.0.0", target=T311
+        )
         == "1.2.0"
     )
 
@@ -473,7 +503,9 @@ def test_compat_registry_find_closest_version_higher() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.2.0", layer="base")
     assert (
-        registry.find_closest_version(pkg_name="my_package", pkg_version="3.0.0", target=T311)
+        registry.find_closest_version(
+            pkg_name="my_package", pkg_version="3.0.0", target=T311
+        )
         == "2.2.0"
     )
 
@@ -481,24 +513,32 @@ def test_compat_registry_find_closest_version_higher() -> None:
 def test_compat_registry_is_valid_version_true() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.2.0", layer="base")
-    assert registry.is_valid_version(pkg_name="my_package", pkg_version="2.0.0", target=T311)
+    assert registry.is_valid_version(
+        pkg_name="my_package", pkg_version="2.0.0", target=T311
+    )
 
 
 def test_compat_registry_is_valid_version_false_min() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.2.0", layer="base")
-    assert not registry.is_valid_version(pkg_name="my_package", pkg_version="1.0.0", target=T311)
+    assert not registry.is_valid_version(
+        pkg_name="my_package", pkg_version="1.0.0", target=T311
+    )
 
 
 def test_compat_registry_is_valid_version_false_max() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, "1.2.0", "2.2.0", layer="base")
-    assert not registry.is_valid_version(pkg_name="my_package", pkg_version="3.0.0", target=T311)
+    assert not registry.is_valid_version(
+        pkg_name="my_package", pkg_version="3.0.0", target=T311
+    )
 
 
 def test_compat_registry_is_valid_version_empty() -> None:
     registry = CompatRegistry()
-    assert registry.is_valid_version(pkg_name="my_package", pkg_version="2.0.0", target=T311)
+    assert registry.is_valid_version(
+        pkg_name="my_package", pkg_version="2.0.0", target=T311
+    )
 
 
 ###################################
@@ -526,21 +566,29 @@ def test_compat_registry_is_unsupported_unconfigured() -> None:
 def test_compat_registry_get_min_and_max_versions_unsupported_raises() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T315, UNSUPPORTED, UNSUPPORTED, layer="base")
-    with pytest.raises(UnsupportedVersionError, match=r"No version of package my_package"):
+    with pytest.raises(
+        UnsupportedVersionError, match=r"No version of package my_package"
+    ):
         registry.get_min_and_max_versions(pkg_name="my_package", target=T315)
 
 
 def test_compat_registry_find_closest_version_unsupported_raises() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T315, UNSUPPORTED, UNSUPPORTED, layer="base")
-    with pytest.raises(UnsupportedVersionError, match=r"No version of package my_package"):
-        registry.find_closest_version(pkg_name="my_package", pkg_version="2.0.0", target=T315)
+    with pytest.raises(
+        UnsupportedVersionError, match=r"No version of package my_package"
+    ):
+        registry.find_closest_version(
+            pkg_name="my_package", pkg_version="2.0.0", target=T315
+        )
 
 
 def test_compat_registry_is_valid_version_unsupported_false() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T315, UNSUPPORTED, UNSUPPORTED, layer="base")
-    assert not registry.is_valid_version(pkg_name="my_package", pkg_version="2.0.0", target=T315)
+    assert not registry.is_valid_version(
+        pkg_name="my_package", pkg_version="2.0.0", target=T315
+    )
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -634,7 +682,8 @@ class CompatRegistry:
     """
 
     def __init__(
-        self, initial_state: dict[str, dict[Target, dict[str, str | None]]] | None = None
+        self,
+        initial_state: dict[str, dict[Target, dict[str, str | None]]] | None = None,
     ) -> None:
         self._base: dict[str, dict[Target, dict[str, str | None]]] = copy.deepcopy(
             initial_state or {}
@@ -661,7 +710,9 @@ class CompatRegistry:
         r"""The override layer (user-supplied corrections)."""
         return self._overrides
 
-    def _layer_table(self, layer: _Layer) -> dict[str, dict[Target, dict[str, str | None]]]:
+    def _layer_table(
+        self, layer: _Layer
+    ) -> dict[str, dict[Target, dict[str, str | None]]]:
         return self._base if layer == "base" else self._overrides
 
     def register(
@@ -750,7 +801,10 @@ class CompatRegistry:
         return (entry_target.os is not None) + (entry_target.arch is not None)
 
     def _resolve_in_layer(
-        self, table: dict[str, dict[Target, dict[str, str | None]]], pkg_name: str, target: Target
+        self,
+        table: dict[str, dict[Target, dict[str, str | None]]],
+        pkg_name: str,
+        target: Target,
     ) -> dict[str, str | None] | None:
         if pkg_name not in table:
             return None
@@ -829,7 +883,9 @@ class CompatRegistry:
             max_version = Version(max_version)
         return min_version, max_version
 
-    def find_closest_version(self, pkg_name: str, pkg_version: str, target: Target) -> str:
+    def find_closest_version(
+        self, pkg_name: str, pkg_version: str, target: Target
+    ) -> str:
         r"""Find the closest valid version for a package.
 
         Args:
@@ -845,7 +901,9 @@ class CompatRegistry:
                 for the given target.
         """
         version = Version(pkg_version)
-        min_version, max_version = self.get_min_and_max_versions(pkg_name=pkg_name, target=target)
+        min_version, max_version = self.get_min_and_max_versions(
+            pkg_name=pkg_name, target=target
+        )
         if min_version is not None and version < min_version:
             return min_version.base_version
         if max_version is not None and version > max_version:
@@ -868,7 +926,9 @@ class CompatRegistry:
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             return False
         version = Version(pkg_version)
-        min_version, max_version = self.get_min_and_max_versions(pkg_name=pkg_name, target=target)
+        min_version, max_version = self.get_min_and_max_versions(
+            pkg_name=pkg_name, target=target
+        )
         return (min_version is None or min_version <= version) and (
             max_version is None or version <= max_version
         )
@@ -933,7 +993,9 @@ def test_register_defaults_populates_base_layer() -> None:
 def test_register_defaults_numpy_entry() -> None:
     registry = CompatRegistry()
     register_defaults(registry)
-    assert registry.get_config(pkg_name="numpy", target=Target(python_version="3.11")) == {
+    assert registry.get_config(
+        pkg_name="numpy", target=Target(python_version="3.11")
+    ) == {
         "min": "1.23.2",
         "max": "2.4.6",
     }
@@ -1104,7 +1166,9 @@ def test_register_compat_adds_to_override_layer() -> None:
 
 def test_register_compat_exist_ok_false_raises() -> None:
     register_compat({"my_package": {T311: {"min": "1.0.0", "max": None}}})
-    with pytest.raises(RuntimeError, match=r"A package configuration .* is already registered"):
+    with pytest.raises(
+        RuntimeError, match=r"A package configuration .* is already registered"
+    ):
         register_compat({"my_package": {T311: {"min": "2.0.0", "max": None}}})
 
 
@@ -1123,14 +1187,23 @@ def test_register_compat_overrides_a_default_without_exist_ok() -> None:
 
 
 def test_find_closest_version_delegates_to_default_registry() -> None:
-    with patch.object(CompatRegistry, "find_closest_version", return_value="1.2.3") as mock_find:
-        result = find_closest_version(pkg_name="numpy", pkg_version="2.0.2", target=T311)
+    with patch.object(
+        CompatRegistry, "find_closest_version", return_value="1.2.3"
+    ) as mock_find:
+        result = find_closest_version(
+            pkg_name="numpy", pkg_version="2.0.2", target=T311
+        )
     assert result == "1.2.3"
-    mock_find.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", target=T311)
+    mock_find.assert_called_once_with(
+        pkg_name="numpy", pkg_version="2.0.2", target=T311
+    )
 
 
 def test_find_closest_version_uses_defaults() -> None:
-    assert find_closest_version(pkg_name="numpy", pkg_version="0.1.0", target=T311) == "1.23.2"
+    assert (
+        find_closest_version(pkg_name="numpy", pkg_version="0.1.0", target=T311)
+        == "1.23.2"
+    )
 
 
 ##################################
@@ -1139,10 +1212,14 @@ def test_find_closest_version_uses_defaults() -> None:
 
 
 def test_is_valid_version_delegates_to_default_registry() -> None:
-    with patch.object(CompatRegistry, "is_valid_version", return_value=False) as mock_valid:
+    with patch.object(
+        CompatRegistry, "is_valid_version", return_value=False
+    ) as mock_valid:
         result = is_valid_version(pkg_name="numpy", pkg_version="2.0.2", target=T311)
     assert result is False
-    mock_valid.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", target=T311)
+    mock_valid.assert_called_once_with(
+        pkg_name="numpy", pkg_version="2.0.2", target=T311
+    )
 
 
 def test_is_valid_version_uses_defaults() -> None:
@@ -1384,16 +1461,16 @@ from feu.compat import Target, find_closest_version
 Change the call inside `install_package_closest_version`:
 
 ```python
-    install_package(
-        installer=installer,
-        package=package.with_version(
-            find_closest_version(
-                pkg_name=package.name,
-                pkg_version=pkg_version,
-                target=Target(python_version=get_python_major_minor()),
-            )
-        ),
-    )
+install_package(
+    installer=installer,
+    package=package.with_version(
+        find_closest_version(
+            pkg_name=package.name,
+            pkg_version=pkg_version,
+            target=Target(python_version=get_python_major_minor()),
+        )
+    ),
+)
 ```
 
 - [ ] **Step 3: Run the install unit tests**

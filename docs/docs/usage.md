@@ -113,7 +113,9 @@ registry.register(
 )
 
 # Get the configuration for a package
-config = registry.get_config(pkg_name="my_package", target=Target(python_version="3.11"))
+config = registry.get_config(
+    pkg_name="my_package", target=Target(python_version="3.11")
+)
 print(config)  # {'min': '1.2.0', 'max': '2.0.0'}
 
 # Get min and max versions

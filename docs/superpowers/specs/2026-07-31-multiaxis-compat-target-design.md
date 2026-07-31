@@ -54,8 +54,8 @@ A new frozen dataclass in `feu/compat/target.py`:
 class Target:
     python_version: str
     free_threaded: bool = False
-    os: str | None = None      # e.g. "linux", "macos", "windows"; None = wildcard
-    arch: str | None = None    # e.g. "x86_64", "arm64"; None = wildcard
+    os: str | None = None  # e.g. "linux", "macos", "windows"; None = wildcard
+    arch: str | None = None  # e.g. "x86_64", "arm64"; None = wildcard
 ```
 
 `os`/`arch` default to `None`, meaning "unspecified / matches
