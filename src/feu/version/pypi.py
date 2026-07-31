@@ -2,11 +2,44 @@ r"""Contain PyPI utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["fetch_pypi_versions"]
+__all__ = ["fetch_pypi_requires_python", "fetch_pypi_versions"]
 
 from functools import lru_cache
 
 from feu.utils.http import fetch_data
+
+
+@lru_cache
+def fetch_pypi_requires_python(package: str) -> dict[str, str | None]:
+    r"""Get the ``requires_python`` specifier for each release of a
+    package on PyPI.
+
+    Args:
+        package: The package name.
+
+    Returns:
+        A dictionary mapping each release version string to its
+            ``requires_python`` specifier (e.g. ``">=3.9"``), or
+            ``None`` if the release has no files or does not declare
+            a ``requires_python`` constraint.
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_pypi_requires_python
+        >>> mapping = fetch_pypi_requires_python("requests")  # doctest: +SKIP
+
+        ```
+    """
+    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
+    result: dict[str, str | None] = {}
+    for version, files in metadata["releases"].items():
+        requires_python = None
+        for file in files or []:
+            requires_python = file.get("requires_python")
+            if requires_python:
+                break
+        result[version] = requires_python
+    return result
 
 
 @lru_cache

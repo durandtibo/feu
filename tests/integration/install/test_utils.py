@@ -3,12 +3,12 @@ from __future__ import annotations
 import pytest
 
 from feu import is_package_available
+from feu.compat import find_closest_version
 from feu.install import (
     get_available_installers,
     install_package,
     install_package_closest_version,
 )
-from feu.compat import find_closest_version
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 from feu.version import get_python_major_minor
