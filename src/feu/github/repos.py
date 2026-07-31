@@ -45,12 +45,6 @@ def fetch_github_repos(owner: str) -> tuple[dict[str, Any], ...]:
 
     while url:
         response = fetch_response(url=url, headers=headers, params=params)
-
-        if response.status_code != 200:
-            logger.error(f"Error: {response.status_code}")
-            logger.error(response.json())
-            break
-
         page_repos = response.json()
         repos.extend(page_repos)
 

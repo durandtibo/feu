@@ -140,28 +140,13 @@ def test_fetch_github_repos_without_github_token(
 
 @requests_available
 def test_fetch_github_repos_api_error() -> None:
-    """Test handling of API errors."""
-    error_response = Mock()
-    error_response.status_code = 404
-    error_response.json.return_value = {"message": "Not Found"}
-
-    with patch(f"{MODULE}.fetch_response", return_value=error_response):
-        result = fetch_github_repos("nonexistent")
-
-    assert result == ()
-
-
-@requests_available
-def test_fetch_github_repos_rate_limit_error() -> None:
-    """Test handling of rate limit errors."""
-    error_response = Mock()
-    error_response.status_code = 403
-    error_response.json.return_value = {"message": "API rate limit exceeded"}
-
-    with patch(f"{MODULE}.fetch_response", return_value=error_response):
-        result = fetch_github_repos("testowner")
-
-    assert result == ()
+    """Test that errors raised by fetch_response propagate to the
+    caller."""
+    with (
+        patch(f"{MODULE}.fetch_response", side_effect=RuntimeError("Not Found")),
+        pytest.raises(RuntimeError, match="Not Found"),
+    ):
+        fetch_github_repos("nonexistent")
 
 
 @requests_available
