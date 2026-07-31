@@ -346,7 +346,7 @@ wheels = [
 
 [[package]]
 name = "feu"
-version = "0.7.3"
+version = "0.8.0a0"
 source = { editable = "." }
 dependencies = [
     { name = "packaging" },
