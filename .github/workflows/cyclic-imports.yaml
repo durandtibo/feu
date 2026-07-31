@@ -25,13 +25,11 @@ jobs:
       - name: check feu.install
         run: |
           python -c "from feu import install"
-      - name: check feu.install.pip
-        run: |
           python -c "from feu.install import pip"
 
-      - name: check feu.repo
+      - name: check feu.github
         run: |
-          python -c "from feu import repo"
+          python -c "from feu import github"
 
       - name: check feu.utils
         run: |
