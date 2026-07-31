@@ -3,7 +3,12 @@ from __future__ import annotations
 import pytest
 from packaging.version import Version
 
-from feu.compat.discovery import DEFAULT_PYTHON_VERSIONS, discover_compat
+from feu.compat.discovery import (
+    DEFAULT_PYTHON_VERSIONS,
+    discover_compat,
+    discover_compat_targets,
+)
+from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version import fetch_pypi_requires_python
 
@@ -85,3 +90,38 @@ def test_discover_compat_default_python_versions() -> None:
 def test_discover_compat_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         discover_compat("my_package")
+
+
+##############################################
+#     Tests for discover_compat_targets      #
+##############################################
+
+
+@pytest.fixture(autouse=True)
+def _reset_wheel_cache() -> None:
+    from feu.version.pypi import fetch_pypi_wheel_filenames
+
+    fetch_pypi_wheel_filenames.cache_clear()
+
+
+@requests_available
+def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
+    # numpy started publishing free-threaded (cp313t/cp314t) linux x86_64
+    # wheels once free-threaded CPython builds became available on PyPI;
+    # assert a non-empty, internally consistent result rather than exact
+    # version numbers, to stay resilient to upstream releases.
+    target = Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
+    compat = discover_compat_targets("numpy", targets=(target,))
+    assert set(compat) == {target}
+    config = compat[target]
+    assert set(config) == {"min", "max"}
+    if config["min"] not in (None, "unsupported"):
+        assert Version(config["min"])
+    if config["max"] not in (None, "unsupported"):
+        assert Version(config["max"])
+
+
+@requests_not_available
+def test_discover_compat_targets_no_requests() -> None:
+    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
+        discover_compat_targets("numpy")
