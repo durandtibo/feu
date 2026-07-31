@@ -100,6 +100,7 @@ Add custom package configurations to the default compatibility registry:
 
 ```python
 from feu.compat import Target, get_default_registry
+from feu.compat.registry import VersionRange
 
 registry = get_default_registry()
 
@@ -107,8 +108,7 @@ registry = get_default_registry()
 registry.register(
     pkg_name="my_package",
     target=Target(python_version="3.11"),
-    pkg_version_min="1.2.0",
-    pkg_version_max="2.0.0",
+    ranges=[VersionRange("1.2.0", "2.0.0")],
     exist_ok=True,
 )
 
@@ -116,13 +116,14 @@ registry.register(
 config = registry.get_config(
     pkg_name="my_package", target=Target(python_version="3.11")
 )
-print(config)  # {'min': '1.2.0', 'max': '2.0.0'}
+print(config)  # [VersionRange(min='1.2.0', max='2.0.0')]
 
-# Get min and max versions
-min_version, max_version = registry.get_min_and_max_versions(
+# Get version ranges as Version objects
+ranges = registry.get_version_ranges(
     pkg_name="numpy", target=Target(python_version="3.11")
 )
-print(f"Min: {min_version}, Max: {max_version}")
+for min_version, max_version in ranges:
+    print(f"Min: {min_version}, Max: {max_version}")
 ```
 
 ## Working with Git Repositories

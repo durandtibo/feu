@@ -49,7 +49,7 @@ free-threaded/OS/arch override.
 
 ### Wheel tag parsing — `feu/compat/wheel_tags.py`
 
-```python
+```text
 @dataclass(frozen=True)
 class WheelTags:
     python_version: str
@@ -97,7 +97,7 @@ tag}-{abi tag}-{platform tag}.whl` (PEP 427). `parse_wheel_filename`:
 
 ### Fetching wheel filenames per release — `feu/version/pypi.py`
 
-```python
+```text
 def fetch_pypi_wheel_filenames(package: str) -> dict[str, tuple[str, ...]]:
 ```
 
@@ -108,7 +108,7 @@ with `packagetype == "bdist_wheel"` for each release into a tuple
 
 ### Discovery — `feu/compat/discovery.py`
 
-```python
+```text
 DEFAULT_TARGETS: tuple[Target, ...] = (
     # cartesian product of DEFAULT_PYTHON_VERSIONS x free_threaded x os x arch
 )

@@ -4,10 +4,10 @@ resolution."""
 from __future__ import annotations
 
 __all__ = [
-    "UNSUPPORTED",
     "CompatRegistry",
     "Target",
     "UnsupportedVersionError",
+    "VersionRange",
     "WheelTags",
     "discover_compat",
     "discover_compat_targets",
@@ -25,6 +25,6 @@ from feu.compat.interface import (
     is_valid_version,
     register_compat,
 )
-from feu.compat.registry import UNSUPPORTED, CompatRegistry, UnsupportedVersionError
+from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange
 from feu.compat.target import Target
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename

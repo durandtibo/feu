@@ -7,25 +7,31 @@ closest valid version and validation of a given version.
 
 from __future__ import annotations
 
-__all__ = ["UNSUPPORTED", "CompatRegistry", "UnsupportedVersionError"]
+__all__ = ["CompatRegistry", "UnsupportedVersionError", "VersionRange"]
 
 import copy
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 from packaging.version import Version
 
 if TYPE_CHECKING:
     from feu.compat.target import Target
 
-UNSUPPORTED = "unsupported"
-r"""Sentinel used as the ``min``/``max`` value to mark a target for which
-no package version is valid.
-
-This is distinct from ``None``, which means "unconstrained" (i.e. any
-version is valid).
-"""
-
 _Layer = Literal["base", "override"]
+
+
+class VersionRange(NamedTuple):
+    r"""Represent one contiguous range of valid package versions.
+
+    Args:
+        min: The minimum valid package version, or ``None`` for no
+            minimum.
+        max: The maximum valid package version, or ``None`` for no
+            maximum.
+    """
+
+    min: str | None
+    max: str | None
 
 
 class UnsupportedVersionError(Exception):
@@ -47,14 +53,16 @@ class CompatRegistry:
       take precedence over ``base`` and are only conflict-checked
       against other overrides.
 
-    Each layer maps package name to ``Target`` to ``{"min": ...,
-    "max": ...}``. A lookup target matches a stored entry when
-    ``python_version`` and ``free_threaded`` are equal, and the
-    stored entry's ``os``/``arch`` are either ``None`` (wildcard) or
-    equal to the lookup target's ``os``/``arch``. Among all matching
-    entries in a layer, the most specific one (most non-``None``
-    ``os``/``arch`` fields) wins; ties are broken by most-recently
-    registered.
+    Each layer maps package name to ``Target`` to a list of
+    ``VersionRange``. A package version is valid for a target if it
+    falls within any of the registered ranges; an empty list means no
+    version is valid for that target. A lookup target matches a
+    stored entry when ``python_version`` and ``free_threaded`` are
+    equal, and the stored entry's ``os``/``arch`` are either ``None``
+    (wildcard) or equal to the lookup target's ``os``/``arch``. Among
+    all matching entries in a layer, the most specific one (most
+    non-``None`` ``os``/``arch`` fields) wins; ties are broken by
+    most-recently registered.
 
     Args:
         initial_state: Optional initial mapping of package
@@ -64,12 +72,12 @@ class CompatRegistry:
     Example:
         ```pycon
         >>> from feu.compat import CompatRegistry, Target
+        >>> from feu.compat.registry import VersionRange
         >>> registry = CompatRegistry()
         >>> registry.register(
         ...     pkg_name="numpy",
         ...     target=Target(python_version="3.11"),
-        ...     pkg_version_min="1.23.2",
-        ...     pkg_version_max="2.4.6",
+        ...     ranges=[VersionRange("1.23.2", "2.4.6")],
         ...     layer="base",
         ... )
         >>> registry.is_valid_version("numpy", "2.0.2", Target(python_version="3.11"))
@@ -79,12 +87,10 @@ class CompatRegistry:
     """
 
     def __init__(
-        self, initial_state: dict[str, dict[Target, dict[str, str | None]]] | None = None
+        self, initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None
     ) -> None:
-        self._base: dict[str, dict[Target, dict[str, str | None]]] = copy.deepcopy(
-            initial_state or {}
-        )
-        self._overrides: dict[str, dict[Target, dict[str, str | None]]] = {}
+        self._base: dict[str, dict[Target, list[VersionRange]]] = copy.deepcopy(initial_state or {})
+        self._overrides: dict[str, dict[Target, list[VersionRange]]] = {}
 
     def __repr__(self) -> str:
         return (
@@ -97,16 +103,16 @@ class CompatRegistry:
         return self.__repr__()
 
     @property
-    def base(self) -> dict[str, dict[Target, dict[str, str | None]]]:
+    def base(self) -> dict[str, dict[Target, list[VersionRange]]]:
         r"""The base layer (defaults/discovered data)."""
         return self._base
 
     @property
-    def overrides(self) -> dict[str, dict[Target, dict[str, str | None]]]:
+    def overrides(self) -> dict[str, dict[Target, list[VersionRange]]]:
         r"""The override layer (user-supplied corrections)."""
         return self._overrides
 
-    def _layer_table(self, layer: _Layer) -> dict[str, dict[Target, dict[str, str | None]]]:
+    def _layer_table(self, layer: _Layer) -> dict[str, dict[Target, list[VersionRange]]]:
         return self._base if layer == "base" else self._overrides
 
     def register(
@@ -114,8 +120,7 @@ class CompatRegistry:
         pkg_name: str,
         target: Target,
         *,
-        pkg_version_min: str | None,
-        pkg_version_max: str | None,
+        ranges: list[VersionRange],
         exist_ok: bool = False,
         layer: _Layer = "override",
     ) -> None:
@@ -124,10 +129,8 @@ class CompatRegistry:
         Args:
             pkg_name: The package name to register (e.g., ``"numpy"``).
             target: The compatibility target.
-            pkg_version_min: The minimum valid package version for
-                this target, or ``None`` for no minimum.
-            pkg_version_max: The maximum valid package version for
-                this target, or ``None`` for no maximum.
+            ranges: The list of valid version ranges for this target.
+                An empty list means no version is valid.
             exist_ok: If ``False``, a ``RuntimeError`` is raised when a
                 configuration already exists for this package and
                 target **within the same layer**. Set to ``True`` to
@@ -153,29 +156,28 @@ class CompatRegistry:
             )
             raise RuntimeError(msg)
 
-        table[pkg_name][target] = {"min": pkg_version_min, "max": pkg_version_max}
+        table[pkg_name][target] = list(ranges)
 
     def register_many(
         self,
-        mapping: dict[str, dict[Target, dict[str, str | None]]],
+        mapping: dict[str, dict[Target, list[VersionRange]]],
         exist_ok: bool = False,
         layer: _Layer = "override",
     ) -> None:
         r"""Register multiple package configurations at once.
 
         Args:
-            mapping: Mapping of package name to ``Target`` to
-                ``{"min": ..., "max": ...}`` constraints.
+            mapping: Mapping of package name to ``Target`` to list of
+                ``VersionRange``.
             exist_ok: Forwarded to ``register``.
             layer: Forwarded to ``register``.
         """
         for pkg_name, targets in mapping.items():
-            for target, config in targets.items():
+            for target, ranges in targets.items():
                 self.register(
                     pkg_name=pkg_name,
                     target=target,
-                    pkg_version_min=config.get("min"),
-                    pkg_version_max=config.get("max"),
+                    ranges=ranges,
                     exist_ok=exist_ok,
                     layer=layer,
                 )
@@ -195,23 +197,33 @@ class CompatRegistry:
         return (entry_target.os is not None) + (entry_target.arch is not None)
 
     def _resolve_in_layer(
-        self, table: dict[str, dict[Target, dict[str, str | None]]], pkg_name: str, target: Target
-    ) -> dict[str, str | None] | None:
+        self, table: dict[str, dict[Target, list[VersionRange]]], pkg_name: str, target: Target
+    ) -> list[VersionRange] | None:
         if pkg_name not in table:
             return None
-        best: dict[str, str | None] | None = None
+        best: list[VersionRange] | None = None
         best_specificity = -1
-        for entry_target, config in table[pkg_name].items():
+        for entry_target, ranges in table[pkg_name].items():
             if not self._matches(entry_target, target):
                 continue
             specificity = self._specificity(entry_target)
             if specificity >= best_specificity:
                 best_specificity = specificity
-                best = config
+                best = ranges
         return best
 
-    def get_config(self, pkg_name: str, target: Target) -> dict[str, str | None]:
-        r"""Get the package version configuration for a package and
+    def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
+        r"""Resolve the raw registered ranges for a package/target,
+        preserving the distinction between "no entry registered"
+        (``None``) and "an entry registered with zero ranges" (``[]``,
+        i.e. explicitly unsupported)."""
+        ranges = self._resolve_in_layer(self._overrides, pkg_name, target)
+        if ranges is not None:
+            return ranges
+        return self._resolve_in_layer(self._base, pkg_name, target)
+
+    def get_config(self, pkg_name: str, target: Target) -> list[VersionRange]:
+        r"""Get the list of valid version ranges for a package and
         compatibility target.
 
         Checks the override layer first, then falls back to the base
@@ -222,16 +234,19 @@ class CompatRegistry:
             target: The compatibility target.
 
         Returns:
-            A dictionary with ``"min"`` and ``"max"`` keys, or an
-            empty dictionary if no configuration matches.
+            The list of ``VersionRange`` for this target, or an empty
+            list if no configuration matches.
         """
-        config = self._resolve_in_layer(self._overrides, pkg_name, target)
-        if config is not None:
-            return config
-        return self._resolve_in_layer(self._base, pkg_name, target) or {}
+        return self._resolve_ranges(pkg_name, target) or []
 
     def is_unsupported(self, pkg_name: str, target: Target) -> bool:
         r"""Indicate if no package version is valid for a target.
+
+        This is distinct from a target having no registered
+        configuration at all: an unconfigured target is treated as
+        permissive (``False``), whereas a target explicitly
+        registered with an empty range list is unsupported
+        (``True``).
 
         Args:
             pkg_name: The package name to check (e.g., ``"numpy"``).
@@ -241,21 +256,21 @@ class CompatRegistry:
             ``True`` if the package has no valid version for the
             given target, ``False`` otherwise.
         """
-        config = self.get_config(pkg_name=pkg_name, target=target)
-        return config.get("min") == UNSUPPORTED or config.get("max") == UNSUPPORTED
+        ranges = self._resolve_ranges(pkg_name, target)
+        return ranges is not None and not ranges
 
-    def get_min_and_max_versions(
+    def get_version_ranges(
         self, pkg_name: str, target: Target
-    ) -> tuple[Version | None, Version | None]:
-        r"""Get the minimum and maximum versions as ``Version`` objects.
+    ) -> list[tuple[Version | None, Version | None]]:
+        r"""Get the valid version ranges as ``Version`` objects.
 
         Args:
             pkg_name: The package name to query (e.g., ``"numpy"``).
             target: The compatibility target.
 
         Returns:
-            A tuple ``(min_version, max_version)``, either value being
-            ``None`` if unconstrained or unconfigured.
+            A list of ``(min_version, max_version)`` tuples, either
+            value being ``None`` if unconstrained on that side.
 
         Raises:
             UnsupportedVersionError: If no package version is valid
@@ -264,14 +279,14 @@ class CompatRegistry:
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             msg = f"No version of package {pkg_name} is compatible with target {target}"
             raise UnsupportedVersionError(msg)
-        config = self.get_config(pkg_name=pkg_name, target=target)
-        min_version = config.get("min", None)
-        max_version = config.get("max", None)
-        if min_version is not None:
-            min_version = Version(min_version)
-        if max_version is not None:
-            max_version = Version(max_version)
-        return min_version, max_version
+        ranges = self.get_config(pkg_name=pkg_name, target=target)
+        return [
+            (
+                Version(version_range.min) if version_range.min is not None else None,
+                Version(version_range.max) if version_range.max is not None else None,
+            )
+            for version_range in ranges
+        ]
 
     def find_closest_version(self, pkg_name: str, pkg_version: str, target: Target) -> str:
         r"""Find the closest valid version for a package.
@@ -289,11 +304,27 @@ class CompatRegistry:
                 for the given target.
         """
         version = Version(pkg_version)
-        min_version, max_version = self.get_min_and_max_versions(pkg_name=pkg_name, target=target)
-        if min_version is not None and version < min_version:
-            return min_version.base_version
-        if max_version is not None and version > max_version:
-            return max_version.base_version
+        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
+
+        # If unconfigured (no ranges), return the input version
+        if not ranges:
+            return pkg_version
+
+        for min_version, max_version in ranges:
+            if (min_version is None or min_version <= version) and (
+                max_version is None or version <= max_version
+            ):
+                return pkg_version
+
+        if ranges[0][0] is not None and version < ranges[0][0]:
+            return ranges[0][0].base_version
+        if ranges[-1][1] is not None and version > ranges[-1][1]:
+            return ranges[-1][1].base_version
+
+        # In a gap between two ranges: snap up to the next range's min.
+        for min_version, _ in ranges:
+            if min_version is not None and version < min_version:
+                return min_version.base_version
         return pkg_version
 
     def is_valid_version(self, pkg_name: str, pkg_version: str, target: Target) -> bool:
@@ -305,14 +336,19 @@ class CompatRegistry:
             target: The compatibility target.
 
         Returns:
-            ``True`` if valid or unconfigured, ``False`` otherwise,
-            including when no package version is valid for the given
-            target.
+            ``True`` if valid for any registered range or
+            unconfigured, ``False`` otherwise, including when no
+            package version is valid for the given target.
         """
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             return False
         version = Version(pkg_version)
-        min_version, max_version = self.get_min_and_max_versions(pkg_name=pkg_name, target=target)
-        return (min_version is None or min_version <= version) and (
-            max_version is None or version <= max_version
+        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
+        # If unconfigured (no ranges), any version is valid
+        if not ranges:
+            return True
+        return any(
+            (min_version is None or min_version <= version)
+            and (max_version is None or version <= max_version)
+            for min_version, max_version in ranges
         )
