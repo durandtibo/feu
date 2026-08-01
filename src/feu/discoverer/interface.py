@@ -7,15 +7,15 @@ __all__ = ["discover_compat_targets", "get_default_registry", "register_discover
 
 from typing import TYPE_CHECKING
 
-from feu.compat.discoverer.registry import CompatDiscovererRegistry
 from feu.compat.discovery import DEFAULT_TARGETS
+from feu.discoverer.registry import CompatDiscovererRegistry
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-    from feu.compat.discoverer.base import BaseCompatDiscoverer
     from feu.compat.registry import VersionRange
     from feu.compat.target import Target
+    from feu.discoverer.base import BaseCompatDiscoverer
 
 
 def get_default_registry() -> CompatDiscovererRegistry:

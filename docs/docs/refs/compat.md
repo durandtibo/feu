@@ -70,4 +70,3 @@ Corrections can be layered on top of the built-in defaults:
 ## API reference
 
 ::: feu.compat
-::: feu.compat.discoverer

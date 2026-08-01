@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 
 from packaging.version import Version
 
-from feu.compat.discoverer.base import BaseCompatDiscoverer
 from feu.compat.discovery import is_compatible
 from feu.compat.registry import VersionRange
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
+from feu.discoverer.base import BaseCompatDiscoverer
 from feu.version import (
     fetch_pypi_requires_python,
     fetch_pypi_wheel_filenames,
