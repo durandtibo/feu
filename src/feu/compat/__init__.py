@@ -4,6 +4,9 @@ resolution."""
 from __future__ import annotations
 
 __all__ = [
+    "BaseCompatDiscoverer",
+    "CompatDiscoverer",
+    "CompatDiscovererRegistry",
     "CompatRegistry",
     "Target",
     "UnsupportedVersionError",
@@ -19,11 +22,13 @@ __all__ = [
     "show_compat_targets",
 ]
 
-from feu.compat.discovery import (
-    discover_compat,
+from feu.compat.discoverer import (
+    BaseCompatDiscoverer,
+    CompatDiscoverer,
+    CompatDiscovererRegistry,
     discover_compat_targets,
-    show_compat_targets,
 )
+from feu.compat.discovery import discover_compat, show_compat_targets
 from feu.compat.interface import (
     find_closest_version,
     get_default_registry,

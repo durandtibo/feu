@@ -7,7 +7,7 @@ __all__ = [
     "DEFAULT_PYTHON_VERSIONS",
     "DEFAULT_TARGETS",
     "discover_compat",
-    "discover_compat_targets",
+    "is_compatible",
     "show_compat_targets",
 ]
 
@@ -18,11 +18,9 @@ from packaging.version import Version
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
-from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.imports import check_rich, is_rich_available
 from feu.version import (
     fetch_pypi_requires_python,
-    fetch_pypi_wheel_filenames,
     filter_stable_versions,
     filter_valid_versions,
 )
@@ -85,7 +83,7 @@ def discover_compat(
         compatible = [
             version
             for version in versions
-            if _is_compatible(requires_python[version], python_version)
+            if is_compatible(requires_python[version], python_version)
         ]
         if not compatible:
             result[python_version] = []
@@ -96,7 +94,7 @@ def discover_compat(
     return result
 
 
-def _is_compatible(requires_python: str | None, python_version: str) -> bool:
+def is_compatible(requires_python: str | None, python_version: str) -> bool:
     r"""Indicate if a ``requires_python`` specifier allows a given Python
     version.
 
@@ -115,122 +113,6 @@ def _is_compatible(requires_python: str | None, python_version: str) -> bool:
         return SpecifierSet(requires_python).contains(python_version, prereleases=True)
     except InvalidSpecifier:
         return True
-
-
-def discover_compat_targets(
-    pkg_name: str, targets: Sequence[Target] = DEFAULT_TARGETS
-) -> dict[Target, list[VersionRange]]:
-    r"""Discover the version range compatible with each target, using
-    actual wheel filenames published on PyPI.
-
-    Unlike ``discover_compat``, which only inspects the
-    ``requires_python`` metadata, this function parses each release's
-    wheel filenames to determine whether it shipped a build matching
-    a target's free-threaded/OS/arch axes, not just its Python
-    version.
-
-    Args:
-        pkg_name: The package name to inspect (e.g., ``"numpy"``).
-        targets: The compatibility targets to compute constraints for.
-            Each target must have concrete (non-``None``) ``os`` and
-            ``arch``. Defaults to ``DEFAULT_TARGETS``.
-
-    Returns:
-        A mapping of ``Target`` to a list of ``VersionRange``, in the
-            same shape expected by ``CompatRegistry.register_many``.
-
-    Example:
-        ```pycon
-        >>> from feu.compat import discover_compat_targets
-        >>> compat = discover_compat_targets("numpy")  # doctest: +SKIP
-
-        ```
-    """
-    wheel_filenames = fetch_pypi_wheel_filenames(pkg_name)
-    versions = filter_stable_versions(filter_valid_versions(wheel_filenames.keys()))
-    versions = sorted(versions, key=Version)
-    latest = versions[-1] if versions else None
-
-    tags_by_version: dict[str, set[WheelTags]] = {
-        version: {
-            tags for filename in wheel_filenames[version] for tags in parse_wheel_filename(filename)
-        }
-        for version in versions
-    }
-    has_pure_python_wheel = any(
-        tag.python_version is None for tags in tags_by_version.values() for tag in tags
-    )
-    requires_python = fetch_pypi_requires_python(pkg_name) if has_pure_python_wheel else {}
-
-    result: dict[Target, list[VersionRange]] = {}
-    for target in targets:
-        wanted = WheelTags(
-            python_version=target.python_version,
-            free_threaded=target.free_threaded,
-            os=target.os,
-            arch=target.arch,
-        )
-        compatible = [
-            version
-            for version in versions
-            if _is_target_compatible(
-                wanted,
-                target.python_version,
-                tags_by_version[version],
-                requires_python.get(version),
-            )
-        ]
-        if not compatible:
-            result[target] = []
-            continue
-        result[target] = [
-            VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-        ]
-    return result
-
-
-def _is_target_compatible(
-    wanted: WheelTags,
-    wanted_python_version: str,
-    tags: set[WheelTags],
-    requires_python: str | None,
-) -> bool:
-    r"""Indicate if a release's wheels satisfy a wanted target.
-
-    A release is compatible if it shipped a wheel matching the
-    target's Python version, OS, arch, and free-threaded axes
-    exactly, or a pure-Python wheel (``python_version``/``os``/
-    ``arch`` of ``None``, meaning "any") whose ``requires_python``
-    metadata allows the target's Python version. Pure-Python wheels
-    are assumed compatible with any OS/arch and both free-threaded and
-    standard builds.
-
-    Args:
-        wanted: The tags describing the wanted target.
-        wanted_python_version: The wanted target's Python version.
-        tags: The wheel tags parsed from the release's wheel
-            filenames.
-        requires_python: The release's ``requires_python`` specifier,
-            used only to validate pure-Python wheels.
-
-    Returns:
-        ``True`` if the release satisfies the wanted target.
-    """
-    for tag in tags:
-        if tag.os is not None and tag.os != wanted.os:
-            continue
-        if tag.arch is not None and tag.arch != wanted.arch:
-            continue
-        if tag.python_version is None:
-            if _is_compatible(requires_python, wanted_python_version):
-                return True
-            continue
-        if tag.python_version != wanted.python_version:
-            continue
-        if tag.free_threaded != wanted.free_threaded:
-            continue
-        return True
-    return False
 
 
 def show_compat_targets(
