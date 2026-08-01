@@ -16,9 +16,14 @@ __all__ = [
     "is_valid_version",
     "parse_wheel_filename",
     "register_compat",
+    "show_compat_targets",
 ]
 
-from feu.compat.discovery import discover_compat, discover_compat_targets
+from feu.compat.discovery import (
+    discover_compat,
+    discover_compat_targets,
+    show_compat_targets,
+)
 from feu.compat.interface import (
     find_closest_version,
     get_default_registry,
