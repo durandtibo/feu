@@ -40,7 +40,7 @@ DEFAULT_PYTHON_VERSIONS = ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"
 DEFAULT_TARGETS: tuple[Target, ...] = tuple(
     Target(python_version=python_version, free_threaded=free_threaded, os=os, arch=arch)
     for python_version in DEFAULT_PYTHON_VERSIONS
-    for free_threaded in (False, True)
+    for free_threaded in ((False, True) if Version(python_version) >= Version("3.13") else (False,))
     for os in ("linux", "macos", "windows")
     for arch in ("x86_64", "arm64")
 )
