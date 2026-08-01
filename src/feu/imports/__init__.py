@@ -7,6 +7,7 @@ __all__ = [
     "check_git",
     "check_package",
     "check_requests",
+    "check_rich",
     "check_urllib3",
     "click_available",
     "decorator_package_available",
@@ -16,13 +17,16 @@ __all__ = [
     "is_module_available",
     "is_package_available",
     "is_requests_available",
+    "is_rich_available",
     "is_urllib3_available",
     "raise_click_missing_error",
     "raise_git_missing_error",
     "raise_package_missing_error",
     "raise_requests_missing_error",
+    "raise_rich_missing_error",
     "raise_urllib3_missing_error",
     "requests_available",
+    "rich_available",
     "urllib3_available",
 ]
 
@@ -43,6 +47,12 @@ from feu.imports.requests import (
     is_requests_available,
     raise_requests_missing_error,
     requests_available,
+)
+from feu.imports.rich import (
+    check_rich,
+    is_rich_available,
+    raise_rich_missing_error,
+    rich_available,
 )
 from feu.imports.universal import (
     check_package,
