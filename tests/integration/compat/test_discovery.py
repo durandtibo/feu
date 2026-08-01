@@ -5,11 +5,8 @@ from typing import TYPE_CHECKING
 import pytest
 from packaging.version import Version
 
-from feu.compat.discovery import (
-    DEFAULT_PYTHON_VERSIONS,
-    discover_compat,
-    discover_compat_targets,
-)
+from feu.compat.discoverer import discover_compat_targets
+from feu.compat.discovery import DEFAULT_PYTHON_VERSIONS, discover_compat
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version import fetch_pypi_requires_python
