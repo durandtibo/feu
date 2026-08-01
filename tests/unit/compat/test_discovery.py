@@ -2,18 +2,24 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import pytest
+
 from feu.compat.discovery import (
     DEFAULT_PYTHON_VERSIONS,
     DEFAULT_TARGETS,
     discover_compat,
     discover_compat_targets,
+    show_compat_targets,
 )
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
+from feu.testing import rich_available
+
+MODULE = "feu.compat.discovery"
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_requires_python",
+    f"{MODULE}.fetch_pypi_requires_python",
     lambda *_args: {
         "1.0.0": ">=3.6",
         "1.5.0": ">=3.8",
@@ -33,7 +39,7 @@ def test_discover_compat() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_requires_python",
+    f"{MODULE}.fetch_pypi_requires_python",
     lambda *_args: {"1.0.0": ">=3.9", "2.0.0": ">=3.9"},
 )
 def test_discover_compat_no_compatible_version() -> None:
@@ -42,7 +48,7 @@ def test_discover_compat_no_compatible_version() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_requires_python",
+    f"{MODULE}.fetch_pypi_requires_python",
     lambda *_args: {"1.0.0": None, "2.0.0": None},
 )
 def test_discover_compat_no_requires_python() -> None:
@@ -51,7 +57,7 @@ def test_discover_compat_no_requires_python() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_requires_python",
+    f"{MODULE}.fetch_pypi_requires_python",
     lambda *_args: {"1.0.0": "invalid specifier!!", "2.0.0": ">=3.9"},
 )
 def test_discover_compat_invalid_specifier() -> None:
@@ -59,7 +65,7 @@ def test_discover_compat_invalid_specifier() -> None:
     assert compat == {"3.5": [VersionRange("1.0.0", "1.0.0")]}
 
 
-@patch("feu.compat.discovery.fetch_pypi_requires_python", lambda *_args: {})
+@patch(f"{MODULE}.fetch_pypi_requires_python", lambda *_args: {})
 def test_discover_compat_empty() -> None:
     compat = discover_compat("my_package", python_versions=("3.9",))
     assert compat == {"3.9": []}
@@ -67,7 +73,7 @@ def test_discover_compat_empty() -> None:
 
 def test_discover_compat_default_python_versions() -> None:
     with patch(
-        "feu.compat.discovery.fetch_pypi_requires_python",
+        f"{MODULE}.fetch_pypi_requires_python",
         lambda *_args: {"1.0.0": None},
     ):
         compat = discover_compat("my_package")
@@ -91,7 +97,7 @@ def test_default_targets_shape() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_wheel_filenames",
+    f"{MODULE}.fetch_pypi_wheel_filenames",
     lambda *_args: {
         "1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
         "1.1.0": (
@@ -109,7 +115,7 @@ def test_discover_compat_targets_basic() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_wheel_filenames",
+    f"{MODULE}.fetch_pypi_wheel_filenames",
     lambda *_args: {
         "1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
         "1.1.0": (
@@ -125,7 +131,7 @@ def test_discover_compat_targets_free_threaded() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_wheel_filenames",
+    f"{MODULE}.fetch_pypi_wheel_filenames",
     lambda *_args: {
         "1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
         "2.0.0": ("pkg-2.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
@@ -138,7 +144,7 @@ def test_discover_compat_targets_max_is_last_compatible() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_wheel_filenames",
+    f"{MODULE}.fetch_pypi_wheel_filenames",
     lambda *_args: {
         "1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
         "1.5.0": ("pkg-1.5.0-cp39-cp39-manylinux_2_17_x86_64.whl",),
@@ -151,7 +157,7 @@ def test_discover_compat_targets_upper_bound() -> None:
     assert compat == {linux_311: [VersionRange("1.0.0", "1.0.0")]}
 
 
-@patch("feu.compat.discovery.fetch_pypi_wheel_filenames", lambda *_args: {})
+@patch(f"{MODULE}.fetch_pypi_wheel_filenames", lambda *_args: {})
 def test_discover_compat_targets_empty() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(linux_311,))
@@ -159,7 +165,7 @@ def test_discover_compat_targets_empty() -> None:
 
 
 @patch(
-    "feu.compat.discovery.fetch_pypi_wheel_filenames",
+    f"{MODULE}.fetch_pypi_wheel_filenames",
     lambda *_args: {"1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",)},
 )
 def test_discover_compat_targets_multiple_targets() -> None:
@@ -170,3 +176,65 @@ def test_discover_compat_targets_multiple_targets() -> None:
         linux_311: [VersionRange("1.0.0", None)],
         macos_311: [],
     }
+
+
+#########################################
+#     Tests for show_compat_targets     #
+#########################################
+
+
+@rich_available
+def test_show_compat_targets_without_rich(capsys: pytest.CaptureFixture) -> None:
+    linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = {linux_311: [VersionRange("1.0.0", None)]}
+    show_compat_targets(compat, pkg_name="my_package")
+    out = capsys.readouterr().out
+    assert "my_package" in out
+    assert "3.11" in out
+    assert "linux" in out
+    assert "x86_64" in out
+    assert "1.0.0" in out
+    assert "latest" in out
+
+
+@rich_available
+def test_show_compat_targets_no_pkg_name(capsys: pytest.CaptureFixture) -> None:
+    linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = {linux_311: [VersionRange("1.0.0", "2.0.0")]}
+    show_compat_targets(compat)
+    out = capsys.readouterr().out
+    assert "Compatibility" in out
+    assert "1.0.0" in out
+    assert "2.0.0" in out
+
+
+@rich_available
+def test_show_compat_targets_unsupported(capsys: pytest.CaptureFixture) -> None:
+    macos_arm = Target(python_version="3.11", free_threaded=True, os="macos", arch="arm64")
+    compat = {macos_arm: []}
+    show_compat_targets(compat, pkg_name="my_package")
+    out = capsys.readouterr().out
+    assert "unsupported" in out
+    assert "True" in out
+    assert "macos" in out
+    assert "arm64" in out
+
+
+@rich_available
+def test_show_compat_targets_multiple_ranges(capsys: pytest.CaptureFixture) -> None:
+    linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = {linux_311: [VersionRange("1.0.0", "1.5.0"), VersionRange("2.0.0", None)]}
+    show_compat_targets(compat, pkg_name="my_package")
+    out = capsys.readouterr().out
+    assert "1.0.0" in out
+    assert "1.5.0" in out
+    assert "2.0.0" in out
+    assert "latest" in out
+
+
+def test_show_compat_targets_without_rich_package() -> None:
+    with (
+        patch("feu.imports.rich.is_rich_available", lambda: False),
+        pytest.raises(RuntimeError, match=r"'rich' package is required but not installed."),
+    ):
+        show_compat_targets({})

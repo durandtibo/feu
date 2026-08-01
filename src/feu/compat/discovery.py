@@ -8,6 +8,7 @@ __all__ = [
     "DEFAULT_TARGETS",
     "discover_compat",
     "discover_compat_targets",
+    "show_compat_targets",
 ]
 
 from typing import TYPE_CHECKING
@@ -18,13 +19,31 @@ from packaging.version import Version
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
-from feu.version.filtering import filter_stable_versions, filter_valid_versions
-from feu.version.pypi import fetch_pypi_requires_python, fetch_pypi_wheel_filenames
+from feu.imports import check_rich, is_rich_available
+from feu.version import (
+    fetch_pypi_requires_python,
+    fetch_pypi_wheel_filenames,
+    filter_stable_versions,
+    filter_valid_versions,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+if is_rich_available():  # pragma: no cover
+    from rich import get_console
+    from rich.table import Table
+
+
 DEFAULT_PYTHON_VERSIONS = ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15")
+
+DEFAULT_TARGETS: tuple[Target, ...] = tuple(
+    Target(python_version=python_version, free_threaded=free_threaded, os=os, arch=arch)
+    for python_version in DEFAULT_PYTHON_VERSIONS
+    for free_threaded in (False, True)
+    for os in ("linux", "macos", "windows")
+    for arch in ("x86_64", "arm64")
+)
 
 
 def discover_compat(
@@ -98,15 +117,6 @@ def _is_compatible(requires_python: str | None, python_version: str) -> bool:
         return True
 
 
-DEFAULT_TARGETS: tuple[Target, ...] = tuple(
-    Target(python_version=python_version, free_threaded=free_threaded, os=os, arch=arch)
-    for python_version in DEFAULT_PYTHON_VERSIONS
-    for free_threaded in (False, True)
-    for os in ("linux", "macos", "windows")
-    for arch in ("x86_64", "arm64")
-)
-
-
 def discover_compat_targets(
     pkg_name: str, targets: Sequence[Target] = DEFAULT_TARGETS
 ) -> dict[Target, list[VersionRange]]:
@@ -131,7 +141,7 @@ def discover_compat_targets(
 
     Example:
         ```pycon
-        >>> from feu.compat.discovery import discover_compat_targets
+        >>> from feu.compat import discover_compat_targets
         >>> compat = discover_compat_targets("numpy")  # doctest: +SKIP
 
         ```
@@ -166,3 +176,58 @@ def discover_compat_targets(
             VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
         ]
     return result
+
+
+def show_compat_targets(
+    compat: dict[Target, list[VersionRange]], pkg_name: str | None = None
+) -> None:
+    r"""Print the output of ``discover_compat_targets`` as a table.
+
+    Args:
+        compat: The mapping of ``Target`` to a list of ``VersionRange``,
+            as returned by ``discover_compat_targets``.
+        pkg_name: The package name to show in the table title, if any.
+
+    Raises:
+        RuntimeError: if the ``rich`` package is not installed.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import discover_compat_targets, show_compat_targets
+        >>> compat = discover_compat_targets("numpy")  # doctest: +SKIP
+        >>> show_compat_targets(compat, pkg_name="numpy")  # doctest: +SKIP
+
+        ```
+    """
+    check_rich()
+
+    table = Table(title=f"Compatibility for {pkg_name}" if pkg_name else "Compatibility")
+    table.add_column("Python")
+    table.add_column("Free-threaded")
+    table.add_column("OS")
+    table.add_column("Arch")
+    table.add_column("Min version")
+    table.add_column("Max version")
+
+    for target, ranges in compat.items():
+        if not ranges:
+            table.add_row(
+                target.python_version,
+                str(target.free_threaded),
+                target.os or "-",
+                target.arch or "-",
+                "[red]unsupported[/red]",
+                "[red]unsupported[/red]",
+            )
+            continue
+        for version_range in ranges:
+            table.add_row(
+                target.python_version,
+                str(target.free_threaded),
+                target.os or "-",
+                target.arch or "-",
+                version_range.min or "-",
+                version_range.max or "[green]latest[/green]",
+            )
+
+    get_console().print(table)
