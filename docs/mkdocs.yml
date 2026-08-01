@@ -23,11 +23,12 @@ nav:
   - CLI Reference: cli.md
   - API Reference:
       - Main Functions: refs/root.md
+      - Compat: refs/compat.md
+      - Discoverer: refs/discoverer.md
       - Git: refs/git.md
       - GitHub: refs/github.md
       - Imports: refs/imports.md
       - Install: refs/install.md
-      - Compat: refs/compat.md
       - Testing: refs/testing.md
       - Utils: refs/utils.md
       - Version: refs/version.md

@@ -28,11 +28,11 @@ __all__ = [
     "register_discoverers",
 ]
 
-from feu.compat.discoverer.base import BaseCompatDiscoverer
-from feu.compat.discoverer.default import CompatDiscoverer
-from feu.compat.discoverer.interface import (
+from feu.discoverer.base import BaseCompatDiscoverer
+from feu.discoverer.default import CompatDiscoverer
+from feu.discoverer.interface import (
     discover_compat_targets,
     get_default_registry,
     register_discoverers,
 )
-from feu.compat.discoverer.registry import CompatDiscovererRegistry
+from feu.discoverer.registry import CompatDiscovererRegistry

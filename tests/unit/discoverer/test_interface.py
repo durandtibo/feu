@@ -5,20 +5,20 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.compat.discoverer import (
+from feu.compat.registry import VersionRange
+from feu.compat.target import Target
+from feu.discoverer import (
     BaseCompatDiscoverer,
     CompatDiscovererRegistry,
     discover_compat_targets,
     get_default_registry,
     register_discoverers,
 )
-from feu.compat.registry import VersionRange
-from feu.compat.target import Target
 
 if TYPE_CHECKING:
     from collections.abc import Generator
 
-MODULE = "feu.compat.discoverer.default"
+MODULE = "feu.discoverer.default"
 
 
 @pytest.fixture(autouse=True)

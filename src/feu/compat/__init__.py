@@ -22,12 +22,6 @@ __all__ = [
     "show_compat_targets",
 ]
 
-from feu.compat.discoverer import (
-    BaseCompatDiscoverer,
-    CompatDiscoverer,
-    CompatDiscovererRegistry,
-    discover_compat_targets,
-)
 from feu.compat.discovery import discover_compat, show_compat_targets
 from feu.compat.interface import (
     find_closest_version,
@@ -38,3 +32,9 @@ from feu.compat.interface import (
 from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange
 from feu.compat.target import Target
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
+from feu.discoverer import (
+    BaseCompatDiscoverer,
+    CompatDiscoverer,
+    CompatDiscovererRegistry,
+    discover_compat_targets,
+)
