@@ -153,12 +153,14 @@ def discover_compat_targets(
 
     tags_by_version: dict[str, set[WheelTags]] = {
         version: {
-            tags
-            for filename in wheel_filenames[version]
-            if (tags := parse_wheel_filename(filename)) is not None
+            tags for filename in wheel_filenames[version] for tags in parse_wheel_filename(filename)
         }
         for version in versions
     }
+    has_pure_python_wheel = any(
+        tag.python_version is None for tags in tags_by_version.values() for tag in tags
+    )
+    requires_python = fetch_pypi_requires_python(pkg_name) if has_pure_python_wheel else {}
 
     result: dict[Target, list[VersionRange]] = {}
     for target in targets:
@@ -168,7 +170,16 @@ def discover_compat_targets(
             os=target.os,
             arch=target.arch,
         )
-        compatible = [version for version in versions if wanted in tags_by_version[version]]
+        compatible = [
+            version
+            for version in versions
+            if _is_target_compatible(
+                wanted,
+                target.python_version,
+                tags_by_version[version],
+                requires_python.get(version),
+            )
+        ]
         if not compatible:
             result[target] = []
             continue
@@ -176,6 +187,50 @@ def discover_compat_targets(
             VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
         ]
     return result
+
+
+def _is_target_compatible(
+    wanted: WheelTags,
+    wanted_python_version: str,
+    tags: set[WheelTags],
+    requires_python: str | None,
+) -> bool:
+    r"""Indicate if a release's wheels satisfy a wanted target.
+
+    A release is compatible if it shipped a wheel matching the
+    target's Python version, OS, arch, and free-threaded axes
+    exactly, or a pure-Python wheel (``python_version``/``os``/
+    ``arch`` of ``None``, meaning "any") whose ``requires_python``
+    metadata allows the target's Python version. Pure-Python wheels
+    are assumed compatible with any OS/arch and both free-threaded and
+    standard builds.
+
+    Args:
+        wanted: The tags describing the wanted target.
+        wanted_python_version: The wanted target's Python version.
+        tags: The wheel tags parsed from the release's wheel
+            filenames.
+        requires_python: The release's ``requires_python`` specifier,
+            used only to validate pure-Python wheels.
+
+    Returns:
+        ``True`` if the release satisfies the wanted target.
+    """
+    for tag in tags:
+        if tag.os is not None and tag.os != wanted.os:
+            continue
+        if tag.arch is not None and tag.arch != wanted.arch:
+            continue
+        if tag.python_version is None:
+            if _is_compatible(requires_python, wanted_python_version):
+                return True
+            continue
+        if tag.python_version != wanted.python_version:
+            continue
+        if tag.free_threaded != wanted.free_threaded:
+            continue
+        return True
+    return False
 
 
 def show_compat_targets(

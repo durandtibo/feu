@@ -5,7 +5,6 @@ from unittest.mock import patch
 import pytest
 
 from feu.compat.discovery import (
-    DEFAULT_PYTHON_VERSIONS,
     DEFAULT_TARGETS,
     discover_compat,
     discover_compat_targets,
@@ -86,7 +85,7 @@ def test_discover_compat_default_python_versions() -> None:
 
 
 def test_default_targets_shape() -> None:
-    assert len(DEFAULT_TARGETS) == len(DEFAULT_PYTHON_VERSIONS) * 2 * 3 * 2
+    assert len(DEFAULT_TARGETS) == 60
     assert all(isinstance(target, Target) for target in DEFAULT_TARGETS)
     assert all(target.os is not None and target.arch is not None for target in DEFAULT_TARGETS)
 
@@ -155,6 +154,38 @@ def test_discover_compat_targets_upper_bound() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
     compat = discover_compat_targets("pkg", targets=(linux_311,))
     assert compat == {linux_311: [VersionRange("1.0.0", "1.0.0")]}
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-py3-none-any.whl",),
+        "2.0.0": ("pkg-2.0.0-py3-none-any.whl",),
+    },
+)
+@patch(
+    f"{MODULE}.fetch_pypi_requires_python",
+    lambda *_args: {"1.0.0": ">=3.8", "2.0.0": ">=3.9"},
+)
+def test_discover_compat_targets_pure_python_wheel() -> None:
+    linux_38 = Target(python_version="3.8", os="linux", arch="x86_64")
+    linux_311 = Target(python_version="3.11", os="macos", arch="arm64")
+    compat = discover_compat_targets("pkg", targets=(linux_38, linux_311))
+    assert compat == {
+        linux_38: [VersionRange("1.0.0", "1.0.0")],
+        linux_311: [VersionRange("1.0.0", None)],
+    }
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {"1.0.0": ("pkg-1.0.0-py3-none-any.whl",)},
+)
+@patch(f"{MODULE}.fetch_pypi_requires_python", lambda *_args: {"1.0.0": ">=3.9"})
+def test_discover_compat_targets_pure_python_wheel_incompatible_python_version() -> None:
+    py38 = Target(python_version="3.8", os="linux", arch="x86_64")
+    compat = discover_compat_targets("pkg", targets=(py38,))
+    assert compat == {py38: []}
 
 
 @patch(f"{MODULE}.fetch_pypi_wheel_filenames", lambda *_args: {})
