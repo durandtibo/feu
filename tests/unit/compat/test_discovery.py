@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.compat.discovery import DEFAULT_TARGETS, show_compat_targets
+from feu.compat.discovery import DEFAULT_TARGETS, is_compatible, show_compat_targets
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.testing import rich_available
@@ -21,6 +21,31 @@ def test_default_targets_shape() -> None:
     assert len(DEFAULT_TARGETS) == 60
     assert all(isinstance(target, Target) for target in DEFAULT_TARGETS)
     assert all(target.os is not None and target.arch is not None for target in DEFAULT_TARGETS)
+
+
+####################################
+#     Tests for is_compatible     #
+####################################
+
+
+def test_is_compatible_none() -> None:
+    assert is_compatible(None, "3.11") is True
+
+
+def test_is_compatible_empty_string() -> None:
+    assert is_compatible("", "3.11") is True
+
+
+def test_is_compatible_true() -> None:
+    assert is_compatible(">=3.9", "3.11") is True
+
+
+def test_is_compatible_false() -> None:
+    assert is_compatible(">=3.12", "3.11") is False
+
+
+def test_is_compatible_invalid_specifier() -> None:
+    assert is_compatible("invalid-specifier", "3.11") is True
 
 
 #########################################
