@@ -160,6 +160,58 @@ def test_fetch_pypi_versions_no_date_filter_excludes_nothing(
     )
 
 
+def make_mock_yanked_response() -> Response:
+    resp = Mock(
+        json=Mock(
+            return_value={
+                "releases": {
+                    "1.0.0": [{"filename": "pkg-1.0.0.tar.gz", "yanked": False}],
+                    "1.1.0": [
+                        {"filename": "pkg-1.1.0.tar.gz", "yanked": True},
+                        {"filename": "pkg-1.1.0.whl", "yanked": True},
+                    ],
+                    "1.2.0": [
+                        {"filename": "pkg-1.2.0.tar.gz", "yanked": False},
+                        {"filename": "pkg-1.2.0.whl", "yanked": True},
+                    ],
+                    "1.3.0": [],
+                }
+            }
+        )
+    )
+    resp.status_code = 200
+    return resp
+
+
+@requests_available
+def test_fetch_pypi_versions_ignore_yanked_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_yanked_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package") == ("1.0.0", "1.2.0", "1.3.0")
+
+
+@requests_available
+def test_fetch_pypi_versions_ignore_yanked_true(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_yanked_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package", ignore_yanked=True) == ("1.0.0", "1.2.0", "1.3.0")
+
+
+@requests_available
+def test_fetch_pypi_versions_ignore_yanked_false(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_yanked_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package", ignore_yanked=False) == (
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+    )
+
+
 ##################################################
 #     Tests for fetch_pypi_requires_python     #
 ##################################################
