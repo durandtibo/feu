@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from feu.compat.discovery import DEFAULT_TARGETS
 from feu.discoverer.duckdb import DuckdbCompatDiscoverer
 from feu.discoverer.jax import JaxCompatDiscoverer
+from feu.discoverer.pydantic import PydanticCompatDiscoverer
 from feu.discoverer.registry import CompatDiscovererRegistry
 
 if TYPE_CHECKING:
@@ -38,7 +39,11 @@ def get_default_registry() -> CompatDiscovererRegistry:
     """
     if not hasattr(get_default_registry, "_registry"):
         get_default_registry._registry = CompatDiscovererRegistry(
-            {"duckdb": DuckdbCompatDiscoverer(), "jax": JaxCompatDiscoverer()}
+            {
+                "duckdb": DuckdbCompatDiscoverer(),
+                "jax": JaxCompatDiscoverer(),
+                "pydantic": PydanticCompatDiscoverer(),
+            }
         )
     return get_default_registry._registry
 

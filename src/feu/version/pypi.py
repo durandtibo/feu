@@ -2,10 +2,17 @@ r"""Contain PyPI utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["fetch_pypi_requires_python", "fetch_pypi_versions", "fetch_pypi_wheel_filenames"]
+__all__ = [
+    "fetch_pypi_pinned_dependency_version",
+    "fetch_pypi_requires_python",
+    "fetch_pypi_versions",
+    "fetch_pypi_wheel_filenames",
+]
 
 from datetime import date, datetime
 from functools import lru_cache
+
+from packaging.requirements import InvalidRequirement, Requirement
 
 from feu.utils.http import fetch_data
 
@@ -89,6 +96,50 @@ def fetch_pypi_wheel_filenames(package: str) -> dict[str, tuple[str, ...]]:
             file["filename"] for file in (files or []) if file.get("packagetype") == "bdist_wheel"
         )
     return result
+
+
+@lru_cache
+def fetch_pypi_pinned_dependency_version(package: str, version: str, dependency: str) -> str | None:
+    r"""Get the exact pinned version of a dependency required by a
+    specific release of a package on PyPI.
+
+    This is only able to detect an exact pin (e.g. ``dependency==1.2.3``).
+    It is intended for packages that pin a compiled dependency to an
+    exact version per release, e.g. ``pydantic`` pinning
+    ``pydantic-core``.
+
+    Args:
+        package: The package name.
+        version: The release version to inspect.
+        dependency: The dependency name to look for (e.g.
+            ``"pydantic-core"``).
+
+    Returns:
+        The exact pinned version of ``dependency`` required by
+            ``package==version``, or ``None`` if the release has no
+            such exact pin.
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_pypi_pinned_dependency_version
+        >>> version = fetch_pypi_pinned_dependency_version(
+        ...     "pydantic", "2.9.0", "pydantic-core"
+        ... )  # doctest: +SKIP
+
+        ```
+    """
+    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/{version}/json", timeout=10)
+    for requirement_str in metadata["info"].get("requires_dist") or []:
+        try:
+            requirement = Requirement(requirement_str)
+        except InvalidRequirement:  # pragma: no cover
+            continue
+        if requirement.name != dependency:
+            continue
+        for specifier in requirement.specifier:
+            if specifier.operator == "==":
+                return specifier.version
+    return None
 
 
 @lru_cache
