@@ -40,18 +40,18 @@ def main() -> None:
     )
     installer = InstallerSpec(name=args.installer, arguments=args.installer_arguments)
 
-    packages = get_package_names()[:3
-    ]
+    packages = get_package_names()
 
-    logger.info(f"Installing all versions of {packages} for {target}...")
+    logger.info("Installing all versions of %s for %s...", packages, target)
     results = install_packages_all_versions(installer=installer, packages=packages, target=target)
     for package, result in results.items():
-        logger.info(f"{package}: ({len(result.installed)}) installed={result.installed}")
+        logger.info("%s: (%s) installed=%s", package, len(result.installed), result.installed)
 
-    logger.info("Packages with failed installations")
+    logger.info("")
+    logger.info("===== Packages with failed installations =====")
     for package, result in results.items():
         if result.failed:
-            logger.info(f"{package}: ({len(result.failed)}) failed={result.failed}")
+            logger.info("%s: (%s) failed=%s", package, len(result.failed), result.failed)
 
     if any(result.failed for result in results.values()):
         msg = "Some package versions failed to install"
