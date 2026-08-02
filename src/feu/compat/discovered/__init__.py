@@ -3,7 +3,7 @@ constraints.
 
 Each submodule of this package holds the precomputed output of
 ``discover_compat_targets`` for one package, refreshed by the
-``debug/generate_discovered_compat.py`` maintenance script. This is
+``dev/generate_discovered_compat.py`` maintenance script. This is
 the automatic counterpart to ``feu.compat.defaults.DEFAULT_COMPAT``,
 the human-curated variant, which takes precedence when both specify a
 given package/target.
