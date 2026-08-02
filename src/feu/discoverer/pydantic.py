@@ -8,9 +8,8 @@ from typing import TYPE_CHECKING
 
 from packaging.version import Version
 
-from feu.compat.registry import VersionRange
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
-from feu.discoverer.base import BaseCompatDiscoverer
+from feu.discoverer.base import BaseCompatDiscoverer, group_into_ranges
 from feu.version import (
     fetch_pypi_pinned_dependency_version,
     fetch_pypi_wheel_filenames,
@@ -21,6 +20,7 @@ from feu.version import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
 
 PYDANTIC_CORE_PKG_NAME = "pydantic-core"
@@ -97,19 +97,14 @@ class PydanticCompatDiscoverer(BaseCompatDiscoverer):
                 os=target.os,
                 arch=target.arch,
             )
-            compatible = [
+            compatible = {
                 version
                 for version in versions
                 if _is_target_compatible(
                     wanted, tags_by_version[version], core_tags_by_version.get(version)
                 )
-            ]
-            if not compatible:
-                result[target] = []
-                continue
-            result[target] = [
-                VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-            ]
+            }
+            result[target] = group_into_ranges(versions, compatible, latest)
         return result
 
 

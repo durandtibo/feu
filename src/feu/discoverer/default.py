@@ -9,9 +9,8 @@ from typing import TYPE_CHECKING
 from packaging.version import Version
 
 from feu.compat.discovery import is_compatible
-from feu.compat.registry import VersionRange
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
-from feu.discoverer.base import BaseCompatDiscoverer
+from feu.discoverer.base import BaseCompatDiscoverer, group_into_ranges
 from feu.version import (
     fetch_pypi_requires_python,
     fetch_pypi_wheel_filenames,
@@ -22,6 +21,7 @@ from feu.version import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
 
 
@@ -116,12 +116,7 @@ def discover_from_wheel_filenames(
                 requires_python.get(version),
             )
         ]
-        if not compatible:
-            result[target] = []
-            continue
-        result[target] = [
-            VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-        ]
+        result[target] = group_into_ranges(versions, set(compatible), latest)
     return result
 
 
