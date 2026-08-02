@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import sys
+from types import SimpleNamespace
 
 import pytest
 
-from feu.utils.platform import get_current_arch, get_current_os, is_free_threaded
+from feu.utils.platform import (
+    get_current_arch,
+    get_current_os,
+    get_python_version,
+    is_free_threaded,
+)
 
 ##################################
 #     Tests for get_current_os     #
@@ -78,3 +84,27 @@ def test_is_free_threaded_gil_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_is_free_threaded_not_available(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delattr(sys, "_is_gil_enabled", raising=False)
     assert is_free_threaded() is False
+
+
+####################################
+#     Tests for get_python_version     #
+####################################
+
+
+@pytest.mark.parametrize(
+    ("major", "minor", "version"),
+    [
+        (3, 11, "3.11"),
+        (3, 12, "3.12"),
+        (3, 9, "3.9"),
+    ],
+)
+def test_get_python_version(
+    monkeypatch: pytest.MonkeyPatch, major: int, minor: int, version: str
+) -> None:
+    monkeypatch.setattr(sys, "version_info", SimpleNamespace(major=major, minor=minor))
+    assert get_python_version() == version
+
+
+def test_get_python_version_matches_running_interpreter() -> None:
+    assert get_python_version() == f"{sys.version_info.major}.{sys.version_info.minor}"
