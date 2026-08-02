@@ -8,6 +8,7 @@ __all__ = [
     "CompatDiscoverer",
     "CompatDiscovererRegistry",
     "CompatRegistry",
+    "JaxCompatDiscoverer",
     "Target",
     "UnsupportedVersionError",
     "VersionRange",
@@ -36,5 +37,6 @@ from feu.discoverer import (
     BaseCompatDiscoverer,
     CompatDiscoverer,
     CompatDiscovererRegistry,
+    JaxCompatDiscoverer,
     discover_compat_targets,
 )

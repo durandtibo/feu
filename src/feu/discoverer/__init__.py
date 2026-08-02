@@ -23,6 +23,7 @@ __all__ = [
     "BaseCompatDiscoverer",
     "CompatDiscoverer",
     "CompatDiscovererRegistry",
+    "JaxCompatDiscoverer",
     "discover_compat_targets",
     "get_default_registry",
     "register_discoverers",
@@ -35,4 +36,5 @@ from feu.discoverer.interface import (
     get_default_registry,
     register_discoverers,
 )
+from feu.discoverer.jax import JaxCompatDiscoverer
 from feu.discoverer.registry import CompatDiscovererRegistry

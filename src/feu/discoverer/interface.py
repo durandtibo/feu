@@ -8,6 +8,7 @@ __all__ = ["discover_compat_targets", "get_default_registry", "register_discover
 from typing import TYPE_CHECKING
 
 from feu.compat.discovery import DEFAULT_TARGETS
+from feu.discoverer.jax import JaxCompatDiscoverer
 from feu.discoverer.registry import CompatDiscovererRegistry
 
 if TYPE_CHECKING:
@@ -35,7 +36,7 @@ def get_default_registry() -> CompatDiscovererRegistry:
         ```
     """
     if not hasattr(get_default_registry, "_registry"):
-        get_default_registry._registry = CompatDiscovererRegistry()
+        get_default_registry._registry = CompatDiscovererRegistry({"jax": JaxCompatDiscoverer()})
     return get_default_registry._registry
 
 

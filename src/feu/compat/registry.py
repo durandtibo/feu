@@ -7,7 +7,7 @@ closest valid version and validation of a given version.
 
 from __future__ import annotations
 
-__all__ = ["CompatRegistry", "UnsupportedVersionError", "VersionRange"]
+__all__ = ["CompatRegistry", "Layer", "UnsupportedVersionError", "VersionRange"]
 
 import copy
 from typing import TYPE_CHECKING, Literal, NamedTuple
