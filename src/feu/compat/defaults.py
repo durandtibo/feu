@@ -155,9 +155,14 @@ def register_defaults(registry: CompatRegistry) -> None:
     r"""Populate a registry with the default package compatibility
     constraints.
 
-    These are the human-curated constraints, so they overwrite any
-    matching automatically discovered entry already registered (see
-    ``feu.compat.discovered.register_discovered``).
+    These are the human-curated constraints, so if called, they
+    overwrite any matching automatically discovered entry already
+    registered (see ``feu.compat.discovered.register_discovered``).
+
+    Note:
+        This function is not currently called by
+        ``feu.compat.interface.get_default_registry`` (see #885), so
+        ``DEFAULT_COMPAT`` has no effect on the default registry.
 
     Args:
         registry: The registry to populate.

@@ -281,7 +281,12 @@ class CompatRegistry:
         for min_version, _ in ranges:
             if min_version is not None and version < min_version:
                 return min_version.base_version
-        return pkg_version
+
+        # Unreachable: `version` is outside every range and not below the
+        # first min or above the last max, so it must fall in a gap caught
+        # above. Kept as a defensive guard for the exhaustiveness checker.
+        msg = "unreachable: version did not match any range, boundary, or gap"  # pragma: no cover
+        raise AssertionError(msg)  # pragma: no cover
 
     def is_valid_version(self, pkg_name: str, pkg_version: str, target: Target) -> bool:
         r"""Check if a package version is valid for a target.
