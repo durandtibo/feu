@@ -13,6 +13,7 @@ from feu.compat import Target
 from feu.compat.packages import get_package_names
 from feu.install import install_packages_all_versions
 from feu.utils.installer import InstallerSpec
+from feu.version import sort_versions
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -45,13 +46,17 @@ def main() -> None:
     logger.info("Installing all versions of %s for %s...", packages, target)
     results = install_packages_all_versions(installer=installer, packages=packages, target=target)
     for package, result in results.items():
-        logger.info("%s: (%s) installed=%s", package, len(result.installed), result.installed)
+        logger.info(
+            "%s: (%s) installed=%s", package, len(result.installed), sort_versions(result.installed)
+        )
 
     logger.info("")
     logger.info("===== Packages with failed installations =====")
     for package, result in results.items():
         if result.failed:
-            logger.info("%s: (%s) failed=%s", package, len(result.failed), result.failed)
+            logger.info(
+                "%s: (%s) failed=%s", package, len(result.failed), sort_versions(result.failed)
+            )
 
     if any(result.failed for result in results.values()):
         msg = "Some package versions failed to install"
