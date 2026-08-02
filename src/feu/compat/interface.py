@@ -13,7 +13,6 @@ __all__ = [
 from typing import TYPE_CHECKING
 
 from feu.compat.discovered import register_discovered
-from feu.compat.overrides import register_overrides
 from feu.compat.registry import CompatRegistry
 
 if TYPE_CHECKING:
@@ -43,7 +42,6 @@ def get_default_registry() -> CompatRegistry:
     if not hasattr(get_default_registry, "_registry"):
         registry = CompatRegistry()
         register_discovered(registry)
-        register_overrides(registry)
         get_default_registry._registry = registry
     return get_default_registry._registry
 
@@ -53,22 +51,18 @@ def register_compat(
     exist_ok: bool = False,
 ) -> None:
     r"""Register custom package configurations into the default global
-    registry's override layer.
-
-    Override entries always take precedence over the default/base
-    layer, and are only conflict-checked against other overrides, so
-    correcting an inaccurate default never requires ``exist_ok=True``.
+    registry.
 
     Args:
         mapping: Mapping of package name to ``Target`` to a list of
             ``VersionRange``.
         exist_ok: If ``False`` (default), raises an error if any entry
-            is already registered as an override. If ``True``,
-            overwrites existing override registrations silently.
+            is already registered. If ``True``, overwrites existing
+            registrations silently.
 
     Raises:
-        RuntimeError: If any entry is already registered as an
-            override and ``exist_ok`` is ``False``.
+        RuntimeError: If any entry is already registered and
+            ``exist_ok`` is ``False``.
 
     Example:
         ```pycon

@@ -43,16 +43,16 @@ def test_get_default_registry_is_singleton() -> None:
 
 def test_get_default_registry_not_populated_with_defaults() -> None:
     # register_defaults is currently disabled, so the human-curated defaults
-    # must not be present in the base layer.
+    # must not be present in the registry.
     registry = get_default_registry()
     assert registry.get_config(pkg_name="numpy", target=T311) == []
 
 
-def test_get_default_registry_uses_discovered_in_base_layer() -> None:
+def test_get_default_registry_uses_discovered() -> None:
     with patch(
         "feu.compat.interface.register_discovered",
         side_effect=lambda registry: registry.register_many(
-            {"numpy": {T311: [VersionRange("0.0.1", None)]}}, layer="base"
+            {"numpy": {T311: [VersionRange("0.0.1", None)]}}
         ),
     ):
         registry = get_default_registry()
@@ -64,11 +64,11 @@ def test_get_default_registry_uses_discovered_in_base_layer() -> None:
 #################################
 
 
-def test_register_compat_adds_to_override_layer() -> None:
+def test_register_compat_adds_to_registry() -> None:
     register_compat({"my_package": {T311: [VersionRange("1.0.0", None)]}})
     registry = get_default_registry()
     assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("1.0.0", None)]
-    assert registry.overrides == {"my_package": {T311: [VersionRange("1.0.0", None)]}}
+    assert registry.state["my_package"] == {T311: [VersionRange("1.0.0", None)]}
 
 
 def test_register_compat_exist_ok_false_raises() -> None:
@@ -77,8 +77,7 @@ def test_register_compat_exist_ok_false_raises() -> None:
         register_compat({"my_package": {T311: [VersionRange("2.0.0", None)]}})
 
 
-def test_register_compat_overrides_a_default_without_exist_ok() -> None:
-    # Overriding a package that has no base entry must not require exist_ok=True either.
+def test_register_compat_numpy_without_exist_ok() -> None:
     register_compat({"numpy": {T311: [VersionRange("9.9.9", None)]}})
     assert get_default_registry().get_config(pkg_name="numpy", target=T311) == [
         VersionRange("9.9.9", None)

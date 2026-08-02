@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 
 
 def register_discovered(registry: CompatRegistry) -> None:
-    r"""Populate a registry's base layer with the automatically
-    discovered package compatibility constraints.
+    r"""Populate a registry with the automatically discovered package
+    compatibility constraints.
 
     Every submodule of ``feu.compat.discovered`` is imported and must
     define ``PKG_NAME`` (the real package name) and a ``compat()``
@@ -35,4 +35,4 @@ def register_discovered(registry: CompatRegistry) -> None:
     """
     for module_info in pkgutil.iter_modules(__path__):
         module = importlib.import_module(f"{__name__}.{module_info.name}")
-        registry.register_many({module.PKG_NAME: module.compat()}, layer="base")
+        registry.register_many({module.PKG_NAME: module.compat()})
