@@ -106,6 +106,30 @@ def test_discover_pure_python_wheel_incompatible_python_version() -> None:
     assert compat == {py38: []}
 
 
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
+    },
+)
+def test_discover_arch_mismatch() -> None:
+    linux_311_arm = Target(python_version="3.11", os="linux", arch="arm64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_311_arm,))
+    assert compat == {linux_311_arm: []}
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-cp314-cp314t-manylinux_2_17_x86_64.whl",),
+    },
+)
+def test_discover_free_threaded_mismatch() -> None:
+    linux_314 = Target(python_version="3.14", free_threaded=False, os="linux", arch="x86_64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_314,))
+    assert compat == {linux_314: []}
+
+
 @patch(f"{MODULE}.fetch_pypi_wheel_filenames", lambda *_args: {})
 def test_discover_empty() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
