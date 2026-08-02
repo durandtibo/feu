@@ -87,6 +87,10 @@ class InstallerRegistry:
             installer: The installer specification.
             package: The package specification.
 
+        Raises:
+            RuntimeError: if no installer is registered for the given
+                installer name.
+
         Example:
             ```pycon
             >>> from feu.install import InstallerRegistry
@@ -98,6 +102,12 @@ class InstallerRegistry:
 
             ```
         """
+        if not cls.has_installer(installer.name):
+            msg = (
+                f"No installer is registered for the name {installer.name!r}. "
+                f"Available installers: {sorted(cls.registry)}"
+            )
+            raise RuntimeError(msg)
         cls.registry[installer.name].instantiate_with_arguments(installer.arguments).install(
             package=package
         )
