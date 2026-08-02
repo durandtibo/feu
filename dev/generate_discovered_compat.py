@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 
 from feu.compat import discover_compat_targets
-from feu.compat.defaults import DEFAULT_COMPAT
+from feu.compat.packages import get_package_names
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ def generate(pkg_name: str) -> None:
 
 def main() -> None:
     r"""Define the main function."""
-    for pkg_name in DEFAULT_COMPAT:
+    for pkg_name in get_package_names():
         generate(pkg_name)
 
 
