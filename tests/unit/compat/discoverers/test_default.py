@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+from feu.compat.discoverers import CompatDiscoverer
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
-from feu.discoverer import CompatDiscoverer
 
-MODULE = "feu.discoverer.default"
+MODULE = "feu.compat.discoverers.default"
 
 
 def test_compat_discoverer_repr() -> None:

@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING
 
 from packaging.version import Version
 
-from feu.compat.discovery import is_compatible
-from feu.discoverer.base import BaseCompatDiscoverer
-from feu.discoverer.utils import build_compat_ranges, build_tags_by_version
+from feu.compat.discoverers.base import BaseCompatDiscoverer
+from feu.compat.discoverers.utils import build_compat_ranges, build_tags_by_version
+from feu.compat.matrix import is_compatible
 from feu.version import (
     fetch_pypi_requires_python,
     fetch_pypi_wheel_filenames,

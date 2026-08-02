@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from feu.compat.registry import VersionRange
-from feu.compat.target import Target
-from feu.compat.wheel_tags import WheelTags
-from feu.discoverer.utils import (
+from feu.compat.discoverers.utils import (
     build_compat_ranges,
     build_tags_by_version,
     group_into_ranges,
@@ -11,6 +8,9 @@ from feu.discoverer.utils import (
     tags_match_exactly,
     target_to_wheel_tags,
 )
+from feu.compat.registry import VersionRange
+from feu.compat.target import Target
+from feu.compat.wheel_tags import WheelTags
 
 ##############################################
 #     Tests for sort_stable_versions     #

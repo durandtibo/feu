@@ -31,14 +31,14 @@ __all__ = [
     "register_discoverers",
 ]
 
-from feu.discoverer.base import BaseCompatDiscoverer
-from feu.discoverer.default import CompatDiscoverer
-from feu.discoverer.duckdb import DuckdbCompatDiscoverer
-from feu.discoverer.interface import (
+from feu.compat.discoverers.base import BaseCompatDiscoverer
+from feu.compat.discoverers.default import CompatDiscoverer
+from feu.compat.discoverers.duckdb import DuckdbCompatDiscoverer
+from feu.compat.discoverers.interface import (
     discover_compat_targets,
     get_default_registry,
     register_discoverers,
 )
-from feu.discoverer.jax import JaxCompatDiscoverer
-from feu.discoverer.pydantic import PydanticCompatDiscoverer
-from feu.discoverer.registry import CompatDiscovererRegistry
+from feu.compat.discoverers.jax import JaxCompatDiscoverer
+from feu.compat.discoverers.pydantic import PydanticCompatDiscoverer
+from feu.compat.discoverers.registry import CompatDiscovererRegistry

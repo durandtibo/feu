@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
+from feu.compat.discoverers import JaxCompatDiscoverer
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
-from feu.discoverer import JaxCompatDiscoverer
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-MODULE = "feu.discoverer.jax"
+MODULE = "feu.compat.discoverers.jax"
 
 
 def test_jax_compat_discoverer_repr() -> None:

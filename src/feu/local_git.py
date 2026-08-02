@@ -26,7 +26,7 @@ def get_tags() -> list[git.TagReference]:
 
     Example:
         ```pycon
-        >>> from feu.git import get_tags
+        >>> from feu.local_git import get_tags
         >>> tags = get_tags()
         >>> tags
 
@@ -45,7 +45,7 @@ def get_last_tag_name() -> str:
 
     Example:
         ```pycon
-        >>> from feu.git import get_last_tag_name
+        >>> from feu.local_git import get_last_tag_name
         >>> tag = get_last_tag_name()
         >>> tag
 
@@ -69,7 +69,7 @@ def get_last_version_tag_name() -> str:
 
     Example:
         ```pycon
-        >>> from feu.git import get_last_version_tag_name
+        >>> from feu.local_git import get_last_version_tag_name
         >>> tag = get_last_version_tag_name()
         >>> tag
 

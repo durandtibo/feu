@@ -6,8 +6,8 @@ __all__ = ["DuckdbCompatDiscoverer"]
 
 from typing import TYPE_CHECKING
 
-from feu.discoverer.base import BaseCompatDiscoverer
-from feu.discoverer.default import discover_from_wheel_filenames
+from feu.compat.discoverers.base import BaseCompatDiscoverer
+from feu.compat.discoverers.default import discover_from_wheel_filenames
 from feu.version import fetch_pypi_wheel_filenames
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ class DuckdbCompatDiscoverer(BaseCompatDiscoverer):
 
     Example:
         ```pycon
-        >>> from feu.discoverer.duckdb import DuckdbCompatDiscoverer
+        >>> from feu.compat.discoverers.duckdb import DuckdbCompatDiscoverer
         >>> from feu.compat.target import Target
         >>> discoverer = DuckdbCompatDiscoverer()
         >>> compat = discoverer.discover(
