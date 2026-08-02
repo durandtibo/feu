@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import platform
 import sys
 import sysconfig
 from datetime import datetime, timedelta, timezone
@@ -15,33 +14,12 @@ from feu.compat import Target
 from feu.compat.packages import get_package_names
 from feu.install import install_packages_all_versions
 from feu.utils.installer import InstallerSpec
+from feu.utils.platform import get_current_arch, get_current_os
 from feu.version import sort_versions
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 MAX_VERSION_AGE_YEARS = 5
-
-_OS_NAMES = {"linux": "linux", "darwin": "macos", "windows": "windows"}
-_ARCH_NAMES = {"x86_64": "x86_64", "amd64": "x86_64", "aarch64": "arm64", "arm64": "arm64"}
-
-
-def get_current_os() -> str | None:
-    r"""Return the current OS name using the registry's vocabulary.
-
-    Returns:
-        The OS name, or ``None`` if it is not recognized.
-    """
-    return _OS_NAMES.get(platform.system().lower())
-
-
-def get_current_arch() -> str | None:
-    r"""Return the current CPU architecture using the registry's
-    vocabulary.
-
-    Returns:
-        The architecture name, or ``None`` if it is not recognized.
-    """
-    return _ARCH_NAMES.get(platform.machine().lower())
 
 
 def parse_args() -> argparse.Namespace:
