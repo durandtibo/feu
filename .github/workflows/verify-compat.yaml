@@ -1,4 +1,4 @@
-name: Tests
+name: Verify Compatibity
 on:
   schedule:
     - cron: "0 6 * * 3" # run every Wednesday at 6:00 AM UTC
