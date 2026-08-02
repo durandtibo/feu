@@ -7,18 +7,18 @@ __all__ = ["discover_compat_targets", "get_default_registry", "register_discover
 
 from typing import TYPE_CHECKING
 
-from feu.compat.discovery import DEFAULT_TARGETS
-from feu.discoverer.duckdb import DuckdbCompatDiscoverer
-from feu.discoverer.jax import JaxCompatDiscoverer
-from feu.discoverer.pydantic import PydanticCompatDiscoverer
-from feu.discoverer.registry import CompatDiscovererRegistry
+from feu.compat.discoverers.duckdb import DuckdbCompatDiscoverer
+from feu.compat.discoverers.jax import JaxCompatDiscoverer
+from feu.compat.discoverers.pydantic import PydanticCompatDiscoverer
+from feu.compat.discoverers.registry import CompatDiscovererRegistry
+from feu.compat.matrix import DEFAULT_TARGETS
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
+    from feu.compat.discoverers.base import BaseCompatDiscoverer
     from feu.compat.registry import VersionRange
     from feu.compat.target import Target
-    from feu.discoverer.base import BaseCompatDiscoverer
 
 
 def get_default_registry() -> CompatDiscovererRegistry:

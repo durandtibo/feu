@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
+from feu.compat.discoverers import PydanticCompatDiscoverer
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
-from feu.discoverer import PydanticCompatDiscoverer
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-MODULE = "feu.discoverer.pydantic"
+MODULE = "feu.compat.discoverers.pydantic"
 
 
 def test_pydantic_compat_discoverer_repr() -> None:

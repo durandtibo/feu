@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from feu.git import get_last_tag_name, get_last_version_tag_name, get_tags
+from feu.local_git import get_last_tag_name, get_last_version_tag_name, get_tags
 from feu.testing import git_available, git_not_available
 
 ##############################

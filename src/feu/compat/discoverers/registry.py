@@ -6,12 +6,12 @@ __all__ = ["CompatDiscovererRegistry"]
 
 from typing import TYPE_CHECKING
 
-from feu.discoverer.default import CompatDiscoverer
+from feu.compat.discoverers.default import CompatDiscoverer
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from feu.discoverer.base import BaseCompatDiscoverer
+    from feu.compat.discoverers.base import BaseCompatDiscoverer
 
 
 class CompatDiscovererRegistry:

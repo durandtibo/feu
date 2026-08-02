@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from feu.discoverer import (
+from feu.compat.discoverers import (
     BaseCompatDiscoverer,
     CompatDiscoverer,
     CompatDiscovererRegistry,

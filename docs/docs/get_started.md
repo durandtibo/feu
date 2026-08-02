@@ -50,7 +50,7 @@ pip install uv
 Then, clone the git repository:
 
 ```shell
-git clone git@github.com:durandtibo/feu.git
+git clone git@github.com:durandtibo/feu.local_git
 cd feu
 ```
 

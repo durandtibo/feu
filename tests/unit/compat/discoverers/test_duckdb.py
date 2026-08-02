@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+from feu.compat.discoverers import DuckdbCompatDiscoverer
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
-from feu.discoverer import DuckdbCompatDiscoverer
 
-MODULE = "feu.discoverer.duckdb"
+MODULE = "feu.compat.discoverers.duckdb"
 
 
 def test_duckdb_compat_discoverer_repr() -> None:

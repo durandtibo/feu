@@ -6,8 +6,8 @@ __all__ = ["JaxCompatDiscoverer"]
 
 from typing import TYPE_CHECKING
 
-from feu.discoverer.base import BaseCompatDiscoverer
-from feu.discoverer.utils import (
+from feu.compat.discoverers.base import BaseCompatDiscoverer
+from feu.compat.discoverers.utils import (
     build_compat_ranges,
     build_tags_by_version,
     sort_stable_versions,
@@ -41,7 +41,7 @@ class JaxCompatDiscoverer(BaseCompatDiscoverer):
 
     Example:
         ```pycon
-        >>> from feu.discoverer.jax import JaxCompatDiscoverer
+        >>> from feu.compat.discoverers.jax import JaxCompatDiscoverer
         >>> from feu.compat.target import Target
         >>> discoverer = JaxCompatDiscoverer()
         >>> compat = discoverer.discover(

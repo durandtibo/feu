@@ -382,7 +382,7 @@ def publish_doc_latest(c: Context) -> None:
     r"""Publish latest (e.g. stable) docs."""
     from packaging.version import Version  # noqa: PLC0415
 
-    from feu.git import get_last_version_tag_name  # noqa: PLC0415
+    from feu.local_git import get_last_version_tag_name  # noqa: PLC0415
 
     logger.info("📚 Publishing latest documentation...")
 

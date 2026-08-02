@@ -3,8 +3,8 @@ from __future__ import annotations
 import pytest
 from packaging.version import Version
 
+from feu.compat.discoverers import discover_compat_targets
 from feu.compat.target import Target
-from feu.discoverer import discover_compat_targets
 from feu.testing import requests_available, requests_not_available
 from feu.version import fetch_pypi_requires_python
 

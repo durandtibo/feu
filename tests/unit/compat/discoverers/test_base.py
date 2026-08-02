@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from feu.discoverer.base import BaseCompatDiscoverer
+from feu.compat.discoverers.base import BaseCompatDiscoverer
 
 
 def test_base_compat_discoverer_is_abstract() -> None:

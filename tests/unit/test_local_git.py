@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.git import get_last_tag_name, get_last_version_tag_name, get_tags
 from feu.imports import is_git_available
+from feu.local_git import get_last_tag_name, get_last_version_tag_name, get_tags
 from feu.testing import git_available
 
 if is_git_available():
@@ -36,14 +36,14 @@ def create_repo_mock() -> Mock:
 
 @git_available
 def test_get_tags_sorted() -> None:
-    with patch("feu.git.git.Repo", Mock(return_value=create_repo_mock())):
+    with patch("feu.local_git.git.Repo", Mock(return_value=create_repo_mock())):
         result = get_tags()
     assert [t.name for t in result] == ["v1", "v2"]
 
 
 @git_available
 def test_get_tags_empty() -> None:
-    with patch("feu.git.git.Repo", Mock(return_value=Mock(tags=[]))):
+    with patch("feu.local_git.git.Repo", Mock(return_value=Mock(tags=[]))):
         result = get_tags()
     assert result == []
 
@@ -67,14 +67,14 @@ def test_get_last_tag_name() -> None:
     m2.configure_mock(name="v1.1.0")
     m3 = Mock()
     m3.configure_mock(name="v2.0.0")
-    with patch("feu.git.get_tags", lambda: [m1, m2, m3]):
+    with patch("feu.local_git.get_tags", lambda: [m1, m2, m3]):
         assert get_last_tag_name() == "v2.0.0"
 
 
 @git_available
 def test_get_last_tag_name_empty() -> None:
     with (
-        patch("feu.git.get_tags", list),
+        patch("feu.local_git.get_tags", list),
         pytest.raises(RuntimeError, match=r"No tag was found"),
     ):
         get_last_tag_name()
@@ -99,7 +99,7 @@ def test_get_last_version_tag_name() -> None:
     m2.configure_mock(name="v1.1.0")
     m3 = Mock()
     m3.configure_mock(name="v2.0.0")
-    with patch("feu.git.get_tags", lambda: [m1, m2, m3]):
+    with patch("feu.local_git.get_tags", lambda: [m1, m2, m3]):
         assert get_last_version_tag_name() == "v2.0.0"
 
 
@@ -113,7 +113,7 @@ def test_get_last_version_tag_name_mock_ignore_other_tag() -> None:
     m3.configure_mock(name="v2.0.0")
     m4 = Mock()
     m4.configure_mock(name="my_tag")
-    with patch("feu.git.get_tags", lambda: [m1, m2, m3, m4]):
+    with patch("feu.local_git.get_tags", lambda: [m1, m2, m3, m4]):
         assert get_last_version_tag_name() == "v2.0.0"
 
 
@@ -123,14 +123,14 @@ def test_get_last_version_tag_name_ignore_non_prefixed_numeric_tag() -> None:
     m1.configure_mock(name="v1.0.0")
     m2 = Mock()
     m2.configure_mock(name="123")
-    with patch("feu.git.get_tags", lambda: [m1, m2]):
+    with patch("feu.local_git.get_tags", lambda: [m1, m2]):
         assert get_last_version_tag_name() == "v1.0.0"
 
 
 @git_available
 def test_get_last_version_tag_name_empty() -> None:
     with (
-        patch("feu.git.get_tags", list),
+        patch("feu.local_git.get_tags", list),
         pytest.raises(RuntimeError, match=r"No tag was found"),
     ):
         get_last_version_tag_name()

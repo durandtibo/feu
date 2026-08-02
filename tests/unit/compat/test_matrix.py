@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.compat.discovery import DEFAULT_TARGETS, is_compatible, show_compat_targets
+from feu.compat.matrix import DEFAULT_TARGETS, is_compatible, show_compat_targets
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.testing import rich_available
 
-MODULE = "feu.compat.discovery"
+MODULE = "feu.compat.matrix"
 
 
 ##############################################

@@ -53,126 +53,33 @@ from feu.imports import (
 )
 from feu.install import is_pip_available, is_pipx_available, is_uv_available
 
-click_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_click_available(), reason="Requires click"
-)
-click_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_click_available(), reason="Skip if click is available"
-)
 
-git_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_git_available(), reason="Requires git"
-)
-git_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_git_available(), reason="Skip if git is available"
-)
+def _skipif_marks(is_available: bool, display_name: str) -> tuple[pytest.MarkDecorator, ...]:
+    r"""Return a ``(<name>_available, <name>_not_available)`` pair of
+    ``skipif`` marks for an optional dependency."""
+    return (
+        pytest.mark.skipif(not is_available, reason=f"Requires {display_name}"),
+        pytest.mark.skipif(is_available, reason=f"Skip if {display_name} is available"),
+    )
 
-jax_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("jax"), reason="Requires JAX"
-)
-jax_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("jax"), reason="Skip if JAX is available"
-)
 
-matplotlib_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("matplotlib"), reason="Requires matplotlib"
+click_available, click_not_available = _skipif_marks(is_click_available(), "click")
+git_available, git_not_available = _skipif_marks(is_git_available(), "git")
+jax_available, jax_not_available = _skipif_marks(is_package_available("jax"), "JAX")
+matplotlib_available, matplotlib_not_available = _skipif_marks(
+    is_package_available("matplotlib"), "matplotlib"
 )
-matplotlib_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("matplotlib"), reason="Skip if matplotlib is available"
-)
-
-numpy_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("numpy"), reason="Requires NumPy"
-)
-numpy_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("numpy"), reason="Skip if NumPy is available"
-)
-
-pandas_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("pandas"), reason="Requires pandas"
-)
-pandas_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("pandas"), reason="Skip if pandas is available"
-)
-
-polars_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("polars"), reason="Requires polars"
-)
-polars_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("polars"), reason="Skip if polars is available"
-)
-
-pyarrow_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("pyarrow"), reason="Requires pyarrow"
-)
-pyarrow_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("pyarrow"), reason="Skip if pyarrow is available"
-)
-
-requests_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_requests_available(), reason="Requires requests"
-)
-requests_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_requests_available(), reason="Skip if requests is available"
-)
-
-rich_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_rich_available(), reason="Requires rich"
-)
-rich_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_rich_available(), reason="Skip if rich is available"
-)
-
-scipy_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("scipy"), reason="Requires scipy"
-)
-scipy_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("scipy"), reason="Skip if scipy is available"
-)
-
-sklearn_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("sklearn"), reason="Requires sklearn"
-)
-sklearn_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("sklearn"), reason="Skip if sklearn is available"
-)
-
-torch_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("torch"), reason="Requires PyTorch"
-)
-torch_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("torch"), reason="Skip if PyTorch is available"
-)
-
-urllib3_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_urllib3_available(), reason="Requires urllib3"
-)
-urllib3_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_urllib3_available(), reason="Skip if urllib3 is available"
-)
-
-xarray_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_package_available("xarray"), reason="Requires xarray"
-)
-xarray_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_package_available("xarray"), reason="Skip if xarray is available"
-)
-
-pip_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_pip_available(), reason="Requires pip"
-)
-pip_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_pip_available(), reason="Skip if pip is available"
-)
-
-pipx_available: pytest.MarkDecorator = pytest.mark.skipif(
-    not is_pipx_available(), reason="Requires pipx"
-)
-pipx_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_pipx_available(), reason="Skip if pipx is available"
-)
-
-uv_available: pytest.MarkDecorator = pytest.mark.skipif(not is_uv_available(), reason="Requires uv")
-uv_not_available: pytest.MarkDecorator = pytest.mark.skipif(
-    is_uv_available(), reason="Skip if uv is available"
-)
+numpy_available, numpy_not_available = _skipif_marks(is_package_available("numpy"), "NumPy")
+pandas_available, pandas_not_available = _skipif_marks(is_package_available("pandas"), "pandas")
+pip_available, pip_not_available = _skipif_marks(is_pip_available(), "pip")
+pipx_available, pipx_not_available = _skipif_marks(is_pipx_available(), "pipx")
+polars_available, polars_not_available = _skipif_marks(is_package_available("polars"), "polars")
+pyarrow_available, pyarrow_not_available = _skipif_marks(is_package_available("pyarrow"), "pyarrow")
+requests_available, requests_not_available = _skipif_marks(is_requests_available(), "requests")
+rich_available, rich_not_available = _skipif_marks(is_rich_available(), "rich")
+scipy_available, scipy_not_available = _skipif_marks(is_package_available("scipy"), "scipy")
+sklearn_available, sklearn_not_available = _skipif_marks(is_package_available("sklearn"), "sklearn")
+torch_available, torch_not_available = _skipif_marks(is_package_available("torch"), "PyTorch")
+urllib3_available, urllib3_not_available = _skipif_marks(is_urllib3_available(), "urllib3")
+uv_available, uv_not_available = _skipif_marks(is_uv_available(), "uv")
+xarray_available, xarray_not_available = _skipif_marks(is_package_available("xarray"), "xarray")

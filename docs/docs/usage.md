@@ -131,7 +131,7 @@ for min_version, max_version in ranges:
 If you have installed the `git` extra (`pip install 'feu[git]'`), you can work with git repositories:
 
 ```python
-from feu.git import get_git_branch, get_git_last_commit_hash
+from feu.local_git import get_git_branch, get_git_last_commit_hash
 
 # Get the current git branch
 branch = get_git_branch()
