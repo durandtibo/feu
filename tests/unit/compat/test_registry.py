@@ -354,6 +354,15 @@ def test_compat_registry_find_closest_version_above_all_ranges() -> None:
     )
 
 
+def test_compat_registry_find_closest_version_empty() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", T311, ranges=[])
+    assert (
+        registry.find_closest_version(pkg_name="my_package", pkg_version="2.0.0", target=T311)
+        == "2.0.0"
+    )
+
+
 def test_compat_registry_is_valid_version_true() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, ranges=[VersionRange("1.2.0", "2.2.0")])

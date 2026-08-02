@@ -2,7 +2,7 @@ r"""Contain the main entry point."""
 
 from __future__ import annotations
 
-from feu.compat import Target
+from feu.compat import Target, UnsupportedVersionError
 from feu.compat import find_closest_version as find_closest_version_
 from feu.compat import is_valid_version
 from feu.imports import check_click, is_click_available
@@ -163,8 +163,8 @@ def find_closest_version(
 
         ```
     """
-    print(  # noqa: T201
-        find_closest_version_(
+    try:
+        version = find_closest_version_(
             pkg_name=pkg_name,
             pkg_version=pkg_version,
             target=Target(
@@ -174,7 +174,9 @@ def find_closest_version(
                 arch=arch or get_current_arch(),
             ),
         )
-    )
+    except UnsupportedVersionError:
+        version = None
+    print(version)  # noqa: T201
 
 
 @click.command()
