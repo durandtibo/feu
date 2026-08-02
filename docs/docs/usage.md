@@ -131,15 +131,19 @@ for min_version, max_version in ranges:
 If you have installed the `git` extra (`pip install 'feu[git]'`), you can work with git repositories:
 
 ```python
-from feu.local_git import get_git_branch, get_git_last_commit_hash
+from feu.local_git import get_last_tag_name, get_last_version_tag_name, get_tags
 
-# Get the current git branch
-branch = get_git_branch()
-print(f"Current branch: {branch}")
+# Get all tags, sorted by date/time
+tags = get_tags()
+print(f"Tags: {[tag.name for tag in tags]}")
 
-# Get the last commit hash
-commit_hash = get_git_last_commit_hash()
-print(f"Last commit: {commit_hash}")
+# Get the name of the most recent tag
+last_tag = get_last_tag_name()
+print(f"Last tag: {last_tag}")
+
+# Get the name of the most recent version tag (e.g. "v1.2.3")
+last_version_tag = get_last_version_tag_name()
+print(f"Last version tag: {last_version_tag}")
 ```
 
 ## Supported Packages
@@ -161,19 +165,19 @@ Each package has defined minimum and maximum versions for different Python versi
 ```python
 from feu.testing import (
     click_available,
-    gitpython_available,
+    git_available,
     requests_available,
 )
 
 
-# Use as decorators in pytest
+# Use as pytest marks (skip the test if the dependency is unavailable)
 @click_available
 def test_click_feature():
     # This test only runs if click is available
     pass
 
 
-@gitpython_available
+@git_available
 def test_git_feature():
     # This test only runs if gitpython is available
     pass

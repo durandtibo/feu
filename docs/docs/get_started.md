@@ -24,6 +24,7 @@ It is also possible to install specific optional dependencies:
 - `feu[cli]` - Install CLI support (click)
 - `feu[git]` - Install git support (gitpython)
 - `feu[requests]` - Install HTTP request support (requests, urllib3)
+- `feu[rich]` - Install rich console/formatting support (rich)
 
 For example:
 
@@ -50,7 +51,7 @@ pip install uv
 Then, clone the git repository:
 
 ```shell
-git clone git@github.com:durandtibo/feu.local_git
+git clone git@github.com:durandtibo/feu.git
 cd feu
 ```
 

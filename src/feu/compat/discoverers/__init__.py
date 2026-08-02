@@ -11,7 +11,7 @@ the default one.
 
 Example:
     ```pycon
-    >>> from feu.compat.discoverer import discover_compat_targets
+    >>> from feu.compat.discoverers import discover_compat_targets
     >>> compat = discover_compat_targets("numpy")  # doctest: +SKIP
 
     ```

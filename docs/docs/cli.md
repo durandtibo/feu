@@ -30,7 +30,7 @@ python -m feu install [OPTIONS]
 - `-v, --pkg-version TEXT` - Package version (required)
 - `-e, --pkg-extras TEXT` - Package extra dependencies (required, comma-separated; pass an empty string for none)
 - `-i, --installer-name TEXT` - Installer name (default: "pip")
-- `-a, --installer-args TEXT` - Installer arguments (optional)
+- `-a, --installer-args TEXT` - Installer arguments (default: "", i.e. none)
 
 ### Examples
 
