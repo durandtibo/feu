@@ -26,7 +26,7 @@ The project uses `uv` for dependency management. After cloning the repository:
 make setup-venv
 
 # Or manually:
-uv venv --python 3.13
+uv venv --python 3.14
 source .venv/bin/activate
 uv sync --all-extras --group dev --group docs
 ```

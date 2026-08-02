@@ -63,7 +63,7 @@ make setup-venv
 
 This command automatically:
 1. Updates `uv` to the latest version
-2. Creates a Python 3.13 virtual environment
+2. Creates a Python 3.14 virtual environment
 3. Installs `invoke` task runner
 4. Installs all dependencies including development and documentation dependencies
 
@@ -71,7 +71,7 @@ Alternatively, you can manually set up the environment:
 
 ```shell
 # Create a virtual environment with uv
-uv venv --python 3.13
+uv venv --python 3.14
 
 # Activate the virtual environment
 source .venv/bin/activate
