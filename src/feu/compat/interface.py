@@ -13,6 +13,7 @@ __all__ = [
 from typing import TYPE_CHECKING
 
 from feu.compat.defaults import register_defaults
+from feu.compat.discovered import register_discovered
 from feu.compat.registry import CompatRegistry
 
 if TYPE_CHECKING:
@@ -42,6 +43,7 @@ def get_default_registry() -> CompatRegistry:
     """
     if not hasattr(get_default_registry, "_registry"):
         registry = CompatRegistry()
+        register_discovered(registry)
         register_defaults(registry)
         get_default_registry._registry = registry
     return get_default_registry._registry

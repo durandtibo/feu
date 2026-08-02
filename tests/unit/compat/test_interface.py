@@ -46,6 +46,19 @@ def test_get_default_registry_populated_with_defaults() -> None:
     assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("1.23.2", "2.4.6")]
 
 
+def test_get_default_registry_defaults_override_discovered_in_base_layer() -> None:
+    # numpy is present in DEFAULT_COMPAT, so even if a discovered module later
+    # ships a value for it, the human-curated default must win in the base layer.
+    with patch(
+        "feu.compat.interface.register_discovered",
+        side_effect=lambda registry: registry.register_many(
+            {"numpy": {T311: [VersionRange("0.0.1", None)]}}, layer="base"
+        ),
+    ):
+        registry = get_default_registry()
+    assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("1.23.2", "2.4.6")]
+
+
 #################################
 #     Tests for register_compat #
 #################################
