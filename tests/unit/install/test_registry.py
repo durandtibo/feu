@@ -78,5 +78,12 @@ def test_installer_registry_install_pip_numpy_with_args() -> None:
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 
 
+def test_installer_registry_install_unknown_installer() -> None:
+    with pytest.raises(RuntimeError, match=r"No installer is registered for the name 'unknown'"):
+        InstallerRegistry.install(
+            installer=InstallerSpec("unknown"), package=PackageSpec(name="numpy", version="2.0.0")
+        )
+
+
 def test_installer_registry_registry() -> None:
     assert set(InstallerRegistry.registry) == {"pip", "pipx", "uv"}
