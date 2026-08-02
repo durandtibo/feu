@@ -4,6 +4,7 @@ from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.compat.wheel_tags import WheelTags
 from feu.discoverer.utils import (
+    build_compat_ranges,
     build_tags_by_version,
     group_into_ranges,
     sort_stable_versions,
@@ -199,3 +200,78 @@ def test_group_into_ranges_trailing_incompatible_version_closes_run() -> None:
     assert group_into_ranges(["1.0.0", "1.1.0", "2.0.0"], {"1.0.0"}, "2.0.0") == [
         VersionRange("1.0.0", "1.0.0")
     ]
+
+
+##############################################
+#     Tests for build_compat_ranges     #
+##############################################
+
+
+def test_build_compat_ranges_empty_versions() -> None:
+    target = Target(python_version="3.11", os="linux", arch="x86_64")
+    assert build_compat_ranges([], None, [target], lambda _version, _target, _wanted: True) == {
+        target: []
+    }
+
+
+def test_build_compat_ranges_empty_targets() -> None:
+    assert (
+        build_compat_ranges(["1.0.0"], "1.0.0", [], lambda _version, _target, _wanted: True) == {}
+    )
+
+
+def test_build_compat_ranges_all_compatible() -> None:
+    target = Target(python_version="3.11", os="linux", arch="x86_64")
+    result = build_compat_ranges(
+        ["1.0.0", "2.0.0"], "2.0.0", [target], lambda _version, _target, _wanted: True
+    )
+    assert result == {target: [VersionRange("1.0.0", None)]}
+
+
+def test_build_compat_ranges_none_compatible() -> None:
+    target = Target(python_version="3.11", os="linux", arch="x86_64")
+    result = build_compat_ranges(
+        ["1.0.0", "2.0.0"], "2.0.0", [target], lambda _version, _target, _wanted: False
+    )
+    assert result == {target: []}
+
+
+def test_build_compat_ranges_per_version_predicate() -> None:
+    target = Target(python_version="3.11", os="linux", arch="x86_64")
+    result = build_compat_ranges(
+        ["1.0.0", "1.1.0", "2.0.0"],
+        "2.0.0",
+        [target],
+        lambda version, _target, _wanted: version != "1.1.0",
+    )
+    assert result == {
+        target: [VersionRange("1.0.0", "1.0.0"), VersionRange("2.0.0", None)],
+    }
+
+
+def test_build_compat_ranges_multiple_targets() -> None:
+    target_linux = Target(python_version="3.11", os="linux", arch="x86_64")
+    target_macos = Target(python_version="3.11", os="macos", arch="arm64")
+
+    def is_compatible(version: str, _target: Target, wanted: WheelTags) -> bool:
+        return wanted.os == "linux" or version == "2.0.0"
+
+    result = build_compat_ranges(
+        ["1.0.0", "2.0.0"], "2.0.0", [target_linux, target_macos], is_compatible
+    )
+    assert result == {
+        target_linux: [VersionRange("1.0.0", None)],
+        target_macos: [VersionRange("2.0.0", None)],
+    }
+
+
+def test_build_compat_ranges_predicate_receives_wanted_wheel_tags() -> None:
+    target = Target(python_version="3.11", free_threaded=True, os="linux", arch="x86_64")
+    seen: list[WheelTags] = []
+
+    def is_compatible(_version: str, _target: Target, wanted: WheelTags) -> bool:
+        seen.append(wanted)
+        return True
+
+    build_compat_ranges(["1.0.0"], "1.0.0", [target], is_compatible)
+    assert seen == [WheelTags(python_version="3.11", free_threaded=True, os="linux", arch="x86_64")]

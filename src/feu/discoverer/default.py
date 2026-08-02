@@ -10,11 +10,7 @@ from packaging.version import Version
 
 from feu.compat.discovery import is_compatible
 from feu.discoverer.base import BaseCompatDiscoverer
-from feu.discoverer.utils import (
-    build_tags_by_version,
-    group_into_ranges,
-    target_to_wheel_tags,
-)
+from feu.discoverer.utils import build_compat_ranges, build_tags_by_version
 from feu.version import (
     fetch_pypi_requires_python,
     fetch_pypi_wheel_filenames,
@@ -100,21 +96,12 @@ def discover_from_wheel_filenames(
     )
     requires_python = fetch_pypi_requires_python(pkg_name) if has_pure_python_wheel else {}
 
-    result: dict[Target, list[VersionRange]] = {}
-    for target in targets:
-        wanted = target_to_wheel_tags(target)
-        compatible = {
-            version
-            for version in versions
-            if _is_target_compatible(
-                wanted,
-                target.python_version,
-                tags_by_version[version],
-                requires_python.get(version),
-            )
-        }
-        result[target] = group_into_ranges(versions, compatible, latest)
-    return result
+    def _is_version_compatible(version: str, target: Target, wanted: WheelTags) -> bool:
+        return _is_target_compatible(
+            wanted, target.python_version, tags_by_version[version], requires_python.get(version)
+        )
+
+    return build_compat_ranges(versions, latest, targets, _is_version_compatible)
 
 
 def _is_target_compatible(

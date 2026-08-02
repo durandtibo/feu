@@ -8,11 +8,10 @@ from typing import TYPE_CHECKING
 
 from feu.discoverer.base import BaseCompatDiscoverer
 from feu.discoverer.utils import (
+    build_compat_ranges,
     build_tags_by_version,
-    group_into_ranges,
     sort_stable_versions,
     tags_match_exactly,
-    target_to_wheel_tags,
 )
 from feu.version import fetch_pypi_pinned_dependency_version, fetch_pypi_wheel_filenames
 
@@ -88,18 +87,12 @@ class PydanticCompatDiscoverer(BaseCompatDiscoverer):
                 )
             core_tags_by_version[version] = pydantic_core_tags_by_version.get(core_version, set())
 
-        result: dict[Target, list[VersionRange]] = {}
-        for target in targets:
-            wanted = target_to_wheel_tags(target)
-            compatible = {
-                version
-                for version in versions
-                if _is_target_compatible(
-                    wanted, tags_by_version[version], core_tags_by_version.get(version)
-                )
-            }
-            result[target] = group_into_ranges(versions, compatible, latest)
-        return result
+        def _is_version_compatible(version: str, _target: Target, wanted: WheelTags) -> bool:
+            return _is_target_compatible(
+                wanted, tags_by_version[version], core_tags_by_version.get(version)
+            )
+
+        return build_compat_ranges(versions, latest, targets, _is_version_compatible)
 
 
 def _is_target_compatible(

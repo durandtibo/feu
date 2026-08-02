@@ -3,6 +3,7 @@ r"""Define helper functions shared by compatibility discoverers."""
 from __future__ import annotations
 
 __all__ = [
+    "build_compat_ranges",
     "build_tags_by_version",
     "group_into_ranges",
     "sort_stable_versions",
@@ -19,7 +20,7 @@ from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.version import filter_stable_versions, filter_valid_versions
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
 
     from feu.compat.target import Target
 
@@ -136,3 +137,35 @@ def group_into_ranges(
     if run_start is not None:
         ranges.append(VersionRange(run_start, None if run_end == latest else run_end))
     return ranges
+
+
+def build_compat_ranges(
+    versions: Sequence[str],
+    latest: str | None,
+    targets: Sequence[Target],
+    is_version_compatible: Callable[[str, Target, WheelTags], bool],
+) -> dict[Target, list[VersionRange]]:
+    r"""Build the per-target compatibility ranges from a version
+    compatibility predicate.
+
+    Args:
+        versions: All the versions considered, sorted ascending.
+        latest: The overall latest version, or ``None`` if
+            ``versions`` is empty.
+        targets: The compatibility targets to compute constraints for.
+        is_version_compatible: Callable indicating if a given version
+            is compatible with a given target, called with the
+            version, the target, and the target's ``WheelTags``.
+
+    Returns:
+        A mapping of ``Target`` to a list of ``VersionRange``, in the
+            same shape expected by ``CompatRegistry.register_many``.
+    """
+    result: dict[Target, list[VersionRange]] = {}
+    for target in targets:
+        wanted = target_to_wheel_tags(target)
+        compatible = {
+            version for version in versions if is_version_compatible(version, target, wanted)
+        }
+        result[target] = group_into_ranges(versions, compatible, latest)
+    return result
