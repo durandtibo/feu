@@ -27,6 +27,7 @@ from feu.version import (
     filter_stable_versions,
     filter_valid_versions,
     get_python_major_minor,
+    sort_versions,
 )
 
 if TYPE_CHECKING:
@@ -177,7 +178,7 @@ def install_all_versions(installer: InstallerSpec, package: str, target: Target)
     logger.info(f"Installing {package}...")
     installed: list[str] = []
     failed: list[str] = []
-    versions = get_installable_versions(pkg_name=pkg_name, target=target)
+    versions = sort_versions(get_installable_versions(pkg_name=pkg_name, target=target))
     logger.info(f"Installable versions for {package}: {versions}")
     for version in versions:
         spec = PackageSpec(name=pkg_name, version=version, extras=extras or None)
