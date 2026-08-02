@@ -5,8 +5,6 @@ from __future__ import annotations
 
 __all__ = ["get_package_names"]
 
-from feu.compat.defaults import DEFAULT_COMPAT
-
 
 def get_package_names() -> list[str]:
     r"""Return the names of the packages with default compatibility
@@ -25,4 +23,18 @@ def get_package_names() -> list[str]:
 
         ```
     """
-    return list(DEFAULT_COMPAT.keys())
+    return [
+        "click",
+        "duckdb",
+        "jax",
+        "matplotlib",
+        "numpy",
+        "pandas",
+        "pyarrow",
+        "pydantic",
+        "requests",
+        "scikit-learn",
+        "scipy",
+        "torch",
+        "xarray",
+    ]
