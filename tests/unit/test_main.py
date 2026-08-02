@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 from click.testing import CliRunner
 
 from feu.__main__ import check_valid_version, find_closest_version, install
-from feu.compat import Target
+from feu.compat import Target, UnsupportedVersionError
 from feu.testing import click_available
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
@@ -160,6 +160,19 @@ def test_find_closest_version_default_options() -> None:
             "pkg_version": "2.0.2",
             "target": Target(python_version="3.12", free_threaded=False, os="macos", arch="arm64"),
         }
+
+
+@click_available
+def test_find_closest_version_unsupported() -> None:
+    runner = CliRunner()
+    mock = Mock(side_effect=UnsupportedVersionError("no valid version"))
+    with patch("feu.__main__.find_closest_version_", mock):
+        result = runner.invoke(
+            find_closest_version,
+            ["--pkg-name", "numpy", "--pkg-version", "2.0.2", "--python-version", "3.10"],
+        )
+        assert result.exit_code == 0
+        assert result.output.strip() == "None"
 
 
 #########################################
