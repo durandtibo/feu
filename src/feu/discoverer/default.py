@@ -9,9 +9,12 @@ from typing import TYPE_CHECKING
 from packaging.version import Version
 
 from feu.compat.discovery import is_compatible
-from feu.compat.registry import VersionRange
-from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.discoverer.base import BaseCompatDiscoverer
+from feu.discoverer.utils import (
+    build_tags_by_version,
+    target_to_wheel_tags,
+    versions_to_ranges,
+)
 from feu.version import (
     fetch_pypi_requires_python,
     fetch_pypi_wheel_filenames,
@@ -22,7 +25,9 @@ from feu.version import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
+    from feu.compat.wheel_tags import WheelTags
 
 
 class CompatDiscoverer(BaseCompatDiscoverer):
@@ -87,12 +92,9 @@ def discover_from_wheel_filenames(
     versions = sorted(versions, key=Version)
     latest = versions[-1] if versions else None
 
-    tags_by_version: dict[str, set[WheelTags]] = {
-        version: {
-            tags for filename in wheel_filenames[version] for tags in parse_wheel_filename(filename)
-        }
-        for version in versions
-    }
+    tags_by_version = build_tags_by_version(
+        {version: wheel_filenames[version] for version in versions}
+    )
     has_pure_python_wheel = any(
         tag.python_version is None for tags in tags_by_version.values() for tag in tags
     )
@@ -100,12 +102,7 @@ def discover_from_wheel_filenames(
 
     result: dict[Target, list[VersionRange]] = {}
     for target in targets:
-        wanted = WheelTags(
-            python_version=target.python_version,
-            free_threaded=target.free_threaded,
-            os=target.os,
-            arch=target.arch,
-        )
+        wanted = target_to_wheel_tags(target)
         compatible = [
             version
             for version in versions
@@ -116,12 +113,7 @@ def discover_from_wheel_filenames(
                 requires_python.get(version),
             )
         ]
-        if not compatible:
-            result[target] = []
-            continue
-        result[target] = [
-            VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-        ]
+        result[target] = versions_to_ranges(compatible, latest)
     return result
 
 

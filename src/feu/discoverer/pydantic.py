@@ -6,22 +6,22 @@ __all__ = ["PydanticCompatDiscoverer"]
 
 from typing import TYPE_CHECKING
 
-from packaging.version import Version
-
-from feu.compat.registry import VersionRange
-from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.discoverer.base import BaseCompatDiscoverer
-from feu.version import (
-    fetch_pypi_pinned_dependency_version,
-    fetch_pypi_wheel_filenames,
-    filter_stable_versions,
-    filter_valid_versions,
+from feu.discoverer.utils import (
+    build_tags_by_version,
+    sort_stable_versions,
+    tags_match_exactly,
+    target_to_wheel_tags,
+    versions_to_ranges,
 )
+from feu.version import fetch_pypi_pinned_dependency_version, fetch_pypi_wheel_filenames
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
+    from feu.compat.wheel_tags import WheelTags
 
 PYDANTIC_CORE_PKG_NAME = "pydantic-core"
 
@@ -65,18 +65,13 @@ class PydanticCompatDiscoverer(BaseCompatDiscoverer):
         self, pkg_name: str, targets: Sequence[Target]
     ) -> dict[Target, list[VersionRange]]:
         wheel_filenames = fetch_pypi_wheel_filenames(pkg_name)
-        versions = filter_stable_versions(filter_valid_versions(wheel_filenames.keys()))
-        versions = sorted(versions, key=Version)
+        versions = sort_stable_versions(wheel_filenames.keys())
         latest = versions[-1] if versions else None
 
-        tags_by_version: dict[str, set[WheelTags]] = {
-            version: {
-                tags
-                for filename in wheel_filenames[version]
-                for tags in parse_wheel_filename(filename)
-            }
-            for version in versions
-        }
+        tags_by_version = build_tags_by_version(
+            {version: wheel_filenames[version] for version in versions}
+        )
+        pydantic_core_tags_by_version: dict[str, set[WheelTags]] | None = None
 
         core_tags_by_version: dict[str, set[WheelTags]] = {}
         for version, tags in tags_by_version.items():
@@ -87,16 +82,15 @@ class PydanticCompatDiscoverer(BaseCompatDiscoverer):
             )
             if core_version is None:
                 continue
-            core_tags_by_version[version] = _fetch_tags(PYDANTIC_CORE_PKG_NAME, core_version)
+            if pydantic_core_tags_by_version is None:
+                pydantic_core_tags_by_version = build_tags_by_version(
+                    fetch_pypi_wheel_filenames(PYDANTIC_CORE_PKG_NAME)
+                )
+            core_tags_by_version[version] = pydantic_core_tags_by_version.get(core_version, set())
 
         result: dict[Target, list[VersionRange]] = {}
         for target in targets:
-            wanted = WheelTags(
-                python_version=target.python_version,
-                free_threaded=target.free_threaded,
-                os=target.os,
-                arch=target.arch,
-            )
+            wanted = target_to_wheel_tags(target)
             compatible = [
                 version
                 for version in versions
@@ -104,20 +98,8 @@ class PydanticCompatDiscoverer(BaseCompatDiscoverer):
                     wanted, tags_by_version[version], core_tags_by_version.get(version)
                 )
             ]
-            if not compatible:
-                result[target] = []
-                continue
-            result[target] = [
-                VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-            ]
+            result[target] = versions_to_ranges(compatible, latest)
         return result
-
-
-def _fetch_tags(pkg_name: str, version: str) -> set[WheelTags]:
-    r"""Fetch the wheel tags published for a single release of a
-    package."""
-    filenames = fetch_pypi_wheel_filenames(pkg_name).get(version, ())
-    return {tags for filename in filenames for tags in parse_wheel_filename(filename)}
 
 
 def _is_target_compatible(
@@ -135,24 +117,9 @@ def _is_target_compatible(
         if tag.python_version is None:
             if core_tags is None:
                 continue
-            for core_tag in core_tags:
-                if core_tag.python_version != wanted.python_version:
-                    continue
-                if core_tag.free_threaded != wanted.free_threaded:
-                    continue
-                if core_tag.os != wanted.os:
-                    continue
-                if core_tag.arch != wanted.arch:
-                    continue
+            if any(tags_match_exactly(core_tag, wanted) for core_tag in core_tags):
                 return True
             continue
-        if tag.python_version != wanted.python_version:
-            continue
-        if tag.free_threaded != wanted.free_threaded:
-            continue
-        if tag.os != wanted.os:
-            continue
-        if tag.arch != wanted.arch:
-            continue
-        return True
+        if tags_match_exactly(tag, wanted):
+            return True
     return False

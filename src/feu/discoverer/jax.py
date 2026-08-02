@@ -6,21 +6,22 @@ __all__ = ["JaxCompatDiscoverer"]
 
 from typing import TYPE_CHECKING
 
-from packaging.version import Version
-
-from feu.compat.registry import VersionRange
-from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.discoverer.base import BaseCompatDiscoverer
-from feu.version import (
-    fetch_pypi_wheel_filenames,
-    filter_stable_versions,
-    filter_valid_versions,
+from feu.discoverer.utils import (
+    build_tags_by_version,
+    sort_stable_versions,
+    tags_match_exactly,
+    target_to_wheel_tags,
+    versions_to_ranges,
 )
+from feu.version import fetch_pypi_wheel_filenames
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
+    from feu.compat.wheel_tags import WheelTags
 
 JAXLIB_PKG_NAME = "jaxlib"
 
@@ -57,47 +58,21 @@ class JaxCompatDiscoverer(BaseCompatDiscoverer):
     def discover(
         self, pkg_name: str, targets: Sequence[Target]
     ) -> dict[Target, list[VersionRange]]:
-        jax_versions = _fetch_sorted_stable_versions(pkg_name)
+        jax_versions = sort_stable_versions(fetch_pypi_wheel_filenames(pkg_name).keys())
         latest = jax_versions[-1] if jax_versions else None
 
-        jaxlib_tags_by_version = _fetch_tags_by_version(JAXLIB_PKG_NAME)
+        jaxlib_tags_by_version = build_tags_by_version(fetch_pypi_wheel_filenames(JAXLIB_PKG_NAME))
 
         result: dict[Target, list[VersionRange]] = {}
         for target in targets:
-            wanted = WheelTags(
-                python_version=target.python_version,
-                free_threaded=target.free_threaded,
-                os=target.os,
-                arch=target.arch,
-            )
+            wanted = target_to_wheel_tags(target)
             compatible = [
                 version
                 for version in jax_versions
                 if _is_target_compatible(wanted, jaxlib_tags_by_version.get(version, set()))
             ]
-            if not compatible:
-                result[target] = []
-                continue
-            result[target] = [
-                VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-            ]
+            result[target] = versions_to_ranges(compatible, latest)
         return result
-
-
-def _fetch_sorted_stable_versions(pkg_name: str) -> list[str]:
-    r"""Fetch and sort the stable release versions of a package."""
-    wheel_filenames = fetch_pypi_wheel_filenames(pkg_name)
-    versions = filter_stable_versions(filter_valid_versions(wheel_filenames.keys()))
-    return sorted(versions, key=Version)
-
-
-def _fetch_tags_by_version(pkg_name: str) -> dict[str, set[WheelTags]]:
-    r"""Fetch the wheel tags published for each release of a package."""
-    wheel_filenames = fetch_pypi_wheel_filenames(pkg_name)
-    return {
-        version: {tags for filename in filenames for tags in parse_wheel_filename(filename)}
-        for version, filenames in wheel_filenames.items()
-    }
 
 
 def _is_target_compatible(wanted: WheelTags, tags: set[WheelTags]) -> bool:
@@ -108,14 +83,4 @@ def _is_target_compatible(wanted: WheelTags, tags: set[WheelTags]) -> bool:
     specific wheels, so a match requires the Python version, free-
     threaded, OS, and arch axes to all agree exactly.
     """
-    for tag in tags:
-        if tag.python_version != wanted.python_version:
-            continue
-        if tag.free_threaded != wanted.free_threaded:
-            continue
-        if tag.os != wanted.os:
-            continue
-        if tag.arch != wanted.arch:
-            continue
-        return True
-    return False
+    return any(tags_match_exactly(tag, wanted) for tag in tags)
