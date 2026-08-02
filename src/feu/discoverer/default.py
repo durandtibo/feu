@@ -98,7 +98,11 @@ def discover_from_wheel_filenames(
 
     def _is_version_compatible(version: str, target: Target, wanted: WheelTags) -> bool:
         return _is_target_compatible(
-            wanted, target.python_version, tags_by_version[version], requires_python.get(version)
+            wanted,
+            target.python_version,
+            tags_by_version[version],
+            requires_python.get(version),
+            treat_sdist_as_pure_python=has_pure_python_wheel,
         )
 
     return build_compat_ranges(versions, latest, targets, _is_version_compatible)
@@ -109,6 +113,7 @@ def _is_target_compatible(
     wanted_python_version: str,
     tags: set[WheelTags],
     requires_python: str | None,
+    treat_sdist_as_pure_python: bool = False,
 ) -> bool:
     r"""Indicate if a release's wheels satisfy a wanted target.
 
@@ -120,17 +125,35 @@ def _is_target_compatible(
     are assumed compatible with any OS/arch and both free-threaded and
     standard builds.
 
+    A release with no wheel files at all (e.g. sdist-only) is treated
+    the same way, falling back to ``requires_python``, but only when
+    ``treat_sdist_as_pure_python`` is ``True`` -- i.e. the package has
+    published pure-Python wheels for at least one other release. That
+    signal indicates the package has no compiled/ABI dependencies, so
+    a missing wheel for a given release is most likely a packaging
+    accident rather than evidence of a compiled extension whose
+    buildability for the target can't be verified. Without that
+    signal (e.g. a package that only ever ships platform-specific
+    wheels, such as numpy), a missing wheel is treated as
+    incompatible, since an sdist build isn't proof the release
+    supports the target's OS/arch/free-threading.
+
     Args:
         wanted: The tags describing the wanted target.
         wanted_python_version: The wanted target's Python version.
         tags: The wheel tags parsed from the release's wheel
             filenames.
         requires_python: The release's ``requires_python`` specifier,
-            used only to validate pure-Python wheels.
+            used only to validate pure-Python and sdist-only releases.
+        treat_sdist_as_pure_python: If ``True``, a release with no
+            wheel files falls back to ``requires_python`` instead of
+            being treated as incompatible.
 
     Returns:
         ``True`` if the release satisfies the wanted target.
     """
+    if not tags:
+        return treat_sdist_as_pure_python and is_compatible(requires_python, wanted_python_version)
     for tag in tags:
         if tag.os is not None and tag.os != wanted.os:
             continue

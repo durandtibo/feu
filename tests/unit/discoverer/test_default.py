@@ -149,3 +149,35 @@ def test_discover_multiple_targets() -> None:
         linux_311: [VersionRange("1.0.0", None)],
         macos_311: [],
     }
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-py3-none-any.whl",),
+        "1.5.0": (),  # sdist-only, e.g. click 6.5
+        "2.0.0": ("pkg-2.0.0-py3-none-any.whl",),
+    },
+)
+@patch(
+    f"{MODULE}.fetch_pypi_requires_python",
+    lambda *_args: {"1.0.0": None, "1.5.0": None, "2.0.0": None},
+)
+def test_discover_sdist_only_version_falls_back_to_pure_python() -> None:
+    linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_311,))
+    assert compat == {linux_311: [VersionRange("1.0.0", None)]}
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
+        "1.5.0": (),  # sdist-only, no pure-Python wheel published elsewhere
+        "2.0.0": ("pkg-2.0.0-cp311-cp311-manylinux_2_17_x86_64.whl",),
+    },
+)
+def test_discover_sdist_only_version_without_pure_python_wheel_is_incompatible() -> None:
+    linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_311,))
+    assert compat == {linux_311: [VersionRange("1.0.0", "1.0.0"), VersionRange("2.0.0", None)]}
