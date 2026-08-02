@@ -77,8 +77,10 @@ def get_last_version_tag_name() -> str:
     """
     tags = get_tags()
     for tag in tags[::-1]:
+        if not tag.name.startswith("v"):
+            continue
         with suppress(InvalidVersion):
-            Version(tag.name)
+            Version(tag.name[1:])
             return tag.name
 
     msg = "No tag was found"

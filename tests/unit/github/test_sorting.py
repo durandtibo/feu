@@ -125,6 +125,25 @@ def test_sort_repos_by_key_with_missing_names() -> None:
     ]
 
 
+def test_sort_repos_by_key_with_none_values() -> None:
+    """Test that repositories with a None value for the key are placed
+    at the end, alongside those missing the key entirely."""
+    assert sort_repos_by_key(
+        [
+            {"name": "zebra", "id": 1},
+            {"name": None, "id": 2},
+            {"name": "alpha", "id": 3},
+            {"id": 4},  # No name
+        ],
+        key="name",
+    ) == [
+        {"name": "alpha", "id": 3},
+        {"name": "zebra", "id": 1},
+        {"name": None, "id": 2},
+        {"id": 4},
+    ]
+
+
 def test_sort_repos_by_key_reverse_parameter_must_be_keyword() -> None:
     """Test that reverse parameter must be passed as keyword
     argument."""

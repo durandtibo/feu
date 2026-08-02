@@ -18,8 +18,8 @@ def sort_repos_by_key(
 ) -> list[dict[str, Any]]:
     r"""Sort repositories by a given key.
 
-    Repositories without the key are placed at the end in their
-    original order.
+    Repositories without the key, or with a ``None`` value for the
+    key, are placed at the end in their original order.
 
     Args:
         repos: List of repository dictionaries from GitHub API.
@@ -28,8 +28,9 @@ def sort_repos_by_key(
 
     Returns:
         List of repository dictionaries sorted in ascending order
-        (or descending if reverse=True). Repositories without the key appear
-        at the end in their original order.
+        (or descending if reverse=True). Repositories without the key, or
+        with a ``None`` value for the key, appear at the end in their
+        original order.
 
     Example:
         ```pycon
@@ -42,8 +43,8 @@ def sort_repos_by_key(
 
         ```
     """
-    repos_with_name = [repo for repo in repos if key in repo]
-    repos_without_name = [repo for repo in repos if key not in repo]
+    repos_with_name = [repo for repo in repos if repo.get(key) is not None]
+    repos_without_name = [repo for repo in repos if repo.get(key) is None]
 
     sorted_repos = sorted(repos_with_name, key=lambda x: x[key], reverse=reverse)
     return sorted_repos + repos_without_name

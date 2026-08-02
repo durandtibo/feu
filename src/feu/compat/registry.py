@@ -236,13 +236,17 @@ class CompatRegistry:
             msg = f"No version of package {pkg_name} is compatible with target {target}"
             raise UnsupportedVersionError(msg)
         ranges = self.get_config(pkg_name=pkg_name, target=target)
-        return [
+        resolved = [
             (
                 Version(version_range.min) if version_range.min is not None else None,
                 Version(version_range.max) if version_range.max is not None else None,
             )
             for version_range in ranges
         ]
+        # ``find_closest_version`` assumes ranges are sorted ascending by
+        # min version, but registration order is not guaranteed to be sorted.
+        resolved.sort(key=lambda r: (r[0] is not None, r[0]))
+        return resolved
 
     def find_closest_version(self, pkg_name: str, pkg_version: str, target: Target) -> str:
         r"""Find the closest valid version for a package.
