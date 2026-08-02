@@ -2,7 +2,7 @@ r"""Contain platform utilities."""
 
 from __future__ import annotations
 
-__all__ = ["get_current_arch", "get_current_os", "is_free_threaded"]
+__all__ = ["get_current_arch", "get_current_os", "get_python_version", "is_free_threaded"]
 
 import platform
 import sys
@@ -50,6 +50,23 @@ def get_current_arch() -> str | None:
         ```
     """
     return _ARCH_NAMES.get(platform.machine().lower())
+
+
+def get_python_version() -> str:
+    r"""Return the current Python version as a ``"major.minor"`` string.
+
+    Returns:
+        The current Python version.
+
+    Example:
+        ```pycon
+        >>> from feu.utils.platform import get_python_version
+        >>> get_python_version()  # doctest: +SKIP
+        '3.11'
+
+        ```
+    """
+    return f"{sys.version_info.major}.{sys.version_info.minor}"
 
 
 def is_free_threaded() -> bool:

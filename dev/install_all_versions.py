@@ -6,14 +6,18 @@ from __future__ import annotations
 
 import argparse
 import logging
-import sys
 from datetime import datetime, timedelta, timezone
 
 from feu.compat import Target
 from feu.compat.packages import get_package_names
 from feu.install import install_packages_all_versions
 from feu.utils.installer import InstallerSpec
-from feu.utils.platform import get_current_arch, get_current_os, is_free_threaded
+from feu.utils.platform import (
+    get_current_arch,
+    get_current_os,
+    get_python_version,
+    is_free_threaded,
+)
 from feu.version import sort_versions
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -39,7 +43,7 @@ def main() -> None:
     r"""Install all the compatible versions of a list of packages."""
     args = parse_args()
     target = Target(
-        python_version=f"{sys.version_info.major}.{sys.version_info.minor}",
+        python_version=get_python_version(),
         free_threaded=is_free_threaded(),
         os=get_current_os(),
         arch=get_current_arch(),
