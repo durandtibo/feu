@@ -9,6 +9,12 @@ from feu.imports import check_click, is_click_available
 from feu.install import install_package_closest_version
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
+from feu.utils.platform import (
+    get_current_arch,
+    get_current_os,
+    get_python_version,
+    is_free_threaded,
+)
 
 if is_click_available():
     import click
@@ -91,16 +97,65 @@ def install(
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
 @click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
 @click.option(
-    "-p", "--python-version", "python_version", help="Python version", required=True, type=str
+    "-p",
+    "--python-version",
+    "python_version",
+    help="Python version. If not provided, the current python version is used.",
+    required=False,
+    type=str,
+    default=None,
 )
-def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -> None:
+@click.option(
+    "-f",
+    "--free-threaded",
+    "free_threaded",
+    help="Whether the target is a free-threaded build. If not provided, the "
+    "current interpreter's free-threaded status is used.",
+    required=False,
+    type=bool,
+    default=None,
+)
+@click.option(
+    "-o",
+    "--os",
+    "os_",
+    help="Target OS. If not provided, the current OS is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+@click.option(
+    "-r",
+    "--arch",
+    "arch",
+    help="Target CPU architecture. If not provided, the current architecture is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+def find_closest_version(
+    pkg_name: str,
+    pkg_version: str,
+    *,
+    python_version: str | None,
+    free_threaded: bool | None,
+    os_: str | None,
+    arch: str | None,
+) -> None:
     r"""Print the closest valid version given the package name and
     version, and python version.
 
     Args:
         pkg_name: The package name.
         pkg_version: The package version to check.
-        python_version: The python version.
+        python_version: The python version. If not provided, the
+            current python version is used.
+        free_threaded: Whether the target is a free-threaded build.
+            If not provided, the current interpreter's free-threaded
+            status is used.
+        os_: The target OS. If not provided, the current OS is used.
+        arch: The target CPU architecture. If not provided, the
+            current architecture is used.
 
     Example:
         ```console
@@ -110,7 +165,14 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
     """
     print(  # noqa: T201
         find_closest_version_(
-            pkg_name=pkg_name, pkg_version=pkg_version, target=Target(python_version=python_version)
+            pkg_name=pkg_name,
+            pkg_version=pkg_version,
+            target=Target(
+                python_version=python_version or get_python_version(),
+                free_threaded=is_free_threaded() if free_threaded is None else free_threaded,
+                os=os_ or get_current_os(),
+                arch=arch or get_current_arch(),
+            ),
         )
     )
 
@@ -119,16 +181,65 @@ def find_closest_version(pkg_name: str, pkg_version: str, python_version: str) -
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
 @click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
 @click.option(
-    "-p", "--python-version", "python_version", help="Python version", required=True, type=str
+    "-p",
+    "--python-version",
+    "python_version",
+    help="Python version. If not provided, the current python version is used.",
+    required=False,
+    type=str,
+    default=None,
 )
-def check_valid_version(pkg_name: str, pkg_version: str, python_version: str) -> None:
+@click.option(
+    "-f",
+    "--free-threaded",
+    "free_threaded",
+    help="Whether the target is a free-threaded build. If not provided, the "
+    "current interpreter's free-threaded status is used.",
+    required=False,
+    type=bool,
+    default=None,
+)
+@click.option(
+    "-o",
+    "--os",
+    "os_",
+    help="Target OS. If not provided, the current OS is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+@click.option(
+    "-r",
+    "--arch",
+    "arch",
+    help="Target CPU architecture. If not provided, the current architecture is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+def check_valid_version(
+    pkg_name: str,
+    pkg_version: str,
+    *,
+    python_version: str | None,
+    free_threaded: bool | None,
+    os_: str | None,
+    arch: str | None,
+) -> None:
     r"""Print if the specified package version is valid for the given
     Python version.
 
     Args:
         pkg_name: The package name.
         pkg_version: The package version to check.
-        python_version: The python version.
+        python_version: The python version. If not provided, the
+            current python version is used.
+        free_threaded: Whether the target is a free-threaded build.
+            If not provided, the current interpreter's free-threaded
+            status is used.
+        os_: The target OS. If not provided, the current OS is used.
+        arch: The target CPU architecture. If not provided, the
+            current architecture is used.
 
     Example:
         ```console
@@ -138,7 +249,14 @@ def check_valid_version(pkg_name: str, pkg_version: str, python_version: str) ->
     """
     print(  # noqa: T201
         is_valid_version(
-            pkg_name=pkg_name, pkg_version=pkg_version, target=Target(python_version=python_version)
+            pkg_name=pkg_name,
+            pkg_version=pkg_version,
+            target=Target(
+                python_version=python_version or get_python_version(),
+                free_threaded=is_free_threaded() if free_threaded is None else free_threaded,
+                os=os_ or get_current_os(),
+                arch=arch or get_current_arch(),
+            ),
         )
     )
 

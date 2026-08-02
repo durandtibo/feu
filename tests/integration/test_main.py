@@ -51,10 +51,44 @@ def test_check_valid_version() -> None:
 
 
 @click_available
+def test_check_valid_version_default_python_version() -> None:
+    cmd = "python -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1"
+    out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
+    assert out.stdout.strip() in {"True", "False"}
+
+
+@click_available
+def test_check_valid_version_all_options() -> None:
+    cmd = (
+        "python -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1 "
+        "--python-version=3.11 --free-threaded=false --os=linux --arch=x86_64"
+    )
+    out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
+    assert out.stdout == "True\n"
+
+
+@click_available
 def test_find_closest_version() -> None:
     cmd = (
         "python -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1 "
         "--python-version=3.11"
+    )
+    out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
+    assert out.stdout == "0.9.1\n"
+
+
+@click_available
+def test_find_closest_version_default_python_version() -> None:
+    cmd = "python -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1"
+    out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
+    assert out.stdout.strip() != ""
+
+
+@click_available
+def test_find_closest_version_all_options() -> None:
+    cmd = (
+        "python -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1 "
+        "--python-version=3.11 --free-threaded=false --os=linux --arch=x86_64"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout == "0.9.1\n"
