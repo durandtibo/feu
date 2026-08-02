@@ -143,6 +143,15 @@ def test_get_installable_versions() -> None:
         ]
 
 
+def test_get_installable_versions_start_date() -> None:
+    fetch_mock = Mock(return_value=("1.0.0", "1.1.0", "2.0.0"))
+    with patch("feu.install.utils.fetch_pypi_versions", fetch_mock):
+        assert get_installable_versions(
+            "my_package", target=Target(python_version="3.11"), start_date="2024-01-01"
+        ) == ["1.0.0", "1.1.0", "2.0.0"]
+        fetch_mock.assert_called_once_with("my_package", start_date="2024-01-01")
+
+
 def test_get_installable_versions_filters_incompatible() -> None:
     registry_mock = Mock()
     registry_mock.is_valid_version.side_effect = lambda **kwargs: kwargs["pkg_version"] != "1.1.0"
@@ -184,6 +193,24 @@ def test_install_all_versions_pip() -> None:
             [call("pip install numpy==1.0.0"), call("pip install numpy==1.1.0")]
         )
         assert result == InstallResult(installed=["1.0.0", "1.1.0"], failed=[])
+
+
+def test_install_all_versions_start_date() -> None:
+    registry_mock = Mock()
+    registry_mock.is_valid_version.return_value = True
+    fetch_mock = Mock(return_value=("1.0.0", "1.1.0"))
+    with (
+        patch("feu.install.utils.fetch_pypi_versions", fetch_mock),
+        patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
+        patch("feu.install.pip.installer.run_bash_command"),
+    ):
+        install_all_versions(
+            installer=InstallerSpec("pip"),
+            package="numpy",
+            target=Target(python_version="3.11"),
+            start_date="2024-01-01",
+        )
+        fetch_mock.assert_called_once_with("numpy", start_date="2024-01-01")
 
 
 def test_install_all_versions_with_extras() -> None:
@@ -278,6 +305,27 @@ def test_install_packages_all_versions() -> None:
             "numpy": InstallResult(installed=["1.0.0"], failed=[]),
             "my_package": InstallResult(installed=["1.0.0"], failed=[]),
         }
+
+
+def test_install_packages_all_versions_start_date() -> None:
+    registry_mock = Mock()
+    registry_mock.is_valid_version.return_value = True
+    fetch_mock = Mock(return_value=("1.0.0",))
+    with (
+        patch("feu.install.utils.fetch_pypi_versions", fetch_mock),
+        patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
+        patch("feu.install.pip.installer.run_bash_command"),
+    ):
+        install_packages_all_versions(
+            installer=InstallerSpec("pip"),
+            packages=["numpy", "my_package"],
+            target=Target(python_version="3.11"),
+            start_date="2024-01-01",
+        )
+        fetch_mock.assert_has_calls(
+            [call("numpy", start_date="2024-01-01"), call("my_package", start_date="2024-01-01")],
+            any_order=True,
+        )
 
 
 def test_install_packages_all_versions_with_failure() -> None:

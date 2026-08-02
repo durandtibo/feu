@@ -32,6 +32,7 @@ from feu.version import (
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+    from datetime import date
 
     from feu.utils.installer import InstallerSpec
 
@@ -113,12 +114,18 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
     )
 
 
-def get_installable_versions(pkg_name: str, target: Target) -> list[str]:
+def get_installable_versions(
+    pkg_name: str, target: Target, start_date: date | str | None = None
+) -> list[str]:
     r"""Get the stable package versions compatible with a target.
 
     Args:
         pkg_name: The package name to inspect (e.g., ``"numpy"``).
         target: The compatibility target.
+        start_date: If specified, only the versions released on or
+            after this date are considered. The date can be a
+            ``date`` object or an ISO 8601 formatted string
+            e.g. ``'2024-01-01'``.
 
     Returns:
         The sorted list of stable versions of the package that are
@@ -135,7 +142,9 @@ def get_installable_versions(pkg_name: str, target: Target) -> list[str]:
         ```
     """
     registry = get_default_registry()
-    versions = filter_stable_versions(filter_valid_versions(fetch_pypi_versions(pkg_name)))
+    versions = filter_stable_versions(
+        filter_valid_versions(fetch_pypi_versions(pkg_name, start_date=start_date))
+    )
     return [
         version
         for version in versions
@@ -143,7 +152,12 @@ def get_installable_versions(pkg_name: str, target: Target) -> list[str]:
     ]
 
 
-def install_all_versions(installer: InstallerSpec, package: str, target: Target) -> InstallResult:
+def install_all_versions(
+    installer: InstallerSpec,
+    package: str,
+    target: Target,
+    start_date: date | str | None = None,
+) -> InstallResult:
     r"""Install all the versions of a package that are compatible with a
     target, one after the other.
 
@@ -155,6 +169,10 @@ def install_all_versions(installer: InstallerSpec, package: str, target: Target)
         package: The package to install, optionally with extras
             e.g. ``"pandas[performance]"``.
         target: The compatibility target.
+        start_date: If specified, only the versions released on or
+            after this date are installed. The date can be a
+            ``date`` object or an ISO 8601 formatted string
+            e.g. ``'2024-01-01'``.
 
     Returns:
         The versions that were installed successfully and the
@@ -178,7 +196,9 @@ def install_all_versions(installer: InstallerSpec, package: str, target: Target)
     logger.info(f"Installing {package}...")
     installed: list[str] = []
     failed: list[str] = []
-    versions = sort_versions(get_installable_versions(pkg_name=pkg_name, target=target))
+    versions = sort_versions(
+        get_installable_versions(pkg_name=pkg_name, target=target, start_date=start_date)
+    )
     logger.info(f"Installable versions for {package}: {versions}")
     for version in versions:
         spec = PackageSpec(name=pkg_name, version=version, extras=extras or None)
@@ -197,7 +217,10 @@ def _try_install(installer: InstallerSpec, package: PackageSpec) -> bool:
 
 
 def install_packages_all_versions(
-    installer: InstallerSpec, packages: Sequence[str], target: Target
+    installer: InstallerSpec,
+    packages: Sequence[str],
+    target: Target,
+    start_date: date | str | None = None,
 ) -> dict[str, InstallResult]:
     r"""Install all the versions of each package in a list that are
     compatible with a target.
@@ -210,6 +233,10 @@ def install_packages_all_versions(
         packages: The packages to install, optionally with extras
             e.g. ``"pandas[performance]"``.
         target: The compatibility target.
+        start_date: If specified, only the versions released on or
+            after this date are installed. The date can be a
+            ``date`` object or an ISO 8601 formatted string
+            e.g. ``'2024-01-01'``.
 
     Returns:
         A mapping of package to the versions that were installed
@@ -230,7 +257,9 @@ def install_packages_all_versions(
         ```
     """
     return {
-        package: install_all_versions(installer=installer, package=package, target=target)
+        package: install_all_versions(
+            installer=installer, package=package, target=target, start_date=start_date
+        )
         for package in packages
     }
 

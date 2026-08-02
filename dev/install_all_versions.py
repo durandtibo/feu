@@ -8,6 +8,7 @@ import argparse
 import logging
 import sys
 import sysconfig
+from datetime import datetime, timedelta, timezone
 
 from feu.compat import Target
 from feu.compat.packages import get_package_names
@@ -16,6 +17,8 @@ from feu.utils.installer import InstallerSpec
 from feu.version import sort_versions
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+MAX_VERSION_AGE_YEARS = 6
 
 
 def parse_args() -> argparse.Namespace:
@@ -42,9 +45,14 @@ def main() -> None:
     installer = InstallerSpec(name=args.installer, arguments=args.installer_arguments)
 
     packages = get_package_names()
+    start_date = datetime.now(tz=timezone.utc).date() - timedelta(days=365 * MAX_VERSION_AGE_YEARS)
 
-    logger.info("Installing all versions of %s for %s...", packages, target)
-    results = install_packages_all_versions(installer=installer, packages=packages, target=target)
+    logger.info(
+        "Installing all versions of %s released since %s for %s...", packages, start_date, target
+    )
+    results = install_packages_all_versions(
+        installer=installer, packages=packages, target=target, start_date=start_date
+    )
     for package, result in results.items():
         logger.info(
             "%s: (%s) installed=%s", package, len(result.installed), sort_versions(result.installed)
