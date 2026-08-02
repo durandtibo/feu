@@ -4,10 +4,10 @@ from __future__ import annotations
 
 __all__ = [
     "build_tags_by_version",
+    "group_into_ranges",
     "sort_stable_versions",
     "tags_match_exactly",
     "target_to_wheel_tags",
-    "versions_to_ranges",
 ]
 
 from typing import TYPE_CHECKING
@@ -19,7 +19,7 @@ from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.version import filter_stable_versions, filter_valid_versions
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
 
     from feu.compat.target import Target
 
@@ -98,22 +98,41 @@ def tags_match_exactly(tag: WheelTags, wanted: WheelTags) -> bool:
     )
 
 
-def versions_to_ranges(compatible: list[str], latest: str | None) -> list[VersionRange]:
-    r"""Convert a list of compatible versions to a list of
-    ``VersionRange``.
+def group_into_ranges(
+    versions: Sequence[str], compatible: set[str], latest: str | None
+) -> list[VersionRange]:
+    r"""Group a set of compatible versions into contiguous
+    ``VersionRange`` objects, following the sorted ``versions`` order.
+
+    Compatibility is not guaranteed to be contiguous across a
+    package's version history (e.g. an old release gaining a backport
+    wheel for a new Python version while intermediate releases never
+    did, or a release accidentally dropping a platform wheel), so runs
+    of compatible versions must be tracked individually instead of
+    collapsed into a single min/max span.
 
     Args:
-        compatible: The versions found compatible with a target,
-            sorted in ascending order.
-        latest: The latest known stable version of the package, or
-            ``None`` if unknown. Used to leave the upper bound open
-            when the compatible range extends to the latest version.
+        versions: All the versions considered, sorted ascending.
+        compatible: The subset of ``versions`` that satisfy a target.
+        latest: The overall latest version, or ``None`` if
+            ``versions`` is empty. The final range's ``max`` is
+            ``None`` (unbounded) when its end is ``latest``.
 
     Returns:
-        An empty list if ``compatible`` is empty, otherwise a
-            single-element list containing the ``VersionRange``
-            spanning the compatible versions.
+        The list of contiguous ``VersionRange`` objects covering
+            ``compatible``.
     """
-    if not compatible:
-        return []
-    return [VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])]
+    ranges: list[VersionRange] = []
+    run_start: str | None = None
+    run_end: str | None = None
+    for version in versions:
+        if version in compatible:
+            if run_start is None:
+                run_start = version
+            run_end = version
+        elif run_start is not None:
+            ranges.append(VersionRange(run_start, run_end))
+            run_start = None
+    if run_start is not None:
+        ranges.append(VersionRange(run_start, None if run_end == latest else run_end))
+    return ranges

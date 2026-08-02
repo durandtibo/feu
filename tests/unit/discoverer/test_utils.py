@@ -5,10 +5,10 @@ from feu.compat.target import Target
 from feu.compat.wheel_tags import WheelTags
 from feu.discoverer.utils import (
     build_tags_by_version,
+    group_into_ranges,
     sort_stable_versions,
     tags_match_exactly,
     target_to_wheel_tags,
-    versions_to_ranges,
 )
 
 ##############################################
@@ -150,29 +150,52 @@ def test_tags_match_exactly_none_vs_none() -> None:
 
 
 ##############################################
-#     Tests for versions_to_ranges     #
+#     Tests for group_into_ranges     #
 ##############################################
 
 
-def test_versions_to_ranges_empty() -> None:
-    assert versions_to_ranges([], None) == []
+def test_group_into_ranges_empty() -> None:
+    assert group_into_ranges([], set(), None) == []
 
 
-def test_versions_to_ranges_empty_with_latest() -> None:
-    assert versions_to_ranges([], "1.0.0") == []
+def test_group_into_ranges_empty_with_latest() -> None:
+    assert group_into_ranges([], set(), "1.0.0") == []
 
 
-def test_versions_to_ranges_single_version_is_latest() -> None:
-    assert versions_to_ranges(["1.0.0"], "1.0.0") == [VersionRange("1.0.0", None)]
+def test_group_into_ranges_no_compatible_versions() -> None:
+    assert group_into_ranges(["1.0.0", "2.0.0"], set(), "2.0.0") == []
 
 
-def test_versions_to_ranges_single_version_not_latest() -> None:
-    assert versions_to_ranges(["1.0.0"], "2.0.0") == [VersionRange("1.0.0", "1.0.0")]
+def test_group_into_ranges_single_version_is_latest() -> None:
+    assert group_into_ranges(["1.0.0"], {"1.0.0"}, "1.0.0") == [VersionRange("1.0.0", None)]
 
 
-def test_versions_to_ranges_multiple_versions_open_upper_bound() -> None:
-    assert versions_to_ranges(["1.0.0", "1.1.0", "2.0.0"], "2.0.0") == [VersionRange("1.0.0", None)]
+def test_group_into_ranges_single_version_not_latest() -> None:
+    assert group_into_ranges(["1.0.0", "2.0.0"], {"1.0.0"}, "2.0.0") == [
+        VersionRange("1.0.0", "1.0.0")
+    ]
 
 
-def test_versions_to_ranges_multiple_versions_closed_upper_bound() -> None:
-    assert versions_to_ranges(["1.0.0", "1.1.0"], "2.0.0") == [VersionRange("1.0.0", "1.1.0")]
+def test_group_into_ranges_contiguous_open_upper_bound() -> None:
+    assert group_into_ranges(["1.0.0", "1.1.0", "2.0.0"], {"1.0.0", "1.1.0", "2.0.0"}, "2.0.0") == [
+        VersionRange("1.0.0", None)
+    ]
+
+
+def test_group_into_ranges_contiguous_closed_upper_bound() -> None:
+    assert group_into_ranges(["1.0.0", "1.1.0", "2.0.0"], {"1.0.0", "1.1.0"}, "2.0.0") == [
+        VersionRange("1.0.0", "1.1.0")
+    ]
+
+
+def test_group_into_ranges_non_contiguous_yields_multiple_ranges() -> None:
+    assert group_into_ranges(["1.0.0", "1.1.0", "1.2.0", "2.0.0"], {"1.0.0", "2.0.0"}, "2.0.0") == [
+        VersionRange("1.0.0", "1.0.0"),
+        VersionRange("2.0.0", None),
+    ]
+
+
+def test_group_into_ranges_trailing_incompatible_version_closes_run() -> None:
+    assert group_into_ranges(["1.0.0", "1.1.0", "2.0.0"], {"1.0.0"}, "2.0.0") == [
+        VersionRange("1.0.0", "1.0.0")
+    ]

@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING
 from feu.discoverer.base import BaseCompatDiscoverer
 from feu.discoverer.utils import (
     build_tags_by_version,
+    group_into_ranges,
     sort_stable_versions,
     tags_match_exactly,
     target_to_wheel_tags,
-    versions_to_ranges,
 )
 from feu.version import fetch_pypi_wheel_filenames
 
@@ -66,12 +66,12 @@ class JaxCompatDiscoverer(BaseCompatDiscoverer):
         result: dict[Target, list[VersionRange]] = {}
         for target in targets:
             wanted = target_to_wheel_tags(target)
-            compatible = [
+            compatible = {
                 version
                 for version in jax_versions
                 if _is_target_compatible(wanted, jaxlib_tags_by_version.get(version, set()))
-            ]
-            result[target] = versions_to_ranges(compatible, latest)
+            }
+            result[target] = group_into_ranges(jax_versions, compatible, latest)
         return result
 
 

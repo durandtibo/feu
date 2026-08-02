@@ -165,6 +165,36 @@ def test_discover_multiple_v2_versions_reuse_fetched_core_wheels() -> None:
     assert compat == {linux_311: [VersionRange("2.8.0", None)]}
 
 
+@patch(
+    f"{MODULE}.fetch_pypi_pinned_dependency_version",
+    _fetch_pin({"2.0.0": "2.0.1", "2.12.0": "2.41.1"}),
+)
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    _fetch_wheels(
+        pydantic_wheels={
+            "1.10.25": (
+                "pydantic-1.10.25-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+            ),
+            "2.0.0": ("pydantic-2.0.0-py3-none-any.whl",),
+            "2.12.0": ("pydantic-2.12.0-py3-none-any.whl",),
+        },
+        core_wheels={
+            "2.0.1": (
+                "pydantic_core-2.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+            ),
+            "2.41.1": (
+                "pydantic_core-2.41.1-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+            ),
+        },
+    ),
+)
+def test_discover_non_contiguous_compatibility_yields_multiple_ranges() -> None:
+    linux_314 = Target(python_version="3.14", os="linux", arch="x86_64")
+    compat = PydanticCompatDiscoverer().discover("pydantic", targets=(linux_314,))
+    assert compat == {linux_314: [VersionRange("1.10.25", "1.10.25"), VersionRange("2.12.0", None)]}
+
+
 @patch(f"{MODULE}.fetch_pypi_pinned_dependency_version", _fetch_pin({}))
 @patch(f"{MODULE}.fetch_pypi_wheel_filenames", _fetch_wheels(pydantic_wheels={}, core_wheels={}))
 def test_discover_empty() -> None:

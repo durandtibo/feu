@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING
 from feu.discoverer.base import BaseCompatDiscoverer
 from feu.discoverer.utils import (
     build_tags_by_version,
+    group_into_ranges,
     sort_stable_versions,
     tags_match_exactly,
     target_to_wheel_tags,
-    versions_to_ranges,
 )
 from feu.version import fetch_pypi_pinned_dependency_version, fetch_pypi_wheel_filenames
 
@@ -91,14 +91,14 @@ class PydanticCompatDiscoverer(BaseCompatDiscoverer):
         result: dict[Target, list[VersionRange]] = {}
         for target in targets:
             wanted = target_to_wheel_tags(target)
-            compatible = [
+            compatible = {
                 version
                 for version in versions
                 if _is_target_compatible(
                     wanted, tags_by_version[version], core_tags_by_version.get(version)
                 )
-            ]
-            result[target] = versions_to_ranges(compatible, latest)
+            }
+            result[target] = group_into_ranges(versions, compatible, latest)
         return result
 
 

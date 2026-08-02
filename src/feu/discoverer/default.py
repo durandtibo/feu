@@ -12,8 +12,8 @@ from feu.compat.discovery import is_compatible
 from feu.discoverer.base import BaseCompatDiscoverer
 from feu.discoverer.utils import (
     build_tags_by_version,
+    group_into_ranges,
     target_to_wheel_tags,
-    versions_to_ranges,
 )
 from feu.version import (
     fetch_pypi_requires_python,
@@ -103,7 +103,7 @@ def discover_from_wheel_filenames(
     result: dict[Target, list[VersionRange]] = {}
     for target in targets:
         wanted = target_to_wheel_tags(target)
-        compatible = [
+        compatible = {
             version
             for version in versions
             if _is_target_compatible(
@@ -112,8 +112,8 @@ def discover_from_wheel_filenames(
                 tags_by_version[version],
                 requires_python.get(version),
             )
-        ]
-        result[target] = versions_to_ranges(compatible, latest)
+        }
+        result[target] = group_into_ranges(versions, compatible, latest)
     return result
 
 
