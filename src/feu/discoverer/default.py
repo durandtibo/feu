@@ -55,49 +55,74 @@ class CompatDiscoverer(BaseCompatDiscoverer):
     def discover(
         self, pkg_name: str, targets: Sequence[Target]
     ) -> dict[Target, list[VersionRange]]:
-        wheel_filenames = fetch_pypi_wheel_filenames(pkg_name)
-        versions = filter_stable_versions(filter_valid_versions(wheel_filenames.keys()))
-        versions = sorted(versions, key=Version)
-        latest = versions[-1] if versions else None
-
-        tags_by_version: dict[str, set[WheelTags]] = {
-            version: {
-                tags
-                for filename in wheel_filenames[version]
-                for tags in parse_wheel_filename(filename)
-            }
-            for version in versions
-        }
-        has_pure_python_wheel = any(
-            tag.python_version is None for tags in tags_by_version.values() for tag in tags
+        return discover_from_wheel_filenames(
+            pkg_name, targets, fetch_pypi_wheel_filenames(pkg_name)
         )
-        requires_python = fetch_pypi_requires_python(pkg_name) if has_pure_python_wheel else {}
 
-        result: dict[Target, list[VersionRange]] = {}
-        for target in targets:
-            wanted = WheelTags(
-                python_version=target.python_version,
-                free_threaded=target.free_threaded,
-                os=target.os,
-                arch=target.arch,
+
+def discover_from_wheel_filenames(
+    pkg_name: str,
+    targets: Sequence[Target],
+    wheel_filenames: dict[str, tuple[str, ...]],
+) -> dict[Target, list[VersionRange]]:
+    r"""Compute the compatibility target ranges from a pre-fetched
+    mapping of version to wheel filenames.
+
+    This is the implementation used by ``CompatDiscoverer.discover``,
+    extracted so specialized discoverers (e.g. ``DuckdbCompatDiscoverer``)
+    can reuse the wheel-tag-based matching logic on a filtered/adjusted
+    set of wheel filenames.
+
+    Args:
+        pkg_name: The package name to inspect (e.g., ``"numpy"``).
+        targets: The compatibility targets to compute constraints for.
+        wheel_filenames: Mapping of version to published wheel
+            filenames for that version.
+
+    Returns:
+        A mapping of ``Target`` to a list of ``VersionRange``, in the
+            same shape expected by ``CompatRegistry.register_many``.
+    """
+    versions = filter_stable_versions(filter_valid_versions(wheel_filenames.keys()))
+    versions = sorted(versions, key=Version)
+    latest = versions[-1] if versions else None
+
+    tags_by_version: dict[str, set[WheelTags]] = {
+        version: {
+            tags for filename in wheel_filenames[version] for tags in parse_wheel_filename(filename)
+        }
+        for version in versions
+    }
+    has_pure_python_wheel = any(
+        tag.python_version is None for tags in tags_by_version.values() for tag in tags
+    )
+    requires_python = fetch_pypi_requires_python(pkg_name) if has_pure_python_wheel else {}
+
+    result: dict[Target, list[VersionRange]] = {}
+    for target in targets:
+        wanted = WheelTags(
+            python_version=target.python_version,
+            free_threaded=target.free_threaded,
+            os=target.os,
+            arch=target.arch,
+        )
+        compatible = [
+            version
+            for version in versions
+            if _is_target_compatible(
+                wanted,
+                target.python_version,
+                tags_by_version[version],
+                requires_python.get(version),
             )
-            compatible = [
-                version
-                for version in versions
-                if _is_target_compatible(
-                    wanted,
-                    target.python_version,
-                    tags_by_version[version],
-                    requires_python.get(version),
-                )
-            ]
-            if not compatible:
-                result[target] = []
-                continue
-            result[target] = [
-                VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-            ]
-        return result
+        ]
+        if not compatible:
+            result[target] = []
+            continue
+        result[target] = [
+            VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
+        ]
+    return result
 
 
 def _is_target_compatible(

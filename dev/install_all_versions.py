@@ -18,7 +18,7 @@ from feu.version import sort_versions
 
 logger: logging.Logger = logging.getLogger(__name__)
 
-MAX_VERSION_AGE_YEARS = 6
+MAX_VERSION_AGE_YEARS = 5
 
 
 def parse_args() -> argparse.Namespace:
