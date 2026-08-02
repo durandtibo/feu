@@ -24,6 +24,16 @@ def _to_date(value: date | str) -> date:
     return date.fromisoformat(value)
 
 
+def _is_yanked(files: list[dict] | None) -> bool:
+    r"""Indicate if a release is yanked.
+
+    A release is considered yanked if it has at least one file and all
+    its files are marked as yanked.
+    """
+    files = files or []
+    return bool(files) and all(file.get("yanked", False) for file in files)
+
+
 def _release_date(files: list[dict] | None) -> date | None:
     r"""Get the release date of a version from its list of files.
 
@@ -148,6 +158,7 @@ def fetch_pypi_versions(
     reverse: bool = False,
     start_date: date | str | None = None,
     end_date: date | str | None = None,
+    ignore_yanked: bool = True,
 ) -> tuple[str, ...]:
     r"""Get the package versions available on PyPI.
 
@@ -165,6 +176,8 @@ def fetch_pypi_versions(
             before this date are returned. The date can be a
             ``date`` object or an ISO 8601 formatted string
             e.g. ``'2024-12-31'``.
+        ignore_yanked: If ``True``, yanked versions are excluded
+            from the returned versions.
 
     Returns:
         A list containing the sorted version strings.
@@ -181,6 +194,8 @@ def fetch_pypi_versions(
     """
     metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
     releases = metadata["releases"]
+    if ignore_yanked:
+        releases = {version: files for version, files in releases.items() if not _is_yanked(files)}
     versions = releases.keys()
     if start_date is not None or end_date is not None:
         start = _to_date(start_date) if start_date is not None else None
