@@ -23,7 +23,8 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="1.1.3", max="2.3.3")
         ],
         Target(python_version="3.9", free_threaded=False, os="linux", arch="arm64"): [
-            VersionRange(min="1.2.2", max="2.3.3")
+            VersionRange(min="1.2.2", max="1.2.2"),
+            VersionRange(min="1.2.5", max="2.3.3"),
         ],
         Target(python_version="3.9", free_threaded=False, os="macos", arch="x86_64"): [
             VersionRange(min="1.1.3", max="2.3.3")

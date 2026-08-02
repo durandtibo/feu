@@ -32,7 +32,9 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="3.5.0", max="3.9.4")
         ],
         Target(python_version="3.9", free_threaded=False, os="windows", arch="x86_64"): [
-            VersionRange(min="3.2.2", max="3.9.4")
+            VersionRange(min="3.2.2", max="3.3.1"),
+            VersionRange(min="3.3.3", max="3.9.0"),
+            VersionRange(min="3.9.2", max="3.9.4"),
         ],
         Target(python_version="3.9", free_threaded=False, os="windows", arch="arm64"): [],
         Target(python_version="3.10", free_threaded=False, os="linux", arch="x86_64"): [
@@ -48,7 +50,8 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="3.5.0", max="3.10.9")
         ],
         Target(python_version="3.10", free_threaded=False, os="windows", arch="x86_64"): [
-            VersionRange(min="3.5.0", max="3.10.9")
+            VersionRange(min="3.5.0", max="3.9.0"),
+            VersionRange(min="3.9.2", max="3.10.9"),
         ],
         Target(python_version="3.10", free_threaded=False, os="windows", arch="arm64"): [],
         Target(python_version="3.11", free_threaded=False, os="linux", arch="x86_64"): [
@@ -64,7 +67,8 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="3.6.0", max=None)
         ],
         Target(python_version="3.11", free_threaded=False, os="windows", arch="x86_64"): [
-            VersionRange(min="3.6.0", max=None)
+            VersionRange(min="3.6.0", max="3.9.0"),
+            VersionRange(min="3.9.2", max=None),
         ],
         Target(python_version="3.11", free_threaded=False, os="windows", arch="arm64"): [
             VersionRange(min="3.10.5", max=None)
@@ -82,7 +86,8 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="3.7.3", max=None)
         ],
         Target(python_version="3.12", free_threaded=False, os="windows", arch="x86_64"): [
-            VersionRange(min="3.7.3", max=None)
+            VersionRange(min="3.7.3", max="3.9.0"),
+            VersionRange(min="3.9.2", max=None),
         ],
         Target(python_version="3.12", free_threaded=False, os="windows", arch="arm64"): [
             VersionRange(min="3.10.5", max=None)

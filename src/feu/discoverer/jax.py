@@ -8,9 +8,8 @@ from typing import TYPE_CHECKING
 
 from packaging.version import Version
 
-from feu.compat.registry import VersionRange
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
-from feu.discoverer.base import BaseCompatDiscoverer
+from feu.discoverer.base import BaseCompatDiscoverer, group_into_ranges
 from feu.version import (
     fetch_pypi_wheel_filenames,
     filter_stable_versions,
@@ -20,6 +19,7 @@ from feu.version import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    from feu.compat.registry import VersionRange
     from feu.compat.target import Target
 
 JAXLIB_PKG_NAME = "jaxlib"
@@ -70,17 +70,12 @@ class JaxCompatDiscoverer(BaseCompatDiscoverer):
                 os=target.os,
                 arch=target.arch,
             )
-            compatible = [
+            compatible = {
                 version
                 for version in jax_versions
                 if _is_target_compatible(wanted, jaxlib_tags_by_version.get(version, set()))
-            ]
-            if not compatible:
-                result[target] = []
-                continue
-            result[target] = [
-                VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-            ]
+            }
+            result[target] = group_into_ranges(jax_versions, compatible, latest)
         return result
 
 
