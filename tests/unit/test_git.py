@@ -118,6 +118,16 @@ def test_get_last_version_tag_name_mock_ignore_other_tag() -> None:
 
 
 @git_available
+def test_get_last_version_tag_name_ignore_non_prefixed_numeric_tag() -> None:
+    m1 = Mock()
+    m1.configure_mock(name="v1.0.0")
+    m2 = Mock()
+    m2.configure_mock(name="123")
+    with patch("feu.git.get_tags", lambda: [m1, m2]):
+        assert get_last_version_tag_name() == "v1.0.0"
+
+
+@git_available
 def test_get_last_version_tag_name_empty() -> None:
     with (
         patch("feu.git.get_tags", list),

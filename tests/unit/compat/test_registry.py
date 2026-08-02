@@ -314,6 +314,20 @@ def test_compat_registry_find_closest_version_gap_snaps_up() -> None:
     )
 
 
+def test_compat_registry_find_closest_version_gap_snaps_up_unordered_registration() -> None:
+    registry = CompatRegistry()
+    # Ranges registered out of ascending order must still be treated as sorted.
+    registry.register(
+        "pydantic",
+        T311,
+        ranges=[VersionRange("2.8.0", None), VersionRange("1.0.0", "1.10.13")],
+    )
+    assert (
+        registry.find_closest_version(pkg_name="pydantic", pkg_version="2.0.0", target=T311)
+        == "2.8.0"
+    )
+
+
 def test_compat_registry_find_closest_version_below_all_ranges() -> None:
     registry = CompatRegistry()
     registry.register(
