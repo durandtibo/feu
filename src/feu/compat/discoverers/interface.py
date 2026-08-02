@@ -32,7 +32,7 @@ def get_default_registry() -> CompatDiscovererRegistry:
 
     Example:
         ```pycon
-        >>> from feu.compat.discoverer import get_default_registry
+        >>> from feu.compat.discoverers import get_default_registry
         >>> registry = get_default_registry()
 
         ```
@@ -62,7 +62,7 @@ def register_discoverers(
 
     Example:
         ```pycon
-        >>> from feu.compat.discoverer import CompatDiscoverer, register_discoverers
+        >>> from feu.compat.discoverers import CompatDiscoverer, register_discoverers
         >>> register_discoverers({"my_package": CompatDiscoverer()})
 
         ```

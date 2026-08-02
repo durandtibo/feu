@@ -40,7 +40,7 @@ class CompatDiscoverer(BaseCompatDiscoverer):
 
     Example:
         ```pycon
-        >>> from feu.compat.discoverer import CompatDiscoverer
+        >>> from feu.compat.discoverers import CompatDiscoverer
         >>> from feu.compat.target import Target
         >>> discoverer = CompatDiscoverer()
         >>> compat = discoverer.discover(

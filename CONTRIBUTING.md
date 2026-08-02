@@ -36,11 +36,11 @@ uv sync --all-extras --group dev --group docs
 Run the test suite to ensure everything works:
 
 ```bash
-# Run all tests with coverage
-inv unit-test --cov
+# Run the full test suite (unit + integration + functional) with coverage
+inv all-test --cov
 
 # Run only unit tests
-inv unit-test
+inv unit-test --cov
 
 # Run integration tests
 inv integration-test
@@ -243,12 +243,15 @@ Use absolute imports and separate groups with blank lines.
 feu/
 ├── src/feu/              # Source code
 │   ├── __init__.py       # Main package exports
-│   ├── package.py        # Package configuration
-│   ├── imports.py        # Import utilities
-│   ├── git.py           # Git utilities
-│   ├── install/         # Installation utilities
-│   ├── version/         # Version management
-│   └── utils/           # Utility functions
+│   ├── __main__.py       # CLI entry point
+│   ├── compat/           # Package/Python-version compatibility registry and discovery
+│   ├── github/           # GitHub API utilities
+│   ├── imports/          # Optional-dependency availability checks
+│   ├── install/          # Installation utilities (incl. install/pip)
+│   ├── local_git.py      # Git tag utilities
+│   ├── testing.py        # Pytest skip marks for optional dependencies
+│   ├── utils/            # Utility functions (incl. utils/fallback)
+│   └── version/          # Version management
 ├── tests/               # Test suite
 │   ├── unit/           # Unit tests
 │   ├── integration/    # Integration tests

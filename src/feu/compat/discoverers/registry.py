@@ -25,7 +25,7 @@ class CompatDiscovererRegistry:
 
     Example:
         ```pycon
-        >>> from feu.compat.discoverer import CompatDiscovererRegistry, CompatDiscoverer
+        >>> from feu.compat.discoverers import CompatDiscovererRegistry, CompatDiscoverer
         >>> registry = CompatDiscovererRegistry()
         >>> registry.register("my_package", CompatDiscoverer())
         >>> registry.has_discoverer("my_package")
@@ -58,7 +58,7 @@ class CompatDiscovererRegistry:
 
         Example:
             ```pycon
-            >>> from feu.compat.discoverer import CompatDiscovererRegistry, CompatDiscoverer
+            >>> from feu.compat.discoverers import CompatDiscovererRegistry, CompatDiscoverer
             >>> registry = CompatDiscovererRegistry()
             >>> registry.register("my_package", CompatDiscoverer())
             >>> registry.has_discoverer("my_package")
@@ -92,7 +92,7 @@ class CompatDiscovererRegistry:
 
         Example:
             ```pycon
-            >>> from feu.compat.discoverer import CompatDiscovererRegistry, CompatDiscoverer
+            >>> from feu.compat.discoverers import CompatDiscovererRegistry, CompatDiscoverer
             >>> registry = CompatDiscovererRegistry()
             >>> registry.register_many({"my_package": CompatDiscoverer()})
             >>> registry.has_discoverer("my_package")
@@ -116,7 +116,7 @@ class CompatDiscovererRegistry:
 
         Example:
             ```pycon
-            >>> from feu.compat.discoverer import CompatDiscovererRegistry
+            >>> from feu.compat.discoverers import CompatDiscovererRegistry
             >>> registry = CompatDiscovererRegistry()
             >>> registry.has_discoverer("pydantic")
             False
@@ -138,7 +138,7 @@ class CompatDiscovererRegistry:
 
         Example:
             ```pycon
-            >>> from feu.compat.discoverer import CompatDiscovererRegistry
+            >>> from feu.compat.discoverers import CompatDiscovererRegistry
             >>> registry = CompatDiscovererRegistry()
             >>> discoverer = registry.find_discoverer("pydantic")
             >>> discoverer
