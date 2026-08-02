@@ -24,7 +24,11 @@ jobs:
 
       - name: Discover package compatibility
         run: |
-          python dev/discover_compat.py
+          python dev/generate_discovered_compat.py
+
+      - name: Run pre-commit
+        run: |
+          pre-commit run --all-files
 
       - uses: peter-evans/create-pull-request@v8
         if: always()
