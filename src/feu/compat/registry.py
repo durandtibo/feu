@@ -17,7 +17,7 @@ from packaging.version import Version
 if TYPE_CHECKING:
     from feu.compat.target import Target
 
-_Layer = Literal["base", "override"]
+Layer = Literal["base", "override"]
 
 
 class VersionRange(NamedTuple):
@@ -112,7 +112,7 @@ class CompatRegistry:
         r"""The override layer (user-supplied corrections)."""
         return self._overrides
 
-    def _layer_table(self, layer: _Layer) -> dict[str, dict[Target, list[VersionRange]]]:
+    def _layer_table(self, layer: Layer) -> dict[str, dict[Target, list[VersionRange]]]:
         return self._base if layer == "base" else self._overrides
 
     def register(
@@ -122,7 +122,7 @@ class CompatRegistry:
         *,
         ranges: list[VersionRange],
         exist_ok: bool = False,
-        layer: _Layer = "override",
+        layer: Layer = "override",
     ) -> None:
         r"""Register a package configuration for a compatibility target.
 
@@ -162,7 +162,7 @@ class CompatRegistry:
         self,
         mapping: dict[str, dict[Target, list[VersionRange]]],
         exist_ok: bool = False,
-        layer: _Layer = "override",
+        layer: Layer = "override",
     ) -> None:
         r"""Register multiple package configurations at once.
 

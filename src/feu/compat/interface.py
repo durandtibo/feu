@@ -12,7 +12,6 @@ __all__ = [
 
 from typing import TYPE_CHECKING
 
-from feu.compat.defaults import register_defaults
 from feu.compat.discovered import register_discovered
 from feu.compat.overrides import register_overrides
 from feu.compat.registry import CompatRegistry
@@ -26,8 +25,7 @@ def get_default_registry() -> CompatRegistry:
     r"""Return the default global compatibility registry.
 
     The registry is created on the first call and reused on all
-    subsequent calls (singleton pattern). It is pre-configured with
-    the default package version constraints in its base layer.
+    subsequent calls (singleton pattern).
 
     Returns:
         A singleton ``CompatRegistry`` configured with the default
@@ -45,7 +43,6 @@ def get_default_registry() -> CompatRegistry:
     if not hasattr(get_default_registry, "_registry"):
         registry = CompatRegistry()
         register_discovered(registry)
-        register_defaults(registry)
         register_overrides(registry)
         get_default_registry._registry = registry
     return get_default_registry._registry
