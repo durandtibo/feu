@@ -14,13 +14,9 @@ package are known to work.
   versions; either bound may be `None` for unbounded. A package/target can
   have several disjoint ranges (e.g. a package supported `1.0`-`1.10`, then
   unsupported for a stretch, then supported again from `2.8` onward).
-- **`CompatRegistry`** stores two independent layers per package:
-  - `base` — populated by `register_defaults()` (the built-in
-    `DEFAULT_COMPAT` table) and by discovery. Safe to refresh at any time.
-  - `overrides` — populated by user calls to `register_compat()`. Always
-    takes precedence over `base`, and is only conflict-checked against
-    other overrides, so re-running discovery can never clash with a
-    user-supplied correction.
+- **`CompatRegistry`** stores package constraints populated by
+  `register_defaults()` (the built-in `DEFAULT_COMPAT` table), discovery,
+  and user calls to `register_compat()`.
 
   A lookup target matches a stored entry when `python_version` and
   `free_threaded` are equal, and the stored entry's `os`/`arch` are either
@@ -58,7 +54,7 @@ True
 
 ```
 
-Corrections can be layered on top of the built-in defaults:
+Corrections can be registered on top of the built-in defaults:
 
 ```pycon
 >>> from feu.compat import Target, register_compat

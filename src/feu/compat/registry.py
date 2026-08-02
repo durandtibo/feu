@@ -7,17 +7,15 @@ closest valid version and validation of a given version.
 
 from __future__ import annotations
 
-__all__ = ["CompatRegistry", "Layer", "UnsupportedVersionError", "VersionRange"]
+__all__ = ["CompatRegistry", "UnsupportedVersionError", "VersionRange"]
 
 import copy
-from typing import TYPE_CHECKING, Literal, NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 from packaging.version import Version
 
 if TYPE_CHECKING:
     from feu.compat.target import Target
-
-Layer = Literal["base", "override"]
 
 
 class VersionRange(NamedTuple):
@@ -43,31 +41,21 @@ class CompatRegistry:
     r"""Manage package version compatibility across different
     compatibility targets.
 
-    The registry holds two independent layers per package:
-
-    - ``base``: populated by ``register_defaults`` and discovered
-      data. Entries here can be freely refreshed (e.g. by re-running
-      discovery) without ever conflicting with user overrides.
-    - ``overrides``: populated by user calls (``register_compat`` /
-      ``register(layer="override")``, the default). Overrides always
-      take precedence over ``base`` and are only conflict-checked
-      against other overrides.
-
-    Each layer maps package name to ``Target`` to a list of
+    The registry maps package name to ``Target`` to a list of
     ``VersionRange``. A package version is valid for a target if it
     falls within any of the registered ranges; an empty list means no
     version is valid for that target. A lookup target matches a
     stored entry when ``python_version`` and ``free_threaded`` are
     equal, and the stored entry's ``os``/``arch`` are either ``None``
     (wildcard) or equal to the lookup target's ``os``/``arch``. Among
-    all matching entries in a layer, the most specific one (most
-    non-``None`` ``os``/``arch`` fields) wins; ties are broken by
-    most-recently registered.
+    all matching entries, the most specific one (most non-``None``
+    ``os``/``arch`` fields) wins; ties are broken by most-recently
+    registered.
 
     Args:
         initial_state: Optional initial mapping of package
-            constraints, seeding the ``base`` layer. If provided, the
-            state is copied to prevent external mutations.
+            constraints. If provided, the state is copied to prevent
+            external mutations.
 
     Example:
         ```pycon
@@ -78,7 +66,6 @@ class CompatRegistry:
         ...     pkg_name="numpy",
         ...     target=Target(python_version="3.11"),
         ...     ranges=[VersionRange("1.23.2", "2.4.6")],
-        ...     layer="base",
         ... )
         >>> registry.is_valid_version("numpy", "2.0.2", Target(python_version="3.11"))
         True
@@ -89,31 +76,20 @@ class CompatRegistry:
     def __init__(
         self, initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None
     ) -> None:
-        self._base: dict[str, dict[Target, list[VersionRange]]] = copy.deepcopy(initial_state or {})
-        self._overrides: dict[str, dict[Target, list[VersionRange]]] = {}
+        self._state: dict[str, dict[Target, list[VersionRange]]] = copy.deepcopy(
+            initial_state or {}
+        )
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(\n"
-            f"  (base): {self._base}\n"
-            f"  (overrides): {self._overrides}\n)"
-        )
+        return f"{self.__class__.__qualname__}(\n  {self._state}\n)"
 
     def __str__(self) -> str:
         return self.__repr__()
 
     @property
-    def base(self) -> dict[str, dict[Target, list[VersionRange]]]:
-        r"""The base layer (defaults/discovered data)."""
-        return self._base
-
-    @property
-    def overrides(self) -> dict[str, dict[Target, list[VersionRange]]]:
-        r"""The override layer (user-supplied corrections)."""
-        return self._overrides
-
-    def _layer_table(self, layer: Layer) -> dict[str, dict[Target, list[VersionRange]]]:
-        return self._base if layer == "base" else self._overrides
+    def state(self) -> dict[str, dict[Target, list[VersionRange]]]:
+        r"""The registered package constraints."""
+        return self._state
 
     def register(
         self,
@@ -122,7 +98,6 @@ class CompatRegistry:
         *,
         ranges: list[VersionRange],
         exist_ok: bool = False,
-        layer: Layer = "override",
     ) -> None:
         r"""Register a package configuration for a compatibility target.
 
@@ -133,26 +108,21 @@ class CompatRegistry:
                 An empty list means no version is valid.
             exist_ok: If ``False``, a ``RuntimeError`` is raised when a
                 configuration already exists for this package and
-                target **within the same layer**. Set to ``True`` to
-                overwrite.
-            layer: Which layer to write to, ``"base"`` or
-                ``"override"``. Defaults to ``"override"``, matching
-                the public ``register_compat`` behavior.
+                target. Set to ``True`` to overwrite.
 
         Raises:
             RuntimeError: If a configuration already exists for the
-                given package name and target in the same layer, and
-                ``exist_ok`` is ``False``.
+                given package name and target, and ``exist_ok`` is
+                ``False``.
         """
-        table = self._layer_table(layer)
+        table = self._state
         table[pkg_name] = table.get(pkg_name, {})
 
         if target in table[pkg_name] and not exist_ok:
             msg = (
                 f"A package configuration ({table[pkg_name][target]}) is already "
-                f"registered for package {pkg_name} and target {target} in the "
-                f"'{layer}' layer. Please use `exist_ok=True` if you want to "
-                f"overwrite the package config"
+                f"registered for package {pkg_name} and target {target}. Please "
+                f"use `exist_ok=True` if you want to overwrite the package config"
             )
             raise RuntimeError(msg)
 
@@ -162,7 +132,6 @@ class CompatRegistry:
         self,
         mapping: dict[str, dict[Target, list[VersionRange]]],
         exist_ok: bool = False,
-        layer: Layer = "override",
     ) -> None:
         r"""Register multiple package configurations at once.
 
@@ -170,7 +139,6 @@ class CompatRegistry:
             mapping: Mapping of package name to ``Target`` to list of
                 ``VersionRange``.
             exist_ok: Forwarded to ``register``.
-            layer: Forwarded to ``register``.
         """
         for pkg_name, targets in mapping.items():
             for target, ranges in targets.items():
@@ -179,7 +147,6 @@ class CompatRegistry:
                     target=target,
                     ranges=ranges,
                     exist_ok=exist_ok,
-                    layer=layer,
                 )
 
     @staticmethod
@@ -196,14 +163,16 @@ class CompatRegistry:
     def _specificity(entry_target: Target) -> int:
         return (entry_target.os is not None) + (entry_target.arch is not None)
 
-    def _resolve_in_layer(
-        self, table: dict[str, dict[Target, list[VersionRange]]], pkg_name: str, target: Target
-    ) -> list[VersionRange] | None:
-        if pkg_name not in table:
+    def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
+        r"""Resolve the raw registered ranges for a package/target,
+        preserving the distinction between "no entry registered"
+        (``None``) and "an entry registered with zero ranges" (``[]``,
+        i.e. explicitly unsupported)."""
+        if pkg_name not in self._state:
             return None
         best: list[VersionRange] | None = None
         best_specificity = -1
-        for entry_target, ranges in table[pkg_name].items():
+        for entry_target, ranges in self._state[pkg_name].items():
             if not self._matches(entry_target, target):
                 continue
             specificity = self._specificity(entry_target)
@@ -212,22 +181,9 @@ class CompatRegistry:
                 best = ranges
         return best
 
-    def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
-        r"""Resolve the raw registered ranges for a package/target,
-        preserving the distinction between "no entry registered"
-        (``None``) and "an entry registered with zero ranges" (``[]``,
-        i.e. explicitly unsupported)."""
-        ranges = self._resolve_in_layer(self._overrides, pkg_name, target)
-        if ranges is not None:
-            return ranges
-        return self._resolve_in_layer(self._base, pkg_name, target)
-
     def get_config(self, pkg_name: str, target: Target) -> list[VersionRange]:
         r"""Get the list of valid version ranges for a package and
         compatibility target.
-
-        Checks the override layer first, then falls back to the base
-        layer.
 
         Args:
             pkg_name: The package name to query (e.g., ``"numpy"``).

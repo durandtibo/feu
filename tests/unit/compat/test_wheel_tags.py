@@ -87,6 +87,10 @@ def test_parse_wheel_filename_no_extension_match_returns_empty() -> None:
     assert parse_wheel_filename("not-a-wheel-file.tar.gz") == []
 
 
+def test_parse_wheel_filename_too_few_components_returns_empty() -> None:
+    assert parse_wheel_filename("numpy-2.3.0-cp312-cp312.whl") == []
+
+
 def test_wheel_tags_is_frozen_and_comparable() -> None:
     a = WheelTags(python_version="3.11", free_threaded=False, os="linux", arch="x86_64")
     b = WheelTags(python_version="3.11", free_threaded=False, os="linux", arch="x86_64")

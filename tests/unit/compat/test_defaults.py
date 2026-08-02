@@ -9,11 +9,10 @@ from feu.compat.target import Target
 #############################################
 
 
-def test_register_defaults_populates_base_layer() -> None:
+def test_register_defaults_populates_registry() -> None:
     registry = CompatRegistry()
     register_defaults(registry)
-    assert registry.overrides == {}
-    assert registry.base["numpy"][Target(python_version="3.11")] == [
+    assert registry.state["numpy"][Target(python_version="3.11")] == [
         VersionRange("1.23.2", "2.4.6")
     ]
 

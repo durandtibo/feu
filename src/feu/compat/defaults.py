@@ -152,12 +152,12 @@ DEFAULT_COMPAT: dict[str, dict[str, list[VersionRange]]] = {
 
 
 def register_defaults(registry: CompatRegistry) -> None:
-    r"""Populate a registry's base layer with the default package
-    compatibility constraints.
+    r"""Populate a registry with the default package compatibility
+    constraints.
 
     These are the human-curated constraints, so they overwrite any
-    matching automatically discovered entry already registered in the
-    base layer (see ``feu.compat.discovered.register_discovered``).
+    matching automatically discovered entry already registered (see
+    ``feu.compat.discovered.register_discovered``).
 
     Args:
         registry: The registry to populate.
@@ -169,4 +169,4 @@ def register_defaults(registry: CompatRegistry) -> None:
         }
         for pkg_name, versions in DEFAULT_COMPAT.items()
     }
-    registry.register_many(mapping, layer="base", exist_ok=True)
+    registry.register_many(mapping, exist_ok=True)
