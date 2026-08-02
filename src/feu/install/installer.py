@@ -5,16 +5,12 @@ from __future__ import annotations
 __all__ = ["BaseInstaller"]
 
 import logging
-import sys
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:  # pragma: no cover
-    from typing_extensions import Self
-
 if TYPE_CHECKING:
+    from typing import Self
+
     from feu.utils.package import PackageSpec
 
 logger: logging.Logger = logging.getLogger(__name__)
