@@ -8,6 +8,7 @@ import pytest
 from feu.imports import is_requests_available
 from feu.testing import requests_available
 from feu.version import (
+    fetch_pypi_pinned_dependency_version,
     fetch_pypi_requires_python,
     fetch_pypi_versions,
     fetch_pypi_wheel_filenames,
@@ -25,6 +26,7 @@ def _reset_cache() -> None:
     fetch_pypi_versions.cache_clear()
     fetch_pypi_requires_python.cache_clear()
     fetch_pypi_wheel_filenames.cache_clear()
+    fetch_pypi_pinned_dependency_version.cache_clear()
 
 
 #########################################
@@ -258,3 +260,71 @@ def test_fetch_pypi_wheel_filenames(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_pypi_wheel_filenames_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_wheel_filenames("my_package")
+
+
+##############################################################
+#     Tests for fetch_pypi_pinned_dependency_version         #
+##############################################################
+
+
+def make_mock_pinned_dependency_response(requires_dist: list[str] | None) -> Response:
+    resp = Mock(json=Mock(return_value={"info": {"requires_dist": requires_dist}}))
+    resp.status_code = 200
+    return resp
+
+
+@requests_available
+def test_fetch_pypi_pinned_dependency_version_exact_pin(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(
+        get=Mock(
+            return_value=make_mock_pinned_dependency_response(
+                ["pydantic-core==2.23.2", "typing-extensions>=4.6.1"]
+            )
+        )
+    )
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core") == "2.23.2"
+    session.get.assert_called_once_with(
+        url="https://pypi.org/pypi/pydantic/2.9.0/json", timeout=10.0
+    )
+
+
+@requests_available
+def test_fetch_pypi_pinned_dependency_version_no_exact_pin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = Mock(
+        get=Mock(return_value=make_mock_pinned_dependency_response(["pydantic-core>=2.0,<3.0"]))
+    )
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core") is None
+
+
+@requests_available
+def test_fetch_pypi_pinned_dependency_version_dependency_not_found(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = Mock(
+        get=Mock(return_value=make_mock_pinned_dependency_response(["typing-extensions>=4.6.1"]))
+    )
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core") is None
+
+
+@requests_available
+def test_fetch_pypi_pinned_dependency_version_no_requires_dist(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = Mock(get=Mock(return_value=make_mock_pinned_dependency_response(None)))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core") is None
+
+
+@patch("feu.imports.requests.is_requests_available", lambda: False)
+def test_fetch_pypi_pinned_dependency_version_no_requests() -> None:
+    with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
+        fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core")
