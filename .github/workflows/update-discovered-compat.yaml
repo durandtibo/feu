@@ -1,4 +1,4 @@
-name: Discover compat
+name: Update Discovered Compatibility
 
 on:
   schedule:
