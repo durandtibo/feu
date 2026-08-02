@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  discover-compat:
+  update-discovered-compat:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -34,8 +34,8 @@ jobs:
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update/compat
-          title: Update default compatibility constraints
-          commit-message: "Update default compatibility constraints"
-          body: Update default package/Python-version compatibility constraints.
+          branch: update/discovered-compat
+          title: Update discovered compatibility constraints
+          commit-message: "Update discovered compatibility constraints"
+          body: Update automatically discovered package/Python-version compatibility constraints.
           author: ci-bot <${{secrets.CI_BOT_EMAIL}}>
