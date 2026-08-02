@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 
 from feu.compat.defaults import register_defaults
 from feu.compat.discovered import register_discovered
+from feu.compat.overrides import register_overrides
 from feu.compat.registry import CompatRegistry
 
 if TYPE_CHECKING:
@@ -45,6 +46,7 @@ def get_default_registry() -> CompatRegistry:
         registry = CompatRegistry()
         register_discovered(registry)
         register_defaults(registry)
+        register_overrides(registry)
         get_default_registry._registry = registry
     return get_default_registry._registry
 
