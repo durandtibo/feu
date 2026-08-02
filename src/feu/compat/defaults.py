@@ -33,12 +33,13 @@ DEFAULT_COMPAT: dict[str, dict[str, list[VersionRange]]] = {
         "3.10": [VersionRange(None, None)],
     },
     # https://pypi.org/project/jaxlib/#history
+    # https://docs.jax.dev/en/latest/changelog.html
     "jax": {
         "3.15": [VersionRange(None, None)],
         "3.14": [VersionRange("0.7.1", None)],
         "3.13": [VersionRange("0.4.34", None)],
         "3.12": [VersionRange("0.4.17", None)],
-        "3.11": [VersionRange("0.4.6", None)],
+        "3.11": [VersionRange("0.4.6", "0.10.2")],
         "3.10": [VersionRange("0.4.6", "0.6.2")],
         "3.9": [VersionRange("0.4.6", "0.4.30")],
     },
@@ -49,7 +50,7 @@ DEFAULT_COMPAT: dict[str, dict[str, list[VersionRange]]] = {
         "3.13": [VersionRange(None, None)],
         "3.12": [VersionRange(None, None)],
         "3.11": [VersionRange(None, None)],
-        "3.10": [VersionRange(None, None)],
+        "3.10": [VersionRange(None, "3.10.9")],
         "3.9": [VersionRange(None, "3.9.4")],
     },
     # https://numpy.org/devdocs/release.html
@@ -105,7 +106,7 @@ DEFAULT_COMPAT: dict[str, dict[str, list[VersionRange]]] = {
         "3.12": [VersionRange(None, None)],
         "3.11": [VersionRange(None, None)],
         "3.10": [VersionRange(None, None)],
-        "3.9": [VersionRange(None, None)],
+        "3.9": [VersionRange(None, "2.32.5")],
     },
     # https://github.com/scikit-learn/scikit-learn/releases
     "scikit-learn": {
