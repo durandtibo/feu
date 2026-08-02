@@ -13,7 +13,6 @@ __all__ = [
     "UnsupportedVersionError",
     "VersionRange",
     "WheelTags",
-    "discover_compat",
     "discover_compat_targets",
     "find_closest_version",
     "get_default_registry",
@@ -23,7 +22,7 @@ __all__ = [
     "show_compat_targets",
 ]
 
-from feu.compat.discovery import discover_compat, show_compat_targets
+from feu.compat.discovery import show_compat_targets
 from feu.compat.interface import (
     find_closest_version,
     get_default_registry,

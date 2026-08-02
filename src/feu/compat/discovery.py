@@ -6,7 +6,6 @@ from __future__ import annotations
 __all__ = [
     "DEFAULT_PYTHON_VERSIONS",
     "DEFAULT_TARGETS",
-    "discover_compat",
     "is_compatible",
     "show_compat_targets",
 ]
@@ -16,17 +15,11 @@ from typing import TYPE_CHECKING
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
 
-from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.imports import check_rich, is_rich_available
-from feu.version import (
-    fetch_pypi_requires_python,
-    filter_stable_versions,
-    filter_valid_versions,
-)
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from feu.compat.registry import VersionRange
 
 if is_rich_available():  # pragma: no cover
     from rich import get_console
@@ -42,56 +35,6 @@ DEFAULT_TARGETS: tuple[Target, ...] = tuple(
     for os in ("linux", "macos", "windows")
     for arch in ("x86_64", "arm64")
 )
-
-
-def discover_compat(
-    pkg_name: str, python_versions: Sequence[str] = DEFAULT_PYTHON_VERSIONS
-) -> dict[str, list[VersionRange]]:
-    r"""Discover the version range compatible with each Python version,
-    using the ``requires_python`` metadata published on PyPI.
-
-    For each Python version, the earliest stable package release
-    compatible with it becomes the range's ``min``, and the latest
-    compatible release becomes its ``max``, or ``None`` if the newest
-    stable release overall is still compatible (i.e. no upper bound
-    has been hit yet). If no stable release is compatible with a
-    given Python version, the range list is empty.
-
-    Args:
-        pkg_name: The package name to inspect (e.g., ``"numpy"``).
-        python_versions: The Python versions to compute constraints
-            for. Defaults to ``DEFAULT_PYTHON_VERSIONS``.
-
-    Returns:
-        A mapping of Python version to a list of ``VersionRange``, in
-            the same shape expected by ``CompatRegistry.register_many``.
-
-    Example:
-        ```pycon
-        >>> from feu.compat import discover_compat
-        >>> compat = discover_compat("requests")  # doctest: +SKIP
-
-        ```
-    """
-    requires_python = fetch_pypi_requires_python(pkg_name)
-    versions = filter_stable_versions(filter_valid_versions(requires_python.keys()))
-    versions = sorted(versions, key=Version)
-    latest = versions[-1] if versions else None
-
-    result: dict[str, list[VersionRange]] = {}
-    for python_version in python_versions:
-        compatible = [
-            version
-            for version in versions
-            if is_compatible(requires_python[version], python_version)
-        ]
-        if not compatible:
-            result[python_version] = []
-            continue
-        result[python_version] = [
-            VersionRange(compatible[0], None if compatible[-1] == latest else compatible[-1])
-        ]
-    return result
 
 
 def is_compatible(requires_python: str | None, python_version: str) -> bool:

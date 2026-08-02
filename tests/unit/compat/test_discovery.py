@@ -4,74 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
-from feu.compat.discovery import DEFAULT_TARGETS, discover_compat, show_compat_targets
+from feu.compat.discovery import DEFAULT_TARGETS, show_compat_targets
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 from feu.testing import rich_available
 
 MODULE = "feu.compat.discovery"
-
-
-@patch(
-    f"{MODULE}.fetch_pypi_requires_python",
-    lambda *_args: {
-        "1.0.0": ">=3.6",
-        "1.5.0": ">=3.8",
-        "2.0.0": ">=3.9",
-        "2.1.0": ">=3.9",
-        "2.1.0a1": ">=3.9",  # pre-release, should be ignored
-        "not-a-version": ">=3.9",  # invalid, should be ignored
-    },
-)
-def test_discover_compat() -> None:
-    compat = discover_compat("my_package", python_versions=("3.8", "3.9", "3.10"))
-    assert compat == {
-        "3.8": [VersionRange("1.0.0", "1.5.0")],
-        "3.9": [VersionRange("1.0.0", None)],
-        "3.10": [VersionRange("1.0.0", None)],
-    }
-
-
-@patch(
-    f"{MODULE}.fetch_pypi_requires_python",
-    lambda *_args: {"1.0.0": ">=3.9", "2.0.0": ">=3.9"},
-)
-def test_discover_compat_no_compatible_version() -> None:
-    compat = discover_compat("my_package", python_versions=("3.7",))
-    assert compat == {"3.7": []}
-
-
-@patch(
-    f"{MODULE}.fetch_pypi_requires_python",
-    lambda *_args: {"1.0.0": None, "2.0.0": None},
-)
-def test_discover_compat_no_requires_python() -> None:
-    compat = discover_compat("my_package", python_versions=("3.9",))
-    assert compat == {"3.9": [VersionRange("1.0.0", None)]}
-
-
-@patch(
-    f"{MODULE}.fetch_pypi_requires_python",
-    lambda *_args: {"1.0.0": "invalid specifier!!", "2.0.0": ">=3.9"},
-)
-def test_discover_compat_invalid_specifier() -> None:
-    compat = discover_compat("my_package", python_versions=("3.5",))
-    assert compat == {"3.5": [VersionRange("1.0.0", "1.0.0")]}
-
-
-@patch(f"{MODULE}.fetch_pypi_requires_python", lambda *_args: {})
-def test_discover_compat_empty() -> None:
-    compat = discover_compat("my_package", python_versions=("3.9",))
-    assert compat == {"3.9": []}
-
-
-def test_discover_compat_default_python_versions() -> None:
-    with patch(
-        f"{MODULE}.fetch_pypi_requires_python",
-        lambda *_args: {"1.0.0": None},
-    ):
-        compat = discover_compat("my_package")
-    assert set(compat.keys()) == {"3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"}
 
 
 ##############################################

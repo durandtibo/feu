@@ -30,13 +30,13 @@ class CompatDiscoverer(BaseCompatDiscoverer):
     r"""Implement the default compatibility target discoverer, using
     actual wheel filenames published on PyPI.
 
-    Unlike ``discover_compat``, which only inspects the
-    ``requires_python`` metadata, this discoverer parses each
-    release's wheel filenames to determine whether it shipped a build
-    matching a target's free-threaded/OS/arch axes, not just its
-    Python version. For pure-Python wheels (which carry no OS/arch
-    information, and sometimes no Python-version information either),
-    it falls back to the ``requires_python`` metadata.
+    Unlike an approach that only inspects the ``requires_python``
+    metadata, this discoverer parses each release's wheel filenames to
+    determine whether it shipped a build matching a target's
+    free-threaded/OS/arch axes, not just its Python version. For
+    pure-Python wheels (which carry no OS/arch information, and
+    sometimes no Python-version information either), it falls back to
+    the ``requires_python`` metadata.
 
     Example:
         ```pycon
