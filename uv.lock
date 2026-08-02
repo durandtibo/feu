@@ -351,7 +351,6 @@ source = { editable = "." }
 dependencies = [
     { name = "packaging" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 
 [package.optional-dependencies]
@@ -399,7 +398,6 @@ requires-dist = [
     { name = "requests", marker = "extra == 'requests'", specifier = ">=2.30.0,<3.0" },
     { name = "rich", marker = "extra == 'rich'", specifier = ">=14.0.0,<16.0" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0,<3.0" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'", specifier = ">=4.10,<5.0" },
     { name = "urllib3", marker = "extra == 'requests'", specifier = ">=2.0,<3.0" },
 ]
 provides-extras = ["cli", "git", "requests", "rich"]

@@ -24,13 +24,6 @@ jobs:
       package-name: tomli
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).tomli) }}
 
-  typing-extensions:
-    needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
-    with:
-      package-name: typing-extensions
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).typing_extensions) }}
-
 
   #################################
   #     Optional dependencies     #
@@ -56,6 +49,13 @@ jobs:
     with:
       package-name: requests
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).requests) }}
+
+  rich:
+    needs: get-versions
+    uses: ./.github/workflows/test-code-dep.yaml
+    with:
+      package-name: rich
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).rich) }}
 
   urllib3:
     needs: get-versions
