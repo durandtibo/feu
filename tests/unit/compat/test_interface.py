@@ -41,14 +41,14 @@ def test_get_default_registry_is_singleton() -> None:
     assert registry1 is registry2
 
 
-def test_get_default_registry_populated_with_defaults() -> None:
+def test_get_default_registry_not_populated_with_defaults() -> None:
+    # register_defaults is currently disabled, so the human-curated defaults
+    # must not be present in the base layer.
     registry = get_default_registry()
-    assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("1.23.2", "2.4.6")]
+    assert registry.get_config(pkg_name="numpy", target=T311) == []
 
 
-def test_get_default_registry_defaults_override_discovered_in_base_layer() -> None:
-    # numpy is present in DEFAULT_COMPAT, so even if a discovered module later
-    # ships a value for it, the human-curated default must win in the base layer.
+def test_get_default_registry_uses_discovered_in_base_layer() -> None:
     with patch(
         "feu.compat.interface.register_discovered",
         side_effect=lambda registry: registry.register_many(
@@ -56,7 +56,7 @@ def test_get_default_registry_defaults_override_discovered_in_base_layer() -> No
         ),
     ):
         registry = get_default_registry()
-    assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("1.23.2", "2.4.6")]
+    assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("0.0.1", None)]
 
 
 #################################
@@ -78,7 +78,7 @@ def test_register_compat_exist_ok_false_raises() -> None:
 
 
 def test_register_compat_overrides_a_default_without_exist_ok() -> None:
-    # numpy has a base entry for 3.11; overriding it must not require exist_ok=True.
+    # Overriding a package that has no base entry must not require exist_ok=True either.
     register_compat({"numpy": {T311: [VersionRange("9.9.9", None)]}})
     assert get_default_registry().get_config(pkg_name="numpy", target=T311) == [
         VersionRange("9.9.9", None)
@@ -97,8 +97,8 @@ def test_find_closest_version_delegates_to_default_registry() -> None:
     mock_find.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", target=T311)
 
 
-def test_find_closest_version_uses_defaults() -> None:
-    assert find_closest_version(pkg_name="numpy", pkg_version="0.1.0", target=T311) == "1.23.2"
+def test_find_closest_version_ignores_disabled_defaults() -> None:
+    assert find_closest_version(pkg_name="numpy", pkg_version="0.1.0", target=T311) == "0.1.0"
 
 
 ##################################
@@ -113,5 +113,5 @@ def test_is_valid_version_delegates_to_default_registry() -> None:
     mock_valid.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", target=T311)
 
 
-def test_is_valid_version_uses_defaults() -> None:
-    assert not is_valid_version(pkg_name="numpy", pkg_version="0.1.0", target=T311)
+def test_is_valid_version_ignores_disabled_defaults() -> None:
+    assert is_valid_version(pkg_name="numpy", pkg_version="0.1.0", target=T311)
