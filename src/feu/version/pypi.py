@@ -44,7 +44,7 @@ def _release_date(files: list[dict] | None) -> date | None:
     ]
     if not upload_times:
         return None
-    return min(datetime.fromisoformat(t) for t in upload_times).date()
+    return min(datetime.fromisoformat(t.replace("Z", "+00:00")) for t in upload_times).date()
 
 
 @lru_cache
