@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from unittest.mock import Mock, patch
 
 import pytest
@@ -59,6 +60,102 @@ def test_fetch_pypi_versions_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_pypi_versions_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_versions("my_package")
+
+
+def make_mock_dated_response() -> Response:
+    resp = Mock(
+        json=Mock(
+            return_value={
+                "releases": {
+                    "1.0.0": [{"upload_time_iso_8601": "2023-06-15T00:00:00.000000Z"}],
+                    "1.1.0": [{"upload_time_iso_8601": "2024-01-10T00:00:00.000000Z"}],
+                    "1.2.0": [{"upload_time_iso_8601": "2024-06-01T00:00:00.000000Z"}],
+                    "1.3.0": [{"upload_time_iso_8601": "2024-12-31T00:00:00.000000Z"}],
+                    "2.0.0": [{"upload_time_iso_8601": "2025-01-05T00:00:00.000000Z"}],
+                    "2.1.0": [],
+                }
+            }
+        )
+    )
+    resp.status_code = 200
+    return resp
+
+
+@requests_available
+def test_fetch_pypi_versions_start_date(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package", start_date="2024-01-01") == (
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+    )
+
+
+@requests_available
+def test_fetch_pypi_versions_end_date(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package", end_date="2024-12-31") == (
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+    )
+
+
+@requests_available
+def test_fetch_pypi_versions_start_date_end_date(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package", start_date="2024-01-01", end_date="2024-12-31") == (
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+    )
+
+
+@requests_available
+def test_fetch_pypi_versions_start_date_end_date_date_objects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions(
+        "my_package", start_date=date(2024, 1, 1), end_date=date(2024, 12, 31)
+    ) == ("1.1.0", "1.2.0", "1.3.0")
+
+
+@requests_available
+def test_fetch_pypi_versions_start_date_end_date_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions(
+        "my_package", reverse=True, start_date="2024-01-01", end_date="2024-12-31"
+    ) == ("1.3.0", "1.2.0", "1.1.0")
+
+
+@requests_available
+def test_fetch_pypi_versions_no_date_filter_excludes_nothing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_versions("my_package") == (
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "2.0.0",
+        "2.1.0",
+    )
 
 
 ##################################################
