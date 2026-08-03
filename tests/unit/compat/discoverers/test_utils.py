@@ -150,6 +150,30 @@ def test_tags_match_exactly_none_vs_none() -> None:
     assert tags_match_exactly(tag, wanted)
 
 
+def test_tags_match_exactly_abi3_matches_same_python_version() -> None:
+    tag = WheelTags(python_version="3.9", free_threaded=False, os="linux", arch="x86_64", abi3=True)
+    wanted = WheelTags(python_version="3.9", free_threaded=False, os="linux", arch="x86_64")
+    assert tags_match_exactly(tag, wanted)
+
+
+def test_tags_match_exactly_abi3_matches_later_python_version() -> None:
+    tag = WheelTags(python_version="3.9", free_threaded=False, os="linux", arch="x86_64", abi3=True)
+    wanted = WheelTags(python_version="3.13", free_threaded=False, os="linux", arch="x86_64")
+    assert tags_match_exactly(tag, wanted)
+
+
+def test_tags_match_exactly_abi3_does_not_match_earlier_python_version() -> None:
+    tag = WheelTags(python_version="3.9", free_threaded=False, os="linux", arch="x86_64", abi3=True)
+    wanted = WheelTags(python_version="3.8", free_threaded=False, os="linux", arch="x86_64")
+    assert not tags_match_exactly(tag, wanted)
+
+
+def test_tags_match_exactly_abi3_does_not_match_free_threaded_target() -> None:
+    tag = WheelTags(python_version="3.9", free_threaded=False, os="linux", arch="x86_64", abi3=True)
+    wanted = WheelTags(python_version="3.13", free_threaded=True, os="linux", arch="x86_64")
+    assert not tags_match_exactly(tag, wanted)
+
+
 ##############################################
 #     Tests for group_into_ranges     #
 ##############################################

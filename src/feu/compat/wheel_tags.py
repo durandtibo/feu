@@ -44,7 +44,9 @@ class WheelTags:
     Args:
         python_version: The CPython version, e.g. ``"3.14"``, or
             ``None`` for a pure-Python wheel compatible with any
-            Python version.
+            Python version. For an ``abi3`` wheel, this is the
+            *minimum* CPython version it supports, since the stable
+            ABI makes it forward-compatible with later versions too.
         free_threaded: ``True`` if the wheel targets a free-threaded
             (no-GIL) build.
         os: The operating system, e.g. ``"linux"``, ``"macos"``,
@@ -53,12 +55,17 @@ class WheelTags:
         arch: The CPU architecture, e.g. ``"x86_64"``, ``"arm64"``, or
             ``None`` for a pure-Python wheel compatible with any
             architecture.
+        abi3: ``True`` if the wheel targets the CPython stable ABI
+            (an ``abi3`` ABI tag), meaning it is forward-compatible
+            with every CPython version from ``python_version`` onward,
+            not just that exact version.
     """
 
     python_version: str | None
     free_threaded: bool
     os: str | None
     arch: str | None
+    abi3: bool = False
 
 
 def parse_python_tag(python_tag: str) -> str | None:
@@ -238,10 +245,15 @@ def parse_wheel_filename(filename: str) -> list[WheelTags]:
             return []
 
     free_threaded = abi_tag.endswith("t")
+    abi3 = abi_tag == "abi3"
 
     return [
         WheelTags(
-            python_version=python_version, free_threaded=free_threaded, os=os_name, arch=arch_name
+            python_version=python_version,
+            free_threaded=free_threaded,
+            os=os_name,
+            arch=arch_name,
+            abi3=abi3,
         )
         for python_version in python_versions
     ]

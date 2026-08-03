@@ -130,6 +130,42 @@ def test_discover_free_threaded_mismatch() -> None:
     assert compat == {linux_314: []}
 
 
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-cp39-abi3-manylinux_2_17_x86_64.whl",),
+    },
+)
+def test_discover_abi3_wheel_matches_later_python_version() -> None:
+    linux_313 = Target(python_version="3.13", os="linux", arch="x86_64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_313,))
+    assert compat == {linux_313: [VersionRange("1.0.0", None)]}
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-cp39-abi3-manylinux_2_17_x86_64.whl",),
+    },
+)
+def test_discover_abi3_wheel_does_not_match_earlier_python_version() -> None:
+    linux_38 = Target(python_version="3.8", os="linux", arch="x86_64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_38,))
+    assert compat == {linux_38: []}
+
+
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    lambda *_args: {
+        "1.0.0": ("pkg-1.0.0-cp39-abi3-manylinux_2_17_x86_64.whl",),
+    },
+)
+def test_discover_abi3_wheel_does_not_match_free_threaded_target() -> None:
+    linux_313_ft = Target(python_version="3.13", free_threaded=True, os="linux", arch="x86_64")
+    compat = CompatDiscoverer().discover("pkg", targets=(linux_313_ft,))
+    assert compat == {linux_313_ft: []}
+
+
 @patch(f"{MODULE}.fetch_pypi_wheel_filenames", lambda *_args: {})
 def test_discover_empty() -> None:
     linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")

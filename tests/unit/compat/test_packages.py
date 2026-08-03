@@ -22,6 +22,7 @@ def test_get_package_names_contains_expected_packages() -> None:
         "pyarrow",
         "pydantic",
         "requests",
+        "safetensors",
         "scikit-learn",
         "scipy",
         "torch",
