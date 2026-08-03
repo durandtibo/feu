@@ -81,8 +81,12 @@ def target_to_wheel_tags(target: Target) -> WheelTags:
 def tags_match_exactly(tag: WheelTags, wanted: WheelTags) -> bool:
     r"""Indicate if a wheel tag matches a wanted target exactly.
 
-    A match requires the Python version, free-threaded, OS, and arch
-    axes to all agree.
+    A match requires the OS and arch axes to agree, and the wheel to
+    not be free-threaded unless the target is too. For a regular
+    (non-``abi3``) tag, the Python version must also agree exactly.
+    For an ``abi3`` tag, the stable ABI makes the wheel forward-
+    compatible with any target Python version at or above the tag's
+    ``python_version``.
 
     Args:
         tag: The wheel tag to check.
@@ -91,12 +95,15 @@ def tags_match_exactly(tag: WheelTags, wanted: WheelTags) -> bool:
     Returns:
         ``True`` if the tag matches the wanted target exactly.
     """
-    return (
-        tag.python_version == wanted.python_version
-        and tag.free_threaded == wanted.free_threaded
-        and tag.os == wanted.os
-        and tag.arch == wanted.arch
-    )
+    if tag.os != wanted.os or tag.arch != wanted.arch or tag.free_threaded != wanted.free_threaded:
+        return False
+    if tag.abi3:
+        return (
+            tag.python_version is not None
+            and wanted.python_version is not None
+            and Version(wanted.python_version) >= Version(tag.python_version)
+        )
+    return tag.python_version == wanted.python_version
 
 
 def group_into_ranges(

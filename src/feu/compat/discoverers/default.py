@@ -119,11 +119,14 @@ def _is_target_compatible(
 
     A release is compatible if it shipped a wheel matching the
     target's Python version, OS, arch, and free-threaded axes
-    exactly, or a pure-Python wheel (``python_version``/``os``/
-    ``arch`` of ``None``, meaning "any") whose ``requires_python``
-    metadata allows the target's Python version. Pure-Python wheels
-    are assumed compatible with any OS/arch and both free-threaded and
-    standard builds.
+    exactly, an ``abi3`` (stable ABI) wheel whose OS, arch, and
+    free-threaded axes match and whose ``python_version`` is at or
+    below the target's (the stable ABI makes such a wheel forward-
+    compatible with later CPython versions), or a pure-Python wheel
+    (``python_version``/``os``/``arch`` of ``None``, meaning "any")
+    whose ``requires_python`` metadata allows the target's Python
+    version. Pure-Python wheels are assumed compatible with any OS/arch
+    and both free-threaded and standard builds.
 
     A release with no wheel files at all (e.g. sdist-only) is treated
     the same way, falling back to ``requires_python``, but only when
@@ -163,9 +166,13 @@ def _is_target_compatible(
             if is_compatible(requires_python, wanted_python_version):
                 return True
             continue
-        if tag.python_version != wanted.python_version:
-            continue
         if tag.free_threaded != wanted.free_threaded:
+            continue
+        if tag.abi3:
+            if Version(wanted_python_version) < Version(tag.python_version):
+                continue
+            return True
+        if tag.python_version != wanted.python_version:
             continue
         return True
     return False

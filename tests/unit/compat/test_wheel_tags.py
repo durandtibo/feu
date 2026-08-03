@@ -39,10 +39,28 @@ from feu.compat.wheel_tags import (
             "numpy-2.3.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
             [WheelTags(python_version="3.10", free_threaded=False, os="linux", arch="arm64")],
         ),
+        (
+            "safetensors-0.4.5-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+            [
+                WheelTags(
+                    python_version="3.9", free_threaded=False, os="linux", arch="x86_64", abi3=True
+                )
+            ],
+        ),
     ],
 )
 def test_parse_wheel_filename_recognized(filename: str, expected: list[WheelTags]) -> None:
     assert parse_wheel_filename(filename) == expected
+
+
+def test_parse_wheel_filename_abi3_defaults_to_false() -> None:
+    tags = parse_wheel_filename(
+        "numpy-2.3.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+    )
+    assert tags == [
+        WheelTags(python_version="3.12", free_threaded=False, os="linux", arch="x86_64")
+    ]
+    assert tags[0].abi3 is False
 
 
 def test_parse_wheel_filename_pure_python() -> None:
