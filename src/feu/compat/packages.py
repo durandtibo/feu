@@ -33,6 +33,7 @@ def get_package_names() -> list[str]:
         "pyarrow",
         "pydantic",
         "requests",
+        "safetensors",
         "scikit-learn",
         "scipy",
         "torch",
