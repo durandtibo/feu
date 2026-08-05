@@ -2,19 +2,13 @@ r"""Contain the main entry point."""
 
 from __future__ import annotations
 
-from feu.compat import Target, UnsupportedVersionError
+from feu.compat import UnsupportedVersionError
 from feu.compat import find_closest_version as find_closest_version_
-from feu.compat import is_valid_version
+from feu.compat import is_valid_version, resolve_target
 from feu.imports import check_click, is_click_available
 from feu.install import install_package_closest_version
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
-from feu.utils.platform import (
-    get_current_arch,
-    get_current_os,
-    get_python_version,
-    is_free_threaded,
-)
 
 if is_click_available():
     import click
@@ -167,12 +161,7 @@ def find_closest_version(
         version = find_closest_version_(
             pkg_name=pkg_name,
             pkg_version=pkg_version,
-            target=Target(
-                python_version=python_version or get_python_version(),
-                free_threaded=is_free_threaded() if free_threaded is None else free_threaded,
-                os=os_ or get_current_os(),
-                arch=arch or get_current_arch(),
-            ),
+            target=resolve_target(python_version, free_threaded, os_, arch),
         )
     except UnsupportedVersionError:
         version = None
@@ -253,12 +242,7 @@ def check_valid_version(
         is_valid_version(
             pkg_name=pkg_name,
             pkg_version=pkg_version,
-            target=Target(
-                python_version=python_version or get_python_version(),
-                free_threaded=is_free_threaded() if free_threaded is None else free_threaded,
-                os=os_ or get_current_os(),
-                arch=arch or get_current_arch(),
-            ),
+            target=resolve_target(python_version, free_threaded, os_, arch),
         )
     )
 
