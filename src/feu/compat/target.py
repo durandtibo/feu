@@ -3,9 +3,16 @@ constraints."""
 
 from __future__ import annotations
 
-__all__ = ["Target"]
+__all__ = ["Target", "resolve_target"]
 
 from dataclasses import dataclass
+
+from feu.utils.platform import (
+    get_current_arch,
+    get_current_os,
+    get_python_version,
+    is_free_threaded,
+)
 
 
 @dataclass(frozen=True)
@@ -38,3 +45,62 @@ class Target:
     free_threaded: bool = False
     os: str | None = None
     arch: str | None = None
+
+
+def resolve_target(
+    python_version: str | None = None,
+    free_threaded: bool | None = None,
+    os: str | None = None,
+    arch: str | None = None,
+) -> Target:
+    r"""Resolve a ``Target`` from optional, possibly partial inputs.
+
+    If ``python_version`` ends with ``t``, the target is a
+    free-threaded build. In that case, ``free_threaded=False`` is
+    invalid because it contradicts the ``t`` suffix. Any unspecified
+    argument falls back to the current interpreter/environment value.
+
+    Args:
+        python_version: The Python version, e.g. ``"3.11"`` or
+            ``"3.14t"``. If not provided, the current python version
+            is used.
+        free_threaded: Whether the target is a free-threaded build.
+            If not provided, it is inferred from ``python_version`` or
+            the current interpreter's free-threaded status.
+        os: The target OS. If not provided, the current OS is used.
+        arch: The target CPU architecture. If not provided, the
+            current architecture is used.
+
+    Returns:
+        The resolved target.
+
+    Raises:
+        ValueError: if ``python_version`` ends with ``t`` and
+            ``free_threaded=False`` is specified.
+
+    Example:
+        ```pycon
+        >>> from feu.compat.target import resolve_target
+        >>> resolve_target(python_version="3.14t", os="linux", arch="x86_64")
+        Target(python_version='3.14', free_threaded=True, os='linux', arch='x86_64')
+
+        ```
+    """
+    python_version = python_version or get_python_version()
+    if python_version.endswith("t"):
+        if free_threaded is False:
+            msg = (
+                f"python_version '{python_version}' indicates a free-threaded build but "
+                "free_threaded=False was specified"
+            )
+            raise ValueError(msg)
+        python_version = python_version[:-1]
+        free_threaded = True
+    if free_threaded is None:
+        free_threaded = is_free_threaded()
+    return Target(
+        python_version=python_version,
+        free_threaded=free_threaded,
+        os=os or get_current_os(),
+        arch=arch or get_current_arch(),
+    )

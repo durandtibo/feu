@@ -19,6 +19,7 @@ __all__ = [
     "is_valid_version",
     "parse_wheel_filename",
     "register_compat",
+    "resolve_target",
     "show_compat_targets",
 ]
 
@@ -37,5 +38,5 @@ from feu.compat.interface import (
 )
 from feu.compat.matrix import show_compat_targets
 from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange
-from feu.compat.target import Target
+from feu.compat.target import Target, resolve_target
 from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
