@@ -145,10 +145,10 @@ def test_find_closest_version_default_options() -> None:
     mock = Mock(return_value="2.0.2")
     with (
         patch("feu.__main__.find_closest_version_", mock),
-        patch("feu.__main__.get_python_version", Mock(return_value="3.12")),
-        patch("feu.__main__.is_free_threaded", Mock(return_value=False)),
-        patch("feu.__main__.get_current_os", Mock(return_value="macos")),
-        patch("feu.__main__.get_current_arch", Mock(return_value="arm64")),
+        patch("feu.compat.target.get_python_version", Mock(return_value="3.12")),
+        patch("feu.compat.target.is_free_threaded", Mock(return_value=False)),
+        patch("feu.compat.target.get_current_os", Mock(return_value="macos")),
+        patch("feu.compat.target.get_current_arch", Mock(return_value="arm64")),
     ):
         result = runner.invoke(
             find_closest_version, ["--pkg-name", "numpy", "--pkg-version", "2.0.2"]
@@ -230,10 +230,10 @@ def test_check_valid_version_default_options() -> None:
     mock = Mock(return_value=True)
     with (
         patch("feu.__main__.is_valid_version", mock),
-        patch("feu.__main__.get_python_version", Mock(return_value="3.12")),
-        patch("feu.__main__.is_free_threaded", Mock(return_value=False)),
-        patch("feu.__main__.get_current_os", Mock(return_value="macos")),
-        patch("feu.__main__.get_current_arch", Mock(return_value="arm64")),
+        patch("feu.compat.target.get_python_version", Mock(return_value="3.12")),
+        patch("feu.compat.target.is_free_threaded", Mock(return_value=False)),
+        patch("feu.compat.target.get_current_os", Mock(return_value="macos")),
+        patch("feu.compat.target.get_current_arch", Mock(return_value="arm64")),
     ):
         result = runner.invoke(
             check_valid_version, ["--pkg-name", "numpy", "--pkg-version", "2.0.2"]
