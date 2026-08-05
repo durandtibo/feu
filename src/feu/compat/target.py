@@ -3,8 +3,9 @@ constraints."""
 
 from __future__ import annotations
 
-__all__ = ["Target", "resolve_target"]
+__all__ = ["VALID_ARCH", "VALID_OS", "Target", "resolve_target"]
 
+import re
 from dataclasses import dataclass
 
 from feu.utils.platform import (
@@ -14,6 +15,10 @@ from feu.utils.platform import (
     is_free_threaded,
 )
 
+_PYTHON_VERSION_PATTERN = re.compile(r"^\d+\.\d+$")
+VALID_OS = frozenset({"linux", "macos", "windows"})
+VALID_ARCH = frozenset({"x86_64", "arm64"})
+
 
 @dataclass(frozen=True)
 class Target:
@@ -21,7 +26,9 @@ class Target:
     applies to.
 
     Args:
-        python_version: The Python version, e.g. ``"3.11"``.
+        python_version: The Python version, e.g. ``"3.11"``. Must be a
+            ``"major.minor"`` string, without a free-threaded ``t``
+            suffix.
         free_threaded: ``True`` for a free-threaded (no-GIL) Python
             build, e.g. ``3.14t``. Defaults to ``False``.
         os: The operating system, e.g. ``"linux"``, ``"macos"``,
@@ -31,6 +38,11 @@ class Target:
         arch: The CPU architecture, e.g. ``"x86_64"``, ``"arm64"``.
             ``None`` means "any architecture" when used as a registry
             entry, and "unspecified" when used as a lookup target.
+
+    Raises:
+        ValueError: if ``python_version`` is not a ``"major.minor"``
+            string, or if ``os``/``arch`` is not one of the supported
+            values.
 
     Example:
         ```pycon
@@ -45,6 +57,20 @@ class Target:
     free_threaded: bool = False
     os: str | None = None
     arch: str | None = None
+
+    def __post_init__(self) -> None:
+        if not _PYTHON_VERSION_PATTERN.match(self.python_version):
+            msg = (
+                f"invalid python_version {self.python_version!r}: expected a "
+                "'major.minor' string, e.g. '3.11'"
+            )
+            raise ValueError(msg)
+        if self.os is not None and self.os not in VALID_OS:
+            msg = f"invalid os {self.os!r}: expected one of {sorted(VALID_OS)} or None"
+            raise ValueError(msg)
+        if self.arch is not None and self.arch not in VALID_ARCH:
+            msg = f"invalid arch {self.arch!r}: expected one of {sorted(VALID_ARCH)} or None"
+            raise ValueError(msg)
 
 
 def resolve_target(

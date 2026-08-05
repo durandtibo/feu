@@ -41,6 +41,39 @@ def test_target_used_as_dict_key() -> None:
     assert mapping[Target(python_version="3.11")] == "value"
 
 
+def test_target_invalid_python_version_free_threaded_suffix() -> None:
+    with pytest.raises(ValueError, match="invalid python_version"):
+        Target(python_version="3.14t")
+
+
+def test_target_invalid_python_version_missing_minor() -> None:
+    with pytest.raises(ValueError, match="invalid python_version"):
+        Target(python_version="3")
+
+
+def test_target_invalid_python_version_empty() -> None:
+    with pytest.raises(ValueError, match="invalid python_version"):
+        Target(python_version="")
+
+
+def test_target_invalid_os() -> None:
+    with pytest.raises(ValueError, match="invalid os"):
+        Target(python_version="3.11", os="freebsd")
+
+
+def test_target_invalid_arch() -> None:
+    with pytest.raises(ValueError, match="invalid arch"):
+        Target(python_version="3.11", arch="ppc64")
+
+
+def test_target_os_none_is_valid() -> None:
+    assert Target(python_version="3.11", os=None).os is None
+
+
+def test_target_arch_none_is_valid() -> None:
+    assert Target(python_version="3.11", arch=None).arch is None
+
+
 ######################################
 #     Tests for resolve_target       #
 ######################################
