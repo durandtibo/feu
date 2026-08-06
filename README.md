@@ -127,28 +127,28 @@ pip install feu
 ```
 
 To make the package as slim as possible, only the minimal packages required to use `feu` are
-installed.
-To include all the dependencies, you can use the following command:
+installed. To include all the dependencies, you can use the following command:
 
 ```shell
 pip install feu[all]
 ```
 
 Please check the [get started page](https://durandtibo.github.io/feu/get_started) to see how to
-install only some specific dependencies or other alternatives to install the library.
-The following is the corresponding `feu` versions and supported dependencies.
+install only some specific dependencies or other alternatives to install the library. The following
+is the corresponding `feu` versions and supported dependencies.
 
 | `feu`   | `packaging`    | `python`       | `click`<sup>*</sup> | `gitpython`<sup>*</sup> | `requests`<sup>*</sup> | `rich`<sup>*</sup> |
-|---------|----------------|----------------|---------------------|-------------------------|------------------------|---------------------|
-| `main`  | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`    |
-| `0.7.3` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.7.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.7.1` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.7.0` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.6.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.6.1` | `>=21.0,<26.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.6.0` | `>=21.0,<26.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
-| `0.5.0` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                     |
+|---------|----------------|----------------|---------------------|-------------------------|------------------------|--------------------|
+| `main`  | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
+| `0.8.0` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
+| `0.7.3` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.7.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.7.1` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.7.0` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.6.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.6.1` | `>=21.0,<26.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.6.0` | `>=21.0,<26.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+| `0.5.0` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
 
 <sup>*</sup> indicates an optional dependency
 
@@ -189,18 +189,16 @@ Please check the instructions in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Suggestions and Communication
 
-Everyone is welcome to contribute to the community.
-If you have any questions or suggestions, you can
-submit [Github Issues](https://github.com/durandtibo/feu/issues).
-We will reply to you as soon as possible. Thank you very much.
+Everyone is welcome to contribute to the community. If you have any questions or suggestions, you
+can submit [Github Issues](https://github.com/durandtibo/feu/issues). We will reply to you as soon
+as possible. Thank you very much.
 
 ## API stability
 
-:warning: While `feu` is in development stage, no API is guaranteed to be stable from one
-release to the next.
-In fact, it is very likely that the API will change multiple times before a stable 1.0.0 release.
-In practice, this means that upgrading `feu` to a new version will possibly break any code that
-was using the old version of `feu`.
+:warning: While `feu` is in development stage, no API is guaranteed to be stable from one release to
+the next. In fact, it is very likely that the API will change multiple times before a stable 1.0.0
+release. In practice, this means that upgrading `feu` to a new version will possibly break any code
+that was using the old version of `feu`.
 
 ## License
 
