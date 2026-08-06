@@ -213,7 +213,7 @@ def parse_wheel_filename(filename: str) -> list[WheelTags]:
         ```pycon
         >>> from feu.compat.wheel_tags import parse_wheel_filename
         >>> parse_wheel_filename("numpy-2.3.0-cp312-cp312-macosx_11_0_arm64.whl")
-        [WheelTags(python_version='3.12', free_threaded=False, os='macos', arch='arm64')]
+        [WheelTags(python_version='3.12', free_threaded=False, os='macos', arch='arm64', abi3=False)]
 
         ```
     """
