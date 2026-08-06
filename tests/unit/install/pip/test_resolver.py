@@ -137,6 +137,13 @@ def test_jax_dependency_resolver_missing_version() -> None:
         resolver.resolve(PackageSpec(name="jax"))
 
 
+def test_jax_dependency_resolver_resolve_wildcard() -> None:
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.4.*")) == [
+        PackageDependency(name="jax", version_specifiers=["==0.4.*"]),
+        PackageDependency(name="jaxlib", version_specifiers=["==0.4.*"]),
+    ]
+
+
 ##############################################
 #     Tests for Numpy2DependencyResolver     #
 ##############################################
@@ -201,6 +208,12 @@ def test_numpy2_dependency_resolver_missing_version() -> None:
     resolver = Numpy2DependencyResolver(min_version="1.2.3")
     with pytest.raises(RuntimeError, match="Missing package version for my_package"):
         resolver.resolve(PackageSpec(name="my_package"))
+
+
+def test_numpy2_dependency_resolver_resolve_wildcard() -> None:
+    assert Numpy2DependencyResolver(min_version="1.2.3").resolve(
+        PackageSpec(name="my_package", version="1.2.*")
+    ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.*"])]
 
 
 ##################################################
@@ -307,6 +320,12 @@ def test_pandas_dependency_resolver_missing_version() -> None:
     resolver = PandasDependencyResolver()
     with pytest.raises(RuntimeError, match="Missing package version for pandas"):
         resolver.resolve(PackageSpec(name="pandas"))
+
+
+def test_pandas_dependency_resolver_resolve_wildcard() -> None:
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.2.*")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.2.*"])
+    ]
 
 
 ###############################################
@@ -507,6 +526,12 @@ def test_torch_dependency_resolver_missing_version() -> None:
     resolver = TorchDependencyResolver()
     with pytest.raises(RuntimeError, match="Missing package version for torch"):
         resolver.resolve(PackageSpec(name="torch"))
+
+
+def test_torch_dependency_resolver_resolve_wildcard() -> None:
+    assert TorchDependencyResolver().resolve(PackageSpec(name="torch", version="2.12.*")) == [
+        PackageDependency(name="torch", version_specifiers=["==2.12.*"])
+    ]
 
 
 ##############################################

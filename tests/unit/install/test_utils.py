@@ -116,6 +116,17 @@ def test_install_package_closest_version_pip_numpy_with_args() -> None:
         run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
 
 
+def test_install_package_closest_version_pip_wildcard() -> None:
+    with (
+        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="torch", version="2.12.*")
+        )
+        run_mock.assert_called_once_with("pip install torch==2.12.*")
+
+
 def test_install_package_closest_version_missing_package_version() -> None:
     with (
         patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),

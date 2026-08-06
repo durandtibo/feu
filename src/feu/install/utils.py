@@ -21,7 +21,12 @@ from typing import TYPE_CHECKING, NamedTuple
 
 from feu.compat import Target, find_closest_version, get_default_registry
 from feu.install import InstallerRegistry
-from feu.utils.package import PackageSpec, extract_package_extras, extract_package_name
+from feu.utils.package import (
+    PackageSpec,
+    extract_package_extras,
+    extract_package_name,
+    is_wildcard_version,
+)
 from feu.version import (
     fetch_pypi_versions,
     filter_stable_versions,
@@ -102,6 +107,11 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
     if pkg_version is None:
         msg = f"A package version must be specified for {package.name}"
         raise RuntimeError(msg)
+    if is_wildcard_version(pkg_version):
+        # Wildcard versions (e.g. '2.12.*') cannot be resolved against the
+        # compatibility matrix, so install the package as specified.
+        install_package(installer=installer, package=package)
+        return
     install_package(
         installer=installer,
         package=package.with_version(

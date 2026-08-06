@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from packaging.version import Version
 
-from feu.utils.package import PackageDependency
+from feu.utils.package import PackageDependency, is_wildcard_version
 
 if TYPE_CHECKING:
     from feu.utils.package import PackageSpec
@@ -155,6 +155,8 @@ class JaxDependencyResolver(DependencyResolver):
             msg = f"Missing package version for {package.name}"
             raise RuntimeError(msg)
         deps.append(PackageDependency("jaxlib", version_specifiers=[f"=={package.version}"]))
+        if is_wildcard_version(package.version):
+            return deps
         ver = Version(package.version)
         if ver < Version("0.4.26"):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
@@ -209,7 +211,9 @@ class Numpy2DependencyResolver(DependencyResolver):
         if package.version is None:
             msg = f"Missing package version for {package.name}"
             raise RuntimeError(msg)
-        if Version(package.version) < Version(self._min_version):
+        if not is_wildcard_version(package.version) and Version(package.version) < Version(
+            self._min_version
+        ):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
         return deps
 
