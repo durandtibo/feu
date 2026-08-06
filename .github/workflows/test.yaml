@@ -26,6 +26,7 @@ jobs:
           macos-26,
           macos-15,
           macos-14,
+          macos-26-intel,
           macos-15-intel,
         ]
         python-version: [ '3.14', '3.14t', '3.13', '3.13t', '3.12', '3.11', '3.10' ]
@@ -37,7 +38,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@v0.0.5
+        uses: durandtibo/setup-venv-uv-action@v0.1.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -70,6 +71,7 @@ jobs:
           macos-26,
           macos-15,
           macos-14,
+          macos-26-intel,
           macos-15-intel,
         ]
         python-version: [ '3.14', '3.14t', '3.13', '3.13t', '3.12', '3.11', '3.10' ]
@@ -81,7 +83,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@v0.0.5
+        uses: durandtibo/setup-venv-uv-action@v0.1.0
         with:
           python-version: ${{ matrix.python-version }}
           install-args: '--no-optional-deps'
