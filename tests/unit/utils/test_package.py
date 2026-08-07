@@ -10,6 +10,7 @@ from feu.utils.package import (
     extract_package_extras,
     extract_package_name,
     generate_extras_string,
+    is_wildcard_version,
 )
 
 if TYPE_CHECKING:
@@ -55,6 +56,10 @@ def test_package_spec_str_extras_empty() -> None:
     assert str(PackageSpec("my_package", version="1.2.3", extras=[])) == "my_package==1.2.3"
 
 
+def test_package_spec_str_wildcard_version() -> None:
+    assert str(PackageSpec("my_package", version="1.2.*")) == "my_package==1.2.*"
+
+
 def test_package_spec_to_package_dependency_name() -> None:
     assert PackageSpec("my_package").to_package_dependency() == PackageDependency("my_package")
 
@@ -78,6 +83,12 @@ def test_package_spec_to_package_dependency_extras_empty() -> None:
         "my_package", version="1.2.3", extras=[]
     ).to_package_dependency() == PackageDependency(
         "my_package", version_specifiers=["==1.2.3"], extras=[]
+    )
+
+
+def test_package_spec_to_package_dependency_wildcard_version() -> None:
+    assert PackageSpec("my_package", version="1.2.*").to_package_dependency() == PackageDependency(
+        "my_package", version_specifiers=["==1.2.*"]
     )
 
 
@@ -288,3 +299,22 @@ def test_extract_package_extras(requirement: str, expected: list[str]) -> None:
 )
 def test_generate_extras_string(extras: Sequence[str], expected: str) -> None:
     assert generate_extras_string(extras) == expected
+
+
+##########################################
+#     Tests for is_wildcard_version     #
+##########################################
+
+
+@pytest.mark.parametrize(
+    ("version", "expected"),
+    [
+        ("2.12.*", True),
+        ("2.*", True),
+        ("*", True),
+        ("2.12.0", False),
+        (None, False),
+    ],
+)
+def test_is_wildcard_version(version: str | None, expected: bool) -> None:
+    assert is_wildcard_version(version) == expected

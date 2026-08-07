@@ -8,6 +8,7 @@ __all__ = [
     "extract_package_extras",
     "extract_package_name",
     "generate_extras_string",
+    "is_wildcard_version",
 ]
 
 import re
@@ -205,6 +206,32 @@ def extract_package_extras(requirement: str) -> list[str]:
     if not match:
         return []
     return [extra.strip() for extra in match.group(1).split(",")]
+
+
+def is_wildcard_version(version: str | None) -> bool:
+    r"""Indicate if a version string contains a wildcard.
+
+    Wildcard versions such as ``'2.12.*'`` are used to let the
+    installer pick any matching version, and cannot be parsed as a
+    concrete ``packaging.version.Version``.
+
+    Args:
+        version: The version string to check.
+
+    Returns:
+        ``True`` if the version contains a wildcard, otherwise ``False``.
+
+    Example:
+        ```pycon
+        >>> from feu.utils.package import is_wildcard_version
+        >>> is_wildcard_version("2.12.*")
+        True
+        >>> is_wildcard_version("2.12.0")
+        False
+
+        ```
+    """
+    return version is not None and "*" in version
 
 
 def generate_extras_string(extras: Sequence[str]) -> str:
