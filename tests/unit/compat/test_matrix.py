@@ -100,6 +100,8 @@ def test_show_compat_targets_multiple_ranges(capsys: pytest.CaptureFixture) -> N
     assert "1.5.0" in out
     assert "2.0.0" in out
     assert "latest" in out
+    # both ranges are shown on a single row for the target
+    assert out.count("3.11") == 1
 
 
 def test_show_compat_targets_without_rich_package() -> None:
