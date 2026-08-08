@@ -30,6 +30,7 @@ def get_package_names() -> list[str]:
         "matplotlib",
         "numpy",
         "pandas",
+        "polars",
         "pyarrow",
         "pydantic",
         "requests",
