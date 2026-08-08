@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 from feu.compat.discoverers.duckdb import DuckdbCompatDiscoverer
 from feu.compat.discoverers.jax import JaxCompatDiscoverer
+from feu.compat.discoverers.polars import PolarsCompatDiscoverer
 from feu.compat.discoverers.pydantic import PydanticCompatDiscoverer
 from feu.compat.discoverers.registry import CompatDiscovererRegistry
 from feu.compat.matrix import DEFAULT_TARGETS
@@ -42,6 +43,7 @@ def get_default_registry() -> CompatDiscovererRegistry:
             {
                 "duckdb": DuckdbCompatDiscoverer(),
                 "jax": JaxCompatDiscoverer(),
+                "polars": PolarsCompatDiscoverer(),
                 "pydantic": PydanticCompatDiscoverer(),
             }
         )

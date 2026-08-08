@@ -25,6 +25,7 @@ __all__ = [
     "CompatDiscovererRegistry",
     "DuckdbCompatDiscoverer",
     "JaxCompatDiscoverer",
+    "PolarsCompatDiscoverer",
     "PydanticCompatDiscoverer",
     "discover_compat_targets",
     "get_default_registry",
@@ -40,5 +41,6 @@ from feu.compat.discoverers.interface import (
     register_discoverers,
 )
 from feu.compat.discoverers.jax import JaxCompatDiscoverer
+from feu.compat.discoverers.polars import PolarsCompatDiscoverer
 from feu.compat.discoverers.pydantic import PydanticCompatDiscoverer
 from feu.compat.discoverers.registry import CompatDiscovererRegistry

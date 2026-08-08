@@ -19,6 +19,7 @@ def test_get_package_names_contains_expected_packages() -> None:
         "matplotlib",
         "numpy",
         "pandas",
+        "polars",
         "pyarrow",
         "pydantic",
         "requests",
