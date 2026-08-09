@@ -86,28 +86,34 @@ def show_compat_targets(
     table.add_column("Free-threaded")
     table.add_column("OS")
     table.add_column("Arch")
-    table.add_column("Min version")
-    table.add_column("Max version")
+    table.add_column("Versions")
 
     for target, ranges in compat.items():
-        if not ranges:
-            table.add_row(
-                target.python_version,
-                str(target.free_threaded),
-                target.os or "-",
-                target.arch or "-",
-                "[red]unsupported[/red]",
-                "[red]unsupported[/red]",
-            )
-            continue
-        for version_range in ranges:
-            table.add_row(
-                target.python_version,
-                str(target.free_threaded),
-                target.os or "-",
-                target.arch or "-",
-                version_range.min or "-",
-                version_range.max or "[green]latest[/green]",
-            )
+        table.add_row(
+            target.python_version,
+            str(target.free_threaded),
+            target.os or "-",
+            target.arch or "-",
+            _format_ranges(ranges),
+        )
 
     get_console().print(table)
+
+
+def _format_ranges(ranges: list[VersionRange]) -> str:
+    r"""Format a list of ``VersionRange`` as a single display string.
+
+    Args:
+        ranges: The version ranges to format. An empty list means no
+            version is valid for the target.
+
+    Returns:
+        A comma-separated ``"min - max"`` string for each range, or
+            ``"unsupported"`` if ``ranges`` is empty.
+    """
+    if not ranges:
+        return "[red]unsupported[/red]"
+    return ", ".join(
+        f"{version_range.min or '-'} - {version_range.max or '[green]latest[/green]'}"
+        for version_range in ranges
+    )
