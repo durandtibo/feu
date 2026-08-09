@@ -62,9 +62,13 @@ packages and their versions across different Python environments.
 
 - ✅ **Check package availability**: Verify if packages and modules are installed
 - 🔄 **Version-aware installation**: Install packages with automatic version compatibility checks
-- 🎯 **Smart version resolution**: Find the closest valid package version for your Python environment
+- 🎯 **Smart version resolution**: Find the closest valid package version for your target
+  environment (Python version, free-threadedness, OS, and CPU architecture)
 - 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas,
-  torch, etc.)
+  polars, torch, etc.)
+- 🔍 **PyPI-backed discovery**: Automatically discover version compatibility from PyPI for packages
+  that aren't in the built-in registry
+- 🐙 **GitHub utilities**: Fetch and sort repository metadata from the GitHub API
 - 🖥️ **CLI tools**: Command-line interface for package management tasks
 - 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
 

@@ -55,31 +55,40 @@
 
 ## Overview
 
-`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python packages and their versions across different Python environments. It provides utilities to:
+`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python
+packages and their versions across different Python environments. It provides utilities to:
 
 - **Check package availability**: Verify if packages and modules are available in your environment
-- **Install packages intelligently**: Install packages with version compatibility checks for your Python version
-- **Version management**: Find the closest valid package version for your Python environment
-- **Package configuration**: Maintain a registry of known package version compatibility with different Python versions
+- **Install packages intelligently**: Install packages with version compatibility checks for your
+  target environment
+- **Version management**: Find the closest valid package version for your target environment
+- **Package configuration**: Maintain a registry of known package version compatibility, and
+  discover it automatically from PyPI when it isn't already registered
+- **GitHub metadata**: Fetch and sort repository metadata from the GitHub API
 
-The library is particularly useful for projects that need to support multiple Python versions and want to ensure they install compatible package versions.
+The library is particularly useful for projects that need to support multiple Python versions,
+free-threaded builds, OSes, and CPU architectures, and want to ensure they install compatible
+package versions.
 
 ## Key Features
 
-- **Python version-aware**: Automatically selects compatible package versions based on your Python version
+- **Target-aware**: Automatically selects compatible package versions based on the Python version,
+  free-threadedness, OS, and CPU architecture
 - **CLI interface**: Command-line tools for package management tasks
 - **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
-- **Extensible**: Registry of common packages (numpy, pandas, torch, etc.) with known version constraints
+- **Extensible**: Registry of common packages (numpy, pandas, polars, torch, etc.) with known
+  version constraints, plus PyPI-backed discovery for anything not in the registry
 
 ## Quick Example
 
 ```python
-from feu import is_package_available, install_package_closest_version
+from feu import is_package_available, get_package_version
 from feu.compat import Target, find_closest_version
 
 # Check if a package is available
 if is_package_available("numpy"):
-    print("NumPy is installed!")
+    version = get_package_version("numpy")
+    print(f"NumPy {version} is installed!")
 
 # Find the closest valid version for your Python version
 version = find_closest_version(
@@ -87,6 +96,13 @@ version = find_closest_version(
 )
 print(f"Closest valid version: {version}")
 ```
+
+## Documentation
+
+- 🚀 [Get Started Guide](get_started.md)
+- 📖 [Usage Guide](usage.md)
+- 🖥️ [CLI Reference](cli.md)
+- 📚 [API Reference](refs/root.md)
 
 ## API stability
 
