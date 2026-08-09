@@ -58,7 +58,7 @@ python -m feu install \
 
 ## Find Closest Version Command
 
-Find the closest valid version of a package for a specific Python version.
+Find the closest valid version of a package for a specific target environment.
 
 ### Syntax
 
@@ -70,7 +70,14 @@ python -m feu find-closest-version [OPTIONS]
 
 - `-n, --pkg-name TEXT` - Package name (required)
 - `-v, --pkg-version TEXT` - Package version to check (required)
-- `-p, --python-version TEXT` - Python version (required, e.g., "3.10", "3.11")
+- `-p, --python-version TEXT` - Python version, e.g. "3.10", "3.11" (optional; defaults to the
+  current Python version)
+- `-f, --free-threaded BOOLEAN` - Whether the target is a free-threaded build (optional; defaults
+  to the current interpreter's free-threaded status)
+- `-o, --os TEXT` - Target OS, e.g. "linux", "macos", "windows" (optional; defaults to the
+  current OS)
+- `-r, --arch TEXT` - Target CPU architecture, e.g. "x86_64", "arm64" (optional; defaults to the
+  current architecture)
 
 ### Examples
 
@@ -104,9 +111,13 @@ Output:
 
 This shows that NumPy 1.0.0 is too old for Python 3.11, so the minimum supported version (1.23.2) would be used instead.
 
+If none of the omitted options are provided, the command falls back to the properties of the
+Python interpreter running the CLI. If no valid version exists for the target, the command prints
+`None`.
+
 ## Check Valid Version Command
 
-Check if a specific package version is valid for a given Python version.
+Check if a specific package version is valid for a given target environment.
 
 ### Syntax
 
@@ -118,7 +129,14 @@ python -m feu check-valid-version [OPTIONS]
 
 - `-n, --pkg-name TEXT` - Package name (required)
 - `-v, --pkg-version TEXT` - Package version to check (required)
-- `-p, --python-version TEXT` - Python version (required, e.g., "3.10", "3.11")
+- `-p, --python-version TEXT` - Python version, e.g. "3.10", "3.11" (optional; defaults to the
+  current Python version)
+- `-f, --free-threaded BOOLEAN` - Whether the target is a free-threaded build (optional; defaults
+  to the current interpreter's free-threaded status)
+- `-o, --os TEXT` - Target OS, e.g. "linux", "macos", "windows" (optional; defaults to the
+  current OS)
+- `-r, --arch TEXT` - Target CPU architecture, e.g. "x86_64", "arm64" (optional; defaults to the
+  current architecture)
 
 ### Examples
 

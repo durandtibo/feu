@@ -150,13 +150,56 @@ print(f"Last version tag: {last_version_tag}")
 
 `feu` includes built-in version compatibility information for common packages:
 
-- **Scientific Computing**: numpy, scipy, pandas, xarray
+- **Scientific Computing**: numpy, scipy, pandas, polars, xarray, duckdb
 - **Machine Learning**: torch, jax, scikit-learn
-- **Data Handling**: pyarrow
+- **Data Handling**: pyarrow, safetensors
 - **Visualization**: matplotlib
 - **Web**: requests, click
+- **Validation**: pydantic
 
-Each package has defined minimum and maximum versions for different Python versions (3.9, 3.10, 3.11, 3.12, 3.13, 3.14).
+Each package has defined minimum and maximum versions for different Python versions (3.9, 3.10,
+3.11, 3.12, 3.13, 3.14, 3.15), and some packages also account for free-threaded builds, OS, and
+CPU architecture (see [Discovering Compatibility from PyPI](#discovering-compatibility-from-pypi)
+below).
+
+## Discovering Compatibility from PyPI
+
+In addition to the built-in registry, `feu` can query PyPI directly to discover which package
+versions are compatible with a given target (Python version, free-threadedness, OS, and
+architecture):
+
+```python
+from feu.compat import discover_compat_targets, show_compat_targets
+
+# Discover the compatibility matrix for a package by inspecting its wheels on PyPI
+compat = discover_compat_targets("numpy")
+
+# Pretty-print the matrix as a table (requires the `rich` extra)
+show_compat_targets(compat, pkg_name="numpy")
+```
+
+This is useful to keep the built-in registry up to date, or to inspect compatibility for packages
+that are not part of the registry.
+
+## Working with GitHub
+
+If you have installed the `requests` extra (`pip install 'feu[requests]'`), you can query GitHub
+repository metadata:
+
+```python
+from feu.github import fetch_github_metadata, fetch_github_repos, sort_repos_by_key
+
+# Fetch metadata for a single repository. Authentication headers are built automatically
+# from the `GITHUB_TOKEN` environment variable, if set, to increase the rate limit.
+metadata = fetch_github_metadata(owner="durandtibo", repo="feu")
+print(metadata)
+
+# Fetch all repositories of a user or organization
+repos = fetch_github_repos(owner="durandtibo")
+
+# Sort repositories by a metadata key, e.g. "stargazers_count"
+sorted_repos = sort_repos_by_key(repos, key="stargazers_count", reverse=True)
+```
 
 ## Testing Utilities
 
@@ -188,6 +231,11 @@ def test_http_feature():
     # This test only runs if requests is available
     pass
 ```
+
+Each mark has an `..._available` variant (skips the test if the dependency is *not* available) and
+an `..._not_available` variant (skips the test if the dependency *is* available). Marks are
+provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `pipx`, `polars`,
+`pyarrow`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `urllib3`, `uv`, and `xarray`.
 
 ## Common Use Cases
 
