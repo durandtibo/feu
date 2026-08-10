@@ -28,6 +28,7 @@ keywords = [
     "version-management",
 ]
 license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 
 dynamic = ["maintainers"]
 
@@ -36,15 +37,17 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: BSD License",
+    "Environment :: Console",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -128,9 +131,6 @@ line-length = 100
 target-version = ["py310", "py311", "py312", "py313", "py314"]
 include = '\.pyi?$'
 
-[tool.pylint.FORMAT]
-max-line-length = 100
-
 [tool.isort]
 profile = "black"
 
@@ -201,52 +201,6 @@ lint.ignore = [
     "D205", # 1 blank line required between summary line and description
     "D209", # Multi-line docstring closing quotes should be on a separate line
 ]
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-lint.fixable = [
-    "A", # builtins
-    "ANN", # annotations
-    "ARG", # flake8-unused-arguments
-    "B", # bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "D", # pydocstyle
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle (Error)
-    "EM", # flake8-errmsg
-    "EXE", # flake8-executable
-    "F", # pyflakes
-    "FA", # flake8-future-annotations
-    "FURB", # refurb
-    "ICN", # flake8-import-conventions
-    "INP", # flake8-no-pep420
-    "ISC", # flake8-implicit-str-concat
-    "LOG", # logging
-    "N", # naming
-    "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
-    "PERF", # Perflint
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
-    "PL", # Pylint
-    "PT", # flake8-pytest-style
-    "PTH", # pathlib
-    "PYI", # flake8-pyi
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RSE", # flake8-raise
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "T20", # flake8-print
-    "TCH", # flake8-type-checking
-    "TD", # flake8-todos
-    "TID", # flake8-tidy-imports
-    "TRY", # tryceratops
-    "UP", # pyupgrade
-    "W", # pycodestyle (Warning)
-]
-lint.unfixable = []
 
 lint.exclude = [
     ".bzr",
