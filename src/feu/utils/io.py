@@ -83,7 +83,7 @@ def save_json(to_save: Any, path: Path, *, exist_ok: bool = False) -> None:
     # Save to tmp, then commit by moving the file in case the job gets
     # interrupted while writing the file
     tmp_path = generate_unique_tmp_path(path)
-    with Path.open(tmp_path, "w") as file:
+    with Path.open(tmp_path, "w", encoding="utf-8") as file:
         json.dump(to_save, file, sort_keys=False)
         file.write("\n")
     tmp_path.rename(path)
