@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
 
 from feu.utils.io import generate_unique_tmp_path, load_json, save_json
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 @pytest.fixture(scope="module")
@@ -52,6 +49,17 @@ def test_save_json_file_exist_ok(tmp_path: Path) -> None:
     save_json({"key1": [3, 2, 1], "key2": "meow"}, path, exist_ok=True)
     assert path.is_file()
     assert load_json(path) == {"key1": [3, 2, 1], "key2": "meow"}
+
+
+def test_save_json_writes_with_utf8_encoding(tmp_path: Path) -> None:
+    # explicit utf-8 encoding is required because the platform default text
+    # encoding is not guaranteed to be utf-8 (e.g. cp1252 on Windows)
+    path = tmp_path.joinpath("tmp/data.json")
+    with patch.object(Path, "open", autospec=True, side_effect=Path.open) as open_mock:
+        save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
+        write_calls = [call for call in open_mock.call_args_list if call.args[1:2] == ("w",)]
+        assert len(write_calls) == 1
+        assert write_calls[0].kwargs == {"encoding": "utf-8"}
 
 
 def test_save_json_file_exist_ok_dir(tmp_path: Path) -> None:
