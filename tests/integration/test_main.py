@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import sys
 from subprocess import CalledProcessError
 
 import pytest
@@ -13,6 +14,13 @@ from feu.testing import (
 )
 from feu.utils.command import run_bash_command
 
+# Use `sys.executable` rather than the literal "python": the bare command
+# name is not guaranteed to resolve to the interpreter running these tests
+# (the one `feu` is installed into) -- PATH ordering can point it elsewhere,
+# e.g. a different interpreter uv downloaded, which does not have `feu`
+# installed and fails with "No module named feu".
+PYTHON = sys.executable
+
 ################################
 #     Tests for entrypoint     #
 ################################
@@ -21,14 +29,14 @@ from feu.utils.command import run_bash_command
 @click_available
 @pip_available
 def test_install_default_installer() -> None:
-    run_bash_command("python -m feu install --pkg-name=coola --pkg-version=0.9.1")
+    run_bash_command(f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10")
 
 
 @click_available
 @pip_available
 def test_install_installer_pip() -> None:
     run_bash_command(
-        "python -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=pip"
+        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=pip"
     )
 
 
@@ -36,14 +44,14 @@ def test_install_installer_pip() -> None:
 @uv_available
 def test_install_uv() -> None:
     run_bash_command(
-        "python -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=uv"
+        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=uv"
     )
 
 
 @click_available
 def test_check_valid_version() -> None:
     cmd = (
-        "python -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
@@ -52,7 +60,7 @@ def test_check_valid_version() -> None:
 
 @click_available
 def test_check_valid_version_default_python_version() -> None:
-    cmd = "python -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1"
+    cmd = f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10"
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout.strip() in {"True", "False"}
 
@@ -60,7 +68,7 @@ def test_check_valid_version_default_python_version() -> None:
 @click_available
 def test_check_valid_version_all_options() -> None:
     cmd = (
-        "python -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11 --free-threaded=false --os=linux --arch=x86_64"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
@@ -70,16 +78,16 @@ def test_check_valid_version_all_options() -> None:
 @click_available
 def test_find_closest_version() -> None:
     cmd = (
-        "python -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
-    assert out.stdout == "0.9.1\n"
+    assert out.stdout == "1.1.10\n"
 
 
 @click_available
 def test_find_closest_version_default_python_version() -> None:
-    cmd = "python -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1"
+    cmd = f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10"
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout.strip() != ""
 
@@ -87,21 +95,21 @@ def test_find_closest_version_default_python_version() -> None:
 @click_available
 def test_find_closest_version_all_options() -> None:
     cmd = (
-        "python -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11 --free-threaded=false --os=linux --arch=x86_64"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
-    assert out.stdout == "0.9.1\n"
+    assert out.stdout == "1.1.10\n"
 
 
 def test_invalid() -> None:
     with pytest.raises(CalledProcessError):
-        run_bash_command("python -m feu invalid")
+        run_bash_command(f"{PYTHON} -m feu invalid")
 
 
 @click_not_available
 def test_install_not_click() -> None:
     with pytest.raises(CalledProcessError):
         run_bash_command(
-            "python -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=pip"
+            f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=pip"
         )
