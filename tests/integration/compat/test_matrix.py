@@ -51,6 +51,24 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
         assert Version(ranges[0].max)
 
 
+@requests_available
+def test_discover_compat_targets_polars_split_runtime_package() -> None:
+    # polars started splitting its compiled backend into per-CPU-feature
+    # "runtime" packages (e.g. polars-runtime-32) that it pins to an exact
+    # version; PolarsCompatDiscoverer has special-cased logic to resolve
+    # platform support through that pinned runtime package instead of
+    # polars' own (pure-Python) wheel. Assert a non-empty, internally
+    # consistent result rather than exact version numbers, to stay
+    # resilient to upstream releases.
+    target = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = discover_compat_targets("polars", targets=(target,))
+    assert set(compat) == {target}
+    ranges = compat[target]
+    assert len(ranges) >= 1
+    assert ranges[0].min is not None
+    assert Version(ranges[0].min)
+
+
 @requests_not_available
 def test_discover_compat_targets_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
