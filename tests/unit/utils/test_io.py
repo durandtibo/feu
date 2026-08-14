@@ -37,7 +37,7 @@ def test_save_json(tmp_path: Path) -> None:
 
 
 def test_save_json_file_exist(tmp_path: Path) -> None:
-    path = tmp_path.joinpath("tmp/exist/data.json")
+    path = tmp_path.joinpath("tmp/data.json")
     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
     with pytest.raises(FileExistsError, match=r"path .* already exists."):
         save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
