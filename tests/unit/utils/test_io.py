@@ -77,7 +77,7 @@ def test_save_json_file_exist_ok_uses_replace_not_rename(tmp_path: Path) -> None
 
 
 def test_save_json_file_exist_ok_dir(tmp_path: Path) -> None:
-    path = tmp_path.joinpath("tmp/dir/data.json")
+    path = tmp_path.joinpath("tmp/data.json")
     path.mkdir(parents=True, exist_ok=True)
     with pytest.raises(IsADirectoryError, match=r"path .* is a directory"):
         save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
