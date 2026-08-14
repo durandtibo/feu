@@ -99,10 +99,25 @@ def test_install_with_installer_args() -> None:
 
 @click_available
 def test_find_closest_version() -> None:
+    # Pin --os/--arch explicitly rather than relying on the host's
+    # implicit values: numpy has no wheels at all for some target
+    # combinations (e.g. python 3.10 on windows/arm64), which would make
+    # this test's outcome depend on the host running it.
     runner = CliRunner()
     result = runner.invoke(
         find_closest_version,
-        ["--pkg-name", "numpy", "--pkg-version", "2.0.2", "--python-version", "3.10"],
+        [
+            "--pkg-name",
+            "numpy",
+            "--pkg-version",
+            "2.0.2",
+            "--python-version",
+            "3.10",
+            "--os",
+            "linux",
+            "--arch",
+            "x86_64",
+        ],
     )
     assert result.exit_code == 0
     assert result.output.strip() == "2.0.2"
@@ -182,10 +197,25 @@ def test_find_closest_version_unsupported() -> None:
 
 @click_available
 def test_check_valid_version() -> None:
+    # Pin --os/--arch explicitly rather than relying on the host's
+    # implicit values: numpy has no wheels at all for some target
+    # combinations (e.g. python 3.10 on windows/arm64), which would make
+    # this test's outcome depend on the host running it.
     runner = CliRunner()
     result = runner.invoke(
         check_valid_version,
-        ["--pkg-name", "numpy", "--pkg-version", "2.0.2", "--python-version", "3.10"],
+        [
+            "--pkg-name",
+            "numpy",
+            "--pkg-version",
+            "2.0.2",
+            "--python-version",
+            "3.10",
+            "--os",
+            "linux",
+            "--arch",
+            "x86_64",
+        ],
     )
     assert result.exit_code == 0
     assert result.output.strip() == "True"
