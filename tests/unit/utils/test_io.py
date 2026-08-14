@@ -44,7 +44,7 @@ def test_save_json_file_exist(tmp_path: Path) -> None:
 
 
 def test_save_json_file_exist_ok(tmp_path: Path) -> None:
-    path = tmp_path.joinpath("tmp/exist_ok/data.json")
+    path = tmp_path.joinpath("tmp/data.json")
     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
     save_json({"key1": [3, 2, 1], "key2": "meow"}, path, exist_ok=True)
     assert path.is_file()
