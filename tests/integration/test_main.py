@@ -29,14 +29,14 @@ PYTHON = sys.executable
 @click_available
 @pip_available
 def test_install_default_installer() -> None:
-    run_bash_command(f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=0.9.1")
+    run_bash_command(f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10")
 
 
 @click_available
 @pip_available
 def test_install_installer_pip() -> None:
     run_bash_command(
-        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=pip"
+        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=pip"
     )
 
 
@@ -44,14 +44,14 @@ def test_install_installer_pip() -> None:
 @uv_available
 def test_install_uv() -> None:
     run_bash_command(
-        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=uv"
+        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=uv"
     )
 
 
 @click_available
 def test_check_valid_version() -> None:
     cmd = (
-        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
@@ -60,7 +60,7 @@ def test_check_valid_version() -> None:
 
 @click_available
 def test_check_valid_version_default_python_version() -> None:
-    cmd = f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1"
+    cmd = f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10"
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout.strip() in {"True", "False"}
 
@@ -68,7 +68,7 @@ def test_check_valid_version_default_python_version() -> None:
 @click_available
 def test_check_valid_version_all_options() -> None:
     cmd = (
-        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11 --free-threaded=false --os=linux --arch=x86_64"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
@@ -78,16 +78,16 @@ def test_check_valid_version_all_options() -> None:
 @click_available
 def test_find_closest_version() -> None:
     cmd = (
-        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
-    assert out.stdout == "0.9.1\n"
+    assert out.stdout == "1.1.10\n"
 
 
 @click_available
 def test_find_closest_version_default_python_version() -> None:
-    cmd = f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1"
+    cmd = f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10"
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout.strip() != ""
 
@@ -95,11 +95,11 @@ def test_find_closest_version_default_python_version() -> None:
 @click_available
 def test_find_closest_version_all_options() -> None:
     cmd = (
-        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=0.9.1 "
+        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10 "
         "--python-version=3.11 --free-threaded=false --os=linux --arch=x86_64"
     )
     out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
-    assert out.stdout == "0.9.1\n"
+    assert out.stdout == "1.1.10\n"
 
 
 def test_invalid() -> None:
@@ -111,5 +111,5 @@ def test_invalid() -> None:
 def test_install_not_click() -> None:
     with pytest.raises(CalledProcessError):
         run_bash_command(
-            f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=0.9.1 --installer-name=pip"
+            f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=pip"
         )
