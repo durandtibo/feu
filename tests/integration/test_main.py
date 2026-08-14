@@ -50,11 +50,20 @@ def test_install_uv() -> None:
 
 @click_available
 def test_check_valid_version() -> None:
-    cmd = (
-        f"{PYTHON} -m feu check-valid-version --pkg-name=coola --pkg-version=1.1.10 "
-        "--python-version=3.11"
-    )
-    out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
+    # Pin --os/--arch explicitly rather than relying on the host's
+    # implicit values, so the target is deterministic across platforms.
+    cmd = [
+        PYTHON,
+        "-m",
+        "feu",
+        "check-valid-version",
+        "--pkg-name=coola",
+        "--pkg-version=1.1.10",
+        "--python-version=3.11",
+        "--os=linux",
+        "--arch=x86_64",
+    ]
+    out = subprocess.run(cmd, check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout == "True\n"
 
 
@@ -77,11 +86,20 @@ def test_check_valid_version_all_options() -> None:
 
 @click_available
 def test_find_closest_version() -> None:
-    cmd = (
-        f"{PYTHON} -m feu find-closest-version --pkg-name=coola --pkg-version=1.1.10 "
-        "--python-version=3.11"
-    )
-    out = subprocess.run(cmd.split(), check=True, capture_output=True, text=True)  # noqa: S603
+    # Pin --os/--arch explicitly rather than relying on the host's
+    # implicit values, so the target is deterministic across platforms.
+    cmd = [
+        PYTHON,
+        "-m",
+        "feu",
+        "find-closest-version",
+        "--pkg-name=coola",
+        "--pkg-version=1.1.10",
+        "--python-version=3.11",
+        "--os=linux",
+        "--arch=x86_64",
+    ]
+    out = subprocess.run(cmd, check=True, capture_output=True, text=True)  # noqa: S603
     assert out.stdout == "1.1.10\n"
 
 
