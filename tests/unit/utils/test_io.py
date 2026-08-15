@@ -62,6 +62,20 @@ def test_save_json_writes_with_utf8_encoding(tmp_path: Path) -> None:
         assert write_calls[0].kwargs == {"encoding": "utf-8"}
 
 
+def test_save_json_file_exist_ok_uses_replace_not_rename(tmp_path: Path) -> None:
+    # `Path.rename` raises FileExistsError on Windows when the destination
+    # already exists (unlike POSIX, where it atomically overwrites), so the
+    # commit step must use `Path.replace` instead.
+    path = tmp_path.joinpath("tmp/exist_ok/data.json")
+    save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
+    with patch.object(
+        Path, "rename", side_effect=FileExistsError("simulated Windows WinError 183")
+    ):
+        save_json({"key1": [3, 2, 1], "key2": "meow"}, path, exist_ok=True)
+    assert path.is_file()
+    assert load_json(path) == {"key1": [3, 2, 1], "key2": "meow"}
+
+
 def test_save_json_file_exist_ok_dir(tmp_path: Path) -> None:
     path = tmp_path.joinpath("tmp/data.json")
     path.mkdir(parents=True, exist_ok=True)

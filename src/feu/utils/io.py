@@ -86,7 +86,7 @@ def save_json(to_save: Any, path: Path, *, exist_ok: bool = False) -> None:
     with Path.open(tmp_path, "w", encoding="utf-8") as file:
         json.dump(to_save, file, sort_keys=False)
         file.write("\n")
-    tmp_path.rename(path)
+    tmp_path.replace(path)
 
 
 def generate_unique_tmp_path(path: Path) -> Path:

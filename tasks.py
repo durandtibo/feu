@@ -3,6 +3,8 @@ r"""Define some tasks that are executed with invoke."""
 from __future__ import annotations
 
 import logging
+import os
+import sys
 from typing import TYPE_CHECKING
 
 from invoke.tasks import task
@@ -23,6 +25,12 @@ INTEGRATION_TESTS = f"{TESTS}/integration"
 FUNCTIONAL_TESTS = f"{TESTS}/functional"
 PYTHON_VERSION = "3.14"
 
+# `pty=PTY` requests a pseudo-terminal, which only exists on POSIX systems.
+# On Windows, invoke cannot allocate one and falls back to a plain pipe with
+# a warning printed on every call; requesting it only where it is actually
+# supported keeps command output identical without the noise.
+PTY = sys.platform != "win32"
+
 
 @task
 def check_format(c: Context) -> None:
@@ -36,7 +44,7 @@ def check_format(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("🎨 Checking code format with black...")
-    c.run("black --check .", pty=True)
+    c.run("black --check .", pty=PTY)
     logger.info("✅ Code format check passed")
 
 
@@ -51,7 +59,7 @@ def check_lint(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("🔍 Checking code linting with ruff...")
-    c.run("ruff check --output-format=github .", pty=True)
+    c.run("ruff check --output-format=github .", pty=PTY)
     logger.info("✅ Linting check passed")
 
 
@@ -66,7 +74,7 @@ def check_types(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("🔬 Checking type hints with pyright...")
-    c.run(f"pyright --verifytypes {NAME} --ignoreexternal", pty=True)
+    c.run(f"pyright --verifytypes {NAME} --ignoreexternal", pty=PTY)
     logger.info("✅ Type check passed")
 
 
@@ -86,10 +94,11 @@ def create_venv(c: Context) -> None:
         existing environment will be cleared.
     """
     logger.info(f"🐍 Creating virtual environment with Python {PYTHON_VERSION}...")
-    c.run(f"uv venv --python {PYTHON_VERSION} --clear", pty=True)
-    c.run("source .venv/bin/activate", pty=True)
+    c.run(f"uv venv --python {PYTHON_VERSION} --clear", pty=PTY)
+    activate = r".venv\Scripts\activate" if sys.platform == "win32" else "source .venv/bin/activate"
+    logger.info(f"👉 Activate the virtual environment with: {activate}")
     logger.info("📦 Installing invoke...")
-    c.run("make install-invoke", pty=True)
+    c.run("make install-invoke", pty=PTY)
     logger.info("✅ Virtual environment created successfully")
 
 
@@ -106,9 +115,9 @@ def doctest_src(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("📚 Running doctests on source code...")
-    c.run(f"python -m pytest --xdoctest {SOURCE}", pty=True)
+    c.run(f"python -m pytest --xdoctest {SOURCE}", pty=PTY)
     logger.info("📝 Validating markdown code examples...")
-    c.run("dev/check_markdown.sh", pty=True)
+    c.run("dev/check_markdown.sh", pty=PTY)
     logger.info("✅ Doctest validation complete")
 
 
@@ -128,7 +137,7 @@ def docformat(c: Context) -> None:
         running this task.
     """
     logger.info("📖 Formatting docstrings...")
-    c.run(f"docformatter --config ./pyproject.toml --in-place {SOURCE}", pty=True)
+    c.run(f"docformatter --config ./pyproject.toml --in-place {SOURCE}", pty=PTY)
     logger.info("✅ Docstring formatting complete")
 
 
@@ -147,11 +156,11 @@ def format_shell(c: Context) -> None:
         SystemExit: If shellcheck or shfmt fails.
     """
     logger.info("🐚 Running shellcheck on shell scripts...")
-    c.run("shellcheck -- **/*.sh", pty=True)
+    c.run("shellcheck -- **/*.sh", pty=PTY)
     logger.info("✅ Shellcheck passed\n")
 
     logger.info("🔧 Running shfmt to format shell scripts...")
-    c.run("shfmt -l -w -- **/*.sh", pty=True)
+    c.run("shfmt -l -w -- **/*.sh", pty=PTY)
     logger.info("✅ Shell formatting complete")
 
 
@@ -191,9 +200,9 @@ def install(
         cmd.append("--group dev")
     if docs_deps:
         cmd.append("--group docs")
-    c.run(" ".join(cmd), pty=True)
+    c.run(" ".join(cmd), pty=PTY)
     logger.info("🔧 Installing package in editable mode...")
-    c.run("uv pip install -e .", pty=True)
+    c.run("uv pip install -e .", pty=PTY)
     logger.info("✅ Installation complete")
 
 
@@ -216,11 +225,11 @@ def update(c: Context) -> None:
         after updating.
     """
     logger.info("🔄 Updating dependencies...")
-    c.run("uv sync --upgrade", pty=True)
+    c.run("uv sync --upgrade", pty=PTY)
     logger.info("🛠️  Upgrading uv tools...")
-    c.run("uv tool upgrade --all", pty=True)
+    c.run("uv tool upgrade --all", pty=PTY)
     logger.info("🪝 Updating pre-commit hooks...")
-    c.run("pre-commit autoupdate", pty=True)
+    c.run("pre-commit autoupdate", pty=PTY)
     logger.info("📦 Reinstalling with docs dependencies...")
     install(c, docs_deps=True)
     logger.info("✅ Update complete")
@@ -251,7 +260,7 @@ def all_test(c: Context, cov: bool = False) -> None:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
         logger.info("📊 Coverage reports will be generated")
     cmd.append(f"{TESTS}")
-    c.run(" ".join(cmd), pty=True)
+    c.run(" ".join(cmd), pty=PTY)
     logger.info("✅ All tests complete")
 
 
@@ -281,7 +290,7 @@ def unit_test(c: Context, cov: bool = False) -> None:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
         logger.info("📊 Coverage reports will be generated")
     cmd.append(f"{UNIT_TESTS}")
-    c.run(" ".join(cmd), pty=True)
+    c.run(" ".join(cmd), pty=PTY)
     logger.info("✅ Unit tests complete")
 
 
@@ -301,7 +310,7 @@ def integration_test(c: Context, cov: bool = False) -> None:
         )
         logger.info("📊 Coverage reports will be generated (appending)")
     cmd.append(f"{INTEGRATION_TESTS}")
-    c.run(" ".join(cmd), pty=True)
+    c.run(" ".join(cmd), pty=PTY)
     logger.info("✅ Integration tests complete")
 
 
@@ -319,7 +328,7 @@ def functional_test(c: Context, cov: bool = False) -> None:
         cmd.append(f"--cov-report html --cov-report xml --cov-report term --cov={NAME}")
         logger.info("📊 Coverage reports will be generated (appending)")
     cmd.append(f"{FUNCTIONAL_TESTS}")
-    c.run(" ".join(cmd), pty=True)
+    c.run(" ".join(cmd), pty=PTY)
     logger.info("✅ Functional tests complete")
 
 
@@ -331,7 +340,7 @@ def show_installed_packages(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("📦 Listing installed packages...")
-    c.run("uv pip list", pty=True)
+    c.run("uv pip list", pty=PTY)
 
 
 @task
@@ -342,9 +351,9 @@ def show_python_config(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("🐍 Python configuration:")
-    c.run("uv python list --only-installed", pty=True)
-    c.run("uv python find", pty=True)
-    c.run("which python", pty=True)
+    c.run("uv python list --only-installed", pty=PTY)
+    c.run("uv python find", pty=PTY)
+    c.run("where python" if sys.platform == "win32" else "which python", pty=PTY)
 
 
 @task
@@ -355,14 +364,17 @@ def publish_pypi(c: Context) -> None:
         c: The invoke context.
     """
     logger.info("📦 Building package...")
-    c.run("uv build", pty=True)
+    c.run("uv build", pty=PTY)
     logger.info("🔍 Verifying package installation...")
     c.run(
         f'uv run --with {NAME} --refresh-package {NAME} --no-project -- python -c "import {NAME}"',
-        pty=True,
+        pty=PTY,
     )
     logger.info("🚀 Publishing to PyPI...")
-    c.run("uv publish --token ${PYPI_TOKEN}", pty=True)
+    # Read the token in Python rather than relying on shell env-var expansion
+    # (`${VAR}` is bash-only; cmd.exe needs `%VAR%`, PowerShell needs `$env:VAR`).
+    token = os.environ["PYPI_TOKEN"]
+    c.run(f"uv publish --token {token}", pty=PTY, echo=False)
     logger.info("✅ Package published successfully")
 
 
@@ -371,9 +383,9 @@ def publish_doc_dev(c: Context) -> None:
     r"""Publish development (e.g. unstable) docs."""
     logger.info("📚 Publishing development documentation...")
     logger.info("🗑️  Deleting previous 'main' version if it exists...")
-    c.run("mike delete --config-file docs/mkdocs.yml main", pty=True, warn=True)
+    c.run("mike delete --config-file docs/mkdocs.yml main", pty=PTY, warn=True)
     logger.info("🚀 Deploying 'main' and 'dev' aliases...")
-    c.run("mike deploy --config-file docs/mkdocs.yml --push --update-aliases main dev", pty=True)
+    c.run("mike deploy --config-file docs/mkdocs.yml --push --update-aliases main dev", pty=PTY)
     logger.info("✅ Development documentation published")
 
 
@@ -395,11 +407,11 @@ def publish_doc_latest(c: Context) -> None:
         logger.warning("⚠️  No version tag found, using default: 0.0")
 
     logger.info(f"🗑️  Deleting previous '{tag}' version if it exists...")
-    c.run(f"mike delete --config-file docs/mkdocs.yml {tag}", pty=True, warn=True)
+    c.run(f"mike delete --config-file docs/mkdocs.yml {tag}", pty=PTY, warn=True)
     logger.info(f"🚀 Deploying '{tag}' and 'latest' aliases...")
     c.run(
-        f"mike deploy --config-file docs/mkdocs.yml --push --update-aliases {tag} latest", pty=True
+        f"mike deploy --config-file docs/mkdocs.yml --push --update-aliases {tag} latest", pty=PTY
     )
     logger.info("🎯 Setting 'latest' as default...")
-    c.run("mike set-default --config-file docs/mkdocs.yml --push --allow-empty latest", pty=True)
+    c.run("mike set-default --config-file docs/mkdocs.yml --push --allow-empty latest", pty=PTY)
     logger.info("✅ Latest documentation published")
