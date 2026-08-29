@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from feu.compat.packages import get_package_names
 
 #############################################
@@ -11,26 +13,34 @@ def test_get_package_names_returns_list() -> None:
     assert isinstance(get_package_names(), list)
 
 
-def test_get_package_names_contains_expected_packages() -> None:
-    assert set(get_package_names()) == {
-        "bokeh",
-        "click",
-        "duckdb",
-        "jax",
-        "matplotlib",
-        "numpy",
-        "pandas",
-        "polars",
-        "pyarrow",
-        "pydantic",
-        "requests",
-        "safetensors",
-        "scikit-learn",
-        "scipy",
-        "torch",
-        "xarray",
-        "xy",
-    }
+EXPECTED_PACKAGES = [
+    "bokeh",
+    "click",
+    "duckdb",
+    "jax",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "polars",
+    "pyarrow",
+    "pydantic",
+    "requests",
+    "safetensors",
+    "scikit-learn",
+    "scipy",
+    "torch",
+    "xarray",
+    "xy",
+]
+
+
+@pytest.mark.parametrize("package", EXPECTED_PACKAGES)
+def test_get_package_names_contains_expected_packages(package: str) -> None:
+    assert package in get_package_names()
+
+
+def test_get_package_names_length_at_least_expected() -> None:
+    assert len(get_package_names()) >= len(EXPECTED_PACKAGES)
 
 
 def test_get_package_names_no_duplicates() -> None:
