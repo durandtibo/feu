@@ -13,6 +13,7 @@ def test_get_package_names_returns_list() -> None:
 
 def test_get_package_names_contains_expected_packages() -> None:
     assert set(get_package_names()) == {
+        "bokeh",
         "click",
         "duckdb",
         "jax",
@@ -28,6 +29,7 @@ def test_get_package_names_contains_expected_packages() -> None:
         "scipy",
         "torch",
         "xarray",
+        "xy",
     }
 
 
