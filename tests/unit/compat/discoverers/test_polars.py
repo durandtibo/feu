@@ -132,6 +132,33 @@ def test_discover_mixes_platform_and_pure_python_ranges() -> None:
     assert compat == {linux_311: [VersionRange("0.13.4", None)]}
 
 
+@patch(
+    f"{MODULE}.fetch_pypi_pinned_dependency_version",
+    _fetch_pin({"1.36.1": "1.36.1", "1.37.0": "1.37.0"}),
+)
+@patch(
+    f"{MODULE}.fetch_pypi_wheel_filenames",
+    _fetch_wheels(
+        polars_wheels={
+            "1.36.1": ("polars-1.36.1-py3-none-any.whl",),
+            "1.37.0": ("polars-1.37.0-py3-none-any.whl",),
+        },
+        runtime_wheels={
+            "1.36.1": (
+                "polars_runtime_32-1.36.1-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+            ),
+            "1.37.0": (
+                "polars_runtime_32-1.37.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+            ),
+        },
+    ),
+)
+def test_discover_reuses_cached_runtime_tags_across_pure_python_versions() -> None:
+    linux_311 = Target(python_version="3.11", os="linux", arch="x86_64")
+    compat = PolarsCompatDiscoverer().discover("polars", targets=(linux_311,))
+    assert compat == {linux_311: [VersionRange("1.36.1", None)]}
+
+
 @patch(f"{MODULE}.fetch_pypi_pinned_dependency_version", _fetch_pin({}))
 @patch(f"{MODULE}.fetch_pypi_wheel_filenames", _fetch_wheels(polars_wheels={}, runtime_wheels={}))
 def test_discover_no_versions() -> None:
