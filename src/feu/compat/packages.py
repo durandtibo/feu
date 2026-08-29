@@ -24,6 +24,7 @@ def get_package_names() -> list[str]:
         ```
     """
     return [
+        "bokeh",
         "click",
         "duckdb",
         "jax",
@@ -39,4 +40,5 @@ def get_package_names() -> list[str]:
         "scipy",
         "torch",
         "xarray",
+        "xy",
     ]
