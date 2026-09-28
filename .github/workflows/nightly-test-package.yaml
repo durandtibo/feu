@@ -1,4 +1,8 @@
-name: Test Package
+# Reusable workflow for testing the installed package.
+# Tests package installation from PyPI and validates basic functionality.
+# Used to test stable releases, pre-releases, and different installation configurations.
+
+name: PyPI Package Install Test
 on:
   workflow_call:
     inputs:
@@ -45,22 +49,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
+      # Install uv package manager
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: true
-
+      # Install package from PyPI using custom install command
       - name: Install package
         run: |
           ${{ inputs.install-cmd }}
-
+      # Display dependency tree
       - name: Show dependency tree
         shell: bash
         run: |
           uv pip tree --show-version-specifiers
-
+      # Run basic package checks (imports, version, etc.)
       - name: Run some checks
         run: |
           python tests/package_checks.py

@@ -1,8 +1,12 @@
+# Compatibility verification workflow.
+# Installs every compatible package version combination (per Python version
+# and OS) recorded in feu's compatibility data, to catch drift between the
+# recorded constraints and what actually installs.
+
 name: Verify Compatibility
 on:
   schedule:
     - cron: "0 6 * * 3" # run every Wednesday at 6:00 AM UTC
-  workflow_call:
   workflow_dispatch: # to trigger manually
 
 permissions:

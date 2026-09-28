@@ -1,4 +1,8 @@
-name: Tests
+# Comprehensive test suite workflow.
+# Runs unit and integration tests across multiple Python versions and operating systems.
+# Tests both with all dependencies and with minimal dependencies.
+
+name: Unit & Integration Tests
 on:
   workflow_call:
   workflow_dispatch: # to trigger manually
@@ -7,6 +11,7 @@ permissions:
   contents: read
 
 jobs:
+  # Test with all dependencies across multiple Python versions and operating systems
   all:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
@@ -36,7 +41,6 @@ jobs:
           ]
         python-version:
           ["3.14", "3.14t", "3.13", "3.13t", "3.12", "3.11", "3.10"]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -58,6 +62,7 @@ jobs:
         run: |
           inv integration-test --cov
 
+  # Test with minimal dependencies to ensure optional dependencies are truly optional
   min:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
@@ -87,8 +92,8 @@ jobs:
           ]
         python-version:
           ["3.14", "3.14t", "3.13", "3.13t", "3.12", "3.11", "3.10"]
-
     steps:
+      # Install only required dependencies, not optional ones
       - name: Checkout
         uses: actions/checkout@v7
         with:

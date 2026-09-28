@@ -1,4 +1,9 @@
-name: Test - Dependencies
+# Dependency compatibility testing workflow.
+# Tests the package with different versions of its required and optional
+# dependencies. Ensures compatibility across supported dependency version
+# ranges.
+
+name: Dependency Compatibility (Source)
 on:
   workflow_call:
   workflow_dispatch: # to trigger manually
@@ -7,19 +12,24 @@ permissions:
   contents: read
 
 jobs:
+  # Get the package versions to test from dev/config/package_versions.json.
   get-versions:
-    uses: ./.github/workflows/get-versions.yaml
+    uses: ./.github/workflows/lib-get-package-versions.yaml
+
+  #########################
+  #     Dependencies      #
+  #########################
 
   packaging:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: packaging
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).packaging) }}
 
   tomli:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: tomli
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).tomli) }}
@@ -30,35 +40,35 @@ jobs:
 
   click:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: click
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).click) }}
 
   gitpython:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: gitpython
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).gitpython) }}
 
   requests:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: requests
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).requests) }}
 
   rich:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: rich
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).rich) }}
 
   urllib3:
     needs: get-versions
-    uses: ./.github/workflows/test-code-dep.yaml
+    uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
       package-name: urllib3
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).urllib3) }}

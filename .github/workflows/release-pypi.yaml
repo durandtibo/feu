@@ -1,9 +1,17 @@
-name: Publish PyPI package
+# PyPI package publishing workflow.
+# Builds and publishes the package to PyPI when a new version is released.
+# Triggered by version tags or can be run manually.
+
+name: Publish PyPI Package
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual trigger
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*" # Trigger on version tags (e.g., v1.0.0)
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
