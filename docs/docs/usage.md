@@ -113,15 +113,11 @@ registry.register(
 )
 
 # Get the configuration for a package
-config = registry.get_config(
-    pkg_name="my_package", target=Target(python_version="3.11")
-)
+config = registry.get_config(pkg_name="my_package", target=Target(python_version="3.11"))
 print(config)  # [VersionRange(min='1.2.0', max='2.0.0')]
 
 # Get version ranges as Version objects
-ranges = registry.get_version_ranges(
-    pkg_name="numpy", target=Target(python_version="3.11")
-)
+ranges = registry.get_version_ranges(pkg_name="numpy", target=Target(python_version="3.11"))
 for min_version, max_version in ranges:
     print(f"Min: {min_version}, Max: {max_version}")
 ```
