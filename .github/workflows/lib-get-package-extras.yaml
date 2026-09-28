@@ -51,10 +51,10 @@ jobs:
       extras: ${{ steps.extras.outputs.extras }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
 
       - name: Get package extras
         id: extras
-        uses: durandtibo/extract-pyproject-metadata-action@v0.2
+        uses: durandtibo/extract-pyproject-metadata-action@4661b78698e6ceb7e04cf60bbdd52addf85a2889 # ratchet:durandtibo/extract-pyproject-metadata-action@v0.2
         with:
           extra-values: ${{ inputs.extra-values }}
