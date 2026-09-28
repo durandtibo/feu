@@ -63,6 +63,7 @@ make setup-venv
 ```
 
 This command automatically:
+
 1. Updates `uv` to the latest version
 2. Creates a Python 3.14 virtual environment
 3. Installs `invoke` task runner

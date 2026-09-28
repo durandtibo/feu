@@ -121,6 +121,7 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 ## Pull Request Process
 
 1. **Create a new branch** for your feature or bugfix:
+
    ```bash
    git checkout -b feature/my-new-feature
    ```
@@ -130,6 +131,7 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 3. **Write or update tests** to cover your changes
 
 4. **Run the test suite** and ensure all tests pass:
+
    ```bash
    inv unit-test --cov
    ```
@@ -137,11 +139,13 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 5. **Update documentation** if you've changed APIs or added features
 
 6. **Commit your changes** with clear, descriptive commit messages:
+
    ```bash
    git commit -m "Add feature: description of what you added"
    ```
 
 7. **Push to your fork**:
+
    ```bash
    git push origin feature/my-new-feature
    ```
@@ -229,7 +233,6 @@ Use absolute imports and separate groups with blank lines.
 - Use descriptive test names that explain what is being tested
 - Include both positive and negative test cases
 - Test edge cases and error conditions
-
 
 ### Test Coverage
 

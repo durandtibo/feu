@@ -91,6 +91,7 @@ python -m feu find-closest-version \
 ```
 
 Output:
+
 ```
 2.0.2
 ```
@@ -105,6 +106,7 @@ python -m feu find-closest-version \
 ```
 
 Output:
+
 ```
 1.23.2
 ```
@@ -150,6 +152,7 @@ python -m feu check-valid-version \
 ```
 
 Output:
+
 ```
 True
 ```
@@ -164,6 +167,7 @@ python -m feu check-valid-version \
 ```
 
 Output:
+
 ```
 False
 ```
@@ -240,7 +244,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
