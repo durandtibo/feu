@@ -228,8 +228,8 @@ def test_http_feature():
     pass
 ```
 
-Each mark has an `..._available` variant (skips the test if the dependency is *not* available) and
-an `..._not_available` variant (skips the test if the dependency *is* available). Marks are
+Each mark has an `..._available` variant (skips the test if the dependency is _not_ available) and
+an `..._not_available` variant (skips the test if the dependency _is_ available). Marks are
 provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `pipx`, `polars`,
 `pyarrow`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `urllib3`, `uv`, and `xarray`.
 

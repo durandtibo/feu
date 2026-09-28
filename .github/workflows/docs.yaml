@@ -1,7 +1,7 @@
 name: Documentation (stable)
 on:
   workflow_call:
-  workflow_dispatch:  # to trigger manually
+  workflow_dispatch: # to trigger manually
   push:
     tags:
       - "v*.*.*"
@@ -21,7 +21,7 @@ jobs:
       - name: Setup python environment
         uses: durandtibo/setup-venv-uv-action@v0.1.0
         with:
-          install-args: '--docs-deps'
+          install-args: "--docs-deps"
 
       - name: Setup doc deploy
         env:

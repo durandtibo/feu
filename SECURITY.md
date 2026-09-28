@@ -41,6 +41,7 @@ Please include the following information in your report:
 When using `feu`, we recommend following these best practices:
 
 1. **Keep dependencies updated**: Regularly update `feu` and its dependencies to get the latest security patches.
+
    ```bash
    pip install --upgrade feu
    ```
