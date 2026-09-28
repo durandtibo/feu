@@ -25,13 +25,13 @@ jobs:
 
       - name: Run unit tests
         run: |
-          inv unit-test --cov
+          inv test.unit --cov
 
       - name: Run integration tests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          inv integration-test --cov
+          inv test.integration --cov
 
       # Upload coverage from this dedicated job (only for the main
       # repository, to avoid spam from forks).

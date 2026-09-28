@@ -23,11 +23,11 @@ jobs:
 
       - name: Check python formatting
         run: |
-          inv check-format
+          inv format.check-python
 
       - name: Lint python scripts
         run: |
-          inv check-lint
+          inv lint.check-python
 
   shell:
     runs-on: ubuntu-latest
