@@ -1,4 +1,4 @@
-name: Test Package with Extras
+name: PyPI Package Extras Install Test
 on:
   workflow_call:
     inputs:
@@ -27,21 +27,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: true
-
       - name: Install package
         run: |
           uv pip install ${{ inputs.install-args }} "feu[${{ matrix.extra }}]"
-
+      # Display dependency tree
       - name: Show dependency tree
         run: |
           uv pip tree --show-version-specifiers
-
+      # Run basic package checks
       - name: Run some checks
         run: |
           python tests/package_checks.py

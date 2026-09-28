@@ -1,12 +1,13 @@
+# Workflow validation workflow.
+# Verifies GitHub Actions workflow files are valid and follow best practices.
+
 name: Verify Workflows
 
 on:
   pull_request:
-    paths:
-      - ".github/workflows/*" # Trigger on changes to workflow files
   push:
-    paths:
-      - ".github/workflows/*" # Trigger on changes to workflow files
+    branches:
+      - main
   workflow_dispatch: # to trigger manually
 
 permissions:

@@ -1,4 +1,8 @@
-name: pre-commit
+# Pre-commit hooks validation workflow.
+# Runs all configured pre-commit hooks to validate code quality.
+# Checks formatting, linting, and other code quality rules.
+
+name: Pre-commit
 on:
   workflow_call:
   workflow_dispatch: # to trigger manually
@@ -7,17 +11,20 @@ permissions:
   contents: read
 
 jobs:
-  format:
+  # Run pre-commit hooks to validate code quality
+  pre-commit:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # Set up Python (pre-commit action will install hooks automatically)
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.14"
 
+      # Run all pre-commit hooks on changed files
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
