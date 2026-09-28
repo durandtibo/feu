@@ -37,16 +37,16 @@ Run the test suite to ensure everything works:
 
 ```bash
 # Run the full test suite (unit + integration + functional) with coverage
-inv all-test --cov
+inv test.all --cov
 
 # Run only unit tests
-inv unit-test --cov
+inv test.unit --cov
 
 # Run integration tests
-inv integration-test
+inv test.integration
 
 # Run functional tests
-inv functional-test
+inv test.functional
 ```
 
 ### Code Quality
@@ -59,7 +59,7 @@ We use `black` for code formatting:
 
 ```bash
 # Check formatting
-inv check-format
+inv format.check-python
 ```
 
 #### Linting
@@ -68,7 +68,7 @@ We use `ruff` for linting:
 
 ```bash
 # Check linting
-inv check-lint
+inv lint.check-python
 ```
 
 #### Pre-commit Hooks
@@ -85,7 +85,7 @@ pre-commit run --all-files
 We follow Google-style docstrings. Run docformatter to ensure consistency:
 
 ```bash
-inv docformat
+inv format.fix-docstrings
 ```
 
 ### Documentation
@@ -104,9 +104,9 @@ mike serve
 
 # Deploy documentation with mike (for maintainers)
 # Development version:
-inv publish-doc-dev
+inv doc.publish-dev
 # Stable version:
-inv publish-doc-latest
+inv doc.publish-latest
 ```
 
 Visit `http://127.0.0.1:8000` to view the documentation locally.
@@ -133,7 +133,7 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 4. **Run the test suite** and ensure all tests pass:
 
    ```bash
-   inv unit-test --cov
+   inv test.unit --cov
    ```
 
 5. **Update documentation** if you've changed APIs or added features
@@ -159,8 +159,8 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 
 Before submitting, ensure your PR:
 
-- [ ] Passes all tests (`inv unit-test --cov`)
-- [ ] Follows code style guidelines (`inv check-format` and `inv check-lint`)
+- [ ] Passes all tests (`inv test.unit --cov`)
+- [ ] Follows code style guidelines (`inv format.check-python` and `inv lint.check-python`)
 - [ ] Includes tests for new functionality
 - [ ] Updates documentation as needed
 - [ ] Has a clear description of changes

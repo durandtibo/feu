@@ -85,5 +85,5 @@ uv sync --all-extras --group dev --group docs
 After installation, you can verify everything is working by running the tests:
 
 ```shell
-inv unit-test --cov
+inv test.unit --cov
 ```
