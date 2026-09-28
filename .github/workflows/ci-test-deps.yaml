@@ -6,69 +6,36 @@
 name: Dependency Compatibility (Source)
 on:
   workflow_call:
-  workflow_dispatch: # to trigger manually
+    inputs:
+      test-matrix:
+        description: "JSON test matrix from lib-get-test-matrix.yaml, loaded once by the caller"
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
-  # Get the package versions to test from dev/config/package_versions.json.
+  # Get the package names and their version bounds from
+  # dev/config/package_versions.json. Package names are used instead of
+  # pyproject.toml's extras names, since feu's extras don't map 1:1 to
+  # package names (e.g. the "requests" extra installs both "requests" and
+  # "urllib3", "cli" installs "click", "git" installs "gitpython").
   get-versions:
     uses: ./.github/workflows/lib-get-package-versions.yaml
 
-  #########################
-  #     Dependencies      #
-  #########################
-
-  packaging:
+  # One job per dependency (required and optional alike), driven by
+  # get-versions instead of a hardcoded list, so a new dependency only needs
+  # to be added to dev/config/package_versions.json (kept up to date by
+  # bot-generate-package-versions.yaml).
+  test-dep:
     needs: get-versions
+    strategy:
+      fail-fast: false
+      matrix:
+        package-name: ${{ fromJson(needs.get-versions.outputs.package_names) }}
     uses: ./.github/workflows/ci-test-code-dep.yaml
     with:
-      package-name: packaging
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).packaging) }}
-
-  tomli:
-    needs: get-versions
-    uses: ./.github/workflows/ci-test-code-dep.yaml
-    with:
-      package-name: tomli
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).tomli) }}
-
-  #################################
-  #     Optional dependencies     #
-  #################################
-
-  click:
-    needs: get-versions
-    uses: ./.github/workflows/ci-test-code-dep.yaml
-    with:
-      package-name: click
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).click) }}
-
-  gitpython:
-    needs: get-versions
-    uses: ./.github/workflows/ci-test-code-dep.yaml
-    with:
-      package-name: gitpython
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).gitpython) }}
-
-  requests:
-    needs: get-versions
-    uses: ./.github/workflows/ci-test-code-dep.yaml
-    with:
-      package-name: requests
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).requests) }}
-
-  rich:
-    needs: get-versions
-    uses: ./.github/workflows/ci-test-code-dep.yaml
-    with:
-      package-name: rich
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).rich) }}
-
-  urllib3:
-    needs: get-versions
-    uses: ./.github/workflows/ci-test-code-dep.yaml
-    with:
-      package-name: urllib3
-      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions).urllib3) }}
+      package-name: ${{ matrix.package-name }}
+      package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions)[matrix.package-name]) }}
+      test-matrix: ${{ inputs.test-matrix }}
