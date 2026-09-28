@@ -1,0 +1,80 @@
+# Comprehensive test suite workflow.
+# Runs unit and integration tests across multiple Python versions and operating systems.
+# Tests both with all dependencies and with minimal dependencies.
+
+name: Unit & Integration Tests
+on:
+  workflow_call:
+    inputs:
+      test-matrix:
+        description: "JSON test matrix from lib-get-test-matrix.yaml, loaded once by the caller"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  # Test with all dependencies across multiple Python versions and operating systems
+  all:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: ${{ fromJson(inputs.test-matrix).os_matrix }}
+        python-version: ${{ fromJson(inputs.test-matrix).python_versions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup python environment
+        uses: durandtibo/setup-venv-uv-action@v0.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run unit tests
+        run: |
+          inv unit-test --cov
+
+      - name: Run integration tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          inv integration-test --cov
+
+  # Test with minimal dependencies to ensure optional dependencies are truly optional
+  min:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: ${{ fromJson(inputs.test-matrix).os_matrix }}
+        python-version: ${{ fromJson(inputs.test-matrix).python_versions }}
+    steps:
+      # Install only required dependencies, not optional ones
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup python environment
+        uses: durandtibo/setup-venv-uv-action@v0.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          install-args: "--no-optional-deps"
+
+      - name: Run unit tests
+        run: |
+          inv unit-test --cov
+
+      - name: Run integration tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          inv integration-test --cov

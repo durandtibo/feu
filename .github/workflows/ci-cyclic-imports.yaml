@@ -1,3 +1,7 @@
+# Cyclic imports check.
+# Imports every feu subpackage in isolation to catch circular-import
+# regressions that only surface once a submodule is imported directly.
+
 name: Cyclic Imports
 on:
   workflow_call:
@@ -16,7 +20,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@v0.1.0
+        uses: durandtibo/setup-venv-uv-action@v0.2.0
 
       - name: check feu
         run: |

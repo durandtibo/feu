@@ -1,3 +1,16 @@
+# Main CI workflow that orchestrates all quality checks and tests.
+# Runs on pull requests, pushes to main, a nightly schedule, and manual dispatch.
+# Validates code quality, runs tests, and checks dependencies.
+#
+# Deliberately NOT called from here, each standalone with its own trigger:
+#   - ci-verify-workflows.yaml: lints .github/workflows/* itself, so it
+#     triggers on every PR/push instead of being gated behind this workflow.
+#
+# The individual check jobs below call out to per-check reusable workflows
+# (ci-build.yaml, ci-format.yaml, ...) instead of inlining their steps here,
+# so each check can still be run/tested on its own (workflow_dispatch) and to
+# keep this file short.
+
 name: CI
 on:
   pull_request:
@@ -6,29 +19,62 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "10 9 * * *" # Run nightly at 9:10 AM UTC to catch issues from external changes
   workflow_dispatch: # to trigger manually
 
 permissions:
   contents: read
 
 jobs:
+  # Load the shared python-version/OS matrix once, and pass it down to every
+  # job below that needs it.
+  get-matrix:
+    uses: ./.github/workflows/lib-get-test-matrix.yaml
+
+  # Validate package can be built and installed correctly
   build:
-    uses: ./.github/workflows/build.yaml
+    needs: get-matrix
+    uses: ./.github/workflows/ci-build.yaml
+    with:
+      test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
+
+  # Run coverage-enabled unit and integration tests, uploaded to Codecov
   coverage:
-    uses: ./.github/workflows/coverage.yaml
+    uses: ./.github/workflows/ci-coverage.yaml
     secrets: inherit
+
+  # Check for circular import dependencies
   cyclic-imports:
-    uses: ./.github/workflows/cyclic-imports.yaml
+    uses: ./.github/workflows/ci-cyclic-imports.yaml
+
+  # Run doctests on code examples
   doctest:
-    uses: ./.github/workflows/doctest.yaml
+    uses: ./.github/workflows/ci-doctest.yaml
     secrets: inherit
+
+  # Verify code formatting and linting
   format:
-    uses: ./.github/workflows/format.yaml
+    uses: ./.github/workflows/ci-format.yaml
+
+  # Check type annotations with pyright
   types:
-    uses: ./.github/workflows/type-checking.yaml
+    uses: ./.github/workflows/ci-type-checking.yaml
+
+  # Run pre-commit hooks for code quality
   pre-commit:
-    uses: ./.github/workflows/pre-commit.yaml
+    uses: ./.github/workflows/ci-pre-commit.yaml
+
+  # Run unit and integration tests across multiple Python versions and OS
   test:
-    uses: ./.github/workflows/test.yaml
+    needs: get-matrix
+    uses: ./.github/workflows/ci-test.yaml
+    with:
+      test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
+
+  # Test compatibility with different dependency versions
   test-deps:
-    uses: ./.github/workflows/test-deps.yaml
+    needs: get-matrix
+    uses: ./.github/workflows/ci-test-deps.yaml
+    with:
+      test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}

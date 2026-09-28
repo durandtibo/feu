@@ -1,4 +1,4 @@
-name: Get Versions
+name: Get Package Versions
 
 # This reusable workflow reads package version configuration from a JSON file
 # and exposes it as an output for use in other workflows.
@@ -6,7 +6,7 @@ name: Get Versions
 # Usage:
 #   jobs:
 #     get-versions:
-#       uses: ./.github/workflows/get-versions.yaml
+#       uses: ./.github/workflows/lib-get-package-versions.yaml
 #
 #     use-versions:
 #       needs: get-versions
@@ -21,6 +21,9 @@ on:
       package_versions:
         description: "JSON string containing all package versions from dev/config/package_versions.json"
         value: ${{ jobs.get-versions.outputs.package_versions }}
+      package_names:
+        description: "JSON array of package names (the keys of dev/config/package_versions.json)"
+        value: ${{ jobs.get-versions.outputs.package_names }}
 
   workflow_dispatch: # Allows manual triggering for testing purposes
 
@@ -33,6 +36,7 @@ jobs:
     timeout-minutes: 2
     outputs:
       package_versions: ${{ steps.read-json.outputs.json-content }}
+      package_names: ${{ steps.package-names.outputs.package_names }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -47,3 +51,16 @@ jobs:
         run: |
           echo "📦 Package versions loaded successfully:"
           echo '${{ steps.read-json.outputs.json-content }}' | jq '.'
+
+      # Package names are not the same as pyproject.toml's extras names (e.g.
+      # feu's "requests" extra installs both the "requests" and "urllib3"
+      # packages, and its "cli"/"git" extras install "click"/"gitpython"), so
+      # this list is derived from the JSON keys instead of
+      # lib-get-package-extras.yaml.
+      - name: List package names
+        id: package-names
+        env:
+          JSON_CONTENT: ${{ steps.read-json.outputs.json-content }}
+        run: |
+          package_names=$(echo "$JSON_CONTENT" | jq -c 'keys')
+          echo "package_names=$package_names" >> "$GITHUB_OUTPUT"

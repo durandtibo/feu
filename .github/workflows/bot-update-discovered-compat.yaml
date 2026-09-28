@@ -1,36 +1,45 @@
+# Discovered compatibility update workflow.
+# Regenerates the automatically discovered package/Python-version
+# compatibility data (feu.compat.discovered) weekly.
+# Creates a pull request with the updated constraints after validation.
+
 name: Update Discovered Compatibility
 
 on:
   schedule:
-    - cron: "0 6 * * 5" # run every Friday at 6:00 AM UTC
-  workflow_call:
+    - cron: "0 6 * * 5" # Run every Friday at 6:00 AM UTC
   workflow_dispatch: # to trigger manually
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   update-discovered-compat:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@v0.1.0
+        uses: durandtibo/setup-venv-uv-action@v0.2.0
 
+      # Regenerate the discovered package/Python-version compatibility data
       - name: Discover package compatibility
         run: |
           python dev/generate_discovered_compat.py
 
+      # Validate the regenerated data with pre-commit
       - name: Run pre-commit
         run: |
           pre-commit run --all-files || pre-commit run --all-files
 
-      - uses: peter-evans/create-pull-request@v8
+      # Create a pull request with the updated constraints
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v8
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -38,4 +47,4 @@ jobs:
           title: Update discovered compatibility constraints
           commit-message: "Update discovered compatibility constraints"
           body: Update automatically discovered package/Python-version compatibility constraints.
-          author: ci-bot <${{secrets.CI_BOT_EMAIL}}>
+          author: ci-bot <${{ secrets.CI_BOT_EMAIL }}>

@@ -1,0 +1,26 @@
+# Cancel stale queued runs workflow.
+# Automatically cancels stale queued workflow runs to prevent resource waste
+# and reduce queue congestion. Runs hourly.
+
+name: Cancel Stale Queued Runs
+
+on:
+  schedule:
+    - cron: "0 * * * *" # runs every hour
+  workflow_dispatch: # optional, for manual triggering
+
+permissions: {}
+
+jobs:
+  cancel-stale-runs:
+    runs-on: ubuntu-slim
+    timeout-minutes: 2
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - uses: durandtibo/cancel-queued-runs-action@v1.9
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ github.repository }}

@@ -1,3 +1,7 @@
+# Code coverage workflow.
+# Runs the unit and integration test suites with coverage enabled and
+# uploads the report to Codecov.
+
 name: Code Coverage
 on:
   workflow_call:
@@ -17,7 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@v0.1.0
+        uses: durandtibo/setup-venv-uv-action@v0.2.0
 
       - name: Run unit tests
         run: |
@@ -29,6 +33,8 @@ jobs:
         run: |
           inv integration-test --cov
 
+      # Upload coverage from this dedicated job (only for the main
+      # repository, to avoid spam from forks).
       - name: Upload coverage to Codecov
         if: github.repository == 'durandtibo/feu' && (github.event_name == 'push' || github.event_name == 'pull_request')
         uses: codecov/codecov-action@v7

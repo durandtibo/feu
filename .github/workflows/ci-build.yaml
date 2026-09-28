@@ -5,13 +5,25 @@
 name: Build Tests
 on:
   workflow_call:
-  workflow_dispatch: # to trigger manually
+    inputs:
+      test-matrix:
+        description: "JSON test matrix from lib-get-test-matrix.yaml, loaded once by the caller"
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
+  # Load the extras from pyproject.toml's [project.optional-dependencies],
+  # plus "" for a baseline "no extra" build.
+  get-extras:
+    uses: ./.github/workflows/lib-get-package-extras.yaml
+    with:
+      extra-values: '[""]'
+
   build:
+    needs: get-extras
     runs-on: ubuntu-latest
     timeout-minutes: 2
     strategy:
@@ -19,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         dist-type: ["sdist", "wheel"]
-        package-extra: ["", "cli", "git", "requests"]
+        package-extra: ${{ fromJson(needs.get-extras.outputs.extras) }}
 
     steps:
       - name: Checkout
@@ -49,10 +61,19 @@ jobs:
       fail-fast: false
       matrix:
         dist-type: ["sdist", "wheel"]
+        # Test at least one full-extras build per supported Python version to
+        # catch version-specific build regressions (e.g. free-threaded 3.13t/3.14t).
+        python-version: ${{ fromJson(inputs.test-matrix).python_versions }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: true
 
       - name: Verify Build
         uses: durandtibo/verify-uv-build-action@v0.0.7
