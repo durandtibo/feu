@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from unittest.mock import Mock, patch
 
+import pytest
+
+pytest.importorskip("click")
+
 from click.testing import CliRunner
 
 from feu.__main__ import check_valid_version, find_closest_version, install
