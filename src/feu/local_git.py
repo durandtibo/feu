@@ -37,40 +37,65 @@ def get_tags() -> list[git.TagReference]:
     return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
 
-def get_last_tag_name() -> str:
+def get_last_tag_name(raise_error: bool = True) -> str | None:
     r"""Get the name of the most recent tag in the current repository.
 
+    Args:
+        raise_error: If ``True``, a ``RuntimeError`` is raised when
+            no tag is found. If ``False``, ``None`` is returned
+            instead.
+
     Returns:
-        The tag name.
+        The tag name, or ``None`` if no tag was found and
+            ``raise_error=False``.
+
+    Raises:
+        RuntimeError: if no tag was found and ``raise_error=True``.
 
     Example:
         ```pycon
         >>> from feu.local_git import get_last_tag_name
         >>> tag = get_last_tag_name()
         >>> tag
+        >>> tag = get_last_tag_name(raise_error=False)
+        >>> tag
 
         ```
     """
     tags = get_tags()
     if not tags:
-        msg = "No tag was found"
-        raise RuntimeError(msg)
+        if raise_error:
+            msg = "No tag was found"
+            raise RuntimeError(msg)
+        return None
     return tags[-1].name
 
 
-def get_last_version_tag_name() -> str:
+def get_last_version_tag_name(raise_error: bool = True) -> str | None:
     r"""Get the name of the most recent version tag in the current
     repository.
 
     A version tag is a tag starting with ``v{number}*``.
 
+    Args:
+        raise_error: If ``True``, a ``RuntimeError`` is raised when
+            no version tag is found. If ``False``, ``None`` is
+            returned instead.
+
     Returns:
-        The tag name.
+        The tag name, or ``None`` if no version tag was found and
+            ``raise_error=False``.
+
+    Raises:
+        RuntimeError: if no version tag was found and
+            ``raise_error=True``.
 
     Example:
         ```pycon
         >>> from feu.local_git import get_last_version_tag_name
         >>> tag = get_last_version_tag_name()
+        >>> tag
+        >>> tag = get_last_version_tag_name(raise_error=False)
         >>> tag
 
         ```
@@ -83,5 +108,7 @@ def get_last_version_tag_name() -> str:
             Version(tag.name[1:])
             return tag.name
 
-    msg = "No tag was found"
-    raise RuntimeError(msg)
+    if raise_error:
+        msg = "No tag was found"
+        raise RuntimeError(msg)
+    return None
