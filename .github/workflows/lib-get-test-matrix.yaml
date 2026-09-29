@@ -54,6 +54,8 @@ jobs:
           echo "test_matrix=$test_matrix" >> "$GITHUB_OUTPUT"
 
       - name: Display test matrix
+        env:
+          JSON_CONTENT: ${{ steps.build-matrix.outputs.test_matrix }}
         run: |
           echo "🧪 Test matrix loaded successfully:"
-          echo '${{ steps.build-matrix.outputs.test_matrix }}' | jq '.'
+          echo "$JSON_CONTENT" | jq '.'

@@ -37,20 +37,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
 
-      - name: Install ShellCheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-
+      # make lint-shell/check-format-shell use `xargs -r`, so they no-op
+      # cleanly when the repo has no shell scripts, unlike the previous
+      # ludeeus/action-shellcheck-based setup which failed with "No files
+      # specified" in that case.
       - name: Check shell formatting
         run: |
-          echo "🔍 Running ShellCheck..."
-          shellcheck -- **/*.sh || exit 1
-
-      - name: Install shfmt
-        run: sudo snap install shfmt
+          make check-format-shell
 
       - name: Lint shell scripts
         run: |
-          echo "✨ Checking formatting using shfmt..."
-          shfmt -d -- **/*.sh
+          make lint-shell

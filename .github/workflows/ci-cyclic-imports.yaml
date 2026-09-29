@@ -13,7 +13,7 @@ permissions:
 jobs:
   cyclic-import:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
 
     steps:
       - name: Checkout
@@ -22,23 +22,6 @@ jobs:
       - name: Setup python environment
         uses: durandtibo/setup-venv-uv-action@269cae0b38051f39b2cfb10230687ba2b8093424 # ratchet:durandtibo/setup-venv-uv-action@v0.2.0
 
-      - name: check feu
+      - name: check modules
         run: |
-          python -c "import feu"
-
-      - name: check feu.install
-        run: |
-          python -c "from feu import install"
-          python -c "from feu.install import pip"
-
-      - name: check feu.github
-        run: |
-          python -c "from feu import github"
-
-      - name: check feu.utils
-        run: |
-          python -c "from feu import utils"
-
-      - name: check feu.version
-        run: |
-          python -c "from feu import version"
+          inv imports.check-cycles
