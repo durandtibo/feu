@@ -19,6 +19,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
+        with:
+          # Fetch tags (and full history so they are reachable) because
+          # the doctests use them.
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup python environment
         uses: durandtibo/setup-venv-uv-action@269cae0b38051f39b2cfb10230687ba2b8093424 # ratchet:durandtibo/setup-venv-uv-action@v0.2.0
