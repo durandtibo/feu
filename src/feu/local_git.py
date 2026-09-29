@@ -28,7 +28,6 @@ def get_tags() -> list[git.TagReference]:
         ```pycon
         >>> from feu.local_git import get_tags
         >>> tags = get_tags()
-        >>> tags
 
         ```
     """
@@ -47,7 +46,6 @@ def get_last_tag_name() -> str:
         ```pycon
         >>> from feu.local_git import get_last_tag_name
         >>> tag = get_last_tag_name()
-        >>> tag
 
         ```
     """
@@ -71,7 +69,6 @@ def get_last_version_tag_name() -> str:
         ```pycon
         >>> from feu.local_git import get_last_version_tag_name
         >>> tag = get_last_version_tag_name()
-        >>> tag
 
         ```
     """
