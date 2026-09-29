@@ -1,9 +1,8 @@
 # Main CI workflow that orchestrates all quality checks and tests.
 # Runs on pull requests, pushes to main, a nightly schedule, and manual dispatch.
 # Validates code quality, runs tests, and checks dependencies.
-# Coverage runs as its own ci-coverage.yaml job rather than riding on a cell
-# of ci-test.yaml's matrix, since feu's coverage run has no dependency
-# version/OS matrix to piggyback on.
+# Coverage is uploaded from the "all" job of ci-test.yaml rather than a
+# separate full test run.
 #
 # Deliberately NOT called from here, each standalone with its own trigger:
 #   - ci-verify-workflows.yaml: lints .github/workflows/* itself, so it
@@ -14,8 +13,8 @@
 # so each check can still be run/tested on its own (workflow_dispatch) and to
 # keep this file short. Job ids are load-bearing: main's branch protection
 # requires status checks derived from the job id here plus the job id in the
-# called workflow (e.g. "format / format", "pre-commit / pre-commit") - keep
-# both in sync if either is renamed.
+# called workflow (e.g. "format / format", "pre-commit / pre-commit",
+# "type-checking / type-checking") - keep both in sync if either is renamed.
 
 name: CI
 on:
@@ -45,11 +44,6 @@ jobs:
     with:
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
 
-  # Run coverage-enabled unit and integration tests, uploaded to Codecov
-  coverage:
-    uses: ./.github/workflows/ci-coverage.yaml
-    secrets: inherit
-
   # Check for circular import dependencies
   cyclic-imports:
     uses: ./.github/workflows/ci-cyclic-imports.yaml
@@ -64,17 +58,19 @@ jobs:
     uses: ./.github/workflows/ci-format.yaml
 
   # Check type annotations with pyright
-  types:
+  type-checking:
     uses: ./.github/workflows/ci-type-checking.yaml
 
   # Run pre-commit hooks for code quality
   pre-commit:
     uses: ./.github/workflows/ci-pre-commit.yaml
 
-  # Run unit and integration tests across multiple Python versions and OS
+  # Run unit and integration tests across multiple Python versions and OS.
+  # secrets: inherit is required so the "all" job can upload coverage to Codecov.
   test:
     needs: get-matrix
     uses: ./.github/workflows/ci-test.yaml
+    secrets: inherit
     with:
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
 
