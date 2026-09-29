@@ -48,9 +48,11 @@ jobs:
           file-path: dev/config/package_versions.json
 
       - name: Display package versions
+        env:
+          JSON_CONTENT: ${{ steps.read-json.outputs.json-content }}
         run: |
           echo "📦 Package versions loaded successfully:"
-          echo '${{ steps.read-json.outputs.json-content }}' | jq '.'
+          echo "$JSON_CONTENT" | jq '.'
 
       # Package names are not the same as pyproject.toml's extras names (e.g.
       # feu's "requests" extra installs both the "requests" and "urllib3"

@@ -7,19 +7,21 @@ on:
   workflow_call:
     inputs:
       mode:
-        description: "Which publish target: 'stable' or 'dev'"
+        description: "Which mike target to publish: 'stable' or 'dev'"
         required: true
         type: string
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
+    permissions:
+      contents: write # Required to push to gh-pages branch
 
     steps:
+      # Install dependencies including documentation tools
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
 
@@ -30,12 +32,9 @@ jobs:
 
       # Configure git and fetch gh-pages branch for mike
       - name: Setup doc deploy
-        env:
-          CI_BOT_EMAIL: ${{ secrets.CI_BOT_EMAIL }}
-        run: |
-          git config --global user.name ci-docs-bot
-          git config --global user.email "$CI_BOT_EMAIL"
-          git fetch origin gh-pages --depth=1 --tags
+        uses: ./.github/actions/setup-doc-deploy
+        with:
+          ci-bot-email: ${{ secrets.CI_BOT_EMAIL }}
 
       # Build and deploy documentation for the requested mode
       - name: Build and deploy documentation

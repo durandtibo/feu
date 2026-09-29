@@ -22,10 +22,15 @@ jobs:
     with:
       extra-values: '[""]'
 
+  # Default Python version x every extra (incl. no-extra baseline): catches
+  # per-extra build/packaging issues. Kept separate from build-all below,
+  # which instead varies Python version at a fixed extra=all - merging the
+  # two into one matrix would need an `include:` fan-out plus conditional
+  # steps for little gain, since the two jobs vary orthogonal axes.
   build:
     needs: get-extras
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -53,6 +58,23 @@ jobs:
           python tests/package_checks.py
           echo "✅ Package checks passed"
 
+      - name: Check optional packages installation
+        if: ${{ matrix.package-extra != '' }}
+        shell: bash
+        env:
+          PACKAGE_EXTRA: ${{ matrix.package-extra }}
+        run: |
+          set -euo pipefail
+          echo "🔍 Verifying if $PACKAGE_EXTRA is installed..."
+
+          if ! uv pip list | grep -qE "^${PACKAGE_EXTRA}\s"; then
+            echo "❌ Error: Package '$PACKAGE_EXTRA' not found in installed packages"
+            echo "Installed packages:"
+            uv pip list
+            exit 1
+          fi
+          echo "✅ Package '$PACKAGE_EXTRA' is installed"
+
   build-all:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -70,7 +92,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
 
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # ratchet:astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # ratchet:astral-sh/setup-uv@v10.2.0
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: true

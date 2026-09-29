@@ -1,5 +1,6 @@
 # Workflow validation workflow.
 # Verifies GitHub Actions workflow files are valid and follow best practices.
+# Triggers on changes to workflow files to catch issues early.
 
 name: Verify Workflows
 
@@ -16,7 +17,7 @@ permissions:
 jobs:
   verify-workflows:
     runs-on: ubuntu-slim
-    timeout-minutes: 2
+    timeout-minutes: 5
 
     steps:
       - name: Checkout

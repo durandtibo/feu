@@ -22,7 +22,7 @@ permissions:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 2
+    timeout-minutes: 5
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -35,20 +35,16 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
       # Install uv package manager
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # ratchet:astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # ratchet:astral-sh/setup-uv@v10.2.0
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: true
       # Install package from PyPI using custom install command
       - name: Install package
+        env:
+          INSTALL_CMD: ${{ inputs.install-cmd }}
         run: |
-          ${{ inputs.install-cmd }}
-      # Display dependency tree
-      - name: Show dependency tree
-        shell: bash
-        run: |
-          uv pip tree --show-version-specifiers
-      # Run basic package checks (imports, version, etc.)
-      - name: Run some checks
-        run: |
-          python tests/package_checks.py
+          $INSTALL_CMD
+      # Display dependency tree and run basic package checks (imports, version, etc.)
+      - name: Verify installed package
+        uses: ./.github/actions/verify-installed-package

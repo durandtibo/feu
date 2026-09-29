@@ -1,6 +1,9 @@
 # Main CI workflow that orchestrates all quality checks and tests.
 # Runs on pull requests, pushes to main, a nightly schedule, and manual dispatch.
 # Validates code quality, runs tests, and checks dependencies.
+# Coverage runs as its own ci-coverage.yaml job rather than riding on a cell
+# of ci-test.yaml's matrix, since feu's coverage run has no dependency
+# version/OS matrix to piggyback on.
 #
 # Deliberately NOT called from here, each standalone with its own trigger:
 #   - ci-verify-workflows.yaml: lints .github/workflows/* itself, so it
@@ -9,7 +12,10 @@
 # The individual check jobs below call out to per-check reusable workflows
 # (ci-build.yaml, ci-format.yaml, ...) instead of inlining their steps here,
 # so each check can still be run/tested on its own (workflow_dispatch) and to
-# keep this file short.
+# keep this file short. Job ids are load-bearing: main's branch protection
+# requires status checks derived from the job id here plus the job id in the
+# called workflow (e.g. "format / format", "pre-commit / pre-commit") - keep
+# both in sync if either is renamed.
 
 name: CI
 on:
@@ -27,8 +33,8 @@ permissions:
   contents: read
 
 jobs:
-  # Load the shared python-version/OS matrix once, and pass it down to every
-  # job below that needs it.
+  # Load the shared python-version/OS matrix from workflow-config-action once,
+  # and pass it down to every job below that needs it.
   get-matrix:
     uses: ./.github/workflows/lib-get-test-matrix.yaml
 
