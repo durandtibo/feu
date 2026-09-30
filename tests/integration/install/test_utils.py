@@ -21,14 +21,14 @@ def _reset_cache() -> None:
 
 @pytest.fixture(scope="module")
 def pkg_name() -> str:
-    return "mkdocs"
+    return "cowsay"
 
 
 @pytest.fixture(scope="module")
 def pkg_version(pkg_name: str) -> str:
     return find_closest_version(
         pkg_name=pkg_name,
-        pkg_version="1.6.1",
+        pkg_version="6.1",
         target=Target(python_version=get_python_major_minor()),
     )
 
