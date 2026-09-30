@@ -140,6 +140,11 @@ print(f"Last tag: {last_tag}")
 # Get the name of the most recent version tag (e.g. "v1.2.3")
 last_version_tag = get_last_version_tag_name()
 print(f"Last version tag: {last_version_tag}")
+
+# By default, a RuntimeError is raised if no tag is found.
+# Use raise_error=False to return None instead.
+last_tag = get_last_tag_name(raise_error=False)
+last_version_tag = get_last_version_tag_name(raise_error=False)
 ```
 
 ## Supported Packages

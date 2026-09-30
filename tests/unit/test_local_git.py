@@ -80,6 +80,12 @@ def test_get_last_tag_name_empty() -> None:
         get_last_tag_name()
 
 
+@git_available
+def test_get_last_tag_name_empty_no_raise() -> None:
+    with patch("feu.local_git.get_tags", list):
+        assert get_last_tag_name(raise_error=False) is None
+
+
 @patch("feu.imports.git.is_git_available", lambda: False)
 def test_get_last_tag_name_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
@@ -131,6 +137,31 @@ def test_get_last_version_tag_name_ignore_non_prefixed_numeric_tag() -> None:
 def test_get_last_version_tag_name_empty() -> None:
     with (
         patch("feu.local_git.get_tags", list),
+        pytest.raises(RuntimeError, match=r"No tag was found"),
+    ):
+        get_last_version_tag_name()
+
+
+@git_available
+def test_get_last_version_tag_name_empty_no_raise() -> None:
+    with patch("feu.local_git.get_tags", list):
+        assert get_last_version_tag_name(raise_error=False) is None
+
+
+@git_available
+def test_get_last_version_tag_name_no_version_tag_no_raise() -> None:
+    m1 = Mock()
+    m1.configure_mock(name="my_tag")
+    with patch("feu.local_git.get_tags", lambda: [m1]):
+        assert get_last_version_tag_name(raise_error=False) is None
+
+
+@git_available
+def test_get_last_version_tag_name_no_version_tag() -> None:
+    m1 = Mock()
+    m1.configure_mock(name="my_tag")
+    with (
+        patch("feu.local_git.get_tags", lambda: [m1]),
         pytest.raises(RuntimeError, match=r"No tag was found"),
     ):
         get_last_version_tag_name()
