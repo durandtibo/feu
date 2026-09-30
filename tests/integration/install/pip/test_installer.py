@@ -18,10 +18,10 @@ def _reset_cache() -> None:
 @pytest.fixture(scope="module")
 def package() -> PackageSpec:
     return PackageSpec(
-        name="mkdocs",
+        name="cowsay",
         version=find_closest_version(
-            pkg_name="mkdocs",
-            pkg_version="1.6.1",
+            pkg_name="cowsay",
+            pkg_version="6.1",
             target=Target(python_version=get_python_major_minor()),
         ),
     )
