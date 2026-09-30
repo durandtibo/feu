@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from packaging.version import InvalidVersion, Version
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
 
 
 def filter_every_n_versions(versions: Sequence[str], n: int) -> list[str]:
@@ -170,7 +170,7 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
     return stable_versions
 
 
-def filter_valid_versions(versions: Sequence[str]) -> list[str]:
+def filter_valid_versions(versions: Iterable[str]) -> list[str]:
     r"""Filter out invalid version strings based on PEP 440.
 
     A valid version is one that can be parsed by `packaging.version.Version`.
