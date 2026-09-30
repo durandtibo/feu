@@ -23,11 +23,9 @@ T311 = Target(python_version="3.11")
 
 @pytest.fixture(autouse=True)
 def _reset_default_registry() -> None:
-    if hasattr(get_default_registry, "_registry"):
-        del get_default_registry._registry
+    get_default_registry.cache_clear()
     yield
-    if hasattr(get_default_registry, "_registry"):
-        del get_default_registry._registry
+    get_default_registry.cache_clear()
 
 
 def test_get_default_registry_returns_compat_registry() -> None:

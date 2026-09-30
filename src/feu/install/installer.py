@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from typing import Self
+    from typing_extensions import Self
 
     from feu.utils.package import PackageSpec
 
