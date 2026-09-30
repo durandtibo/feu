@@ -39,7 +39,7 @@ def get_default_registry() -> CompatDiscovererRegistry:
         ```
     """
     if not hasattr(get_default_registry, "_registry"):
-        get_default_registry._registry = CompatDiscovererRegistry(
+        get_default_registry._registry = CompatDiscovererRegistry(  # ty: ignore[unresolved-attribute]
             {
                 "duckdb": DuckdbCompatDiscoverer(),
                 "jax": JaxCompatDiscoverer(),
@@ -47,7 +47,7 @@ def get_default_registry() -> CompatDiscovererRegistry:
                 "pydantic": PydanticCompatDiscoverer(),
             }
         )
-    return get_default_registry._registry
+    return get_default_registry._registry  # ty: ignore[unresolved-attribute]
 
 
 def register_discoverers(

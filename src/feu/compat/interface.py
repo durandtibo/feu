@@ -42,8 +42,8 @@ def get_default_registry() -> CompatRegistry:
     if not hasattr(get_default_registry, "_registry"):
         registry = CompatRegistry()
         register_discovered(registry)
-        get_default_registry._registry = registry
-    return get_default_registry._registry
+        get_default_registry._registry = registry  # ty: ignore[unresolved-attribute]
+    return get_default_registry._registry  # ty: ignore[unresolved-attribute]
 
 
 def register_compat(

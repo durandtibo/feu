@@ -134,7 +134,7 @@ def decorator_package_available(fn: F, condition: Callable[[], bool]) -> F:
             return None
         return fn(*args, **kwargs)
 
-    return inner
+    return inner  # ty: ignore[invalid-return-type]
 
 
 def raise_package_missing_error(package_name: str, install_cmd: str) -> NoReturn:
