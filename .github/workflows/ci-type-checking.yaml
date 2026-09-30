@@ -1,5 +1,5 @@
 # Type checking workflow.
-# Validates type annotations using pyright to ensure type safety.
+# Validates type annotations using ty to ensure type safety.
 # Helps catch type-related bugs before runtime.
 
 name: Type Checking
@@ -23,4 +23,4 @@ jobs:
 
       - name: Check types
         run: |
-          inv types.check
+          ty check

@@ -10,6 +10,7 @@ __all__ = [
     "register_compat",
 ]
 
+from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from feu.compat.discovered import register_discovered
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
     from feu.compat.target import Target
 
 
+@lru_cache(maxsize=1)
 def get_default_registry() -> CompatRegistry:
     r"""Return the default global compatibility registry.
 
@@ -39,11 +41,9 @@ def get_default_registry() -> CompatRegistry:
 
         ```
     """
-    if not hasattr(get_default_registry, "_registry"):
-        registry = CompatRegistry()
-        register_discovered(registry)
-        get_default_registry._registry = registry
-    return get_default_registry._registry
+    registry = CompatRegistry()
+    register_discovered(registry)
+    return registry
 
 
 def register_compat(
