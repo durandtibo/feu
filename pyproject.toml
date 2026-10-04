@@ -15,17 +15,15 @@ name = "feu"
 version = "0.8.4"
 description = "A lightweight Python library for managing packages and versions across different Python environments"
 readme = "README.md"
-authors = [
-    { name = "Thibaut Durand", email = "durand.tibo+gh@gmail.com" },
-]
+authors = [{ name = "Thibaut Durand", email = "durand.tibo+gh@gmail.com" }]
 keywords = [
-    "package",
-    "install",
-    "dependency",
-    "version",
-    "compatibility",
-    "package-manager",
-    "version-management",
+  "package",
+  "install",
+  "dependency",
+  "version",
+  "compatibility",
+  "package-manager",
+  "version-management",
 ]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
@@ -33,67 +31,64 @@ license-files = ["LICENSE"]
 dynamic = ["maintainers"]
 
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: Science/Research",
-    "Environment :: Console",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Typing :: Typed",
-    "Topic :: Scientific/Engineering",
-    "Topic :: Software Development :: Libraries",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: System :: Installation/Setup",
-    "Topic :: System :: Software Distribution",
-    "Topic :: Utilities",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Science/Research",
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: System :: Installation/Setup",
+  "Topic :: System :: Software Distribution",
+  "Topic :: Utilities",
 ]
 
 requires-python = ">=3.10"
 dependencies = [
-    "packaging >=21.0,<27.0",
-    "tomli>= 2.0,<3.0; python_version < '3.11'",
+  "packaging >=21.0,<27.0",
+  "tomli>= 2.0,<3.0; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
-cli = [ "click >=8.1,<9.0" ]
-git = [ "gitpython >=3.1.41,<4.0" ]
-requests = [
-    "requests >=2.30.0,<3.0",
-    "urllib3 >=2.0,<3.0",
-]
-rich = [ "rich>=14.0.0,<16.0" ]
+cli = ["click >=8.1,<9.0"]
+git = ["gitpython >=3.1.41,<4.0"]
+requests = ["requests >=2.30.0,<3.0", "urllib3 >=2.0,<3.0"]
+rich = ["rich>=14.0.0,<16.0"]
 
 [dependency-groups]
 dev = [
-    "coverage[toml]>=7.15,<8.0",
-    "docformatter>=1.7.8,<2.0",
-    "feu[all]>=0.8.3,<1.0",
-    "invoke>=3.0,<4.0",
-    "invoke-tasklib>=0.0.7,<1.0",
-    "pre-commit>=4.6,<5.0",
-    "pygments>=2.20,<3.0",
-    "pytest>=9.1,<10.0",
-    "pytest-cov>=7.1,<8.0",
-    "pytest-timeout>=2.4,<3.0",
-    "ruff>=0.16,<1.0",
-    "tomli>=2.0,<3.0",
-    "ty>=0.0.1",
-    "typing-extensions>=4.0,<5.0",
-    "xdoctest>=1.3,<2.0",
+  "coverage[toml]>=7.15,<8.0",
+  "docformatter>=1.7.8,<2.0",
+  "feu[all]>=0.8.3,<1.0",
+  "invoke>=3.0,<4.0",
+  "invoke-tasklib>=0.0.8,<1.0",
+  "pre-commit>=4.6,<5.0",
+  "pygments>=2.20,<3.0",
+  "pytest>=9.1,<10.0",
+  "pytest-cov>=7.1,<8.0",
+  "pytest-timeout>=2.4,<3.0",
+  "ruff>=0.16,<1.0",
+  "tomli>=2.0,<3.0",
+  "ty>=0.0.1",
+  "typing-extensions>=4.0,<5.0",
+  "xdoctest>=1.3,<2.0",
 ]
 
 docs = [
-    "mike >=2.2,<3.0",
-    "mkdocs-material >=9.7,<10.0",
-    "mkdocstrings[python]>=1.0,<2.0",
-    "mkdocs-include-markdown-plugin >=7.3,<8.0",
+  "mike >=2.2,<3.0",
+  "mkdocs-material >=9.7,<10.0",
+  "mkdocstrings[python]>=1.0,<2.0",
+  "mkdocs-include-markdown-plugin >=7.3,<8.0",
 ]
 
 [project.urls]
@@ -119,10 +114,7 @@ source = ["feu"]
 
 [tool.coverage.report]
 show_missing = true
-exclude_lines = [
-    "pragma: no cover",
-    "if TYPE_CHECKING:"
-]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.pytest.ini_options]
 minversion = "9.0"
@@ -143,133 +135,133 @@ syntax = "google"
 [tool.ruff]
 # List of rules: https://docs.astral.sh/ruff/rules/
 lint.select = [
-    "A", # builtins
-    "ANN", # annotations
-    "ARG", # flake8-unused-arguments
-    "B", # bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "D", # pydocstyle
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle (Error)
-    "EM", # flake8-errmsg
-    "EXE", # flake8-executable
-    "F", # pyflakes
-    "FA", # flake8-future-annotations
-    "FURB", # refurb
-    "I", # isort
-    "ICN", # flake8-import-conventions
-    "INP", # flake8-no-pep420
-    "ISC", # flake8-implicit-str-concat
-    "LOG", # logging
-    "N", # naming
-    "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
-    "PERF", # Perflint
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
-    "PL", # Pylint
-    "PT", # flake8-pytest-style
-    "PTH", # pathlib
-    "PYI", # flake8-pyi
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RSE", # flake8-raise
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "T20", # flake8-print
-    "TC", # flake8-type-checking
-    "TD", # flake8-todos
-    "TID", # flake8-tidy-imports
-    "TRY", # tryceratops
-    "UP", # pyupgrade
-    "W", # pycodestyle (Warning)
+  "A",    # builtins
+  "ANN",  # annotations
+  "ARG",  # flake8-unused-arguments
+  "B",    # bugbear
+  "BLE",  # flake8-blind-except
+  "C4",   # flake8-comprehensions
+  "D",    # pydocstyle
+  "DTZ",  # flake8-datetimez
+  "E",    # pycodestyle (Error)
+  "EM",   # flake8-errmsg
+  "EXE",  # flake8-executable
+  "F",    # pyflakes
+  "FA",   # flake8-future-annotations
+  "FURB", # refurb
+  "I",    # isort
+  "ICN",  # flake8-import-conventions
+  "INP",  # flake8-no-pep420
+  "ISC",  # flake8-implicit-str-concat
+  "LOG",  # logging
+  "N",    # naming
+  "NPY",  # NumPy-specific rules
+  "PD",   # pandas-vet
+  "PERF", # Perflint
+  "PGH",  # pygrep-hooks
+  "PIE",  # flake8-pie
+  "PL",   # Pylint
+  "PT",   # flake8-pytest-style
+  "PTH",  # pathlib
+  "PYI",  # flake8-pyi
+  "Q",    # flake8-quotes
+  "RET",  # flake8-return
+  "RSE",  # flake8-raise
+  "RUF",  # Ruff-specific rules
+  "S",    # flake8-bandit
+  "SIM",  # flake8-simplify
+  "T20",  # flake8-print
+  "TC",   # flake8-type-checking
+  "TD",   # flake8-todos
+  "TID",  # flake8-tidy-imports
+  "TRY",  # tryceratops
+  "UP",   # pyupgrade
+  "W",    # pycodestyle (Warning)
 ]
 lint.ignore = [
-    "A003", # Class attribute `{name}` is shadowing a python builtin
-    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed.
-    "B905", # `zip()` without an explicit strict= parameter set. The `strict=` argument was added in Python 3.10
-    "E501", # Line lengths are recommended to be no greater than 79 characters.
-    "W505", # Doc line too long
-    "PLR0913", # Too many arguments in function definition (8 > 5)
-    "PLR2004", # Magic value used in comparison, consider replacing 0.0 with a constant variable
+  "A003",    # Class attribute `{name}` is shadowing a python builtin
+  "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed.
+  "B905",    # `zip()` without an explicit strict= parameter set. The `strict=` argument was added in Python 3.10
+  "E501",    # Line lengths are recommended to be no greater than 79 characters.
+  "W505",    # Doc line too long
+  "PLR0913", # Too many arguments in function definition (8 > 5)
+  "PLR2004", # Magic value used in comparison, consider replacing 0.0 with a constant variable
 
-    # The following rules are ignored because they conflict with another library like docformatter.
-    "D102", # Missing docstring in public method
-    "D105", # Missing docstring in magic method
-    "D107", # Missing docstring in `__init__`
-    "D205", # 1 blank line required between summary line and description
-    "D209", # Multi-line docstring closing quotes should be on a separate line
+  # The following rules are ignored because they conflict with another library like docformatter.
+  "D102", # Missing docstring in public method
+  "D105", # Missing docstring in magic method
+  "D107", # Missing docstring in `__init__`
+  "D205", # 1 blank line required between summary line and description
+  "D209", # Multi-line docstring closing quotes should be on a separate line
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 lint.fixable = [
-    "A", # builtins
-    "ANN", # annotations
-    "ARG", # flake8-unused-arguments
-    "B", # bugbear
-    "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
-    "D", # pydocstyle
-    "DTZ", # flake8-datetimez
-    "E", # pycodestyle (Error)
-    "EM", # flake8-errmsg
-    "EXE", # flake8-executable
-    "F", # pyflakes
-    "FA", # flake8-future-annotations
-    "FURB", # refurb
-    "I", # isort
-    "ICN", # flake8-import-conventions
-    "INP", # flake8-no-pep420
-    "ISC", # flake8-implicit-str-concat
-    "LOG", # logging
-    "N", # naming
-    "NPY", # NumPy-specific rules
-    "PD", # pandas-vet
-    "PERF", # Perflint
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
-    "PL", # Pylint
-    "PT", # flake8-pytest-style
-    "PTH", # pathlib
-    "PYI", # flake8-pyi
-    "Q", # flake8-quotes
-    "RET", # flake8-return
-    "RSE", # flake8-raise
-    "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
-    "SIM", # flake8-simplify
-    "T20", # flake8-print
-    "TC", # flake8-type-checking
-    "TD", # flake8-todos
-    "TID", # flake8-tidy-imports
-    "TRY", # tryceratops
-    "UP", # pyupgrade
-    "W", # pycodestyle (Warning)
+  "A",    # builtins
+  "ANN",  # annotations
+  "ARG",  # flake8-unused-arguments
+  "B",    # bugbear
+  "BLE",  # flake8-blind-except
+  "C4",   # flake8-comprehensions
+  "D",    # pydocstyle
+  "DTZ",  # flake8-datetimez
+  "E",    # pycodestyle (Error)
+  "EM",   # flake8-errmsg
+  "EXE",  # flake8-executable
+  "F",    # pyflakes
+  "FA",   # flake8-future-annotations
+  "FURB", # refurb
+  "I",    # isort
+  "ICN",  # flake8-import-conventions
+  "INP",  # flake8-no-pep420
+  "ISC",  # flake8-implicit-str-concat
+  "LOG",  # logging
+  "N",    # naming
+  "NPY",  # NumPy-specific rules
+  "PD",   # pandas-vet
+  "PERF", # Perflint
+  "PGH",  # pygrep-hooks
+  "PIE",  # flake8-pie
+  "PL",   # Pylint
+  "PT",   # flake8-pytest-style
+  "PTH",  # pathlib
+  "PYI",  # flake8-pyi
+  "Q",    # flake8-quotes
+  "RET",  # flake8-return
+  "RSE",  # flake8-raise
+  "RUF",  # Ruff-specific rules
+  "S",    # flake8-bandit
+  "SIM",  # flake8-simplify
+  "T20",  # flake8-print
+  "TC",   # flake8-type-checking
+  "TD",   # flake8-todos
+  "TID",  # flake8-tidy-imports
+  "TRY",  # tryceratops
+  "UP",   # pyupgrade
+  "W",    # pycodestyle (Warning)
 ]
 lint.unfixable = []
 
 lint.exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
 ]
 
 # Enable on top of the Google convention.
@@ -282,9 +274,9 @@ src = ["src"]
 [tool.ruff.lint.per-file-ignores]
 # Ignore all directories named `tests`.
 "tests/**" = [
-    "D", # pydocstyle
-    "PL", # Pylint
-    "S101", # flake8-bandit
+  "D",    # pydocstyle
+  "PL",   # Pylint
+  "S101", # flake8-bandit
 ]
 
 [tool.ruff.lint.mccabe]
