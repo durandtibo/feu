@@ -5,7 +5,7 @@ include .make/makefile.mk
 include .make/markdown.mk
 include .make/self.mk
 include .make/shell.mk
-#include .make/toml.mk
+include .make/toml.mk
 include .make/uv.mk
 include .make/yaml.mk
 
