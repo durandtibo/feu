@@ -15,8 +15,7 @@ from feu.utils.command import run_bash_command
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-
-    from typing_extensions import Self
+    from typing import Self
 
     from feu.utils.package import PackageDependency, PackageSpec
 
