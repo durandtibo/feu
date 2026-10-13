@@ -53,9 +53,7 @@ classifiers = [
 ]
 
 requires-python = ">=3.11"
-dependencies = [
-  "packaging >=21.0,<27.0",
-]
+dependencies = ["packaging >=21.0,<27.0"]
 
 [project.optional-dependencies]
 cli = ["click >=8.1,<9.0"]
