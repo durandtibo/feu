@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import argparse
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from feu.compat import Target
 from feu.compat.packages import get_package_names
@@ -51,7 +51,7 @@ def main() -> None:
     installer = InstallerSpec(name=args.installer, arguments=args.installer_arguments)
 
     packages = get_package_names()
-    start_date = datetime.now(tz=timezone.utc).date() - timedelta(days=365 * MAX_VERSION_AGE_YEARS)
+    start_date = datetime.now(tz=UTC).date() - timedelta(days=365 * MAX_VERSION_AGE_YEARS)
 
     logger.info(
         "Installing all versions of %s released since %s for %s...", packages, start_date, target

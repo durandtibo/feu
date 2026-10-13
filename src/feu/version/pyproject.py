@@ -8,17 +8,12 @@ __all__ = [
     "read_pyproject_package_bounds",
 ]
 
-import sys
+import tomllib
 from pathlib import Path
 
-from feu.version.bound import PackageBounds, normalize_package_name
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:  # pragma: no cover
-    import tomli as tomllib
-
 from packaging.requirements import Requirement
+
+from feu.version.bound import PackageBounds, normalize_package_name
 
 
 def read_pyproject_dependencies(path: str | Path) -> list[PackageBounds]:
