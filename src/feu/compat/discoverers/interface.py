@@ -5,7 +5,7 @@ from __future__ import annotations
 
 __all__ = ["discover_compat_targets", "get_default_registry", "register_discoverers"]
 
-from functools import lru_cache
+from functools import cache
 from typing import TYPE_CHECKING
 
 from feu.compat.discoverers.duckdb import DuckdbCompatDiscoverer
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from feu.compat.target import Target
 
 
-@lru_cache(maxsize=1)
+@cache
 def get_default_registry() -> CompatDiscovererRegistry:
     r"""Return the default global compatibility discoverer registry.
 

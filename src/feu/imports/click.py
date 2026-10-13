@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = ["check_click", "click_available", "is_click_available", "raise_click_missing_error"]
 
-from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
+from functools import cache
+from typing import TYPE_CHECKING, Any, Never, TypeVar
 
 from feu.imports.universal import (
     decorator_package_available,
@@ -36,7 +36,7 @@ def check_click() -> None:
         raise_click_missing_error()
 
 
-@lru_cache(1)
+@cache
 def is_click_available() -> bool:
     r"""Indicate if the ``click`` package is installed or not.
 
@@ -78,7 +78,7 @@ def click_available(fn: F) -> F:
     return decorator_package_available(fn, is_click_available)
 
 
-def raise_click_missing_error() -> NoReturn:
+def raise_click_missing_error() -> Never:
     r"""Raise a RuntimeError to indicate the ``click`` package is
     missing."""
     raise_package_missing_error("click", "click")
