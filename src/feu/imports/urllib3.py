@@ -9,8 +9,8 @@ __all__ = [
     "urllib3_available",
 ]
 
-from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
+from functools import cache
+from typing import TYPE_CHECKING, Any, Never, TypeVar
 
 from feu.imports.universal import (
     decorator_package_available,
@@ -41,7 +41,7 @@ def check_urllib3() -> None:
         raise_urllib3_missing_error()
 
 
-@lru_cache(1)
+@cache
 def is_urllib3_available() -> bool:
     r"""Indicate if the ``urllib3`` package is installed or not.
 
@@ -83,7 +83,7 @@ def urllib3_available(fn: F) -> F:
     return decorator_package_available(fn, is_urllib3_available)
 
 
-def raise_urllib3_missing_error() -> NoReturn:
+def raise_urllib3_missing_error() -> Never:
     r"""Raise a RuntimeError to indicate the ``urllib3`` package is
     missing."""
     raise_package_missing_error("urllib3", "urllib3")

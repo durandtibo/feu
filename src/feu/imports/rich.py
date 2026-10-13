@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = ["check_rich", "is_rich_available", "raise_rich_missing_error", "rich_available"]
 
-from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
+from functools import cache
+from typing import TYPE_CHECKING, Any, Never, TypeVar
 
 from feu.imports.universal import (
     decorator_package_available,
@@ -36,7 +36,7 @@ def check_rich() -> None:
         raise_rich_missing_error()
 
 
-@lru_cache(1)
+@cache
 def is_rich_available() -> bool:
     r"""Indicate if the ``rich`` package is installed or not.
 
@@ -78,7 +78,7 @@ def rich_available(fn: F) -> F:
     return decorator_package_available(fn, is_rich_available)
 
 
-def raise_rich_missing_error() -> NoReturn:
+def raise_rich_missing_error() -> Never:
     r"""Raise a RuntimeError to indicate the ``rich`` package is
     missing."""
     raise_package_missing_error("rich", "rich")

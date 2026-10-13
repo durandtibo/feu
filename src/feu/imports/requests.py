@@ -9,8 +9,8 @@ __all__ = [
     "requests_available",
 ]
 
-from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NoReturn, TypeVar
+from functools import cache
+from typing import TYPE_CHECKING, Any, Never, TypeVar
 
 from feu.imports.universal import (
     decorator_package_available,
@@ -41,7 +41,7 @@ def check_requests() -> None:
         raise_requests_missing_error()
 
 
-@lru_cache(1)
+@cache
 def is_requests_available() -> bool:
     r"""Indicate if the ``requests`` package is installed or not.
 
@@ -83,7 +83,7 @@ def requests_available(fn: F) -> F:
     return decorator_package_available(fn, is_requests_available)
 
 
-def raise_requests_missing_error() -> NoReturn:
+def raise_requests_missing_error() -> Never:
     r"""Raise a RuntimeError to indicate the ``requests`` package is
     missing."""
     raise_package_missing_error("requests", "requests")

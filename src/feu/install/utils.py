@@ -16,7 +16,7 @@ __all__ = [
 
 import logging
 import shutil
-from functools import lru_cache
+from functools import cache
 from typing import TYPE_CHECKING, NamedTuple
 
 from feu.compat import Target, find_closest_version, get_default_registry
@@ -274,7 +274,7 @@ def install_packages_all_versions(
     }
 
 
-@lru_cache(1)
+@cache
 def is_pip_available() -> bool:
     r"""Check if ``pip`` is available.
 
@@ -291,7 +291,7 @@ def is_pip_available() -> bool:
     return shutil.which("pip") is not None
 
 
-@lru_cache(1)
+@cache
 def is_pipx_available() -> bool:
     r"""Check if ``pipx`` is available.
 
@@ -308,7 +308,7 @@ def is_pipx_available() -> bool:
     return shutil.which("pipx") is not None
 
 
-@lru_cache(1)
+@cache
 def is_uv_available() -> bool:
     r"""Check if ``uv`` is available.
 
@@ -325,7 +325,7 @@ def is_uv_available() -> bool:
     return shutil.which("uv") is not None
 
 
-@lru_cache(1)
+@cache
 def get_available_installers() -> tuple[str, ...]:
     r"""Get the available installers.
 
