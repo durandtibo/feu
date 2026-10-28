@@ -1,210 +1,246 @@
-# feu :fire:
+# shared-makefiles
 
-<p align="center">
-    <a href="https://github.com/durandtibo/feu/actions/workflows/ci.yaml">
-        <img alt="CI" src="https://github.com/durandtibo/feu/actions/workflows/ci.yaml/badge.svg">
-    </a>
-    <a href="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml">
-        <img alt="Nightly Package Tests" src="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml/badge.svg">
-    </a>
-    <a href="https://codecov.io/gh/durandtibo/feu">
-        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/feu/branch/main/graph/badge.svg">
-    </a>
-    <br/>
-    <a href="https://durandtibo.github.io/feu/">
-        <img alt="Documentation" src="https://github.com/durandtibo/feu/actions/workflows/release-docs.yaml/badge.svg">
-    </a>
-    <a href="https://durandtibo.github.io/feu/dev/">
-        <img alt="Documentation" src="https://github.com/durandtibo/feu/actions/workflows/release-docs-dev.yaml/badge.svg">
-    </a>
-    <br/>
-    <a href="https://github.com/psf/black">
-        <img  alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
-    </a>
-    <a href="https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings">
-        <img  alt="Doc style: google" src="https://img.shields.io/badge/%20style-google-3666d6.svg">
-    </a>
-    <a href="https://github.com/astral-sh/ruff">
-        <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;">
-    </a>
-    <a href="https://github.com/guilatrova/tryceratops">
-        <img  alt="Doc style: google" src="https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black">
-    </a>
-    <br/>
-    <a href="https://pypi.org/project/feu/">
-        <img alt="PYPI version" src="https://img.shields.io/pypi/v/feu">
-    </a>
-    <a href="https://pypi.org/project/feu/">
-        <img alt="Python" src="https://img.shields.io/pypi/pyversions/feu.svg">
-    </a>
-    <a href="https://opensource.org/licenses/BSD-3-Clause">
-        <img alt="BSD-3-Clause" src="https://img.shields.io/pypi/l/feu">
-    </a>
-    <br/>
-    <a href="https://pepy.tech/project/feu">
-        <img  alt="Downloads" src="https://static.pepy.tech/badge/feu">
-    </a>
-    <a href="https://pepy.tech/project/feu">
-        <img  alt="Monthly downloads" src="https://static.pepy.tech/badge/feu/month">
-    </a>
-    <br/>
-</p>
+Shared/reusable Makefiles for formatting and linting common file types across projects.
 
-## Overview
+Each file is self-contained, include-guarded, and configurable via variables — pull in only what
+you need.
 
-`feu` (French word for "fire" 🔥) is a lightweight Python library designed to help manage Python
-packages and their versions across different Python environments.
+## Usage
 
-### Key Features
+Include the files you need in your project's `Makefile`:
 
-- ✅ **Check package availability**: Verify if packages and modules are installed
-- 🔄 **Version-aware installation**: Install packages with automatic version compatibility checks
-- 🎯 **Smart version resolution**: Find the closest valid package version for your target
-  environment (Python version, free-threadedness, OS, and CPU architecture)
-- 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas,
-  polars, torch, etc.)
-- 🔍 **PyPI-backed discovery**: Automatically discover version compatibility from PyPI for packages
-  that aren't in the built-in registry
-- 🐙 **GitHub utilities**: Fetch and sort repository metadata from the GitHub API
-- 🖥️ **CLI tools**: Command-line interface for package management tasks
-- 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
+```makefile
+include yaml.mk
+include makefile.mk
+include shell.mk
+include toml.mk
+include markdown.mk
+include actions.mk
+include help.mk
 
-### Quick Example
+.DEFAULT_GOAL := help
 
-```python
-from feu.imports import is_package_available
-from feu.compat import Target, find_closest_version
-from feu.version import get_package_version
+.PHONY: install-tools
+install-tools: install-prettier install-yamllint install-mbake install-checkmake install-shellcheck install-shfmt install-bats install-taplo install-markdownlint install-actionlint ## Install all formatting/linting tools
 
-# Check if a package is available
-if is_package_available("numpy"):
-    version = get_package_version("numpy")
-    print(f"NumPy {version} is installed!")
+.PHONY: format
+format: format-yaml format-makefile format-shell format-toml format-markdown ## Format all files
 
-# Find the closest valid version for your Python version
-version = find_closest_version(
-    pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
-)
-print(f"Closest valid version: {version}")
+.PHONY: lint
+lint: lint-yaml lint-makefile lint-shell lint-markdown lint-actions ## Lint all files
 ```
 
-### Why feu?
+Required tools (`prettier`, `yamllint`, `mbake`, `checkmake`, `shellcheck`, `shfmt`, `markdownlint`,
+`actionlint`) are installed on demand — each
+`format-*`/`lint-*` target depends on an `install-*` target that installs the tool if it isn't
+already on `PATH`. Run `make install-tools` to install all of them upfront.
 
-Managing Python package versions across different Python versions can be challenging. Different
-Python versions support different package versions, and manually tracking compatibility can be
-error-prone. `feu` solves this by:
+Run `make help` to list every target that has a `## description` comment (see `help.mk` below).
 
-1. **Automating version selection**: Automatically finds compatible package versions for your Python
-   environment
-2. **Preventing installation failures**: Validates versions before installation to avoid runtime
-   errors
-3. **Simplifying multi-version support**: Makes it easy to support multiple Python versions in your
-   projects
-4. **Providing graceful fallbacks**: Check package availability and provide alternatives when
-   packages aren't installed
+## Adding as a git subtree
 
-### Documentation
-
-- 📚 [Full Documentation](https://durandtibo.github.io/feu/)
-- 🚀 [Get Started Guide](https://durandtibo.github.io/feu/get_started)
-- 📖 [Usage Examples](https://durandtibo.github.io/feu/usage)
-- 🖥️ [CLI Reference](https://durandtibo.github.io/feu/cli)
-
-### Quick Links
-
-- [Installation](#installation)
-- [Contributing](#contributing)
-- [API stability](#api-stability)
-- [License](#license)
-
-## Installation
-
-We highly recommend installing
-a [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
-`feu` can be installed from pip using the following command:
+This repo is meant to be vendored into consuming projects as a git subtree (conventionally at
+`.make/`), rather than being added as a submodule or copy-pasted:
 
 ```shell
-pip install feu
+git remote add shared-makefiles https://github.com/durandtibo/shared-makefiles.git
+git fetch shared-makefiles main
+
+git subtree add --prefix=.make shared-makefiles main --squash
 ```
 
-To make the package as slim as possible, only the minimal packages required to use `feu` are
-installed. To include all the dependencies, you can use the following command:
+Then `include` the files you need from `.make/` in your project's `Makefile`, e.g.
+`include .make/yaml.mk`.
 
-```shell
-pip install feu[all]
+To pull in upstream changes later, `include .make/self.mk` and run `make update-subtree` — see
+[`self.mk`](#self-mk) below. It fetches the latest commits and runs `git subtree pull`, so you
+don't need to remember the raw `git subtree`/`git remote` invocations yourself.
+
+## Available files
+
+| File          | Targets                                     | Tools                      | Description                                                           |
+| ------------- | ------------------------------------------- | -------------------------- | --------------------------------------------------------------------- |
+| `yaml.mk`     | `format-yaml`, `lint-yaml`                  | `prettier`, `yamllint`     | Format and lint YAML files                                            |
+| `makefile.mk` | `format-makefile`, `lint-makefile`          | `mbake`, `checkmake`       | Format and lint Makefiles and `.mk` files                             |
+| `shell.mk`    | `format-shell`, `lint-shell`                | `shfmt`, `shellcheck`      | Format and lint shell scripts                                         |
+| `toml.mk`     | `format-toml`                               | `taplo`                    | Format TOML files                                                     |
+| `markdown.mk` | `format-markdown`, `lint-markdown`          | `prettier`, `markdownlint` | Format and lint Markdown files                                        |
+| `actions.mk`  | `lint-actions`                              | `actionlint`               | Lint GitHub Actions workflow files                                    |
+| `uv.mk`       | `install-invoke`, `update-uv`, `setup-venv` | `uv`                       | Manage Python virtual environments with `uv`                          |
+| `prettier.mk` | `install-prettier`                          | `prettier`                 | Shared `install-prettier` target, included by `yaml.mk`/`markdown.mk` |
+| `self.mk`     | `update-subtree`                            | `git`                      | Sync the `.make` shared-makefiles subtree                             |
+| `help.mk`     | `help`                                      | —                          | List all documented (`## ...`) targets                                |
+
+### `yaml.mk`
+
+Optional variables (set before `include`):
+
+| Variable           | Default | Description                                                   |
+| ------------------ | ------- | ------------------------------------------------------------- |
+| `YAML_FORMAT_PATH` | `.`     | Root path globbed for `**/*.{yml,yaml}`, passed to `prettier` |
+| `YAML_LINT_PATH`   | `.`     | Path passed to `yamllint`                                     |
+
+```makefile
+include yaml.mk
+
+YAML_LINT_PATH = .github/workflows
 ```
 
-Please check the [get started page](https://durandtibo.github.io/feu/get_started) to see how to
-install only some specific dependencies or other alternatives to install the library. The following
-is the corresponding `feu` versions and supported dependencies.
+### `makefile.mk`
 
-| `feu`   | `packaging`    | `python`       | `click`<sup>*</sup> | `gitpython`<sup>*</sup> | `requests`<sup>*</sup> | `rich`<sup>*</sup> |
-| ------- | -------------- | -------------- | ------------------- | ----------------------- | ---------------------- | ------------------ |
-| `main`  | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
-| `0.8.3` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
-| `0.8.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
-| `0.8.1` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
-| `0.8.0` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
-| `0.7.3` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.7.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.7.1` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.7.0` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.6.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.6.1` | `>=21.0,<26.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.6.0` | `>=21.0,<26.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
-| `0.5.0` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
+Optional variables (set before `include`):
 
-<sup>*</sup> indicates an optional dependency
+| Variable                | Default         | Description                    |
+| ----------------------- | --------------- | ------------------------------ |
+| `MAKEFILE_FORMAT_FILES` | `Makefile *.mk` | Files passed to `mbake format` |
+| `MAKEFILE_LINT_FILES`   | `Makefile *.mk` | Files passed to `checkmake`    |
 
-<details>
-    <summary>older versions</summary>
+```makefile
+include makefile.mk
 
-| `feu`   | `packaging`    | `python`       | `click`<sup>*</sup> | `gitpython`<sup>*</sup> | `fire`<sup>*</sup> | `requests`<sup>*</sup> |
-| ------- | -------------- | -------------- | ------------------- | ----------------------- | ------------------ | ---------------------- |
-| `0.4.2` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         |                    | `>=2.30,<3.0`          |
-| `0.4.1` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         |                    | `>=2.30,<3.0`          |
-| `0.4.0` | `>=21.0,<26.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         |                    | `>=2.30,<3.0`          |
-| `0.3.5` | `>=21.0,<26.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         |                    |                        |
-| `0.3.4` | `>=21.0,<26.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         |                    |                        |
-| `0.3.3` | `>=21.0,<26.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         |                    |                        |
-| `0.3.2` | `>=21.0,<25.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.3.1` | `>=21.0,<25.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.3.0` | `>=21.0,<25.0` | `>=3.9,<3.14`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.2.4` | `>=21.0,<25.0` | `>=3.9,<3.13`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.2.3` | `>=21.0,<25.0` | `>=3.9,<3.13`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.2.2` | `>=21.0,<25.0` | `>=3.9,<3.13`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.2.1` | `>=21.0,<25.0` | `>=3.9,<3.13`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.2.0` | `>=21.0,<25.0` | `>=3.9,<3.13`  | `>=8.1,<9.0`        |                         |                    |                        |
-| `0.1.1` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         | `>=0.6.0,<1.0`     |                        |
-| `0.1.0` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         | `>=0.6.0,<1.0`     |                        |
-| `0.0.7` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         |                    |                        |
-| `0.0.6` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         |                    |                        |
-| `0.0.5` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         |                    |                        |
-| `0.0.4` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         |                    |                        |
-| `0.0.3` | `>=21.0,<25.0` | `>=3.9,<3.13`  |                     |                         |                    |                        |
-| `0.0.2` | `>=22.0,<24.0` | `>=3.9,<3.13`  |                     |                         |                    |                        |
-| `0.0.1` | `>=22.0,<23.3` | `>=3.9,<3.13`  |                     |                         |                    |                        |
+MAKEFILE_LINT_FILES = Makefile makefile.mk yaml.mk
+```
 
-</details>
+### `shell.mk`
 
-## Contributing
+Optional variables (set before `include`):
 
-Please check the instructions in [CONTRIBUTING.md](CONTRIBUTING.md).
+| Variable            | Default | Description                                           |
+| ------------------- | ------- | ----------------------------------------------------- |
+| `SHELL_FORMAT_PATH` | `.`     | Path passed to `shfmt` (walked recursively)           |
+| `SHELL_LINT_PATH`   | `.`     | Path searched for `*.sh` files passed to `shellcheck` |
 
-## Suggestions and Communication
+```makefile
+include shell.mk
 
-Everyone is welcome to contribute to the community. If you have any questions or suggestions, you
-can submit [Github Issues](https://github.com/durandtibo/feu/issues). We will reply to you as soon
-as possible. Thank you very much.
+SHELL_LINT_PATH = scripts
+```
 
-## API stability
+### `toml.mk`
 
-:warning: While `feu` is in development stage, no API is guaranteed to be stable from one release to
-the next. In fact, it is very likely that the API will change multiple times before a stable 1.0.0
-release. In practice, this means that upgrading `feu` to a new version will possibly break any code
-that was using the old version of `feu`.
+Optional variables (set before `include`):
+
+| Variable           | Default | Description                                        |
+| ------------------ | ------- | -------------------------------------------------- |
+| `TOML_FORMAT_PATH` | `.`     | Path searched for `*.toml` files passed to `taplo` |
+
+```makefile
+include toml.mk
+
+TOML_FORMAT_PATH = config
+```
+
+### `markdown.mk`
+
+Optional variables (set before `include`):
+
+| Variable               | Default   | Description                                           |
+| ---------------------- | --------- | ----------------------------------------------------- |
+| `MARKDOWN_FORMAT_PATH` | `.`       | Root path globbed for `**/*.md`, passed to `prettier` |
+| `MARKDOWN_LINT_GLOB`   | `**/*.md` | Glob passed to `markdownlint`                         |
+
+```makefile
+include markdown.mk
+
+MARKDOWN_LINT_GLOB = docs/**/*.md
+```
+
+### `actions.mk`
+
+Optional variables (set before `include`):
+
+| Variable            | Default | Description                                                                      |
+| ------------------- | ------- | -------------------------------------------------------------------------------- |
+| `ACTIONS_LINT_PATH` | `.`     | Path searched for `.github/workflows/*.{yml,yaml}` files, passed to `actionlint` |
+
+```makefile
+include actions.mk
+
+ACTIONS_LINT_PATH = .
+```
+
+### `uv.mk`
+
+Optional variables (set before `include`):
+
+| Variable         | Default | Description                                 |
+| ---------------- | ------- | ------------------------------------------- |
+| `PYTHON_VERSION` | `3.14`  | Python version passed to `uv venv --python` |
+
+```makefile
+include uv.mk
+
+PYTHON_VERSION = 3.12
+```
+
+`install-invoke` installs `uv` on demand and then `invoke>=3.0` and `invoke-tasklib>=0.0.8` via `uv pip install` into the
+active virtual environment (create one first, e.g. with `uv venv`).
+`update-uv` runs `uv self update`. `setup-venv` updates `uv`, creates a fresh `.venv`
+(`uv venv --python $(PYTHON_VERSION) --clear`), installs `invoke` into it, and runs
+`uv run inv env.create-venv` and `uv run inv env.install` — it assumes the project's
+`tasks.py` exposes the `invoke-tasklib` tasks (`from invoke_tasklib import ns`).
+
+### `self.mk`
+
+For projects that vendor this repo as a subtree (e.g. at `.make/`), `self.mk` provides a target
+to pull in upstream changes.
+
+Optional variables (set before `include`):
+
+| Variable                       | Default                                              | Description     |
+| ------------------------------ | ---------------------------------------------------- | --------------- |
+| `SHARED_MAKEFILES_REMOTE_NAME` | `shared-makefiles`                                   | Git remote name |
+| `SHARED_MAKEFILES_REMOTE_URL`  | `https://github.com/durandtibo/shared-makefiles.git` | Git remote URL  |
+| `SHARED_MAKEFILES_BRANCH`      | `main`                                               | Branch to pull  |
+| `SHARED_MAKEFILES_PREFIX`      | `.make`                                              | Subtree prefix  |
+
+```makefile
+include self.mk
+```
+
+`update-subtree` adds the `$(SHARED_MAKEFILES_REMOTE_NAME)` remote if missing, fetches
+`$(SHARED_MAKEFILES_BRANCH)`, and runs `git subtree pull --prefix=$(SHARED_MAKEFILES_PREFIX)
+$(SHARED_MAKEFILES_REMOTE_NAME) $(SHARED_MAKEFILES_BRANCH) --squash` to sync the subtree. It then
+removes the `.github/` and `testdata/` folders from within `$(SHARED_MAKEFILES_PREFIX)` (not
+needed in consuming projects) and commits the removal.
+
+### `help.mk`
+
+```makefile
+include help.mk
+
+.PHONY: format
+format: format-yaml ## Format all files
+```
+
+`help` scans every included Makefile (`$(MAKEFILE_LIST)`) for lines matching
+`target: ... ## description` and prints them, sorted, as `target` / `description` pairs. Only
+targets with a trailing `## ...` comment show up — add one to any target you want documented. Every
+target defined in this repo's own `.mk` files is already annotated this way, so `include`-ing any
+of them and running `make help` lists them for free.
+
+## Design
+
+- **Include guards** — each file defines an `_MK_INCLUDED` variable so it's safe to `include`
+  more than once (e.g. transitively from multiple project Makefiles).
+- **On-demand install** — every lint/format target depends on an `install-<tool>` target that
+  checks `command -v` before installing, so CI and local runs don't need the tool preinstalled.
+- **Configurable paths** — variables default to sensible project-wide values but can be
+  overridden per project or per target invocation.
+- **`.make/` excluded by default** — this repo is meant to be vendored as a subtree at `.make/`
+  in consuming projects, so every formatter/linter skips that folder by default:
+  [`.prettierignore`](.prettierignore) and [`.markdownlintignore`](.markdownlintignore) exclude
+  it, `.yamllint.yaml` sets `ignore: .make/`, and `shell.mk`'s `find` commands `-prune` it.
+
+## Testing
+
+[`.github/workflows/ci-test.yml`](.github/workflows/ci-test.yml) exercises every file against the
+Unix OS matrix (Ubuntu and macOS runners) resolved dynamically via
+[`durandtibo/workflow-config-action`](https://github.com/durandtibo/workflow-config-action) on
+every push/PR to `main`, running both the lint and format targets (including on-demand tool
+installation) to make sure the rules stay portable across platforms.
 
 ## License
 
-`feu` is licensed under BSD 3-Clause "New" or "Revised" license available in [LICENSE](LICENSE)
+This repo is licensed under BSD 3-Clause "New" or "Revised" license available in [LICENSE](LICENSE)
 file.
