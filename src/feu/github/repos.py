@@ -76,12 +76,16 @@ def display_repos_summary(repos: Sequence[dict[str, Any]]) -> None:
 
         ```
     """
-    logger.info(f"Total repositories: {len(repos)}\n")
+    logger.info("Total repositories: %d\n", len(repos))
 
     for i, repo in enumerate(repos, 1):
-        logger.info(f"{i}. {repo['name']}")
-        logger.info(f"   URL: {repo['html_url']}")
-        logger.info(f"   Description: {repo['description'] or 'No description'}")
-        logger.info(f"   Stars: {repo['stargazers_count']:,} | Forks: {repo['forks_count']:,}")
-        logger.info(f"   Language: {repo['language'] or 'Not specified'}")
-        logger.info(f"   Private: {repo['private']}\n")
+        logger.info("%d. %s", i, repo["name"])
+        logger.info("   URL: %s", repo["html_url"])
+        logger.info("   Description: %s", repo["description"] or "No description")
+        logger.info(
+            "   Stars: %s | Forks: %s",
+            f"{repo['stargazers_count']:,}",
+            f"{repo['forks_count']:,}",
+        )
+        logger.info("   Language: %s", repo["language"] or "Not specified")
+        logger.info("   Private: %s\n", repo["private"])

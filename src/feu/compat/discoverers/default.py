@@ -157,22 +157,37 @@ def _is_target_compatible(
     """
     if not tags:
         return treat_sdist_as_pure_python and is_compatible(requires_python, wanted_python_version)
-    for tag in tags:
-        if tag.os is not None and tag.os != wanted.os:
-            continue
-        if tag.arch is not None and tag.arch != wanted.arch:
-            continue
-        if tag.python_version is None:
-            if is_compatible(requires_python, wanted_python_version):
-                return True
-            continue
-        if tag.free_threaded != wanted.free_threaded:
-            continue
-        if tag.abi3:
-            if Version(wanted_python_version) < Version(tag.python_version):
-                continue
-            return True
-        if tag.python_version != wanted.python_version:
-            continue
-        return True
-    return False
+    return any(
+        _is_tag_compatible(tag, wanted, wanted_python_version, requires_python) for tag in tags
+    )
+
+
+def _is_tag_compatible(
+    tag: WheelTags,
+    wanted: WheelTags,
+    wanted_python_version: str,
+    requires_python: str | None,
+) -> bool:
+    r"""Indicate if a single wheel's tags satisfy a wanted target.
+
+    Args:
+        tag: The tags parsed from one wheel filename.
+        wanted: The tags describing the wanted target.
+        wanted_python_version: The wanted target's Python version.
+        requires_python: The release's ``requires_python`` specifier,
+            used only to validate pure-Python wheels.
+
+    Returns:
+        ``True`` if the wheel satisfies the wanted target.
+    """
+    if tag.os is not None and tag.os != wanted.os:
+        return False
+    if tag.arch is not None and tag.arch != wanted.arch:
+        return False
+    if tag.python_version is None:
+        return is_compatible(requires_python, wanted_python_version)
+    if tag.free_threaded != wanted.free_threaded:
+        return False
+    if tag.abi3:
+        return Version(wanted_python_version) >= Version(tag.python_version)
+    return tag.python_version == wanted.python_version
