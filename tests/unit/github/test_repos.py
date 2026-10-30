@@ -6,16 +6,10 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+from requests import Response
 
 from feu.github import display_repos_summary, fetch_github_repos
-from feu.imports import is_requests_available
 from feu.testing import requests_available
-
-if is_requests_available():
-    from requests import Response
-else:
-    Response = Mock()
-
 
 MODULE = "feu.github.repos"
 
@@ -33,7 +27,7 @@ def _reset_cache() -> None:
 @pytest.fixture
 def mock_response() -> Response:
     """Create a mock response object."""
-    response = Mock()
+    response = Mock(spec=Response)
     response.status_code = 200
     response.headers = {}
     return response
@@ -50,7 +44,7 @@ def sample_repos() -> list[dict[str, Any]]:
 
 @requests_available
 def test_fetch_github_repos_single_page(
-    mock_response: Response, sample_repos: list[dict[str, Any]]
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
 ) -> None:
     """Test fetching repos with a single page of results."""
     mock_response.json.return_value = sample_repos
@@ -107,7 +101,7 @@ def test_fetch_github_repos_no_next_link(sample_repos: list[dict[str, Any]]) -> 
 @requests_available
 @patch.dict(os.environ, {"GITHUB_TOKEN": "meow"}, clear=True)
 def test_fetch_github_repos_with_github_token(
-    mock_response: Response, sample_repos: list[dict[str, Any]]
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
 ) -> None:
     """Test that GitHub token is used when available."""
     mock_response.json.return_value = sample_repos
@@ -124,7 +118,7 @@ def test_fetch_github_repos_with_github_token(
 @requests_available
 @patch.dict(os.environ, {}, clear=True)
 def test_fetch_github_repos_without_github_token(
-    mock_response: Response, sample_repos: list[dict[str, Any]]
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
 ) -> None:
     """Test that authorization header is not added when token is
     missing."""
@@ -150,7 +144,7 @@ def test_fetch_github_repos_api_error() -> None:
 
 
 @requests_available
-def test_fetch_github_repos_empty_results(mock_response: Response) -> None:
+def test_fetch_github_repos_empty_results(mock_response: Mock) -> None:
     """Test fetching repos when user has no repositories."""
     mock_response.json.return_value = []
 
@@ -162,7 +156,7 @@ def test_fetch_github_repos_empty_results(mock_response: Response) -> None:
 
 @requests_available
 def test_fetch_github_repos_correct_url_and_params(
-    mock_response: Response, sample_repos: list[dict[str, Any]]
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
 ) -> None:
     """Test that correct URL and parameters are used."""
     mock_response.json.return_value = sample_repos
@@ -177,7 +171,7 @@ def test_fetch_github_repos_correct_url_and_params(
 
 @requests_available
 def test_fetch_github_repos_headers(
-    mock_response: Response, sample_repos: list[dict[str, Any]]
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
 ) -> None:
     """Test that correct headers are set."""
     mock_response.json.return_value = sample_repos
@@ -221,7 +215,7 @@ def test_fetch_github_repos_pagination_link_parsing(sample_repos: list[dict[str,
 
 @requests_available
 def test_fetch_github_repos_caching(
-    mock_response: Response, sample_repos: list[dict[str, Any]]
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
 ) -> None:
     """Test that lru_cache is working."""
     mock_response.json.return_value = sample_repos

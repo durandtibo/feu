@@ -150,4 +150,4 @@ def test_sort_repos_by_key_reverse_parameter_must_be_keyword() -> None:
     repos = [{"name": "test", "id": 1}]
     # This should raise TypeError because reverse is keyword-only
     with pytest.raises(TypeError):
-        sort_repos_by_key(repos, "name", True)
+        sort_repos_by_key(repos, "name", True)  # ty: ignore[missing-argument, too-many-positional-arguments]

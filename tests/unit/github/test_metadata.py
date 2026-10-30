@@ -4,6 +4,7 @@ import os
 from unittest.mock import Mock, patch
 
 import pytest
+from requests import Response
 
 from feu.github import fetch_github_metadata
 from feu.imports import is_requests_available
@@ -11,9 +12,6 @@ from feu.testing import requests_available
 
 if is_requests_available():
     import requests
-    from requests import Response
-else:
-    Response = Mock()
 
 
 @pytest.fixture(autouse=True)
@@ -27,7 +25,7 @@ def _reset_cache() -> None:
 
 
 def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
-    resp = Mock()
+    resp = Mock(spec=Response)
     resp.status_code = status
 
     # raise_for_status

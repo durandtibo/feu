@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -13,6 +14,9 @@ from feu.compat.interface import (
 from feu.compat.registry import CompatRegistry, VersionRange
 from feu.compat.target import Target
 
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
 T311 = Target(python_version="3.11")
 
 
@@ -22,7 +26,7 @@ T311 = Target(python_version="3.11")
 
 
 @pytest.fixture(autouse=True)
-def _reset_default_registry() -> None:
+def _reset_default_registry() -> Generator[None]:
     get_default_registry.cache_clear()
     yield
     get_default_registry.cache_clear()

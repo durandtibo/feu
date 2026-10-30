@@ -232,5 +232,19 @@ force-sort-within-sections = false
 combine-as-imports = true
 known-first-party = ["feu"]
 
+[tool.ty.analysis]
+# Optional dependencies are imported lazily and are not installed in the dev environment.
+allowed-unresolved-imports = [
+  "jax.**",
+  "matplotlib.**",
+  "numpy.**",
+  "pandas.**",
+  "pyarrow.**",
+  "scipy.**",
+  "sklearn.**",
+  "torch.**",
+  "xarray.**",
+]
+
 [tool.ty.src]
 include = ["src", "tests", "dev"]

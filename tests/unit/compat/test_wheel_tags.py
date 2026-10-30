@@ -114,7 +114,7 @@ def test_wheel_tags_is_frozen_and_comparable() -> None:
     b = WheelTags(python_version="3.11", free_threaded=False, os="linux", arch="x86_64")
     assert a == b
     with pytest.raises(AttributeError):
-        a.os = "macos"  # type: ignore[misc]
+        a.os = "macos"  # ty: ignore[invalid-assignment]
 
 
 #################################################
