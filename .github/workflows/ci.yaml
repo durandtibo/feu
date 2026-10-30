@@ -6,15 +6,17 @@
 #
 # Deliberately NOT called from here, each standalone with its own trigger:
 #   - ci-verify-workflows.yaml: lints .github/workflows/* itself, so it
-#     triggers on every PR/push instead of being gated behind this workflow.
+#     has its own trigger instead of being part of this workflow.
+# See .github/GUIDELINES.md for the naming/prefix and runs-on/timeout
+# conventions shared across every workflow in this directory.
 #
 # The individual check jobs below call out to per-check reusable workflows
 # (ci-build.yaml, ci-format.yaml, ...) instead of inlining their steps here,
 # so each check can still be run/tested on its own (workflow_dispatch) and to
 # keep this file short. Job ids are load-bearing: main's branch protection
-# requires status checks derived from the job id here plus the job id in the
-# called workflow (e.g. "format / format", "pre-commit / pre-commit",
-# "type-checking / type-checking") - keep both in sync if either is renamed.
+# requires status checks named "format / format", "pre-commit / pre-commit"
+# and "type-checking / type-checking", derived from the job id here plus the
+# job id in the called workflow - keep both in sync if either is renamed.
 
 name: CI
 on:
@@ -27,6 +29,7 @@ on:
   schedule:
     - cron: "10 9 * * *" # Run nightly at 9:10 AM UTC to catch issues from external changes
   workflow_dispatch: # to trigger manually
+  workflow_call: # the release workflows run the CI before publishing
 
 permissions:
   contents: read
