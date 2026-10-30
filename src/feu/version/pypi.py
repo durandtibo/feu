@@ -1,4 +1,8 @@
-r"""Contain PyPI utility functions."""
+r"""Contain functions to fetch package metadata from PyPI.
+
+The functions use the PyPI JSON API and some of them cache their results
+for the lifetime of the process.
+"""
 
 from __future__ import annotations
 
@@ -18,7 +22,19 @@ from feu.utils.http import fetch_data
 
 
 def _to_date(value: date | str) -> date:
-    r"""Convert a date or ISO-formatted string to a ``date`` object."""
+    r"""Convert a date or ISO-formatted string to a ``date`` object.
+
+    Args:
+        value: A ``date`` object or an ISO 8601 formatted string
+            e.g. ``'2024-01-01'``.
+
+    Returns:
+        The ``date`` object.
+
+    Raises:
+        ValueError: If ``value`` is a string that is not a valid ISO
+            8601 date.
+    """
     if isinstance(value, date):
         return value
     return date.fromisoformat(value)
@@ -29,6 +45,13 @@ def _is_yanked(files: list[dict] | None) -> bool:
 
     A release is considered yanked if it has at least one file and all
     its files are marked as yanked.
+
+    Args:
+        files: The list of file metadata of a release, as returned by
+            the PyPI JSON API, or ``None``.
+
+    Returns:
+        ``True`` if the release is yanked, otherwise ``False``.
     """
     files = files or []
     return bool(files) and all(file.get("yanked", False) for file in files)
@@ -38,6 +61,13 @@ def _release_date(files: list[dict] | None) -> date | None:
     r"""Get the release date of a version from its list of files.
 
     The release date is the earliest upload date among the files.
+
+    Args:
+        files: The list of file metadata of a release, as returned by
+            the PyPI JSON API, or ``None``.
+
+    Returns:
+        The release date, or ``None`` if no file has an upload time.
     """
     upload_times = [
         file["upload_time_iso_8601"] for file in (files or []) if file.get("upload_time_iso_8601")
@@ -51,6 +81,8 @@ def _release_date(files: list[dict] | None) -> date | None:
 def fetch_pypi_requires_python(package: str) -> dict[str, str | None]:
     r"""Get the ``requires_python`` specifier for each release of a
     package on PyPI.
+
+    The result is cached, so PyPI is queried once per package.
 
     Args:
         package: The package name.
@@ -84,6 +116,8 @@ def fetch_pypi_requires_python(package: str) -> dict[str, str | None]:
 def fetch_pypi_wheel_filenames(package: str) -> dict[str, tuple[str, ...]]:
     r"""Get the wheel filenames for each release of a package on PyPI.
 
+    The result is cached, so PyPI is queried once per package.
+
     Args:
         package: The package name.
 
@@ -116,7 +150,8 @@ def fetch_pypi_pinned_dependency_version(package: str, version: str, dependency:
     This is only able to detect an exact pin (e.g. ``dependency==1.2.3``).
     It is intended for packages that pin a compiled dependency to an
     exact version per release, e.g. ``pydantic`` pinning
-    ``pydantic-core``.
+    ``pydantic-core``. The package name comparison is case-sensitive.
+    The result is cached.
 
     Args:
         package: The package name.
@@ -162,7 +197,7 @@ def fetch_pypi_versions(
 ) -> tuple[str, ...]:
     r"""Get the package versions available on PyPI.
 
-    The package versions are read from PyPI.
+    The package versions are read from PyPI. The result is cached.
 
     Args:
         package: The package name.
@@ -180,7 +215,9 @@ def fetch_pypi_versions(
             from the returned versions.
 
     Returns:
-        A list containing the sorted version strings.
+        A tuple containing the version strings. The versions are
+            sorted as strings, not according to PEP 440 order; use
+            ``sort_versions`` to sort them by version.
 
     Example:
         ```pycon

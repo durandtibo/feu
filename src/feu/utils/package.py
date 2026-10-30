@@ -25,7 +25,8 @@ class PackageSpec:
 
     Args:
         name: The package name.
-        version: An optional package version.
+        version: An optional package version. If set, the string
+            representation pins it with ``==``.
         extras: Optional package extra dependencies.
 
     Example:
@@ -109,7 +110,9 @@ class PackageDependency:
 
     Args:
         name: The package name.
-        version_specifiers: Optional package version specifies.
+        version_specifiers: Optional package version specifiers,
+            e.g. ``["==1.2.3"]`` or ``[">=1.0", "<2.0"]``. They are
+            joined with commas in the string representation.
         extras: Optional package extra dependencies.
 
     Example:
@@ -145,7 +148,7 @@ def extract_package_name(requirement: str) -> str:
 
     The requirement string may include optional dependencies in square brackets,
     such as 'package[extra1,extra2]'. This function returns only the base package
-    name without the extras.
+    name without the extras and without the version specifiers.
 
     Args:
         requirement: The requirement string containing the package name and
@@ -216,10 +219,11 @@ def is_wildcard_version(version: str | None) -> bool:
     concrete ``packaging.version.Version``.
 
     Args:
-        version: The version string to check.
+        version: The version string to check, or ``None``.
 
     Returns:
-        ``True`` if the version contains a wildcard, otherwise ``False``.
+        ``True`` if the version contains a wildcard, otherwise
+            ``False`` (including when ``version`` is ``None``).
 
     Example:
         ```pycon
@@ -242,7 +246,8 @@ def generate_extras_string(extras: Sequence[str]) -> str:
         extras: The package optional dependencies.
 
     Returns:
-        A string with the package extras.
+        A string with the package extras in square brackets separated
+            by commas, or an empty string if there is no extra.
 
     Example:
         ```pycon

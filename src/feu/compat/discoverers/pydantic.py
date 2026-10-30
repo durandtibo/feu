@@ -105,6 +105,17 @@ def _is_target_compatible(
     axes exactly. A release that only ships a pure-Python wheel
     (``pydantic`` 2.x) is compatible only if its pinned ``pydantic-
     core`` release shipped a wheel matching those axes exactly.
+
+    Args:
+        wanted: The tags describing the wanted target.
+        tags: The wheel tags parsed from the ``pydantic`` release's
+            wheel filenames.
+        core_tags: The wheel tags of the pinned ``pydantic-core``
+            release, or ``None`` if the release has no pinned
+            ``pydantic-core`` dependency.
+
+    Returns:
+        ``True`` if the release satisfies the wanted target.
     """
     for tag in tags:
         if tag.python_version is None:

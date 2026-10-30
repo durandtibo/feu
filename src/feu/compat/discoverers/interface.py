@@ -62,6 +62,10 @@ def register_discoverers(
             package already exists. This parameter should be set to
             ``True`` to overwrite the discoverer for a package.
 
+    Raises:
+        RuntimeError: if a discoverer is already registered for any
+            of the package names and ``exist_ok=False``.
+
     Example:
         ```pycon
         >>> from feu.compat.discoverers import CompatDiscoverer, register_discoverers

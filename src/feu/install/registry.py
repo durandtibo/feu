@@ -15,7 +15,20 @@ if TYPE_CHECKING:
 
 
 class InstallerRegistry:
-    r"""Implement the main installer registry."""
+    r"""Implement the main installer registry.
+
+    The registry maps an installer name to an installer class. It is
+    shared by the whole process. The installers ``"pip"``, ``"pipx"``
+    and ``"uv"`` are registered by default.
+
+    Example:
+        ```pycon
+        >>> from feu.install import InstallerRegistry
+        >>> InstallerRegistry.has_installer("uv")
+        True
+
+        ```
+    """
 
     registry: ClassVar[dict[str, type[BaseInstaller]]] = {
         "pip": PipInstaller,
@@ -27,18 +40,18 @@ class InstallerRegistry:
     def add_installer(
         cls, name: str, installer: type[BaseInstaller], exist_ok: bool = False
     ) -> None:
-        r"""Add an installer for a given package.
+        r"""Add an installer class for a given installer name.
 
         Args:
-            name: The installer name e.g. pip or uv.
-            installer: The installer used for the given package.
+            name: The installer name e.g. ``"pip"`` or ``"uv"``.
+            installer: The installer class used for the given name.
             exist_ok: If ``False``, ``RuntimeError`` is raised if the
                 installer already exists. This parameter should be set
-                to ``True`` to overwrite the installer for a package.
+                to ``True`` to overwrite the installer for a name.
 
         Raises:
             RuntimeError: if an installer is already registered for the
-                package name and ``exist_ok=False``.
+                name and ``exist_ok=False``.
 
         Example:
             ```pycon

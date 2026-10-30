@@ -18,7 +18,10 @@ def sort_by_keys(mapping: Mapping[Any, Any]) -> dict[Any, Any]:
         mapping: The dictionary to sort.
 
     Returns:
-        dict: The sorted dictionary.
+        A new dictionary sorted by keys in ascending order.
+
+    Raises:
+        TypeError: if the keys cannot be compared.
 
     Example:
         ```pycon
@@ -38,7 +41,11 @@ def sort_by_values(mapping: Mapping[Any, Any]) -> dict[Any, Any]:
         mapping: The dictionary to sort.
 
     Returns:
-        dict: The sorted dictionary.
+        A new dictionary sorted by values in ascending order. The
+            order of the items with equal values is preserved.
+
+    Raises:
+        TypeError: if the values cannot be compared.
 
     Example:
         ```pycon

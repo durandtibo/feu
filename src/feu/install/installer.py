@@ -19,6 +19,10 @@ logger: logging.Logger = logging.getLogger(__name__)
 class BaseInstaller(ABC):
     r"""Define the base class to implement a package installer.
 
+    A concrete installer must implement ``equal``, ``install``, and
+    ``instantiate_with_arguments``. Installers are registered by name
+    in ``InstallerRegistry``.
+
     Example:
         ```pycon
         >>> from feu.install.pip import PipInstaller

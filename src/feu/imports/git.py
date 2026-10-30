@@ -61,8 +61,10 @@ def git_available(fn: F) -> F:
         fn: The function to execute.
 
     Returns:
-        A wrapper around ``fn`` if ``git`` package is installed,
-            otherwise ``None``.
+        A wrapper around ``fn``. When the wrapper is called, it
+            executes ``fn`` and returns its output if the ``git``
+            package is installed, otherwise it does nothing and
+            returns ``None``.
 
     Example:
         ```pycon
@@ -79,6 +81,9 @@ def git_available(fn: F) -> F:
 
 
 def raise_git_missing_error() -> Never:
-    r"""Raise a RuntimeError to indicate the ``git`` package is
-    missing."""
+    r"""Raise a RuntimeError to indicate the ``git`` package is missing.
+
+    Raises:
+        RuntimeError: Always raised to indicate the package is missing.
+    """
     raise_package_missing_error("git", "gitpython")

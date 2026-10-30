@@ -1,4 +1,5 @@
-r"""Contain functions to manage package versions."""
+r"""Contain functions to get the version of an installed package or of
+the current python."""
 
 from __future__ import annotations
 
@@ -18,7 +19,8 @@ def get_package_version(package: str) -> Version | None:
         package: The package name.
 
     Returns:
-        The package version.
+        The package version, or ``None`` if the package is not
+            installed.
 
     Example:
         ```pycon

@@ -19,14 +19,20 @@ logger: logging.Logger = logging.getLogger(__name__)
 def fetch_github_metadata(owner: str, repo: str) -> dict[str, Any]:
     r"""Get the GitHub repo metadata.
 
-    The metadata is read from GitHub API.
+    The metadata is read from the GitHub API. The request is
+    authenticated if the ``GITHUB_TOKEN`` environment variable is set
+    (see ``build_github_headers``). The result is cached.
 
     Args:
         owner: The owner of the repo.
         repo: The repo name.
 
     Returns:
-        The repo metadata.
+        The repo metadata, as returned by the GitHub API.
+
+    Raises:
+        RuntimeError: If the request fails or if ``requests`` is not
+            installed.
 
     Example:
         ```pycon

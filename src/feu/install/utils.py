@@ -60,9 +60,19 @@ class InstallResult(NamedTuple):
 def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
     r"""Install a package with the specified installer.
 
+    The package is installed as specified, without any version
+    compatibility check. Use ``install_package_closest_version`` to
+    install the closest compatible version.
+
     Args:
         installer: The installer specification.
         package: The package specification.
+
+    Raises:
+        RuntimeError: If no installer is registered for the installer
+            name.
+        subprocess.CalledProcessError: If the installation command
+            fails.
 
     Example:
         ```pycon
@@ -83,14 +93,22 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
     installer.
 
     This function finds the closest valid version if the specified
-    version is not compatible.
+    version is not compatible with the current Python version (the
+    OS and the CPU architecture are not considered). A wildcard version
+    (e.g. ``'2.12.*'``) cannot be checked against the compatibility
+    registry, so the package is installed as specified.
 
     Args:
         installer: The installer specification.
         package: The package specification.
 
     Raises:
-        RuntimeError: If no package version is specified.
+        RuntimeError: If no package version is specified, or if no
+            installer is registered for the installer name.
+        UnsupportedVersionError: If no version of the package is
+            valid for the current Python version.
+        subprocess.CalledProcessError: If the installation command
+            fails.
 
     Example:
         ```pycon
@@ -138,8 +156,10 @@ def get_installable_versions(
             e.g. ``'2024-01-01'``.
 
     Returns:
-        The sorted list of stable versions of the package that are
-            valid for the given target.
+        The stable versions of the package that are valid for the
+            given target. The versions are in the order returned by
+            ``fetch_pypi_versions`` (sorted as strings), so use
+            ``sort_versions`` to sort them by version.
 
     Example:
         ```pycon
@@ -172,7 +192,7 @@ def install_all_versions(
     target, one after the other.
 
     A failure to install one version does not stop the installation of
-    the remaining versions.
+    the remaining versions. The failure is logged.
 
     Args:
         installer: The installer specification.
@@ -217,7 +237,18 @@ def install_all_versions(
 
 
 def _try_install(installer: InstallerSpec, package: PackageSpec) -> bool:
-    r"""Try to install a package, returning whether it succeeded."""
+    r"""Try to install a package, returning whether it succeeded.
+
+    Any exception raised by the installation is logged and not
+    propagated.
+
+    Args:
+        installer: The installer specification.
+        package: The package specification.
+
+    Returns:
+        ``True`` if the installation succeeded, otherwise ``False``.
+    """
     try:
         install_package(installer=installer, package=package)
     except Exception:
@@ -278,6 +309,8 @@ def install_packages_all_versions(
 def is_pip_available() -> bool:
     r"""Check if ``pip`` is available.
 
+    The result is cached.
+
     Returns:
         ``True`` if ``pip`` is available, otherwise ``False``.
 
@@ -294,6 +327,8 @@ def is_pip_available() -> bool:
 @cache
 def is_pipx_available() -> bool:
     r"""Check if ``pipx`` is available.
+
+    The result is cached.
 
     Returns:
         ``True`` if ``pipx`` is available, otherwise ``False``.
@@ -312,6 +347,8 @@ def is_pipx_available() -> bool:
 def is_uv_available() -> bool:
     r"""Check if ``uv`` is available.
 
+    The result is cached.
+
     Returns:
         ``True`` if ``uv`` is available, otherwise ``False``.
 
@@ -329,8 +366,11 @@ def is_uv_available() -> bool:
 def get_available_installers() -> tuple[str, ...]:
     r"""Get the available installers.
 
+    The result is cached.
+
     Returns:
-        The available installers.
+        The names of the installers found on the ``PATH``, among
+            ``"pip"``, ``"pipx"`` and ``"uv"``.
 
     Example:
         ```pycon

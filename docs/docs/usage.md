@@ -72,6 +72,20 @@ closest = find_closest_version(
 print(f"Closest valid version: {closest}")  # Will return "1.23.2"
 ```
 
+A package that is not configured for the target accepts any version. If the package is configured
+but no version of it supports the target, `is_valid_version` returns `False` and
+`find_closest_version` raises `feu.compat.UnsupportedVersionError`.
+
+`Target` also accepts the optional `free_threaded`, `os` and `arch` arguments. Use
+`resolve_target` to build a target from partial inputs, falling back to the current interpreter
+and platform:
+
+```python
+from feu.compat import resolve_target
+
+target = resolve_target(python_version="3.14t", os="linux", arch="x86_64")
+```
+
 ## Installing Packages
 
 Install packages with automatic version selection:
@@ -87,7 +101,9 @@ install_package(
     package=PackageSpec(name="numpy", version="2.0.2"),
 )
 
-# Install the closest valid version for your Python environment
+# Install the closest valid version for your Python environment. The compatibility is
+# checked against the current Python version only, and a wildcard version (e.g. "2.0.*")
+# is installed as specified.
 install_package_closest_version(
     installer=InstallerSpec(name="pip"),
     package=PackageSpec(name="numpy", version="2.0.2"),
@@ -153,8 +169,8 @@ last_version_tag = get_last_version_tag_name(raise_error=False)
 
 - **Scientific Computing**: numpy, scipy, pandas, polars, xarray, duckdb
 - **Machine Learning**: torch, jax, scikit-learn
-- **Data Handling**: pyarrow, safetensors
-- **Visualization**: matplotlib
+- **Data Handling**: pyarrow, safetensors, xy
+- **Visualization**: matplotlib, bokeh
 - **Web**: requests, click
 - **Validation**: pydantic
 

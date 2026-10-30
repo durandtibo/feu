@@ -75,5 +75,16 @@ def _is_target_compatible(wanted: WheelTags, tags: set[WheelTags]) -> bool:
     Unlike pure-Python packages, ``jaxlib`` always ships platform-
     specific wheels, so a match requires the Python version, free-
     threaded, OS, and arch axes to all agree exactly.
+
+    Args:
+        wanted: The tags describing the wanted target.
+        tags: The wheel tags parsed from the wheel filenames of the
+            ``jaxlib`` release with the same version as the ``jax``
+            release. An empty set means that ``jaxlib`` has no such
+            release.
+
+    Returns:
+        ``True`` if at least one ``jaxlib`` wheel matches the wanted
+            target exactly.
     """
     return any(tags_match_exactly(tag, wanted) for tag in tags)

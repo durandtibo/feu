@@ -64,7 +64,10 @@ packages and their versions across different Python environments. It provides ut
 - **Version management**: Find the closest valid package version for your target environment
 - **Package configuration**: Maintain a registry of known package version compatibility, and
   discover it automatically from PyPI when it isn't already registered
-- **GitHub metadata**: Fetch and sort repository metadata from the GitHub API
+- **Version utilities**: Compare, filter and sort versions, fetch the versions published on PyPI,
+  and read dependency bounds from `pyproject.toml`
+- **Git and GitHub utilities**: Get the tags of a local git repository, and fetch and sort
+  repository metadata from the GitHub API
 
 The library is particularly useful for projects that need to support multiple Python versions,
 free-threaded builds, OSes, and CPU architectures, and want to ensure they install compatible

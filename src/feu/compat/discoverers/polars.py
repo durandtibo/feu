@@ -104,6 +104,17 @@ def _is_target_compatible(
     release that only ships a pure-Python wheel is compatible only if
     its pinned ``polars-runtime-32`` release shipped a wheel matching
     those axes exactly.
+
+    Args:
+        wanted: The tags describing the wanted target.
+        tags: The wheel tags parsed from the ``polars`` release's wheel
+            filenames.
+        runtime_tags: The wheel tags of the pinned
+            ``polars-runtime-32`` release, or ``None`` if the release
+            has no pinned ``polars-runtime-32`` dependency.
+
+    Returns:
+        ``True`` if the release satisfies the wanted target.
     """
     for tag in tags:
         if tag.python_version is None:

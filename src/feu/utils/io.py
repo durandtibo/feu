@@ -1,4 +1,4 @@
-r"""Contain utility functions to export data to JSON format."""
+r"""Contain utility functions to load and save data in JSON format."""
 
 from __future__ import annotations
 
@@ -18,6 +18,10 @@ def load_json(path: Path) -> Any:
 
     Returns:
         The data from the JSON file.
+
+    Raises:
+        FileNotFoundError: if the file does not exist.
+        json.JSONDecodeError: if the file does not contain valid JSON.
 
     Example:
         ```pycon
@@ -41,24 +45,30 @@ def load_json(path: Path) -> Any:
 def save_json(to_save: Any, path: Path, *, exist_ok: bool = False) -> None:
     r"""Save the given data in a JSON file.
 
+    The parent directories are created if needed. The data is first
+    written to a unique temporary file, which is then moved to
+    ``path``, so an interrupted write does not corrupt an existing
+    file.
+
     Args:
-        to_save: The data to write in a JSON file.
+        to_save: The data to write in a JSON file. It must be
+            serializable by ``json.dump``.
         path: The path where to write the JSON file.
-        exist_ok: If ``exist_ok`` is ``False`` (the default),
-            ``FileExistsError`` is raised if the target file
-            already exists. If ``exist_ok`` is ``True``,
-            ``FileExistsError`` will not be raised unless the
-            given path already exists in the file system and is
-            not a file.
+        exist_ok: If ``False`` (the default), ``FileExistsError`` is
+            raised if the target file already exists. If ``True``,
+            the existing file is overwritten.
 
     Raises:
-        FileExistsError: if the file already exists.
+        FileExistsError: if the file already exists and
+            ``exist_ok=False``.
+        IsADirectoryError: if ``path`` is a directory.
+        TypeError: if ``to_save`` is not JSON serializable.
 
     Example:
         ```pycon
         >>> import tempfile
         >>> from pathlib import Path
-        >>> from feu.utils.io import save_json
+        >>> from feu.utils.io import load_json, save_json
         >>> with tempfile.TemporaryDirectory() as tmpdir:
         ...     path = Path(tmpdir).joinpath("data.json")
         ...     save_json({"key1": [1, 2, 3], "key2": "abc"}, path)
@@ -92,13 +102,14 @@ def save_json(to_save: Any, path: Path, *, exist_ok: bool = False) -> None:
 def generate_unique_tmp_path(path: Path) -> Path:
     r"""Return a unique temporary path given a path.
 
-    This function updates the name to add a UUID.
+    This function adds a UUID to the file name, before the extensions,
+    e.g. ``data.json`` becomes ``data-<uuid>.json``.
 
     Args:
         path: The input path.
 
     Returns:
-        The unique name.
+        The unique path, in the same directory as ``path``.
 
     Example:
         ```pycon

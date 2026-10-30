@@ -24,13 +24,18 @@ def sort_repos_by_key(
     Args:
         repos: List of repository dictionaries from GitHub API.
         key: Key to sort.
-        reverse: If True, sort in descending order. Defaults to False.
+        reverse: If ``True``, sort in descending order. Defaults to
+            ``False``.
 
     Returns:
-        List of repository dictionaries sorted in ascending order
-        (or descending if reverse=True). Repositories without the key, or
-        with a ``None`` value for the key, appear at the end in their
-        original order.
+        A new list of repository dictionaries sorted in ascending
+            order (or descending if ``reverse=True``). Repositories
+            without the key, or with a ``None`` value for the key,
+            appear at the end in their original order, whatever the
+            value of ``reverse``.
+
+    Raises:
+        TypeError: If the values of the key cannot be compared.
 
     Example:
         ```pycon
