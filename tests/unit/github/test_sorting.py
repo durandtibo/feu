@@ -1,18 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
 import pytest
 
 from feu.github import sort_repos_by_key
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-
-def call(func: Callable[..., Any], *args: Any) -> Any:
-    return func(*args)
-
 
 #######################################
 #     Tests for sort_repos_by_key     #
@@ -160,4 +150,4 @@ def test_sort_repos_by_key_reverse_parameter_must_be_keyword() -> None:
     repos = [{"name": "test", "id": 1}]
     # This should raise TypeError because reverse is keyword-only
     with pytest.raises(TypeError):
-        call(sort_repos_by_key, repos, "name", True)
+        sort_repos_by_key(repos, "name", True)  # ty: ignore[missing-argument, too-many-positional-arguments]
