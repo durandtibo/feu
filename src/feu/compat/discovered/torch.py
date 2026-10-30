@@ -38,19 +38,19 @@ def compat() -> dict[Target, list[VersionRange]]:
         ],
         Target(python_version="3.9", free_threaded=False, os="windows", arch="arm64"): [],
         Target(python_version="3.10", free_threaded=False, os="linux", arch="x86_64"): [
-            VersionRange(min="1.11.0", max=None)
+            VersionRange(min="1.11.0", max="2.14.1")
         ],
         Target(python_version="3.10", free_threaded=False, os="linux", arch="arm64"): [
-            VersionRange(min="1.10.2", max=None)
+            VersionRange(min="1.10.2", max="2.14.1")
         ],
         Target(python_version="3.10", free_threaded=False, os="macos", arch="x86_64"): [
             VersionRange(min="1.11.0", max="2.2.2")
         ],
         Target(python_version="3.10", free_threaded=False, os="macos", arch="arm64"): [
-            VersionRange(min="1.11.0", max=None)
+            VersionRange(min="1.11.0", max="2.14.1")
         ],
         Target(python_version="3.10", free_threaded=False, os="windows", arch="x86_64"): [
-            VersionRange(min="1.11.0", max=None)
+            VersionRange(min="1.11.0", max="2.14.1")
         ],
         Target(python_version="3.10", free_threaded=False, os="windows", arch="arm64"): [],
         Target(python_version="3.11", free_threaded=False, os="linux", arch="x86_64"): [
@@ -141,16 +141,32 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="2.9.0", max=None)
         ],
         Target(python_version="3.14", free_threaded=True, os="windows", arch="arm64"): [],
-        Target(python_version="3.15", free_threaded=False, os="linux", arch="x86_64"): [],
-        Target(python_version="3.15", free_threaded=False, os="linux", arch="arm64"): [],
+        Target(python_version="3.15", free_threaded=False, os="linux", arch="x86_64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
+        Target(python_version="3.15", free_threaded=False, os="linux", arch="arm64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
         Target(python_version="3.15", free_threaded=False, os="macos", arch="x86_64"): [],
-        Target(python_version="3.15", free_threaded=False, os="macos", arch="arm64"): [],
-        Target(python_version="3.15", free_threaded=False, os="windows", arch="x86_64"): [],
+        Target(python_version="3.15", free_threaded=False, os="macos", arch="arm64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
+        Target(python_version="3.15", free_threaded=False, os="windows", arch="x86_64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
         Target(python_version="3.15", free_threaded=False, os="windows", arch="arm64"): [],
-        Target(python_version="3.15", free_threaded=True, os="linux", arch="x86_64"): [],
-        Target(python_version="3.15", free_threaded=True, os="linux", arch="arm64"): [],
+        Target(python_version="3.15", free_threaded=True, os="linux", arch="x86_64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
+        Target(python_version="3.15", free_threaded=True, os="linux", arch="arm64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
         Target(python_version="3.15", free_threaded=True, os="macos", arch="x86_64"): [],
-        Target(python_version="3.15", free_threaded=True, os="macos", arch="arm64"): [],
-        Target(python_version="3.15", free_threaded=True, os="windows", arch="x86_64"): [],
+        Target(python_version="3.15", free_threaded=True, os="macos", arch="arm64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
+        Target(python_version="3.15", free_threaded=True, os="windows", arch="x86_64"): [
+            VersionRange(min="2.15.0", max=None)
+        ],
         Target(python_version="3.15", free_threaded=True, os="windows", arch="arm64"): [],
     }
