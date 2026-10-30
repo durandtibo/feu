@@ -5,9 +5,13 @@ import pytest
 from feu.compat.discoverers.base import BaseCompatDiscoverer
 
 
+def instantiate(cls: type[BaseCompatDiscoverer]) -> BaseCompatDiscoverer:
+    return cls()
+
+
 def test_base_compat_discoverer_is_abstract() -> None:
     with pytest.raises(TypeError):
-        BaseCompatDiscoverer()
+        instantiate(BaseCompatDiscoverer)
 
 
 def test_base_compat_discoverer_subclass_must_implement_discover() -> None:
@@ -15,7 +19,7 @@ def test_base_compat_discoverer_subclass_must_implement_discover() -> None:
         pass
 
     with pytest.raises(TypeError):
-        IncompleteDiscoverer()
+        instantiate(IncompleteDiscoverer)
 
 
 def test_base_compat_discoverer_subclass_can_be_instantiated() -> None:

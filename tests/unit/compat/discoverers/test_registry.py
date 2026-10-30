@@ -26,7 +26,7 @@ def test_compat_discoverer_registry_init_empty() -> None:
 
 def test_compat_discoverer_registry_init_with_state() -> None:
     discoverer = StubCompatDiscoverer()
-    initial_state = {"my_package": discoverer}
+    initial_state: dict[str, BaseCompatDiscoverer] = {"my_package": discoverer}
     registry = CompatDiscovererRegistry(initial_state)
 
     assert registry._state["my_package"] is discoverer

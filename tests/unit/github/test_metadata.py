@@ -11,9 +11,6 @@ from feu.testing import requests_available
 
 if is_requests_available():
     import requests
-    from requests import Response
-else:
-    Response = Mock()
 
 
 @pytest.fixture(autouse=True)
@@ -26,7 +23,7 @@ def _reset_cache() -> None:
 ###########################################
 
 
-def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
+def make_mock_response(status: int = 200, raise_json: bool = False) -> Mock:
     resp = Mock()
     resp.status_code = status
 
