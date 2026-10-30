@@ -65,7 +65,7 @@ def generate(pkg_name: str) -> None:
 def main() -> None:
     r"""Define the main function."""
     packages = get_package_names()
-    logger.info(f"Generating compatibility module for packages: {packages}")
+    logger.info("Generating compatibility module for packages: %s", packages)
     for pkg_name in packages:
         generate(pkg_name)
 

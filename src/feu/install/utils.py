@@ -203,13 +203,13 @@ def install_all_versions(
     """
     pkg_name = extract_package_name(package)
     extras = extract_package_extras(package)
-    logger.info(f"Installing {package}...")
+    logger.info("Installing %s...", package)
     installed: list[str] = []
     failed: list[str] = []
     versions = sort_versions(
         get_installable_versions(pkg_name=pkg_name, target=target, start_date=start_date)
     )
-    logger.info(f"Installable versions for {package}: {versions}")
+    logger.info("Installable versions for %s: %s", package, versions)
     for version in versions:
         spec = PackageSpec(name=pkg_name, version=version, extras=extras or None)
         (installed if _try_install(installer, spec) else failed).append(version)
@@ -221,7 +221,7 @@ def _try_install(installer: InstallerSpec, package: PackageSpec) -> bool:
     try:
         install_package(installer=installer, package=package)
     except Exception:
-        logger.exception(f"failed to install {package}")
+        logger.exception("failed to install %s", package)
         return False
     return True
 

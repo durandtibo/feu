@@ -29,5 +29,5 @@ def run_bash_command(cmd: str) -> None:
 
         ```
     """
-    logger.info(f"execute the following command: {cmd}")
+    logger.info("execute the following command: %s", cmd)
     subprocess.run(shlex.split(cmd, posix=(os.name != "nt")), check=True)  # noqa: S603
