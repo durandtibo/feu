@@ -6,6 +6,7 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+from requests import Response
 
 from feu.github import display_repos_summary, fetch_github_repos
 from feu.testing import requests_available
@@ -24,9 +25,9 @@ def _reset_cache() -> None:
 
 
 @pytest.fixture
-def mock_response() -> Mock:
+def mock_response() -> Response:
     """Create a mock response object."""
-    response = Mock()
+    response = Mock(spec=Response)
     response.status_code = 200
     response.headers = {}
     return response

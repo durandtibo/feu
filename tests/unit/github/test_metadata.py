@@ -4,6 +4,7 @@ import os
 from unittest.mock import Mock, patch
 
 import pytest
+from requests import Response
 
 from feu.github import fetch_github_metadata
 from feu.imports import is_requests_available
@@ -23,8 +24,8 @@ def _reset_cache() -> None:
 ###########################################
 
 
-def make_mock_response(status: int = 200, raise_json: bool = False) -> Mock:
-    resp = Mock()
+def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
+    resp = Mock(spec=Response)
     resp.status_code = status
 
     # raise_for_status
