@@ -213,14 +213,23 @@ the CLI could offer `--strict` to fail on unknown packages.
 marks at import time. `lru_cache` also makes monkeypatching painful, which is why the tests call
 `cache_clear()` (`tests/unit/compat/test_interface.py`, `tests/unit/install/test_utils.py`, ...).
 
-**Proposal.**
+**Proposal: adopt the `coola.utils.imports` design** (coola 2.0 alpha, which I read from the local
+uv cache, `coola/utils/imports/{package,optional,lazy}.py`):
 
-- Drop the cache from `is_package_available` (`find_spec` is fast enough) or expose
-  `invalidate_caches()` and call it after a successful install.
-- `is_module_available` imports the module and so has side effects. Document that more
-  prominently, and consider `find_spec` plus an optional `import_module` flag.
-- `is_package_available("a.b")` will import the parent `a` to find `a.b`. This is a surprising
-  side effect for a function documented as "searched without being imported".
+- `@availability_cache` replaces `functools.cache`/`lru_cache` on every availability check. It
+  caches and registers the function, and `clear_availability_caches()` resets all of them with no
+  list to maintain. Tests and post-install code call it once, instead of one `cache_clear()` per
+  function.
+- Call `clear_availability_caches()` after a successful `install_package` in `feu`.
+- `package_available(name)` only uses `find_spec` (no import) and suppresses `ImportError` and
+  `ValueError`. That fixes the case where `find_spec("a.b")` raises because the parent package
+  cannot be imported.
+- `module_available(name)` imports the module, treats any exception from a broken install (missing
+  shared library, ABI mismatch) as "not available", and logs it with `logger.warning(...,
+exc_info=True)`. `feu`'s `is_module_available` swallows only `ImportError`, so a broken module
+  crashes the caller.
+- `is_<pkg>_available` should call `module_available` (the library "can be imported"), not
+  `find_spec`, so a broken numpy is not reported as available.
 
 **Breaking:** no.
 
@@ -354,17 +363,36 @@ discoverers already `{...}`-copy defensively in places, but nothing enforces it.
 
 ## P13. Duplication that can be removed
 
-- **`feu/imports/{click,git,requests,rich,urllib3}.py`** are five 90-line copies that differ in the
-  package name and pip name. Generate them with a small factory (a dataclass `OptionalDependency`
-  with `is_available()`, `check()`, `raise_missing_error()`, and a decorator method), keeping
-  the current function names as thin aliases for compatibility. The `*_available` decorators
-  silently return `None` when the dependency is missing. That is surprising for a function that
-  has a return value, so consider raising by default.
+- **`feu/imports/{click,git,requests,rich,urllib3}.py`** are five 90-line copies that differ only
+  in the package name and the pip name. Follow coola's layout instead:
+  - `package.py`: `package_available`, `module_available`, `check_package(package, *, install=None)`,
+    `raise_package_missing_error(package, *, install=None)`, `availability_cache`,
+    `clear_availability_caches`. The `install=` keyword replaces the second positional string
+    (`raise_package_missing_error("git", "gitpython")`), which is easy to swap.
+  - `optional.py`: the `is_<pkg>_available()` / `check_<pkg>()` pairs for `click`, `git`,
+    `requests`, `rich`, `urllib3` in one module, each two lines of code.
+  - Drop the `<pkg>_available` decorators and `decorator_package_available`. They return `None`
+    when the package is missing, which is surprising for a function that normally returns a value.
+    Nothing in `src/` needs them; the test marks in `feu.testing` already cover that use.
+  - Add `MissingPackageError(ModuleNotFoundError, RuntimeError)` with `.name` set. `except
+ImportError` works and the existing `except RuntimeError` code keeps working. It replaces the
+    plain `RuntimeError` raised today.
+  - Add `lazy_exports(package, exports, namespace)` (coola's PEP 562 helper) so the top-level
+    `feu/__init__.py` does not import `feu.install`, `feu.compat`, and `feu.version` at
+    `import feu` time. I measured about 82 ms for `import feu`, almost all of it `feu.compat`
+    (the discovered data registry).
+  - Two real differences to keep in mind when porting: feu has `is_module_available` /
+    `is_package_available` where coola has `module_available` / `package_available`, and feu uses
+    `requests`, `urllib3`, `git`, which coola does not have. The `*_available` public names would
+    need aliases for one release.
 - **`feu/utils/fallback/*`** build fake `click`/`git`/`requests` modules so imports succeed.
   `typing.TYPE_CHECKING or is_x_available()` blocks are repeated in `local_git.py`,
-  `utils/http.py`, `__main__.py`, and `compat/matrix.py`. A lazy import inside the function that
-  needs the dependency (the pattern `CLAUDE.md` already prescribes for numpy/torch/...) removes the
-  fallback modules and the `# pragma: no cover` branches.
+  `utils/http.py`, `__main__.py`, and `compat/matrix.py`. With coola's design, a function calls `check_requests()` and
+  then imports `requests` inside its body (the pattern `CLAUDE.md` already prescribes for
+  numpy/torch/...). That removes the fallback modules and the `# pragma: no cover` branches. The
+  HTTP code in `utils/http.py` and the git code in `local_git.py` can import at call time, and
+  `__main__.py` can build the click group lazily or raise `MissingPackageError` from a small
+  entry point.
 - **`install/pip/resolver.py`**: seven `Numpy2DependencyResolver` subclasses differ only by one
   constant (`min_version`). They can be one table `{"pandas": "2.2.2", "scipy": "1.13.0", ...}`
   plus the two special resolvers (jax, default). That removes about 250 lines. Also note
