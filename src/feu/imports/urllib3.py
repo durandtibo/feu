@@ -66,8 +66,10 @@ def urllib3_available(fn: F) -> F:
         fn: The function to execute.
 
     Returns:
-        A wrapper around ``fn`` if ``urllib3`` package is installed,
-            otherwise ``None``.
+        A wrapper around ``fn``. When the wrapper is called, it
+            executes ``fn`` and returns its output if the ``urllib3``
+            package is installed, otherwise it does nothing and
+            returns ``None``.
 
     Example:
         ```pycon
@@ -85,5 +87,9 @@ def urllib3_available(fn: F) -> F:
 
 def raise_urllib3_missing_error() -> Never:
     r"""Raise a RuntimeError to indicate the ``urllib3`` package is
-    missing."""
+    missing.
+
+    Raises:
+        RuntimeError: Always raised to indicate the package is missing.
+    """
     raise_package_missing_error("urllib3", "urllib3")

@@ -82,6 +82,14 @@ class BasePipInstaller(BaseInstaller):
 class PipInstaller(BasePipInstaller):
     r"""Implement a pip package installer.
 
+    The package dependencies are resolved first, and then installed
+    with a single ``pip install`` command.
+
+    Args:
+        arguments: Optional arguments to pass to ``pip install``,
+            e.g. ``"--upgrade"``. Leading and trailing whitespace is
+            removed.
+
     Example:
         ```pycon
         >>> from feu.install.pip import PipInstaller
@@ -105,6 +113,14 @@ class PipInstaller(BasePipInstaller):
 class PipxInstaller(BasePipInstaller):
     r"""Implement a pipx package installer.
 
+    The package dependencies are resolved first, and then installed
+    with a single ``pipx install`` command.
+
+    Args:
+        arguments: Optional arguments to pass to ``pipx install``,
+            e.g. ``"--upgrade"``. Leading and trailing whitespace is
+            removed.
+
     Example:
         ```pycon
         >>> from feu.install.pip import PipxInstaller
@@ -127,6 +143,14 @@ class PipxInstaller(BasePipInstaller):
 
 class UvInstaller(BasePipInstaller):
     r"""Implement a uv package installer.
+
+    The package dependencies are resolved first, and then installed
+    with a single ``uv pip install`` command.
+
+    Args:
+        arguments: Optional arguments to pass to ``uv pip install``,
+            e.g. ``"--upgrade"``. Leading and trailing whitespace is
+            removed.
 
     Example:
         ```pycon

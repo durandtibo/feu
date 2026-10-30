@@ -54,8 +54,8 @@ class CompatRegistry:
 
     Args:
         initial_state: Optional initial mapping of package
-            constraints. If provided, the state is copied to prevent
-            external mutations.
+            constraints. If provided, the state is deep-copied to
+            prevent external mutations.
 
     Example:
         ```pycon
@@ -88,7 +88,8 @@ class CompatRegistry:
 
     @property
     def state(self) -> dict[str, dict[Target, list[VersionRange]]]:
-        r"""The registered package constraints."""
+        r"""The registered package constraints, as a mapping of package
+        name to ``Target`` to a list of ``VersionRange``."""
         return self._state
 
     def register(
@@ -139,6 +140,11 @@ class CompatRegistry:
             mapping: Mapping of package name to ``Target`` to list of
                 ``VersionRange``.
             exist_ok: Forwarded to ``register``.
+
+        Raises:
+            RuntimeError: If any configuration already exists for a
+                given package name and target, and ``exist_ok`` is
+                ``False``.
         """
         for pkg_name, targets in mapping.items():
             for target, ranges in targets.items():
@@ -151,6 +157,18 @@ class CompatRegistry:
 
     @staticmethod
     def _matches(entry_target: Target, lookup: Target) -> bool:
+        r"""Indicate if a registered target applies to a lookup target.
+
+        Args:
+            entry_target: The registered target. Its ``os`` and
+                ``arch`` act as wildcards when they are ``None``.
+            lookup: The target to look up.
+
+        Returns:
+            ``True`` if ``python_version`` and ``free_threaded`` are
+                equal, and ``os`` and ``arch`` are either ``None`` in
+                ``entry_target`` or equal to those of ``lookup``.
+        """
         if entry_target.python_version != lookup.python_version:
             return False
         if entry_target.free_threaded != lookup.free_threaded:
@@ -161,13 +179,32 @@ class CompatRegistry:
 
     @staticmethod
     def _specificity(entry_target: Target) -> int:
+        r"""Compute how specific a registered target is.
+
+        Args:
+            entry_target: The registered target.
+
+        Returns:
+            The number of non-``None`` fields among ``os`` and
+                ``arch``, i.e. ``0``, ``1`` or ``2``.
+        """
         return (entry_target.os is not None) + (entry_target.arch is not None)
 
     def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
         r"""Resolve the raw registered ranges for a package/target,
         preserving the distinction between "no entry registered"
         (``None``) and "an entry registered with zero ranges" (``[]``,
-        i.e. explicitly unsupported)."""
+        i.e. explicitly unsupported).
+
+        Args:
+            pkg_name: The package name to query.
+            target: The compatibility target.
+
+        Returns:
+            The ranges of the most specific entry matching ``target``
+                (the most recently registered one on a tie), or
+                ``None`` if no entry matches.
+        """
         if pkg_name not in self._state:
             return None
         best: list[VersionRange] | None = None
@@ -225,8 +262,10 @@ class CompatRegistry:
             target: The compatibility target.
 
         Returns:
-            A list of ``(min_version, max_version)`` tuples, either
-            value being ``None`` if unconstrained on that side.
+            A list of ``(min_version, max_version)`` tuples sorted by
+                ascending minimum version, either value being ``None``
+                if unconstrained on that side. The list is empty if
+                the package is not configured for the target.
 
         Raises:
             UnsupportedVersionError: If no package version is valid
@@ -257,7 +296,10 @@ class CompatRegistry:
             target: The compatibility target.
 
         Returns:
-            The closest valid version as a string.
+            The closest valid version as a string. The requested
+                version is returned unchanged if it is valid or if
+                the package is not configured for the target.
+                Otherwise, the nearest range boundary is returned.
 
         Raises:
             UnsupportedVersionError: If no package version is valid

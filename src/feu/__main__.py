@@ -1,4 +1,10 @@
-r"""Contain the main entry point."""
+r"""Contain the main entry point of the command line interface.
+
+The command line interface requires the ``click`` package, which can be
+installed with ``pip install 'feu[cli]'``. It provides the commands
+``install``, ``find-closest-version``, and ``check-valid-version``,
+which are run with ``python -m feu <command>``.
+"""
 
 from __future__ import annotations
 
@@ -21,7 +27,7 @@ else:  # pragma: no cover
 
 @click.group()
 def cli() -> None:
-    r"""Implement the main entrypoint."""
+    r"""Implement the main entrypoint, which groups the commands."""
 
 
 @click.command()
@@ -63,15 +69,19 @@ def install(
 ) -> None:
     r"""Install a package and associated packages.
 
+    The closest version compatible with the current Python version is
+    installed if ``pkg_version`` is not compatible.
+
     Args:
         pkg_name: The package name e.g. ``'pandas'``.
         pkg_version: The target version of the package to install.
-        pkg_extras: Optional package extra dependencies.
+        pkg_extras: Optional package extra dependencies, separated by
+            commas e.g. ``'dev,doc'``. An empty string means no extra.
         installer_name: The package installer name to use to install
             the packages.
         installer_args: Optional arguments to pass to the package
-            installer. The valid arguments depend on the package
-            installer.
+            installer, as a single string e.g. ``'--upgrade'``. The
+            valid arguments depend on the package installer.
 
     Example:
         ```console
@@ -140,7 +150,11 @@ def find_closest_version(
     arch: str | None,
 ) -> None:
     r"""Print the closest valid version given the package name and
-    version, and python version.
+    version, and the target (python version, free-threaded build, OS,
+    and CPU architecture).
+
+    ``None`` is printed if no version of the package is valid for the
+    target.
 
     Args:
         pkg_name: The package name.
@@ -221,7 +235,11 @@ def check_valid_version(
     arch: str | None,
 ) -> None:
     r"""Print if the specified package version is valid for the given
-    Python version.
+    target (python version, free-threaded build, OS, and CPU
+    architecture).
+
+    ``True`` is printed if the version is valid or if the package is
+    not configured for the target, otherwise ``False`` is printed.
 
     Args:
         pkg_name: The package name.

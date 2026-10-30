@@ -15,15 +15,17 @@ if TYPE_CHECKING:
 
 
 def compare_version(package: str, op: Callable, version: str) -> bool:
-    r"""Compare a package version to a given version.
+    r"""Compare the installed version of a package to a given version.
 
     Args:
         package: The package to check.
-        op: The comparison operator.
+        op: The comparison operator, e.g. ``operator.ge``. It is
+            called as ``op(installed_version, Version(version))``.
         version: The version to compare with.
 
     Returns:
-        The comparison status.
+        The comparison status. ``False`` if the package is not
+            installed.
 
     Example:
         ```pycon
@@ -57,10 +59,11 @@ def latest_version(versions: Sequence[str]) -> str:
 
     Raises:
         ValueError: If ``versions`` is empty.
+        packaging.version.InvalidVersion: If a version string is not
+            a valid PEP 440 version.
 
     Example:
         ```pycon
-        >>> import operator
         >>> from feu.version import latest_version
         >>> latest_version(["1.0.0", "1.0.1rc1", "1.0.1"])
         '1.0.1'
@@ -84,12 +87,15 @@ def sort_versions(versions: Sequence[str], reverse: bool = False) -> list[str]:
             sort in descending order.
 
     Returns:
-        A new list of version strings sorted according to semantic
-            version order.
+        A new list of version strings sorted according to PEP 440
+            version order. The input is not modified.
+
+    Raises:
+        packaging.version.InvalidVersion: If a version string is not
+            a valid PEP 440 version.
 
     Example:
         ```pycon
-        >>> import operator
         >>> from feu.version import sort_versions
         >>> sort_versions(["1.0.0", "1.2.0", "1.1.0"])
         ['1.0.0', '1.1.0', '1.2.0']

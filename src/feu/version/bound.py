@@ -1,4 +1,4 @@
-r"""Contains the low and upper bounds for a package dependency."""
+r"""Contain the lower and upper bounds for a package dependency."""
 
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def get_package_bounds(
     """Return the first ``PackageBounds`` matching a given package name.
 
     The name comparison is case-insensitive and treats hyphens and
-    underscores as equivalent, following PEP 508 normalisation rules.
+    underscores as equivalent (see ``normalize_package_name``).
 
     Args:
         packages: A sequence of ``PackageBounds`` instances to search.
@@ -84,11 +84,12 @@ def get_package_bounds(
 
 
 def normalize_package_name(name: str) -> str:
-    """Normalize a package name per PEP 508.
+    """Normalize a package name.
 
     Converts the name to lowercase and replaces hyphens with underscores,
     so that ``"scikit-learn"``, ``"scikit_learn"``, and ``"Scikit_Learn"``
-    all compare as equal.
+    all compare as equal. Unlike the full PEP 503 normalization, dots
+    and runs of separators are not collapsed.
 
     Args:
         name: The package name to normalize.

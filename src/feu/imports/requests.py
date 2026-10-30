@@ -66,8 +66,10 @@ def requests_available(fn: F) -> F:
         fn: The function to execute.
 
     Returns:
-        A wrapper around ``fn`` if ``requests`` package is installed,
-            otherwise ``None``.
+        A wrapper around ``fn``. When the wrapper is called, it
+            executes ``fn`` and returns its output if the ``requests``
+            package is installed, otherwise it does nothing and
+            returns ``None``.
 
     Example:
         ```pycon
@@ -85,5 +87,9 @@ def requests_available(fn: F) -> F:
 
 def raise_requests_missing_error() -> Never:
     r"""Raise a RuntimeError to indicate the ``requests`` package is
-    missing."""
+    missing.
+
+    Raises:
+        RuntimeError: Always raised to indicate the package is missing.
+    """
     raise_package_missing_error("requests", "requests")

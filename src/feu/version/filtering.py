@@ -109,7 +109,12 @@ def filter_range_versions(
             If None, no upper limit is applied.
 
     Returns:
-        A list of version strings that fall within the specified bounds.
+        A list of version strings that fall within the specified bounds,
+            in the original order.
+
+    Raises:
+        packaging.version.InvalidVersion: If a version string is not
+            a valid PEP 440 version.
 
     Example:
         ```pycon
@@ -149,7 +154,12 @@ def filter_stable_versions(versions: Sequence[str]) -> list[str]:
         versions: A list of version strings.
 
     Returns:
-        A list containing only stable version strings.
+        A list containing only stable version strings, in the original
+            order.
+
+    Raises:
+        packaging.version.InvalidVersion: If a version string is not
+            a valid PEP 440 version.
 
     Example:
         ```pycon
@@ -174,13 +184,14 @@ def filter_valid_versions(versions: Iterable[str]) -> list[str]:
     r"""Filter out invalid version strings based on PEP 440.
 
     A valid version is one that can be parsed by `packaging.version.Version`.
-    Invalid versions include strings that don't conform to semantic versioning rules.
+    Invalid versions are the strings that don't conform to PEP 440.
 
     Args:
         versions: A list of version strings.
 
     Returns:
-        A list containing only valid version strings.
+        A list containing only valid version strings, in the original
+            order.
 
     Example:
         ```pycon
@@ -228,6 +239,10 @@ def latest_major_versions(versions: Sequence[str]) -> list[str]:
         A list containing the latest version for each major version,
             sorted by major version number.
 
+    Raises:
+        packaging.version.InvalidVersion: If a version string is not
+            a valid PEP 440 version.
+
     Example:
         ```pycon
         >>> from feu.version import latest_major_versions
@@ -262,9 +277,13 @@ def latest_minor_versions(versions: Sequence[str]) -> list[str]:
         A list containing the latest version for each minor version,
             sorted by major and minor version numbers.
 
+    Raises:
+        packaging.version.InvalidVersion: If a version string is not
+            a valid PEP 440 version.
+
     Example:
         ```pycon
-        >>> from feu.version import latest_major_versions
+        >>> from feu.version import latest_minor_versions
         >>> versions = latest_minor_versions(["1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"])
         >>> versions
         ['1.0.1', '1.1.2', '2.0.3']

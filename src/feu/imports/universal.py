@@ -26,6 +26,9 @@ F = TypeVar("F", bound="Callable[..., Any]")
 def is_package_available(name: str) -> bool:
     r"""Indicate if a package is available or not.
 
+    The package is searched without being imported. The result is
+    cached.
+
     Args:
         name: The package name to check.
 
@@ -50,6 +53,9 @@ def is_package_available(name: str) -> bool:
 @lru_cache
 def is_module_available(name: str) -> bool:
     r"""Indicate if a module is available or not.
+
+    Unlike ``is_package_available``, the module is imported, so
+    importing it can have side effects. The result is cached.
 
     Args:
         name: The module name to check.
@@ -80,7 +86,8 @@ def check_package(package: str, command: str | None = None) -> None:
 
     Args:
         package: The package name.
-        command: The command to install the package.
+        command: The optional command to install the package. If
+            provided, it is added to the error message.
 
     Raises:
         RuntimeError: if the package is not installed.
@@ -109,8 +116,10 @@ def decorator_package_available(fn: F, condition: Callable[[], bool]) -> F:
             check if a package is installed or not.
 
     Returns:
-        A wrapper around ``fn`` if condition is true,
-            otherwise ``None``.
+        A wrapper around ``fn``. When the wrapper is called, it
+            executes ``fn`` and returns its output if ``condition``
+            returns ``True``, otherwise it does nothing and returns
+            ``None``.
 
     Example:
         ```pycon
@@ -123,7 +132,7 @@ def decorator_package_available(fn: F, condition: Callable[[], bool]) -> F:
         ...     return 42 + n
         ...
         >>> my_function(2)
-            44
+        44
 
         ```
     """

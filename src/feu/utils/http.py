@@ -25,10 +25,10 @@ else:  # pragma: no cover
 
 
 def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]:
-    r"""Retrieve data for a given URL.
+    r"""Retrieve the JSON data for a given URL.
 
-    This function performs an HTTP GET request to fetch repository information.
-    It configures a retry policy for transient errors
+    This function performs an HTTP GET request and parses the response
+    body as JSON. It configures a retry policy for transient errors
     (e.g., 429, 500, 502, 503, 504), handles network and
     timeout failures, validates the HTTP response, and returns the parsed JSON
     payload. Any unrecoverable error is raised as a RuntimeError with a clear
@@ -45,7 +45,8 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
 
     Raises:
         RuntimeError: If the request times out, if a network or HTTP error occurs,
-            or if the response body contains invalid JSON.
+            if the response body contains invalid JSON, or if
+            ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -77,10 +78,11 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         **kwargs: Optional arguments that ``requests.get`` accepts.
 
     Returns:
-        A requests.Response object containing the HTTP response.
+        A ``requests.Response`` object containing the HTTP response.
 
     Raises:
-        RuntimeError: If the request times out or if a network/HTTP error occurs.
+        RuntimeError: If the request times out, if a network/HTTP error occurs,
+            or if ``requests`` is not installed.
 
     Example:
         ```pycon

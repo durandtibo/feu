@@ -1,4 +1,8 @@
-r"""Contain git utility functions."""
+r"""Contain git utility functions to inspect the tags of the current
+repository.
+
+These functions require the ``gitpython`` package.
+"""
 
 from __future__ import annotations
 
@@ -21,8 +25,18 @@ def get_tags() -> list[git.TagReference]:
     r"""Get the list of git tags sorted by date/time for the current
     repository.
 
+    The repository is searched from the current working directory
+    and its parent directories. The tags are sorted by the commit
+    date of the commit they point to.
+
     Returns:
-        The list of git tags sorted by date/time.
+        The list of git tags sorted by commit date/time, from the
+            oldest to the most recent.
+
+    Raises:
+        RuntimeError: if the ``gitpython`` package is not installed.
+        git.InvalidGitRepositoryError: if the current directory is
+            not in a git repository.
 
     Example:
         ```pycon
@@ -40,6 +54,9 @@ def get_tags() -> list[git.TagReference]:
 def get_last_tag_name(raise_error: bool = True) -> str | None:
     r"""Get the name of the most recent tag in the current repository.
 
+    The most recent tag is the tag pointing to the most recent commit,
+    see ``get_tags``.
+
     Args:
         raise_error: If ``True``, a ``RuntimeError`` is raised when
             no tag is found. If ``False``, ``None`` is returned
@@ -50,7 +67,8 @@ def get_last_tag_name(raise_error: bool = True) -> str | None:
             ``raise_error=False``.
 
     Raises:
-        RuntimeError: if no tag was found and ``raise_error=True``.
+        RuntimeError: if no tag was found and ``raise_error=True``, or
+            if the ``gitpython`` package is not installed.
 
     Example:
         ```pycon
@@ -75,7 +93,9 @@ def get_last_version_tag_name(raise_error: bool = True) -> str | None:
     r"""Get the name of the most recent version tag in the current
     repository.
 
-    A version tag is a tag starting with ``v{number}*``.
+    A version tag is a tag made of the prefix ``v`` followed by a
+    valid PEP 440 version, e.g. ``v1.2.3``. The other tags are
+    ignored.
 
     Args:
         raise_error: If ``True``, a ``RuntimeError`` is raised when
@@ -88,7 +108,8 @@ def get_last_version_tag_name(raise_error: bool = True) -> str | None:
 
     Raises:
         RuntimeError: if no version tag was found and
-            ``raise_error=True``.
+            ``raise_error=True``, or if the ``gitpython`` package is
+            not installed.
 
     Example:
         ```pycon

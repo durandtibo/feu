@@ -1,4 +1,19 @@
-r"""Define some utility functions for testing."""
+r"""Define the ``pytest`` marks to skip tests depending on the
+availability of optional dependencies.
+
+For each dependency, ``<name>_available`` skips the test if the
+dependency is not available, and ``<name>_not_available`` skips the
+test if the dependency is available.
+
+Example:
+    ```pycon
+    >>> from feu.testing import numpy_available
+    >>> @numpy_available
+    ... def test_numpy_feature() -> None: ...
+    ...
+
+    ```
+"""
 
 from __future__ import annotations
 
@@ -58,7 +73,18 @@ def _skipif_marks(
     is_available: bool, display_name: str
 ) -> tuple[pytest.MarkDecorator, pytest.MarkDecorator]:
     r"""Return a ``(<name>_available, <name>_not_available)`` pair of
-    ``skipif`` marks for an optional dependency."""
+    ``skipif`` marks for an optional dependency.
+
+    Args:
+        is_available: Whether the dependency is available.
+        display_name: The dependency name displayed in the skip
+            reason.
+
+    Returns:
+        The mark that skips the test if the dependency is not
+            available, and the mark that skips the test if the
+            dependency is available.
+    """
     return (
         pytest.mark.skipif(not is_available, reason=f"Requires {display_name}"),
         pytest.mark.skipif(is_available, reason=f"Skip if {display_name} is available"),

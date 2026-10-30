@@ -55,7 +55,7 @@ git clone git@github.com:durandtibo/feu.git
 cd feu
 ```
 
-It is recommended to create a Python 3.10+ virtual environment. The easiest way is to use the
+It is recommended to create a Python 3.11+ virtual environment. The easiest way is to use the
 provided Makefile command:
 
 ```shell

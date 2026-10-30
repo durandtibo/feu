@@ -3,10 +3,10 @@ constraints.
 
 Each submodule of this package holds the precomputed output of
 ``discover_compat_targets`` for one package, refreshed by the
-``dev/generate_discovered_compat.py`` maintenance script. This is
-the automatic counterpart to ``feu.compat.defaults.DEFAULT_COMPAT``,
-the human-curated variant, which takes precedence when both specify a
-given package/target.
+``dev/generate_discovered_compat.py`` maintenance script. The
+default registry returned by ``feu.compat.get_default_registry`` is
+populated from these modules. Custom constraints can be registered on
+top with ``feu.compat.register_compat``.
 """
 
 from __future__ import annotations

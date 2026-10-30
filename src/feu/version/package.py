@@ -1,4 +1,5 @@
-r"""Contain functions to manage package versions."""
+r"""Contain functions to fetch the versions of a package published on
+PyPI."""
 
 from __future__ import annotations
 
@@ -38,17 +39,18 @@ if TYPE_CHECKING:
 def fetch_versions(
     package: str, lower: str | None = None, upper: str | None = None
 ) -> tuple[str, ...]:
-    r"""Get the valid versions for a given package.
+    r"""Get the valid stable versions for a given package.
 
     Args:
         package: The package name.
         lower: The lower version bound (inclusive).
             If ``None``, no lower limit is applied.
         upper: The upper version bound (exclusive).
-            If None, no upper limit is applied.
+            If ``None``, no upper limit is applied.
 
     Returns:
-        A tuple containing the valid versions.
+        A tuple containing the unique, valid, stable versions in
+            ascending order.
 
     Example:
         ```pycon
@@ -182,6 +184,9 @@ def fetch_sampled_latest_minor_versions(
     Returns:
         A sorted tuple of sampled version strings.
 
+    Raises:
+        ValueError: If ``n`` is less than 1.
+
     Example:
         ```pycon
         >>> from feu.version import fetch_sampled_latest_minor_versions
@@ -199,13 +204,19 @@ def fetch_sampled_latest_minor_versions(
 
 
 def fetch_latest_version(package: str) -> str:
-    r"""Get the latest valid versions for a given package.
+    r"""Get the latest valid version for a given package.
+
+    The latest version can be a pre-release, post-release or
+    development release.
 
     Args:
         package: The package name.
 
     Returns:
-        The latest valid versions.
+        The latest valid version.
+
+    Raises:
+        ValueError: If the package has no valid version.
 
     Example:
         ```pycon
@@ -220,13 +231,16 @@ def fetch_latest_version(package: str) -> str:
 
 
 def fetch_latest_stable_version(package: str) -> str:
-    r"""Get the latest stable valid versions for a given package.
+    r"""Get the latest stable valid version for a given package.
 
     Args:
         package: The package name.
 
     Returns:
-        The latest stable valid versions.
+        The latest stable valid version.
+
+    Raises:
+        ValueError: If the package has no stable valid version.
 
     Example:
         ```pycon

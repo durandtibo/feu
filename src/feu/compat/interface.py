@@ -26,11 +26,12 @@ def get_default_registry() -> CompatRegistry:
     r"""Return the default global compatibility registry.
 
     The registry is created on the first call and reused on all
-    subsequent calls (singleton pattern).
+    subsequent calls (singleton pattern). It is populated with the
+    automatically discovered constraints of ``feu.compat.discovered``.
 
     Returns:
-        A singleton ``CompatRegistry`` configured with the default
-        package version constraints.
+        A singleton ``CompatRegistry`` configured with the
+            discovered package version constraints.
 
     Example:
         ```pycon
@@ -86,7 +87,13 @@ def find_closest_version(pkg_name: str, pkg_version: str, target: Target) -> str
         target: The compatibility target.
 
     Returns:
-        The closest valid version as a string.
+        The closest valid version as a string. The requested version
+            is returned unchanged if it is valid or if the package is
+            not configured for the target.
+
+    Raises:
+        UnsupportedVersionError: If no package version is valid for
+            the given target.
 
     Example:
         ```pycon
@@ -113,7 +120,9 @@ def is_valid_version(pkg_name: str, pkg_version: str, target: Target) -> bool:
         target: The compatibility target.
 
     Returns:
-        ``True`` if valid or unconfigured, ``False`` otherwise.
+        ``True`` if valid or unconfigured, ``False`` otherwise,
+            including when no package version is valid for the
+            target.
 
     Example:
         ```pycon

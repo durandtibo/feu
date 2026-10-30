@@ -1,4 +1,5 @@
-r"""Utilities for reading package version bounds from pyproject.toml."""
+r"""Contain functions to read package version bounds from a
+``pyproject.toml`` file."""
 
 from __future__ import annotations
 
@@ -104,7 +105,7 @@ def read_pyproject_package_bounds(
     - ``[dependency-groups.*]``
 
     The package name comparison is case-insensitive and treats hyphens
-    and underscores as equivalent, following PEP 508 normalisation rules.
+    and underscores as equivalent (see ``normalize_package_name``).
 
     Args:
         path: Path to the ``pyproject.toml`` file.
@@ -121,7 +122,7 @@ def read_pyproject_package_bounds(
 
     Example:
         ```python
-        bounds = find_package_bounds("pyproject.toml", "numpy")
+        bounds = read_pyproject_package_bounds("pyproject.toml", "numpy")
         for b in bounds:
             print(b.section, b.lower, b.upper)
         ```
@@ -163,6 +164,10 @@ def read_pyproject_package_bounds(
 
 def _parse_bounds_from_spec(spec: str, section: str) -> PackageBounds:
     """Parse a PEP 508 dependency specifier and return its bounds.
+
+    Only the first lower (``>=``, ``>``) and the first upper (``<``,
+    ``<=``) bound of the specifier are kept; other operators are
+    ignored.
 
     Args:
         spec: A PEP 508 dependency specifier string.

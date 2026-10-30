@@ -62,11 +62,15 @@ packages and their versions across different Python environments.
 - 🎯 **Smart version resolution**: Find the closest valid package version for your target
   environment (Python version, free-threadedness, OS, and CPU architecture)
 - 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas,
-  polars, torch, etc.)
-- 🔍 **PyPI-backed discovery**: Automatically discover version compatibility from PyPI for packages
-  that aren't in the built-in registry
-- 🐙 **GitHub utilities**: Fetch and sort repository metadata from the GitHub API
-- 🖥️ **CLI tools**: Command-line interface for package management tasks
+  polars, torch, pydantic, etc.), which can be extended with your own constraints
+- 🔍 **PyPI-backed discovery**: Discover version compatibility from the wheels published on PyPI,
+  including for packages that aren't in the built-in registry
+- 🔖 **Version utilities**: Compare, filter and sort versions, fetch the versions published on PyPI,
+  and read dependency bounds from `pyproject.toml`
+- 🌿 **Git and GitHub utilities**: Get the tags of a local repository, and fetch and sort
+  repository metadata from the GitHub API
+- 🖥️ **CLI tools**: Command-line interface to install a package, find the closest valid version,
+  and check if a version is valid (`pip install 'feu[cli]'`)
 - 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
 
 ### Quick Example
@@ -86,6 +90,14 @@ version = find_closest_version(
     pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
 )
 print(f"Closest valid version: {version}")
+```
+
+The same checks are available from the command line:
+
+```shell
+python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+python -m feu install --pkg-name=numpy --pkg-version=2.0.2
 ```
 
 ### Why feu?
@@ -109,6 +121,7 @@ error-prone. `feu` solves this by:
 - 🚀 [Get Started Guide](https://durandtibo.github.io/feu/get_started)
 - 📖 [Usage Examples](https://durandtibo.github.io/feu/usage)
 - 🖥️ [CLI Reference](https://durandtibo.github.io/feu/cli)
+- 📚 [API Reference](https://durandtibo.github.io/feu/refs/root)
 
 ### Quick Links
 
@@ -135,7 +148,8 @@ pip install feu[all]
 ```
 
 Please check the [get started page](https://durandtibo.github.io/feu/get_started) to see how to
-install only some specific dependencies or other alternatives to install the library. The following
+install only some specific dependencies (`feu[cli]`, `feu[git]`, `feu[requests]`, `feu[rich]`) or
+other alternatives to install the library. The following
 is the corresponding `feu` versions and supported dependencies.
 
 | `feu`   | `packaging`    | `python`       | `click`<sup>*</sup> | `gitpython`<sup>*</sup> | `requests`<sup>*</sup> | `rich`<sup>*</sup> |
