@@ -6,10 +6,13 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
-from requests import Response
 
 from feu.github import display_repos_summary, fetch_github_repos
+from feu.imports import is_requests_available
 from feu.testing import requests_available
+
+if is_requests_available():
+    from requests import Response
 
 MODULE = "feu.github.repos"
 
