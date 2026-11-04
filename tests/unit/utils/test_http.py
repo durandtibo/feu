@@ -159,6 +159,25 @@ def test_fetch_response_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @requests_available
+def test_fetch_response_closes_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    fetch_response(url="https://my_url")
+    session.close.assert_called_once_with()
+
+
+@requests_available
+def test_fetch_response_closes_session_on_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = Mock(get=Mock(side_effect=requests.exceptions.Timeout()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    with pytest.raises(RuntimeError, match="timed out"):
+        fetch_response(url="https://my_url")
+    session.close.assert_called_once_with()
+
+
+@requests_available
 def test_fetch_response_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)

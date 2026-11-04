@@ -76,6 +76,8 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         timeout: The number of seconds to wait for the server to send
             data before giving up. Defaults to 10.0.
         **kwargs: Optional arguments that ``requests.get`` accepts.
+            The underlying session is closed before the function
+            returns, so streaming (``stream=True``) is not supported.
 
     Returns:
         A ``requests.Response`` object containing the HTTP response.
@@ -115,5 +117,7 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
     except requests.exceptions.RequestException as exc:
         msg = f"Network or HTTP error when accessing {url}: {exc}"
         raise RuntimeError(msg) from exc
+    finally:
+        session.close()
 
     return resp
