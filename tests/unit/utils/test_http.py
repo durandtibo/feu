@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -39,11 +39,17 @@ def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
     return resp
 
 
+def make_mock_session(get: Mock) -> MagicMock:
+    session = MagicMock(get=get)
+    session.__enter__.return_value = session
+    return session
+
+
 @requests_available
 def test_fetch_data_success(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_data(url="https://my_url") == {"key": "value"}
@@ -54,7 +60,7 @@ def test_fetch_data_success(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_data_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_data(url="https://my_url", timeout=5.0) == {"key": "value"}
@@ -65,7 +71,7 @@ def test_fetch_data_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_data_headers(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_data(url="https://my_url", headers={"Accept": "application/vnd.github+json"}) == {
@@ -81,7 +87,9 @@ def test_fetch_data_timeout_error(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Timeout error
     monkeypatch.setattr(
-        requests, "Session", lambda: Mock(get=Mock(side_effect=requests.exceptions.Timeout()))
+        requests,
+        "Session",
+        lambda: make_mock_session(get=Mock(side_effect=requests.exceptions.Timeout())),
     )
     with pytest.raises(RuntimeError, match="timed out"):
         fetch_data(url="https://my_url")
@@ -94,7 +102,7 @@ def test_fetch_data_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(return_value=make_mock_response(status=404))),
+        lambda: make_mock_session(get=Mock(return_value=make_mock_response(status=404))),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
         fetch_data(url="https://my_url")
@@ -107,7 +115,9 @@ def test_fetch_data_request_exception(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(side_effect=requests.exceptions.RequestException("boom"))),
+        lambda: make_mock_session(
+            get=Mock(side_effect=requests.exceptions.RequestException("boom"))
+        ),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
         fetch_data(url="https://my_url")
@@ -120,7 +130,7 @@ def test_fetch_data_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(return_value=make_mock_response(raise_json=True))),
+        lambda: make_mock_session(get=Mock(return_value=make_mock_response(raise_json=True))),
     )
     with pytest.raises(RuntimeError, match="Invalid JSON"):
         fetch_data(url="https://my_url")
@@ -135,7 +145,7 @@ def test_fetch_data_no_requests() -> None:
 @requests_available
 @patch("feu.utils.http.is_urllib3_available", lambda: False)
 def test_fetch_data_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_data(url="https://my_url") == {"key": "value"}
@@ -151,7 +161,7 @@ def test_fetch_data_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_response_success(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_response(url="https://my_url").json() == {"key": "value"}
@@ -159,10 +169,29 @@ def test_fetch_response_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @requests_available
+def test_fetch_response_closes_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    fetch_response(url="https://my_url")
+    session.__exit__.assert_called_once()
+
+
+@requests_available
+def test_fetch_response_closes_session_on_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = make_mock_session(get=Mock(side_effect=requests.exceptions.Timeout()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    with pytest.raises(RuntimeError, match="timed out"):
+        fetch_response(url="https://my_url")
+    session.__exit__.assert_called_once()
+
+
+@requests_available
 def test_fetch_response_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_response(url="https://my_url", timeout=5.0).json() == {"key": "value"}
@@ -173,7 +202,7 @@ def test_fetch_response_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_response_headers(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_response(
@@ -189,7 +218,9 @@ def test_fetch_response_timeout_error(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Timeout error
     monkeypatch.setattr(
-        requests, "Session", lambda: Mock(get=Mock(side_effect=requests.exceptions.Timeout()))
+        requests,
+        "Session",
+        lambda: make_mock_session(get=Mock(side_effect=requests.exceptions.Timeout())),
     )
     with pytest.raises(RuntimeError, match="timed out"):
         fetch_response(url="https://my_url")
@@ -202,7 +233,7 @@ def test_fetch_response_http_error(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(return_value=make_mock_response(status=404))),
+        lambda: make_mock_session(get=Mock(return_value=make_mock_response(status=404))),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
         fetch_response(url="https://my_url")
@@ -215,7 +246,9 @@ def test_fetch_response_request_exception(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(side_effect=requests.exceptions.RequestException("boom"))),
+        lambda: make_mock_session(
+            get=Mock(side_effect=requests.exceptions.RequestException("boom"))
+        ),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
         fetch_response(url="https://my_url")
@@ -230,7 +263,7 @@ def test_fetch_response_no_requests() -> None:
 @requests_available
 @patch("feu.utils.http.is_urllib3_available", lambda: False)
 def test_fetch_response_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_response(url="https://my_url").json() == {"key": "value"}

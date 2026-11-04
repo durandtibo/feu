@@ -76,6 +76,8 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         timeout: The number of seconds to wait for the server to send
             data before giving up. Defaults to 10.0.
         **kwargs: Optional arguments that ``requests.get`` accepts.
+            The underlying session is closed before the function
+            returns, so streaming (``stream=True``) is not supported.
 
     Returns:
         A ``requests.Response`` object containing the HTTP response.
@@ -93,27 +95,26 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         ```
     """
     check_requests()
-    session = requests.Session()
+    with requests.Session() as session:
+        if is_urllib3_available():
+            retry = Retry(
+                total=5,
+                backoff_factor=0.5,
+                status_forcelist=[429, 500, 502, 503, 504],
+                allowed_methods=["GET"],
+                raise_on_status=False,
+            )
+            adapter = HTTPAdapter(max_retries=retry)
+            session.mount("https://", adapter)
 
-    if is_urllib3_available():
-        retry = Retry(
-            total=5,
-            backoff_factor=0.5,
-            status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["GET"],
-            raise_on_status=False,
-        )
-        adapter = HTTPAdapter(max_retries=retry)
-        session.mount("https://", adapter)
-
-    try:
-        resp = session.get(url=url, timeout=timeout, **kwargs)
-        resp.raise_for_status()
-    except requests.exceptions.Timeout as exc:
-        msg = f"Request to {url} timed out after {timeout}s"
-        raise RuntimeError(msg) from exc
-    except requests.exceptions.RequestException as exc:
-        msg = f"Network or HTTP error when accessing {url}: {exc}"
-        raise RuntimeError(msg) from exc
+        try:
+            resp = session.get(url=url, timeout=timeout, **kwargs)
+            resp.raise_for_status()
+        except requests.exceptions.Timeout as exc:
+            msg = f"Request to {url} timed out after {timeout}s"
+            raise RuntimeError(msg) from exc
+        except requests.exceptions.RequestException as exc:
+            msg = f"Network or HTTP error when accessing {url}: {exc}"
+            raise RuntimeError(msg) from exc
 
     return resp
