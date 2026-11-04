@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -18,7 +18,7 @@ if is_git_available():
 ##############################
 
 
-def create_repo_mock() -> Mock:
+def create_repo_mock() -> MagicMock:
     tz = timezone(timedelta(hours=0))  # UTC+2
     dt = datetime(year=2025, month=5, day=17, hour=14, minute=30, second=0, tzinfo=tz)
 
@@ -31,7 +31,9 @@ def create_repo_mock() -> Mock:
     tag2 = Mock(spec=git.TagReference, commit=Mock(committed_datetime=dt))
     tag2.configure_mock(name="v2")
 
-    return Mock(tags=[tag2, tag1])
+    repo = MagicMock(tags=[tag2, tag1])
+    repo.__enter__.return_value = repo
+    return repo
 
 
 @git_available
@@ -43,9 +45,19 @@ def test_get_tags_sorted() -> None:
 
 @git_available
 def test_get_tags_empty() -> None:
-    with patch("feu.local_git.git.Repo", Mock(return_value=Mock(tags=[]))):
+    repo = MagicMock(tags=[])
+    repo.__enter__.return_value = repo
+    with patch("feu.local_git.git.Repo", Mock(return_value=repo)):
         result = get_tags()
     assert result == []
+
+
+@git_available
+def test_get_tags_closes_repo() -> None:
+    repo = create_repo_mock()
+    with patch("feu.local_git.git.Repo", Mock(return_value=repo)):
+        get_tags()
+    repo.__exit__.assert_called_once()
 
 
 @patch("feu.imports.git.is_git_available", lambda: False)

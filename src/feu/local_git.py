@@ -38,6 +38,9 @@ def get_tags() -> list[git.TagReference]:
         git.InvalidGitRepositoryError: if the current directory is
             not in a git repository.
 
+    The repository is closed before returning, so that no ``git``
+    helper process is left running.
+
     Example:
         ```pycon
         >>> from feu.local_git import get_tags
@@ -47,8 +50,8 @@ def get_tags() -> list[git.TagReference]:
         ```
     """
     check_git()
-    repo = git.Repo(search_parent_directories=True)
-    return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+    with git.Repo(search_parent_directories=True) as repo:
+        return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
 
 def get_last_tag_name(raise_error: bool = True) -> str | None:
