@@ -1,295 +1,47 @@
-# Contributing to feu
+# Contributing
 
-Thank you for your interest in contributing to `feu`! We welcome contributions from everyone.
+Thanks for your interest in contributing to `shared-makefiles`!
 
-## Getting Started
+## Getting started
 
-1. **Fork the repository** on GitHub
-2. **Clone your fork** locally:
-   ```bash
-   git clone git@github.com:YOUR_USERNAME/feu.git
-   cd feu
-   ```
-3. **Set up the development environment**:
-   ```bash
-   make setup-venv
-   ```
+1. Fork the repo and clone your fork.
+2. Create a branch for your change.
+3. Run `make install-tools` to install the formatting/linting tools used by this repo
+   (`prettier`, `yamllint`, `mbake`, `checkmake`, `shellcheck`, `shfmt`, `markdownlint`,
+   `actionlint`).
 
-## Development Workflow
+## Making changes
 
-### Setting Up Your Environment
+- Each `.mk` file is self-contained and include-guarded — keep that property when editing or
+  adding one (see [`README.md`](README.md#design) for the design conventions: include guards,
+  on-demand tool install, configurable path variables).
+- Add a `## description` comment to any new `.PHONY` target so it shows up in `make help`.
+- If you add or change a variable, document it in the relevant table in `README.md`.
+- Run `make format` and `make lint` before committing.
 
-The project uses `uv` for dependency management. After cloning the repository:
+## Testing
 
-```bash
-# Create and activate a virtual environment
-make setup-venv
+CI ([`.github/workflows/ci-test.yml`](.github/workflows/ci-test.yml)) runs `make lint` and
+`make format` (including on-demand tool installation) across an Ubuntu/macOS matrix. Make sure
+both pass locally first:
 
-# Or manually:
-uv venv --python 3.14
-source .venv/bin/activate
-uv sync --all-extras --group dev --group docs
+```shell
+make lint
+make format
 ```
 
-### Running Tests
+## Submitting a pull request
 
-Run the test suite to ensure everything works:
+- Fill in the [PR template](.github/PULL_REQUEST_TEMPLATE.md) checklist.
+- Keep PRs focused — one logical change per PR.
+- Make sure CI is green before requesting a review.
 
-```bash
-# Run the full test suite (unit + integration + functional) with coverage
-inv test.all --cov
+## Reporting bugs and requesting features
 
-# Run only unit tests
-inv test.unit --cov
+Use the issue templates under
+[`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE): `bug-report.yml` or `feature-request.yml`.
 
-# Run integration tests
-inv test.integration
+## Security issues
 
-# Run functional tests
-inv test.functional
-```
-
-### Code Quality
-
-Before submitting a pull request, ensure your code meets our quality standards:
-
-#### Formatting
-
-We use `black` for code formatting:
-
-```bash
-# Check formatting
-inv format.check-python
-```
-
-#### Linting
-
-We use `ruff` for linting:
-
-```bash
-# Check linting
-inv lint.check-python
-```
-
-#### Pre-commit Hooks
-
-Install pre-commit hooks to automatically check your code before committing:
-
-```bash
-pre-commit install
-pre-commit run --all-files
-```
-
-#### Docstring Format
-
-We follow Google-style docstrings. Run docformatter to ensure consistency:
-
-```bash
-inv format.fix-docstrings
-```
-
-### Documentation
-
-#### Building Documentation
-
-The documentation is built using MkDocs with `mike` for versioning:
-
-```bash
-# Install documentation dependencies
-uv sync --group docs
-
-# Serve documentation locally (for development)
-cd docs
-mike serve
-
-# Deploy documentation with mike (for maintainers)
-# Development version:
-inv doc.publish-dev
-# Stable version:
-inv doc.publish-latest
-```
-
-Visit `http://127.0.0.1:8000` to view the documentation locally.
-
-#### Writing Documentation
-
-- Add docstrings to all public functions, classes, and modules
-- Follow the Google docstring format
-- Include example usage in docstrings when appropriate
-- Update relevant `.md` files in `docs/docs/` for user-facing documentation
-
-## Pull Request Process
-
-1. **Create a new branch** for your feature or bugfix:
-
-   ```bash
-   git checkout -b feature/my-new-feature
-   ```
-
-2. **Make your changes** following the code style guidelines
-
-3. **Write or update tests** to cover your changes
-
-4. **Run the test suite** and ensure all tests pass:
-
-   ```bash
-   inv test.unit --cov
-   ```
-
-5. **Update documentation** if you've changed APIs or added features
-
-6. **Commit your changes** with clear, descriptive commit messages:
-
-   ```bash
-   git commit -m "Add feature: description of what you added"
-   ```
-
-7. **Push to your fork**:
-
-   ```bash
-   git push origin feature/my-new-feature
-   ```
-
-8. **Open a Pull Request** on GitHub with:
-   - A clear title describing the change
-   - A detailed description of what you changed and why
-   - References to any related issues
-
-### Pull Request Checklist
-
-Before submitting, ensure your PR:
-
-- [ ] Passes all tests (`inv test.unit --cov`)
-- [ ] Follows code style guidelines (`inv format.check-python` and `inv lint.check-python`)
-- [ ] Includes tests for new functionality
-- [ ] Updates documentation as needed
-- [ ] Has a clear description of changes
-- [ ] References related issues (if applicable)
-
-## Types of Contributions
-
-### Bug Reports
-
-When filing a bug report, please include:
-
-- A clear, descriptive title
-- Steps to reproduce the bug
-- Expected behavior
-- Actual behavior
-- Your environment (Python version, OS, feu version)
-- Any relevant code snippets or error messages
-
-### Feature Requests
-
-When proposing a feature:
-
-- Explain the use case and why it would be valuable
-- Provide examples of how it would be used
-- Consider potential implementation approaches
-- Discuss any potential downsides or alternatives
-
-### Code Contributions
-
-We welcome code contributions for:
-
-- Bug fixes
-- New features
-- Performance improvements
-- Documentation improvements
-- Test coverage improvements
-
-For significant changes, please open an issue first to discuss the proposed changes.
-
-## Code Style Guidelines
-
-### Python Style
-
-- Follow PEP 8 guidelines
-- Use type hints for function signatures
-- Maximum line length: 100 characters
-- Use meaningful variable and function names
-
-### Docstrings
-
-We use Google-style docstrings.
-
-### Import Order
-
-Follow this import order (enforced by `ruff`):
-
-1. Standard library imports
-2. Third-party imports
-3. Local imports
-
-Use absolute imports and separate groups with blank lines.
-
-## Testing Guidelines
-
-### Writing Tests
-
-- Place tests in the appropriate directory (`unit/`, `integration/`, or `functional/`)
-- Name test files with `test_` prefix
-- Name test functions with `test_` prefix
-- Use descriptive test names that explain what is being tested
-- Include both positive and negative test cases
-- Test edge cases and error conditions
-
-### Test Coverage
-
-- Aim for high test coverage (current target: >80%)
-- Focus on testing behavior, not implementation details
-- Include integration tests for complex interactions
-
-## Project Structure
-
-```
-feu/
-├── src/feu/              # Source code
-│   ├── __init__.py       # Main package exports
-│   ├── __main__.py       # CLI entry point
-│   ├── compat/           # Package/Python-version compatibility registry and discovery
-│   ├── github/           # GitHub API utilities
-│   ├── imports/          # Optional-dependency availability checks
-│   ├── install/          # Installation utilities (incl. install/pip)
-│   ├── local_git.py      # Git tag utilities
-│   ├── testing.py        # Pytest skip marks for optional dependencies
-│   ├── utils/            # Utility functions (incl. utils/fallback)
-│   └── version/          # Version management
-├── tests/               # Test suite
-│   ├── unit/           # Unit tests
-│   ├── integration/    # Integration tests
-│   └── functional/     # Functional tests
-├── docs/               # Documentation
-│   ├── docs/          # Markdown files
-│   └── mkdocs.yml     # MkDocs configuration
-└── pyproject.toml     # Project configuration
-```
-
-## Release Process
-
-Releases are managed by the project maintainers. The process includes:
-
-1. Update version in `pyproject.toml`
-2. Create a git tag
-3. Build and upload to PyPI
-4. Create a GitHub release with release notes
-
-## Getting Help
-
-If you need help or have questions:
-
-- Open an issue on GitHub
-- Check existing issues and pull requests
-- Review the documentation at https://durandtibo.github.io/feu/
-
-## Code of Conduct
-
-Please note that this project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
-
-## License
-
-By contributing to `feu`, you agree that your contributions will be licensed under the BSD-3-Clause license.
-
-## Acknowledgments
-
-Thank you for contributing to `feu`! Every contribution, no matter how small, is valuable and appreciated.
+Please don't open a public issue for security vulnerabilities — see [`SECURITY.md`](SECURITY.md)
+for how to report them privately.
