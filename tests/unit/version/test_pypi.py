@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -34,6 +34,12 @@ def _reset_cache() -> None:
 #########################################
 
 
+def make_mock_session(get: Mock) -> MagicMock:
+    session = MagicMock(get=get)
+    session.__enter__.return_value = session
+    return session
+
+
 def make_mock_response() -> Response:
     resp = Mock(json=Mock(return_value={"releases": {"1.2.0": None, "1.2.3": None, "2.0.0": None}}))
     resp.status_code = 200
@@ -42,7 +48,7 @@ def make_mock_response() -> Response:
 
 @requests_available
 def test_fetch_pypi_versions(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package") == ("1.2.0", "1.2.3", "2.0.0")
@@ -51,7 +57,7 @@ def test_fetch_pypi_versions(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @requests_available
 def test_fetch_pypi_versions_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", reverse=True) == ("2.0.0", "1.2.3", "1.2.0")
@@ -85,7 +91,7 @@ def make_mock_dated_response() -> Response:
 
 @requests_available
 def test_fetch_pypi_versions_start_date(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_dated_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", start_date="2024-01-01") == (
@@ -98,7 +104,7 @@ def test_fetch_pypi_versions_start_date(monkeypatch: pytest.MonkeyPatch) -> None
 
 @requests_available
 def test_fetch_pypi_versions_end_date(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_dated_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", end_date="2024-12-31") == (
@@ -111,7 +117,7 @@ def test_fetch_pypi_versions_end_date(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @requests_available
 def test_fetch_pypi_versions_start_date_end_date(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_dated_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", start_date="2024-01-01", end_date="2024-12-31") == (
@@ -125,7 +131,7 @@ def test_fetch_pypi_versions_start_date_end_date(monkeypatch: pytest.MonkeyPatch
 def test_fetch_pypi_versions_start_date_end_date_date_objects(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_dated_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions(
@@ -135,7 +141,7 @@ def test_fetch_pypi_versions_start_date_end_date_date_objects(
 
 @requests_available
 def test_fetch_pypi_versions_start_date_end_date_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_dated_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions(
@@ -147,7 +153,7 @@ def test_fetch_pypi_versions_start_date_end_date_reverse(monkeypatch: pytest.Mon
 def test_fetch_pypi_versions_no_date_filter_excludes_nothing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    session = Mock(get=Mock(return_value=make_mock_dated_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_dated_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package") == (
@@ -185,7 +191,7 @@ def make_mock_yanked_response() -> Response:
 
 @requests_available
 def test_fetch_pypi_versions_ignore_yanked_default(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_yanked_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_yanked_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package") == ("1.0.0", "1.2.0", "1.3.0")
@@ -193,7 +199,7 @@ def test_fetch_pypi_versions_ignore_yanked_default(monkeypatch: pytest.MonkeyPat
 
 @requests_available
 def test_fetch_pypi_versions_ignore_yanked_true(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_yanked_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_yanked_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", ignore_yanked=True) == ("1.0.0", "1.2.0", "1.3.0")
@@ -201,7 +207,7 @@ def test_fetch_pypi_versions_ignore_yanked_true(monkeypatch: pytest.MonkeyPatch)
 
 @requests_available
 def test_fetch_pypi_versions_ignore_yanked_false(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_yanked_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_yanked_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", ignore_yanked=False) == (
@@ -236,7 +242,7 @@ def make_mock_requires_python_response() -> Response:
 
 @requests_available
 def test_fetch_pypi_requires_python(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_requires_python_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_requires_python_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_requires_python("my_package") == {
@@ -293,7 +299,7 @@ def make_mock_wheel_filenames_response() -> Response:
 
 @requests_available
 def test_fetch_pypi_wheel_filenames(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(get=Mock(return_value=make_mock_wheel_filenames_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_wheel_filenames_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_wheel_filenames("my_package") == {
@@ -327,7 +333,7 @@ def make_mock_pinned_dependency_response(requires_dist: list[str] | None) -> Res
 
 @requests_available
 def test_fetch_pypi_pinned_dependency_version_exact_pin(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = Mock(
+    session = make_mock_session(
         get=Mock(
             return_value=make_mock_pinned_dependency_response(
                 ["pydantic-core==2.23.2", "typing-extensions>=4.6.1"]
@@ -346,7 +352,7 @@ def test_fetch_pypi_pinned_dependency_version_exact_pin(monkeypatch: pytest.Monk
 def test_fetch_pypi_pinned_dependency_version_no_exact_pin(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    session = Mock(
+    session = make_mock_session(
         get=Mock(return_value=make_mock_pinned_dependency_response(["pydantic-core>=2.0,<3.0"]))
     )
     monkeypatch.setattr(requests, "Session", lambda: session)
@@ -358,7 +364,7 @@ def test_fetch_pypi_pinned_dependency_version_no_exact_pin(
 def test_fetch_pypi_pinned_dependency_version_dependency_not_found(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    session = Mock(
+    session = make_mock_session(
         get=Mock(return_value=make_mock_pinned_dependency_response(["typing-extensions>=4.6.1"]))
     )
     monkeypatch.setattr(requests, "Session", lambda: session)
@@ -370,7 +376,7 @@ def test_fetch_pypi_pinned_dependency_version_dependency_not_found(
 def test_fetch_pypi_pinned_dependency_version_no_requires_dist(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    session = Mock(get=Mock(return_value=make_mock_pinned_dependency_response(None)))
+    session = make_mock_session(get=Mock(return_value=make_mock_pinned_dependency_response(None)))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core") is None
