@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -22,6 +22,12 @@ def _reset_cache() -> None:
 ###########################################
 #     Tests for fetch_github_metadata     #
 ###########################################
+
+
+def make_mock_session(get: Mock) -> MagicMock:
+    session = MagicMock(get=get)
+    session.__enter__.return_value = session
+    return session
 
 
 def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
@@ -47,7 +53,7 @@ def make_mock_response(status: int = 200, raise_json: bool = False) -> Response:
 def test_fetch_github_metadata_success(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
@@ -63,7 +69,7 @@ def test_fetch_github_metadata_success(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_fetch_github_metadata_success_with_token(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Successful request (200 OK)
-    session = Mock(get=Mock(return_value=make_mock_response()))
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
@@ -79,7 +85,9 @@ def test_fetch_github_metadata_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     # Patch requests.Session() to return a mock session
     #  -> Timeout error
     monkeypatch.setattr(
-        requests, "Session", lambda: Mock(get=Mock(side_effect=requests.exceptions.Timeout()))
+        requests,
+        "Session",
+        lambda: make_mock_session(get=Mock(side_effect=requests.exceptions.Timeout())),
     )
     with pytest.raises(RuntimeError, match="timed out"):
         fetch_github_metadata(owner="owner", repo="repo")
@@ -92,7 +100,7 @@ def test_fetch_github_metadata_http_error(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(return_value=make_mock_response(status=404))),
+        lambda: make_mock_session(get=Mock(return_value=make_mock_response(status=404))),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
         fetch_github_metadata(owner="owner", repo="repo")
@@ -105,7 +113,9 @@ def test_fetch_github_metadata_request_exception(monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(side_effect=requests.exceptions.RequestException("boom"))),
+        lambda: make_mock_session(
+            get=Mock(side_effect=requests.exceptions.RequestException("boom"))
+        ),
     )
     with pytest.raises(RuntimeError, match="Network or HTTP error"):
         fetch_github_metadata(owner="owner", repo="repo")
@@ -118,7 +128,7 @@ def test_fetch_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(
         requests,
         "Session",
-        lambda: Mock(get=Mock(return_value=make_mock_response(raise_json=True))),
+        lambda: make_mock_session(get=Mock(return_value=make_mock_response(raise_json=True))),
     )
     with pytest.raises(RuntimeError, match="Invalid JSON"):
         fetch_github_metadata(owner="owner", repo="repo")
