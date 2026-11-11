@@ -7,7 +7,8 @@ import pytest
 
 from feu.compat.interface import (
     find_closest_version,
-    get_default_registry,
+    get_compatible_versions,
+    get_default_compat_registry,
     is_valid_version,
     register_compat,
 )
@@ -21,44 +22,44 @@ T311 = Target(python_version="3.11")
 
 
 ######################################
-#     Tests for get_default_registry #
+#     Tests for get_default_compat_registry #
 ######################################
 
 
 @pytest.fixture(autouse=True)
 def _reset_default_registry() -> Generator[None]:
-    get_default_registry.cache_clear()
+    get_default_compat_registry.cache_clear()
     yield
-    get_default_registry.cache_clear()
+    get_default_compat_registry.cache_clear()
 
 
-def test_get_default_registry_returns_compat_registry() -> None:
-    registry = get_default_registry()
+def test_get_default_compat_registry_returns_compat_registry() -> None:
+    registry = get_default_compat_registry()
     assert isinstance(registry, CompatRegistry)
 
 
-def test_get_default_registry_is_singleton() -> None:
-    registry1 = get_default_registry()
-    registry2 = get_default_registry()
+def test_get_default_compat_registry_is_singleton() -> None:
+    registry1 = get_default_compat_registry()
+    registry2 = get_default_compat_registry()
     assert registry1 is registry2
 
 
-def test_get_default_registry_not_populated_with_defaults() -> None:
+def test_get_default_compat_registry_not_populated_with_defaults() -> None:
     # register_defaults is currently disabled, so the human-curated defaults
     # must not be present in the registry: only the discovered data is.
     with patch("feu.compat.interface.register_discovered"):
-        registry = get_default_registry()
+        registry = get_default_compat_registry()
     assert registry.state == {}
 
 
-def test_get_default_registry_uses_discovered() -> None:
+def test_get_default_compat_registry_uses_discovered() -> None:
     with patch(
         "feu.compat.interface.register_discovered",
         side_effect=lambda registry: registry.register_many(
             {"numpy": {T311: [VersionRange("0.0.1", None)]}}
         ),
     ):
-        registry = get_default_registry()
+        registry = get_default_compat_registry()
     assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("0.0.1", None)]
 
 
@@ -69,7 +70,7 @@ def test_get_default_registry_uses_discovered() -> None:
 
 def test_register_compat_adds_to_registry() -> None:
     register_compat({"my_package": {T311: [VersionRange("1.0.0", None)]}})
-    registry = get_default_registry()
+    registry = get_default_compat_registry()
     assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("1.0.0", None)]
     assert registry.state["my-package"] == {T311: [VersionRange("1.0.0", None)]}
 
@@ -82,7 +83,7 @@ def test_register_compat_exist_ok_false_raises() -> None:
 
 def test_register_compat_numpy_without_exist_ok() -> None:
     register_compat({"numpy": {T311: [VersionRange("9.9.9", None)]}})
-    assert get_default_registry().state["numpy"][T311] == [VersionRange("9.9.9", None)]
+    assert get_default_compat_registry().state["numpy"][T311] == [VersionRange("9.9.9", None)]
 
 
 ########################################
@@ -118,3 +119,33 @@ def test_is_valid_version_delegates_to_default_registry() -> None:
 
 def test_is_valid_version_unknown_package_is_permissive() -> None:
     assert is_valid_version(pkg_name="not-a-real-package", pkg_version="0.1.0", target=T311)
+
+
+########################################
+#     Tests for get_compatible_versions #
+########################################
+
+
+def test_get_compatible_versions_delegates_to_default_registry() -> None:
+    with patch.object(
+        CompatRegistry, "get_compatible_versions", return_value=["1.2.3"]
+    ) as mock_versions:
+        result = get_compatible_versions("numpy", T311, "1.*")
+    assert result == ["1.2.3"]
+    mock_versions.assert_called_once_with("numpy", T311, "1.*")
+
+
+def test_get_compatible_versions_custom_registry() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("numpy", ["1.0.0", "2.0.0"])
+    assert get_compatible_versions("numpy", T311, "2.*", registry=registry) == ["2.0.0"]
+
+
+def test_find_closest_version_custom_registry() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", "1.5.0")]}})
+    assert find_closest_version("numpy", "2.0.0", T311, registry=registry) == "1.5.0"
+
+
+def test_is_valid_version_custom_registry() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", "1.5.0")]}})
+    assert not is_valid_version("numpy", "2.0.0", T311, registry=registry)

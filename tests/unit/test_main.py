@@ -10,8 +10,8 @@ from click.testing import CliRunner
 
 from feu.__main__ import check_valid_version, find_closest_version, install
 from feu.compat import Target, UnsupportedVersionError
+from feu.install import InstallerSpec
 from feu.testing import click_available
-from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 
 #############################

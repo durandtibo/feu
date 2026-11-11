@@ -10,8 +10,7 @@ from datetime import UTC, datetime, timedelta
 
 from feu.compat import Target
 from feu.compat.packages import get_package_names
-from feu.install import install_packages_all_versions
-from feu.utils.installer import InstallerSpec
+from feu.install import InstallerSpec, install_all_versions
 from feu.utils.platform import (
     get_current_arch,
     get_current_os,
@@ -56,9 +55,12 @@ def main() -> None:
     logger.info(
         "Installing all versions of %s released since %s for %s...", packages, start_date, target
     )
-    results = install_packages_all_versions(
-        installer=installer, packages=packages, target=target, start_date=start_date
-    )
+    results = {
+        package: install_all_versions(
+            installer=installer, package=package, target=target, start_date=start_date
+        )
+        for package in packages
+    }
     for package, result in results.items():
         logger.info(
             "%s: (%s) installed=%s", package, len(result.installed), sort_versions(result.installed)

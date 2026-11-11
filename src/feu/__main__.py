@@ -15,8 +15,7 @@ from feu.compat import (
     resolve_target,
 )
 from feu.imports import check_click, is_click_available
-from feu.install import install_package_closest_version
-from feu.utils.installer import InstallerSpec
+from feu.install import InstallerSpec, install_package_closest_version
 from feu.utils.package import PackageSpec
 
 if is_click_available():

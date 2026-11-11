@@ -4,7 +4,7 @@ constraints.
 Each submodule of this package holds the precomputed output of
 ``discover_compat_targets`` for one package, refreshed by the
 ``dev/generate_discovered_compat.py`` maintenance script. The
-default registry returned by ``feu.compat.get_default_registry`` is
+default registry returned by ``feu.compat.get_default_compat_registry`` is
 populated from these modules. Custom constraints can be registered on
 top with ``feu.compat.register_compat``.
 """

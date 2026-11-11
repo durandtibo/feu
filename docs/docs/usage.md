@@ -77,7 +77,7 @@ print(f"Closest valid version: {closest}")  # Will return "1.23.2"
 A target that leaves `os` and `arch` to `None` matches every platform: the answer is the union of
 the versions published for at least one platform. `install_package_closest_version` uses the full
 current target (Python version, free-threaded flag, OS and architecture) unless `target=` is given.
-Use `get_default_registry().has_package(name)` to detect an unknown package.
+Use `get_default_compat_registry().has_package(name)` to detect an unknown package.
 
 A package that is not configured for the target accepts any version. If the package is configured
 but no version of it supports the target, `is_valid_version` returns `False` and
@@ -126,8 +126,8 @@ Install packages with automatic version selection:
 
 ```python
 from feu import install_package, install_package_closest_version
+from feu.install import InstallerSpec
 from feu.utils.package import PackageSpec
-from feu.utils.installer import InstallerSpec
 
 # Install a package with a specific version
 install_package(
@@ -157,17 +157,19 @@ InstallerSpec(name="pip", arguments=["--index-url", "https://example.com/my inde
 
 `pipx` is no longer a built-in installer: it installs an application into an isolated environment,
 which is not an installation into the current environment. Register your own installer with
-`InstallerRegistry.add_installer` if you need it.
+`feu.install.register_installer(name, installer_class)` if you need it. Dependency resolvers
+(for example `pandas` before 2.2.2 needs `numpy<2.0.0`) are functions from a `PackageSpec` to a list
+of `packaging.requirements.Requirement`, registered with `feu.install.register_resolver(name, resolver)`.
 
 ## Managing Package Configurations
 
 Add custom package configurations to the default compatibility registry:
 
 ```python
-from feu.compat import Target, get_default_registry
+from feu.compat import Target, get_default_compat_registry
 from feu.compat.registry import VersionRange
 
-registry = get_default_registry()
+registry = get_default_compat_registry()
 
 # Add a custom package configuration
 registry.register(
@@ -330,8 +332,8 @@ Before installing a package, check if the version is compatible:
 import sys
 from feu.compat import Target, is_valid_version
 from feu import install_package
+from feu.install import InstallerSpec
 from feu.utils.package import PackageSpec
-from feu.utils.installer import InstallerSpec
 
 python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
 desired_version = "2.0.2"

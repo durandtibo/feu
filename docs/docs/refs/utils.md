@@ -2,8 +2,8 @@
 
 ::: feu.utils.command
 ::: feu.utils.http
-::: feu.utils.installer
 ::: feu.utils.io
 ::: feu.utils.mapping
 ::: feu.utils.package
+::: feu.utils.registry
 ::: feu.utils.platform

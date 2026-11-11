@@ -1,8 +1,9 @@
 ::: feu.install
 
-::: feu.install.pip
+::: feu.install.api
 
-::: feu.install.pip.installer
-::: feu.install.pip.resolver
+::: feu.install.all_versions
 
-::: feu.install.utils
+::: feu.install.installer
+
+::: feu.install.resolver

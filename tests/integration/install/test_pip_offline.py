@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from feu.install import install_package
+from feu.install import InstallerSpec, install_package
 from feu.testing import pip_available, uv_available
-from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 
 if TYPE_CHECKING:
