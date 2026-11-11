@@ -8,7 +8,7 @@
   Fix the issues raised by ruff. Ignoring an issue (`noqa`, a changed rule set) is not fixing it.
 - Type check with `.venv/bin/ty check`. Fix the issues raised by ty. Ignoring an issue
   (`type: ignore`, `ty: ignore`, a cast that hides the problem) is not fixing it.
-- Run the unit tests of the packages you changed (for example `.venv/bin/pytest tests/unit/hashing -q`).
+- Run the unit tests of the packages you changed (for example `.venv/bin/pytest tests/unit/utils -q`).
   Some tests fail on `main`; check with `git stash` before blaming your change.
 
 ## Workflow
@@ -40,14 +40,15 @@
 - Follow the current style of the repository in everything you add (source, tests, docs, commit
   messages, PR descriptions). Look at a few neighbouring files first, and do not introduce a new
   convention or reformat code you do not otherwise change.
-- Shared helpers belong in `coola.utils` as public functions (no leading underscore) with their
+- Shared helpers belong in `feu.utils` as public functions (no leading underscore) with their
   own tests, not as private functions imported across modules.
-- Validate an argument with `coola.validation`; do not write `raise ValueError` for a type, range
-  or membership check, and do not add a validator that is one `isinstance` or one comparison.
-- Prefer `LazySingleton` for lazily built process-wide objects, not `functools.cache`.
-- Keep new options keyword-only (`*`), as `hash_object` does.
-- Optional libraries (numpy, torch, pandas, polars, ...) are imported lazily; do not import them
-  at module level in `src`.
+- Raise `ValueError` or `TypeError` with an explicit message for invalid arguments, as the
+  surrounding code does. `feu` has no validation module; do not introduce one.
+- Keep new options keyword-only (`*`).
+- The only required dependency is `packaging`. Optional libraries (click, gitpython, requests,
+  rich, numpy, torch, pandas, polars, ...) are imported lazily or guarded with the helpers of
+  `feu.imports` (`is_<package>_available`, `check_<package>`); do not import them at module
+  level in `src`. Keep code compatible with Python 3.11+.
 - Every function, public or private (leading underscore), needs a docstring and its own unit
   tests. Private functions are not exempt. An override that adds nothing to the docstring of the
   method it overrides (same behaviour, arguments and exceptions) has no docstring: it inherits the
@@ -62,20 +63,19 @@
 
 - Always write tests for the code in `src/`, including every private function. Unit tests must be fast and efficient; move big or
   slow tests to `tests/integration/` if needed.
-- Unit tests mirror the source tree (`tests/unit/<package>/test_<module>.py`). Cross-thread
-  behaviour goes in `tests/integration/`, using `run_threads` from `tests/integration/helpers.py`,
-  a lock around the shared list, and a docstring starting with "Test that ...".
+- Unit tests mirror the source tree (`tests/unit/<package>/test_<module>.py`). Tests that
+  use the real network, git or installers go in `tests/integration/`, with a docstring starting
+  with "Test that ...".
 - Do not use local imports inside tests (for example `import polars as pl` in a test body). Import
-  at the top of the module; use the `*_available` fixtures from `coola.testing.marks` for
-  optional libraries.
+  at the top of the module; use the `*_available` / `*_not_available` markers from `feu.testing` for
+  optional libraries and tools.
 - One behaviour per test: a test has one `assert` or one `pytest.raises`. Split a test that checks
-  several things (equal, different, negative, ...) into several tests. Thread-safety tests may
-  assert the count and the uniqueness together, as the existing ones do.
+  several things (equal, different, negative, ...) into several tests.
 - Keep the unit tests simple and fast: no sleeps, no large data, no real network or heavy I/O,
   and no logic (loops, branches) in the test body. Anything slow or concurrent belongs in
   `tests/integration/`.
 - Add the missing tests to get 100% coverage of the code you add or change
-  (`.venv/bin/pytest <tests> --cov=coola --cov-report=term-missing`). Do not use
+  (`.venv/bin/pytest <tests> --cov=feu --cov-report=term-missing`). Do not use
   `# pragma: no cover` to skip a line that can be tested.
 - Use `pytest.mark.parametrize` for the same check on several values.
 - Every `pytest.raises` (and `pytest.warns`) must define `match` with a regular expression for the
@@ -133,6 +133,45 @@ check. Cover, where applicable:
 
 Prefer many small, precisely named tests (one behavior per test) over a few broad ones, so a
 failure points at the specific behavior that broke.
+
+## GitHub Actions workflows
+
+The workflows are in `.github/workflows/`; the composite actions are in `.github/actions/`.
+`.github/GUIDELINES.md` has the full table of workflows, triggers and conventions: read it
+and keep it up to date when you add, rename or remove a workflow.
+
+- The file name starts with a prefix that gives the role of the workflow:
+  - `ci-`: quality and test checks of the repository source. Most are reusable workflows
+    (`workflow_call`, plus `workflow_dispatch` to run one alone) called from `ci.yaml`.
+    `ci-verify-workflows.yaml` (every change of `.github/workflows/*`) is standalone and not
+    called from `ci.yaml`.
+  - `lib-`: reusable helpers that compute an output for other workflows (test matrix, package
+    versions, extras).
+  - `nightly-`: scheduled tests of the _published_ PyPI package, not of the source.
+    `nightly-package.yaml` is the entry point; the `nightly-test-package*.yaml` are called by
+    it. `nightly-verify-compat.yaml` is a standalone weekly check.
+  - `bot-`: scheduled automation that opens pull requests (dependency updates, pinning
+    actions, formatting, ...) with the `ci-bot` GitHub App token.
+  - `release-`: publishing to PyPI and the documentation, triggered by version tags
+    (`v*.*.*`) or manually; `release-pypi.yaml` runs `ci.yaml` before publishing.
+  - `security-`: dependency review of PRs and scorecard.
+- `ci.yaml` is the single entry point of the checks (pull request, push to `main`, nightly).
+  It calls `lib-get-test-matrix.yaml` once and passes the matrix to the test workflows, so the
+  Python versions and OS are defined in one place (`dev/config/test_matrix.json`). To add a
+  check, create a `ci-<name>.yaml` reusable workflow and add a job in `ci.yaml`. The job ids of
+  `ci.yaml` and of the workflows it calls are used by the branch protection (for example
+  `format / format`): keep them in sync when renaming either.
+- Put shared steps in a composite action when they sit inside one job, and in a `lib-*.yaml`
+  reusable workflow when the output feeds a matrix or the logic is a whole job. Extend an
+  existing one instead of copy-pasting steps.
+- Conventions: a header comment that says what the workflow does and when it runs; the minimum
+  `permissions` at the workflow level (`contents: read` or `{}`), widened only on the job that
+  needs more; `timeout-minutes` on every job; actions pinned to a commit SHA with a
+  `# ratchet:owner/repo@vX.Y.Z` comment (`bot-pin-action.yaml` maintains them, never hand-pin
+  a SHA without that comment); `workflow_dispatch` so the workflow can be run manually.
+- `ci-verify-workflows.yaml` lints the workflows: check your changes with `actionlint` (run
+  from `.github/workflows`) when available.
+- Set `permissions` on every job, including the jobs that call a reusable workflow.
 
 ## Reporting
 
