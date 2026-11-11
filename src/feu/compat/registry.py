@@ -12,6 +12,7 @@ __all__ = ["CompatRegistry", "UnsupportedVersionError", "VersionRange"]
 import copy
 from typing import TYPE_CHECKING, NamedTuple
 
+from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 if TYPE_CHECKING:
@@ -53,7 +54,8 @@ class CompatRegistry:
     r"""Manage package version compatibility across different
     compatibility targets.
 
-    The registry maps package name to ``Target`` to a list of
+    The registry maps the canonical package name (PEP 503) to ``Target``
+    to a list of
     ``VersionRange``. A package version is valid for a target if it
     falls within any of the registered ranges; an empty list means no
     version is valid for that target. A lookup target matches a
@@ -69,7 +71,12 @@ class CompatRegistry:
     Args:
         initial_state: Optional initial mapping of package
             constraints. If provided, the state is deep-copied to
-            prevent external mutations.
+            prevent external mutations. It is validated like
+            ``register``, and the package names are canonicalised.
+
+    Raises:
+        ValueError: If a range of ``initial_state`` is invalid (see
+            ``register``).
 
     Example:
         ```pycon
@@ -90,9 +97,8 @@ class CompatRegistry:
     def __init__(
         self, initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None
     ) -> None:
-        self._state: dict[str, dict[Target, list[VersionRange]]] = copy.deepcopy(
-            initial_state or {}
-        )
+        self._state: dict[str, dict[Target, list[VersionRange]]] = {}
+        self.register_many(copy.deepcopy(initial_state or {}))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(\n  {self._state}\n)"
@@ -118,6 +124,7 @@ class CompatRegistry:
 
         Args:
             pkg_name: The package name to register (e.g., ``"numpy"``).
+                It is canonicalised (PEP 503).
             target: The compatibility target.
             ranges: The list of valid version ranges for this target.
                 An empty list means no version is valid.
@@ -129,19 +136,46 @@ class CompatRegistry:
             RuntimeError: If a configuration already exists for the
                 given package name and target, and ``exist_ok`` is
                 ``False``.
+            ValueError: If a bound of a range is not a valid PEP 440
+                version, or if a minimum is greater than the maximum
+                of the same range. Nothing is registered in that case.
         """
-        table = self._state
-        table[pkg_name] = table.get(pkg_name, {})
+        name = canonicalize_name(pkg_name)
+        self._validate_ranges(name, ranges)
+        configs = self._state.get(name, {})
 
-        if target in table[pkg_name] and not exist_ok:
+        if target in configs and not exist_ok:
             msg = (
-                f"A package configuration ({table[pkg_name][target]}) is already "
-                f"registered for package {pkg_name} and target {target}. Please "
+                f"A package configuration ({configs[target]}) is already "
+                f"registered for package {name} and target {target}. Please "
                 f"use `exist_ok=True` if you want to overwrite the package config"
             )
             raise RuntimeError(msg)
 
-        table[pkg_name][target] = list(ranges)
+        self._state.setdefault(name, {})[target] = list(ranges)
+
+    @staticmethod
+    def _validate_ranges(pkg_name: str, ranges: list[VersionRange]) -> None:
+        r"""Validate a list of version ranges.
+
+        Args:
+            pkg_name: The package name, used in the error message.
+            ranges: The ranges to validate.
+
+        Raises:
+            ValueError: If a bound is not a valid PEP 440 version, or
+                if a minimum is greater than the maximum of the same
+                range.
+        """
+        for version_range in ranges:
+            min_version = _parse(version_range.min)
+            max_version = _parse(version_range.max)
+            if min_version is not None and max_version is not None and min_version > max_version:
+                msg = (
+                    f"invalid version range {tuple(version_range)} for package {pkg_name}: "
+                    "the minimum is greater than the maximum"
+                )
+                raise ValueError(msg)
 
     def register_many(
         self,
@@ -253,11 +287,12 @@ class CompatRegistry:
                 matching ``target``, or ``None`` if no entry
                 matches.
         """
-        if pkg_name not in self._state:
+        configs = self._state.get(canonicalize_name(pkg_name))
+        if configs is None:
             return None
         best: list[list[VersionRange]] = []
         best_specificity = -1
-        for entry_target, ranges in self._state[pkg_name].items():
+        for entry_target, ranges in configs.items():
             if not self._matches(entry_target, target):
                 continue
             specificity = self._specificity(entry_target)
@@ -286,7 +321,7 @@ class CompatRegistry:
             ``True`` if a configuration is registered for the
                 package, otherwise ``False``.
         """
-        return bool(self._state.get(pkg_name))
+        return bool(self._state.get(canonicalize_name(pkg_name)))
 
     def get_config(self, pkg_name: str, target: Target) -> list[VersionRange]:
         r"""Get the list of valid version ranges for a package and
@@ -369,34 +404,46 @@ class CompatRegistry:
             The closest valid version as a string. The requested
                 version is returned unchanged if it is valid or if
                 the package is not configured for the target.
-                Otherwise, the nearest range boundary is returned.
+                Otherwise, the nearest range boundary is returned, as
+                it was registered.
 
         Raises:
             UnsupportedVersionError: If no package version is valid
                 for the given target.
         """
         version = Version(pkg_version)
-        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
+        if self.is_unsupported(pkg_name=pkg_name, target=target):
+            msg = f"No version of package {pkg_name} is compatible with target {target}"
+            raise UnsupportedVersionError(msg)
+        # ``VersionRange`` keeps the registered strings, which are returned
+        # as is for a boundary. The ranges are sorted ascending by min
+        # version, but registration order is not guaranteed to be sorted.
+        ranges = sorted(
+            self.get_config(pkg_name=pkg_name, target=target),
+            key=lambda r: (r.min is not None, _parse(r.min)),
+        )
 
         # If unconfigured (no ranges), return the input version
         if not ranges:
             return pkg_version
 
-        for min_version, max_version in ranges:
+        for version_range in ranges:
+            min_version = _parse(version_range.min)
+            max_version = _parse(version_range.max)
             if (min_version is None or min_version <= version) and (
                 max_version is None or version <= max_version
             ):
                 return pkg_version
 
-        if ranges[0][0] is not None and version < ranges[0][0]:
-            return ranges[0][0].base_version
-        if ranges[-1][1] is not None and version > ranges[-1][1]:
-            return ranges[-1][1].base_version
+        if ranges[0].min is not None and version < Version(ranges[0].min):
+            return ranges[0].min
+        if ranges[-1].max is not None and version > Version(ranges[-1].max):
+            return ranges[-1].max
 
         # In a gap between two ranges: snap up to the next range's min.
-        for min_version, _ in ranges:
-            if min_version is not None and version < min_version:
-                return min_version.base_version
+        for version_range in ranges:
+            if version_range.min is not None and version < Version(version_range.min):
+                return version_range.min
 
         # Unreachable: `version` is outside every range and not below the
         # first min or above the last max, so it must fall in a gap caught

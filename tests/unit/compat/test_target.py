@@ -130,3 +130,9 @@ def test_resolve_target_python_version_default_from_interpreter() -> None:
         assert resolve_target(os="linux", arch="x86_64") == Target(
             python_version="3.13", free_threaded=True, os="linux", arch="x86_64"
         )
+
+
+@pytest.mark.parametrize("python_version", ["3.11\n", "3.11 ", " 3.11", "3.11\n3.12"])
+def test_target_rejects_trailing_or_leading_characters(python_version: str) -> None:
+    with pytest.raises(ValueError, match="invalid python_version"):
+        Target(python_version=python_version)

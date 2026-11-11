@@ -15,7 +15,7 @@ from feu.utils.platform import (
     is_free_threaded,
 )
 
-_PYTHON_VERSION_PATTERN = re.compile(r"^\d+\.\d+$")
+_PYTHON_VERSION_PATTERN = re.compile(r"\d+\.\d+")
 VALID_OS = frozenset({"linux", "macos", "windows"})
 VALID_ARCH = frozenset({"x86_64", "arm64"})
 
@@ -59,7 +59,7 @@ class Target:
     arch: str | None = None
 
     def __post_init__(self) -> None:
-        if not _PYTHON_VERSION_PATTERN.match(self.python_version):
+        if not _PYTHON_VERSION_PATTERN.fullmatch(self.python_version):
             msg = (
                 f"invalid python_version {self.python_version!r}: expected a "
                 "'major.minor' string, e.g. '3.11'"

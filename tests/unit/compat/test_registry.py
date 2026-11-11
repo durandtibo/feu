@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange, _parse
 from feu.compat.target import Target
@@ -45,7 +45,7 @@ def test_compat_registry_str() -> None:
 def test_compat_registry_register() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T311, ranges=[VersionRange("1.2.0", "2.0.2")])
-    assert registry.state == {"my_package": {T311: [VersionRange("1.2.0", "2.0.2")]}}
+    assert registry.state == {"my-package": {T311: [VersionRange("1.2.0", "2.0.2")]}}
 
 
 def test_compat_registry_register_multiple_ranges() -> None:
@@ -65,7 +65,7 @@ def test_compat_registry_register_multiple_targets() -> None:
     registry.register("my_package", T311, ranges=[VersionRange("1.2.0", "2.0.2")])
     registry.register("my_package", T310, ranges=[VersionRange("1.1.0", "1.5.2")])
     assert registry.state == {
-        "my_package": {
+        "my-package": {
             T311: [VersionRange("1.2.0", "2.0.2")],
             T310: [VersionRange("1.1.0", "1.5.2")],
         }
@@ -90,7 +90,7 @@ def test_compat_registry_register_exist_ok_true() -> None:
         ranges=[VersionRange("1.2.0", "2.0.2")],
         exist_ok=True,
     )
-    assert registry.state == {"my_package": {T311: [VersionRange("1.2.0", "2.0.2")]}}
+    assert registry.state == {"my-package": {T311: [VersionRange("1.2.0", "2.0.2")]}}
 
 
 def test_compat_registry_register_many() -> None:
@@ -577,7 +577,7 @@ def test_compat_registry_register_does_not_mutate_inputs_on_union() -> None:
     registry.register("my_package", LINUX_X86, ranges=ranges)
     registry.register("my_package", MACOS_ARM, ranges=[VersionRange("1.5.0", "3.0.0")])
     registry.get_config(pkg_name="my_package", target=T311)
-    assert registry.state["my_package"][LINUX_X86] == [VersionRange("1.0.0", "2.0.0")]
+    assert registry.state["my-package"][LINUX_X86] == [VersionRange("1.0.0", "2.0.0")]
 
 
 ########################################
@@ -610,3 +610,116 @@ def test_parse_none() -> None:
 
 def test_parse_version() -> None:
     assert _parse("1.2.3") == Version("1.2.3")
+
+
+##########################################
+#     Tests for canonical package names  #
+##########################################
+
+
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn", "scikit.learn", "SCIKIT--learn"])
+def test_compat_registry_register_canonicalises_name(name: str) -> None:
+    registry = CompatRegistry()
+    registry.register(name, T311, ranges=[VersionRange("1.0.0", None)])
+    assert registry.state == {"scikit-learn": {T311: [VersionRange("1.0.0", None)]}}
+
+
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn", "scikit-learn"])
+def test_compat_registry_get_config_any_spelling(name: str) -> None:
+    registry = CompatRegistry({"scikit-learn": {T311: [VersionRange("1.0.0", None)]}})
+    assert registry.get_config(pkg_name=name, target=T311) == [VersionRange("1.0.0", None)]
+
+
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn"])
+def test_compat_registry_is_valid_version_any_spelling(name: str) -> None:
+    registry = CompatRegistry({"scikit-learn": {T311: [VersionRange("1.0.0", None)]}})
+    assert not registry.is_valid_version(pkg_name=name, pkg_version="0.1", target=T311)
+
+
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn"])
+def test_compat_registry_has_package_any_spelling(name: str) -> None:
+    registry = CompatRegistry({"scikit-learn": {T311: [VersionRange("1.0.0", None)]}})
+    assert registry.has_package(name)
+
+
+def test_compat_registry_register_other_spelling_conflicts() -> None:
+    registry = CompatRegistry()
+    registry.register("scikit-learn", T311, ranges=[VersionRange("1.0.0", None)])
+    with pytest.raises(RuntimeError, match="already registered for package scikit-learn"):
+        registry.register("Scikit_Learn", T311, ranges=[VersionRange("2.0.0", None)])
+
+
+def test_compat_registry_init_canonicalises_names() -> None:
+    registry = CompatRegistry({"Scikit_Learn": {T311: [VersionRange("1.0.0", None)]}})
+    assert registry.state == {"scikit-learn": {T311: [VersionRange("1.0.0", None)]}}
+
+
+###################################
+#     Tests for range validation  #
+###################################
+
+
+def test_compat_registry_register_min_greater_than_max() -> None:
+    registry = CompatRegistry()
+    with pytest.raises(ValueError, match=r"invalid version range \('2\.0\.0', '1\.0\.0'\)"):
+        registry.register("numpy", T311, ranges=[VersionRange("2.0.0", "1.0.0")])
+
+
+def test_compat_registry_register_invalid_version() -> None:
+    registry = CompatRegistry()
+    with pytest.raises(InvalidVersion, match="not-a-version"):
+        registry.register("numpy", T311, ranges=[VersionRange("not-a-version", None)])
+
+
+def test_compat_registry_register_equal_bounds_is_valid() -> None:
+    registry = CompatRegistry()
+    registry.register("numpy", T311, ranges=[VersionRange("1.0.0", "1.0.0")])
+    assert registry.state == {"numpy": {T311: [VersionRange("1.0.0", "1.0.0")]}}
+
+
+def test_compat_registry_register_failure_does_not_create_package() -> None:
+    registry = CompatRegistry()
+    with pytest.raises(ValueError, match="invalid version range"):
+        registry.register("numpy", T311, ranges=[VersionRange("2.0.0", "1.0.0")])
+    assert registry.state == {}
+
+
+def test_compat_registry_register_conflict_does_not_change_state() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", None)]}})
+    with pytest.raises(RuntimeError, match="already registered"):
+        registry.register("numpy", T311, ranges=[VersionRange("2.0.0", None)])
+    assert registry.state == {"numpy": {T311: [VersionRange("1.0.0", None)]}}
+
+
+def test_compat_registry_register_failure_does_not_create_package_for_other_name() -> None:
+    registry = CompatRegistry()
+    with pytest.raises(ValueError, match="invalid version range"):
+        registry.register("other", T311, ranges=[VersionRange("2.0.0", "1.0.0")])
+    assert not registry.has_package("other")
+
+
+def test_compat_registry_init_invalid_range() -> None:
+    with pytest.raises(ValueError, match="invalid version range"):
+        CompatRegistry({"numpy": {T311: [VersionRange("2.0.0", "1.0.0")]}})
+
+
+#########################################################
+#     Tests for registered strings of the boundaries    #
+#########################################################
+
+
+def test_compat_registry_find_closest_version_returns_registered_lower_string() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.23.2.post1", "2.0")]}})
+    assert registry.find_closest_version("numpy", "1.0.0", T311) == "1.23.2.post1"
+
+
+def test_compat_registry_find_closest_version_returns_registered_upper_string() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0", "2.0.0rc1")]}})
+    assert registry.find_closest_version("numpy", "3.0.0", T311) == "2.0.0rc1"
+
+
+def test_compat_registry_find_closest_version_returns_registered_gap_string() -> None:
+    registry = CompatRegistry(
+        {"numpy": {T311: [VersionRange("1.0", "1.5"), VersionRange("2.0.0.post0", None)]}}
+    )
+    assert registry.find_closest_version("numpy", "1.7", T311) == "2.0.0.post0"

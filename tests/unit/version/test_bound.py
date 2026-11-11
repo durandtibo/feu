@@ -7,7 +7,6 @@ import pytest
 from feu.version import (
     PackageBounds,
     get_package_bounds,
-    normalize_package_name,
     partition_package_bounds,
 )
 
@@ -102,42 +101,6 @@ def test_get_package_bounds_not_found_raises_value_error() -> None:
 def test_get_package_bounds_empty_sequence_raises_value_error() -> None:
     with pytest.raises(ValueError, match="numpy"):
         get_package_bounds([], "numpy")
-
-
-##############################################
-#     Tests for normalize_package_name       #
-##############################################
-
-
-@pytest.mark.parametrize(
-    ("name", "expected"),
-    [
-        pytest.param("numpy", "numpy", id="already_normalized"),
-        pytest.param("NumPy", "numpy", id="mixed_case"),
-        pytest.param("NUMPY", "numpy", id="uppercase"),
-        pytest.param("scikit-learn", "scikit_learn", id="hyphen"),
-        pytest.param("scikit_learn", "scikit_learn", id="underscore"),
-        pytest.param("Scikit-Learn", "scikit_learn", id="mixed_case_hyphen"),
-        pytest.param("SCIKIT-LEARN", "scikit_learn", id="uppercase_hyphen"),
-        pytest.param("my-package-name", "my_package_name", id="multiple_hyphens"),
-        pytest.param("a", "a", id="single_char"),
-        pytest.param("", "", id="empty_string"),
-    ],
-)
-def test_normalize_package_name_parametrized(name: str, expected: str) -> None:
-    assert normalize_package_name(name) == expected
-
-
-def test_normalize_package_name_returns_str() -> None:
-    assert isinstance(normalize_package_name("numpy"), str)
-
-
-def test_normalize_package_name_hyphen_and_underscore_equivalent() -> None:
-    assert normalize_package_name("scikit-learn") == normalize_package_name("scikit_learn")
-
-
-def test_normalize_package_name_case_insensitive() -> None:
-    assert normalize_package_name("NumPy") == normalize_package_name("numpy")
 
 
 ##############################################

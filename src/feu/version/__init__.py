@@ -28,7 +28,6 @@ __all__ = [
     "latest_major_versions",
     "latest_minor_versions",
     "latest_version",
-    "normalize_package_name",
     "partition_package_bounds",
     "read_pyproject_dependencies",
     "read_pyproject_optional_dependencies",
@@ -40,7 +39,6 @@ __all__ = [
 from feu.version.bound import (
     PackageBounds,
     get_package_bounds,
-    normalize_package_name,
     partition_package_bounds,
 )
 from feu.version.comparison import compare_version, latest_version, sort_versions

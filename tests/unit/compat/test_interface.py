@@ -71,7 +71,7 @@ def test_register_compat_adds_to_registry() -> None:
     register_compat({"my_package": {T311: [VersionRange("1.0.0", None)]}})
     registry = get_default_registry()
     assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("1.0.0", None)]
-    assert registry.state["my_package"] == {T311: [VersionRange("1.0.0", None)]}
+    assert registry.state["my-package"] == {T311: [VersionRange("1.0.0", None)]}
 
 
 def test_register_compat_exist_ok_false_raises() -> None:

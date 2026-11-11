@@ -336,3 +336,16 @@ def test_unique_versions_single_item() -> None:
 
 def test_unique_versions_empty() -> None:
     assert unique_versions([]) == []
+
+
+######################################################
+#     Tests for the strings returned by latest_*     #
+######################################################
+
+
+def test_latest_major_versions_returns_the_input_strings() -> None:
+    assert latest_major_versions(["1.0-1", "1.0", "2.0.0-1"]) == ["1.0-1", "2.0.0-1"]
+
+
+def test_latest_minor_versions_returns_the_input_strings() -> None:
+    assert latest_minor_versions(["1.0-1", "1.0", "1.1.0-1"]) == ["1.0-1", "1.1.0-1"]

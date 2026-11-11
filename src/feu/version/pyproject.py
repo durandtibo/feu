@@ -13,8 +13,9 @@ import tomllib
 from pathlib import Path
 
 from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 
-from feu.version.bound import PackageBounds, normalize_package_name
+from feu.version.bound import PackageBounds
 
 
 def read_pyproject_dependencies(path: str | Path) -> list[PackageBounds]:
@@ -105,7 +106,7 @@ def read_pyproject_package_bounds(
     - ``[dependency-groups.*]``
 
     The package name comparison is case-insensitive and treats hyphens
-    and underscores as equivalent (see ``normalize_package_name``).
+    and underscores as equivalent (see ``packaging.utils.canonicalize_name``).
 
     Args:
         path: Path to the ``pyproject.toml`` file.
@@ -131,7 +132,7 @@ def read_pyproject_package_bounds(
     with path.open("rb") as f:
         data = tomllib.load(f)
 
-    normalized_package = normalize_package_name(package)
+    normalized_package = canonicalize_name(package)
     results: list[PackageBounds] = []
 
     # [project.dependencies]
@@ -185,7 +186,9 @@ def _parse_bounds_from_spec(spec: str, section: str) -> PackageBounds:
         (s.version for s in req.specifier if s.operator in ("<", "<=")),
         None,
     )
-    return PackageBounds(name=req.name, lower=lower, upper=upper, section=section)
+    return PackageBounds(
+        name=canonicalize_name(req.name), lower=lower, upper=upper, section=section
+    )
 
 
 def _parse_bounds(
@@ -206,4 +209,4 @@ def _parse_bounds(
         ``None`` otherwise.
     """
     bounds = _parse_bounds_from_spec(spec, section)
-    return bounds if normalize_package_name(bounds.name) == normalized_package else None
+    return bounds if canonicalize_name(bounds.name) == normalized_package else None
