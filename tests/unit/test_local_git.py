@@ -149,7 +149,7 @@ def test_get_last_version_tag_name_ignore_non_prefixed_numeric_tag() -> None:
 def test_get_last_version_tag_name_empty() -> None:
     with (
         patch("feu.local_git.get_tags", list),
-        pytest.raises(RuntimeError, match=r"No tag was found"),
+        pytest.raises(RuntimeError, match=r"No version tag was found"),
     ):
         get_last_version_tag_name()
 
@@ -174,7 +174,7 @@ def test_get_last_version_tag_name_no_version_tag() -> None:
     m1.configure_mock(name="my_tag")
     with (
         patch("feu.local_git.get_tags", lambda: [m1]),
-        pytest.raises(RuntimeError, match=r"No tag was found"),
+        pytest.raises(RuntimeError, match=r"No version tag was found"),
     ):
         get_last_version_tag_name()
 
@@ -183,3 +183,39 @@ def test_get_last_version_tag_name_no_version_tag() -> None:
 def test_get_last_version_tag_name_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_last_version_tag_name()
+
+
+@git_available
+def test_get_last_tag_name_no_tag_message_is_not_the_version_tag_message() -> None:
+    with (
+        patch("feu.local_git.get_tags", list),
+        pytest.raises(RuntimeError, match=r"^No tag was found$"),
+    ):
+        get_last_tag_name()
+
+
+@git_available
+def test_get_last_version_tag_name_message_explains_what_a_version_tag_is() -> None:
+    with (
+        patch("feu.local_git.get_tags", list),
+        pytest.raises(RuntimeError, match=r"'v' followed by a PEP 440 version"),
+    ):
+        get_last_version_tag_name()
+
+
+@git_available
+def test_get_last_tag_name_raise_error_is_keyword_only() -> None:
+    with (
+        patch("feu.local_git.get_tags", list),
+        pytest.raises(TypeError, match="positional argument"),
+    ):
+        get_last_tag_name(False)  # ty: ignore[too-many-positional-arguments]
+
+
+@git_available
+def test_get_last_version_tag_name_raise_error_is_keyword_only() -> None:
+    with (
+        patch("feu.local_git.get_tags", list),
+        pytest.raises(TypeError, match="positional argument"),
+    ):
+        get_last_version_tag_name(False)  # ty: ignore[too-many-positional-arguments]

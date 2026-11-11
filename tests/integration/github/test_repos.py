@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import pytest
 
 from feu.github import fetch_github_repos
@@ -21,7 +23,7 @@ def test_fetch_github_repos() -> None:
     repos = fetch_github_repos(owner="durandtibo")
     assert isinstance(repos, tuple)
     assert len(repos) > 0
-    assert isinstance(repos[0], dict)
+    assert isinstance(repos[0], Mapping)
 
 
 @requests_not_available

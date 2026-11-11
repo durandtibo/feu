@@ -33,6 +33,7 @@ def mock_response() -> Response:
     response = Mock(spec=Response)
     response.status_code = 200
     response.headers = {}
+    response.links = {}
     return response
 
 
@@ -68,15 +69,13 @@ def test_fetch_github_repos_multiple_pages(sample_repos: list[dict[str, Any]]) -
     first_response = Mock()
     first_response.status_code = 200
     first_response.json.return_value = sample_repos[:1]
-    first_response.headers = {
-        "Link": '<https://api.github.com/users/owner/repos?page=2>; rel="next"'
-    }
+    first_response.links = {"next": {"url": "https://api.github.com/users/owner/repos?page=2"}}
 
     # Second page
     second_response = Mock()
     second_response.status_code = 200
     second_response.json.return_value = sample_repos[1:]
-    second_response.headers = {}
+    second_response.links = {}
 
     with patch(f"{MODULE}.fetch_response", side_effect=[first_response, second_response]):
         result = fetch_github_repos("testowner")
@@ -93,7 +92,7 @@ def test_fetch_github_repos_no_next_link(sample_repos: list[dict[str, Any]]) -> 
     response = Mock()
     response.status_code = 200
     response.json.return_value = sample_repos[:1]
-    response.headers = {"Link": '<https://api.github.com/users/owner/repos?page=1>; rel="first"'}
+    response.links = {"first": {"url": "https://api.github.com/users/owner/repos?page=1"}}
 
     with patch(f"{MODULE}.fetch_response", return_value=response):
         result = fetch_github_repos("testowner")
@@ -189,19 +188,19 @@ def test_fetch_github_repos_headers(
 
 @requests_available
 def test_fetch_github_repos_pagination_link_parsing(sample_repos: list[dict[str, Any]]) -> None:
-    """Test parsing of Link header with multiple relations."""
+    """Test that the next page is read from the Link header with multiple relations."""
     first_response = Mock()
     first_response.status_code = 200
     first_response.json.return_value = sample_repos[:1]
-    first_response.headers = {
-        "Link": '<https://api.github.com/users/owner/repos?page=1>; rel="prev", '
-        '<https://api.github.com/users/owner/repos?page=2>; rel="next"'
+    first_response.links = {
+        "prev": {"url": "https://api.github.com/users/owner/repos?page=1"},
+        "next": {"url": "https://api.github.com/users/owner/repos?page=2"},
     }
 
     second_response = Mock()
     second_response.status_code = 200
     second_response.json.return_value = sample_repos[1:]
-    second_response.headers = {}
+    second_response.links = {}
 
     with patch(
         f"{MODULE}.fetch_response", side_effect=[first_response, second_response]
@@ -449,3 +448,34 @@ def test_display_repos_summary_large_numbers(caplog: pytest.LogCaptureFixture) -
         display_repos_summary(repos)
 
     assert "Stars: 10,000 | Forks: 5,000" in caplog.text
+
+
+@requests_available
+def test_fetch_github_repos_returns_read_only_mappings(
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
+) -> None:
+    """Test that a caller cannot corrupt the cached repositories."""
+    mock_response.json.return_value = sample_repos
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response):
+        repos = fetch_github_repos("testowner")
+    with pytest.raises(TypeError, match="does not support item assignment"):
+        repos[0]["name"] = "changed"  # ty: ignore[invalid-assignment]
+
+
+@requests_available
+def test_fetch_github_repos_returns_a_tuple(
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
+) -> None:
+    mock_response.json.return_value = sample_repos
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response):
+        assert isinstance(fetch_github_repos("testowner"), tuple)
+
+
+@requests_available
+def test_fetch_github_repos_does_not_mutate_the_response(
+    mock_response: Mock, sample_repos: list[dict[str, Any]]
+) -> None:
+    mock_response.json.return_value = sample_repos
+    with patch(f"{MODULE}.fetch_response", return_value=mock_response):
+        fetch_github_repos("testowner")
+    assert sample_repos[0]["name"] == "repo1"

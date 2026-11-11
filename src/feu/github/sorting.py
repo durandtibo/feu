@@ -8,27 +8,27 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
 def sort_repos_by_key(
-    repos: Sequence[dict[str, Any]], *, key: str, reverse: bool = False
-) -> list[dict[str, Any]]:
+    repos: Sequence[Mapping[str, Any]], *, key: str, reverse: bool = False
+) -> list[Mapping[str, Any]]:
     r"""Sort repositories by a given key.
 
     Repositories without the key, or with a ``None`` value for the
     key, are placed at the end in their original order.
 
     Args:
-        repos: List of repository dictionaries from GitHub API.
+        repos: List of repository mappings from GitHub API.
         key: Key to sort.
         reverse: If ``True``, sort in descending order. Defaults to
             ``False``.
 
     Returns:
-        A new list of repository dictionaries sorted in ascending
+        A new list of repository mappings sorted in ascending
             order (or descending if ``reverse=True``). Repositories
             without the key, or with a ``None`` value for the key,
             appear at the end in their original order, whatever the

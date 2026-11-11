@@ -59,8 +59,9 @@ def test_fetch_github_metadata_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
     session.get.assert_called_once_with(
         url="https://api.github.com/repos/owner/repo",
-        timeout=10,
+        timeout=10.0,
         headers={"Accept": "application/vnd.github+json"},
+        params=None,
     )
 
 
@@ -75,8 +76,9 @@ def test_fetch_github_metadata_success_with_token(monkeypatch: pytest.MonkeyPatc
     assert fetch_github_metadata(owner="owner", repo="repo") == {"name": "example-repo"}
     session.get.assert_called_once_with(
         url="https://api.github.com/repos/owner/repo",
-        timeout=10,
+        timeout=10.0,
         headers={"Accept": "application/vnd.github+json", "Authorization": "Bearer meow"},
+        params=None,
     )
 
 
@@ -138,3 +140,13 @@ def test_fetch_github_metadata_invalid_json(monkeypatch: pytest.MonkeyPatch) -> 
 def test_fetch_github_metadata_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_github_metadata(owner="my_name", repo="my_package")
+
+
+@requests_available
+def test_fetch_github_metadata_is_read_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    metadata = fetch_github_metadata(owner="owner", repo="repo")
+    with pytest.raises(TypeError, match="does not support item assignment"):
+        metadata["name"] = "changed"  # ty: ignore[invalid-assignment]

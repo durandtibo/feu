@@ -27,7 +27,6 @@ __all__ = [
     "filter_valid_versions",
     "get_package_bounds",
     "get_package_version",
-    "get_python_major_minor",
     "latest_major_versions",
     "latest_minor_versions",
     "latest_version",
@@ -82,4 +81,4 @@ from feu.version.pyproject import (
     read_pyproject_package_bounds,
 )
 from feu.version.request import VersionRequest, parse_version_request
-from feu.version.runtime import get_package_version, get_python_major_minor
+from feu.version.runtime import get_package_version

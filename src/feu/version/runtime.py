@@ -1,15 +1,12 @@
-r"""Contain functions to get the version of an installed package or of
-the current python."""
+r"""Contain functions to get the version of an installed package."""
 
 from __future__ import annotations
 
-__all__ = ["get_package_version", "get_python_major_minor"]
+__all__ = ["get_package_version"]
 
-import sys
-from functools import lru_cache
 from importlib.metadata import PackageNotFoundError, version
 
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 
 def get_package_version(package: str) -> Version | None:
@@ -20,7 +17,8 @@ def get_package_version(package: str) -> Version | None:
 
     Returns:
         The package version, or ``None`` if the package is not
-            installed.
+            installed or if its version is not a valid PEP 440
+            version.
 
     Example:
         ```pycon
@@ -32,22 +30,5 @@ def get_package_version(package: str) -> Version | None:
     """
     try:
         return Version(version(package))
-    except PackageNotFoundError:
+    except (PackageNotFoundError, InvalidVersion):
         return None
-
-
-@lru_cache
-def get_python_major_minor() -> str:
-    r"""Get the MAJOR.MINOR version of the current python.
-
-    Returns:
-        The MAJOR.MINOR version of the current python.
-
-    Example:
-        ```pycon
-        >>> from feu.version import get_python_major_minor
-        >>> get_python_major_minor()  # doctest: +SKIP
-
-        ```
-    """
-    return f"{sys.version_info.major}.{sys.version_info.minor}"
