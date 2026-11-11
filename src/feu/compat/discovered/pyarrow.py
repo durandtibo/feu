@@ -7,12 +7,82 @@ hand: re-run the script to refresh this module.
 
 from __future__ import annotations
 
-__all__ = ["PKG_NAME", "compat"]
+__all__ = ["PKG_NAME", "VERSIONS", "compat"]
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 PKG_NAME = "pyarrow"
+
+# The stable, valid releases that existed when the module was generated, in
+# PEP 440 order. A wildcard version request is matched against them.
+VERSIONS = (
+    "0.1.0",
+    "0.2.0",
+    "0.3.0",
+    "0.4.0",
+    "0.4.1",
+    "0.5.0",
+    "0.6.0",
+    "0.7.0",
+    "0.7.1",
+    "0.8.0",
+    "0.9.0",
+    "0.10.0",
+    "0.11.0",
+    "0.11.1",
+    "0.12.0",
+    "0.12.1",
+    "0.13.0",
+    "0.14.0",
+    "0.14.1",
+    "0.15.0",
+    "0.15.1",
+    "0.16.0",
+    "0.17.0",
+    "0.17.1",
+    "1.0.0",
+    "1.0.1",
+    "2.0.0",
+    "3.0.0",
+    "4.0.0",
+    "4.0.1",
+    "5.0.0",
+    "6.0.0",
+    "6.0.1",
+    "7.0.0",
+    "8.0.0",
+    "9.0.0",
+    "10.0.0",
+    "10.0.1",
+    "11.0.0",
+    "12.0.0",
+    "12.0.1",
+    "13.0.0",
+    "14.0.0",
+    "14.0.1",
+    "14.0.2",
+    "15.0.0",
+    "15.0.1",
+    "15.0.2",
+    "16.0.0",
+    "16.1.0",
+    "17.0.0",
+    "18.0.0",
+    "18.1.0",
+    "19.0.0",
+    "19.0.1",
+    "20.0.0",
+    "21.0.0",
+    "22.0.0",
+    "23.0.0",
+    "23.0.1",
+    "24.0.0",
+    "25.0.0",
+    "25.0.1",
+    "26.0.0",
+    "26.0.1",
+)
 
 
 def compat() -> dict[Target, list[VersionRange]]:

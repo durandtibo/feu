@@ -3,6 +3,7 @@ from __future__ import annotations
 from unittest.mock import Mock, patch
 
 import pytest
+from packaging.version import Version
 
 from feu.install.pip.resolver import (
     BaseDependencyResolver,
@@ -17,8 +18,10 @@ from feu.install.pip.resolver import (
     SklearnDependencyResolver,
     TorchDependencyResolver,
     XarrayDependencyResolver,
+    _is_within,
 )
 from feu.utils.package import PackageDependency, PackageSpec
+from feu.version.request import parse_version_request
 
 ########################################
 #     Tests for DependencyResolver     #
@@ -131,10 +134,9 @@ def test_jax_dependency_resolver_resolve_with_extras() -> None:
     ]
 
 
-def test_jax_dependency_resolver_missing_version() -> None:
+def test_jax_dependency_resolver_resolve_no_version() -> None:
     resolver = JaxDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for jax"):
-        resolver.resolve(PackageSpec(name="jax"))
+    assert resolver.resolve(PackageSpec(name="jax")) == [PackageDependency(name="jax")]
 
 
 def test_jax_dependency_resolver_resolve_wildcard() -> None:
@@ -204,10 +206,11 @@ def test_numpy2_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="my_package", version_specifiers=["==1.2.3"], extras=["dev"])]
 
 
-def test_numpy2_dependency_resolver_missing_version() -> None:
+def test_numpy2_dependency_resolver_resolve_no_version() -> None:
     resolver = Numpy2DependencyResolver(min_version="1.2.3")
-    with pytest.raises(RuntimeError, match="Missing package version for my_package"):
-        resolver.resolve(PackageSpec(name="my_package"))
+    assert resolver.resolve(PackageSpec(name="my_package")) == [
+        PackageDependency(name="my_package")
+    ]
 
 
 def test_numpy2_dependency_resolver_resolve_wildcard() -> None:
@@ -264,10 +267,11 @@ def test_matplotlib_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="matplotlib", version_specifiers=["==3.8.4"], extras=["tk"])]
 
 
-def test_matplotlib_dependency_resolver_missing_version() -> None:
+def test_matplotlib_dependency_resolver_resolve_no_version() -> None:
     resolver = MatplotlibDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for matplotlib"):
-        resolver.resolve(PackageSpec(name="matplotlib"))
+    assert resolver.resolve(PackageSpec(name="matplotlib")) == [
+        PackageDependency(name="matplotlib")
+    ]
 
 
 ##############################################
@@ -316,10 +320,9 @@ def test_pandas_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="pandas", version_specifiers=["==2.2.2"], extras=["performance"])]
 
 
-def test_pandas_dependency_resolver_missing_version() -> None:
+def test_pandas_dependency_resolver_resolve_no_version() -> None:
     resolver = PandasDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for pandas"):
-        resolver.resolve(PackageSpec(name="pandas"))
+    assert resolver.resolve(PackageSpec(name="pandas")) == [PackageDependency(name="pandas")]
 
 
 def test_pandas_dependency_resolver_resolve_wildcard() -> None:
@@ -374,10 +377,9 @@ def test_pyarrow_dependency_resolver_resolve_with_extras() -> None:
     ) == [PackageDependency(name="pyarrow", version_specifiers=["==16.0"], extras=["pandas"])]
 
 
-def test_pyarrow_dependency_resolver_missing_version() -> None:
+def test_pyarrow_dependency_resolver_resolve_no_version() -> None:
     resolver = PyarrowDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for pyarrow"):
-        resolver.resolve(PackageSpec(name="pyarrow"))
+    assert resolver.resolve(PackageSpec(name="pyarrow")) == [PackageDependency(name="pyarrow")]
 
 
 #############################################
@@ -420,10 +422,9 @@ def test_scipy_dependency_resolver_resolve_low() -> None:
     ]
 
 
-def test_scipy_dependency_resolver_missing_version() -> None:
+def test_scipy_dependency_resolver_resolve_no_version() -> None:
     resolver = ScipyDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for scipy"):
-        resolver.resolve(PackageSpec(name="scipy"))
+    assert resolver.resolve(PackageSpec(name="scipy")) == [PackageDependency(name="scipy")]
 
 
 ###############################################
@@ -476,10 +477,11 @@ def test_sklearn_dependency_resolver_resolve_with_extras() -> None:
     ]
 
 
-def test_sklearn_dependency_resolver_missing_version() -> None:
+def test_sklearn_dependency_resolver_resolve_no_version() -> None:
     resolver = SklearnDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for scikit-learn"):
-        resolver.resolve(PackageSpec(name="scikit-learn"))
+    assert resolver.resolve(PackageSpec(name="scikit-learn")) == [
+        PackageDependency(name="scikit-learn")
+    ]
 
 
 #############################################
@@ -522,10 +524,9 @@ def test_torch_dependency_resolver_resolve_low() -> None:
     ]
 
 
-def test_torch_dependency_resolver_missing_version() -> None:
+def test_torch_dependency_resolver_resolve_no_version() -> None:
     resolver = TorchDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for torch"):
-        resolver.resolve(PackageSpec(name="torch"))
+    assert resolver.resolve(PackageSpec(name="torch")) == [PackageDependency(name="torch")]
 
 
 def test_torch_dependency_resolver_resolve_wildcard() -> None:
@@ -582,10 +583,9 @@ def test_xarray_dependency_resolver_resolve_with_extras() -> None:
     ]
 
 
-def test_xarray_dependency_resolver_missing_version() -> None:
+def test_xarray_dependency_resolver_resolve_no_version() -> None:
     resolver = XarrayDependencyResolver()
-    with pytest.raises(RuntimeError, match="Missing package version for xarray"):
-        resolver.resolve(PackageSpec(name="xarray"))
+    assert resolver.resolve(PackageSpec(name="xarray")) == [PackageDependency(name="xarray")]
 
 
 ################################################
@@ -696,3 +696,112 @@ def test_dependency_resolver_registry_add_resolver_other_spelling_conflicts() ->
         DependencyResolverRegistry.add_resolver(
             PackageSpec("Scikit_Learn"), Mock(spec=BaseDependencyResolver)
         )
+
+
+#########################################################
+#     Tests for the version requests of the resolvers   #
+#########################################################
+
+
+def test_pandas_dependency_resolver_resolve_empty_version() -> None:
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="")) == [
+        PackageDependency(name="pandas")
+    ]
+
+
+def test_pandas_dependency_resolver_resolve_wildcard_below_min_version() -> None:
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.1.*")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.1.*"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_pandas_dependency_resolver_resolve_wildcard_major_straddles_min_version() -> None:
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.*")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.*"])
+    ]
+
+
+def test_pandas_dependency_resolver_resolve_wildcard_above_min_version() -> None:
+    assert PandasDependencyResolver().resolve(PackageSpec(name="pandas", version="2.3.*")) == [
+        PackageDependency(name="pandas", version_specifiers=["==2.3.*"])
+    ]
+
+
+def test_numpy2_dependency_resolver_resolve_wildcard_major_below_min_version() -> None:
+    assert Numpy2DependencyResolver(min_version="2.0.0").resolve(
+        PackageSpec(name="my_package", version="1.*")
+    ) == [
+        PackageDependency(name="my_package", version_specifiers=["==1.*"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_jax_dependency_resolver_resolve_empty_version() -> None:
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="")) == [
+        PackageDependency(name="jax")
+    ]
+
+
+def test_jax_dependency_resolver_resolve_wildcard_below_numpy2_support() -> None:
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.3.*")) == [
+        PackageDependency(name="jax", version_specifiers=["==0.3.*"]),
+        PackageDependency(name="jaxlib", version_specifiers=["==0.3.*"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+    ]
+
+
+def test_jax_dependency_resolver_resolve_wildcard_straddling_numpy2_support() -> None:
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.4.*")) == [
+        PackageDependency(name="jax", version_specifiers=["==0.4.*"]),
+        PackageDependency(name="jaxlib", version_specifiers=["==0.4.*"]),
+    ]
+
+
+def test_jax_dependency_resolver_resolve_wildcard_in_ml_dtypes_range() -> None:
+    assert JaxDependencyResolver().resolve(PackageSpec(name="jax", version="0.4.10.*")) == [
+        PackageDependency(name="jax", version_specifiers=["==0.4.10.*"]),
+        PackageDependency(name="jaxlib", version_specifiers=["==0.4.10.*"]),
+        PackageDependency(name="numpy", version_specifiers=["<2.0.0"]),
+        PackageDependency(name="ml_dtypes", version_specifiers=["<=0.2.0"]),
+    ]
+
+
+@pytest.mark.parametrize(
+    ("version", "expected"),
+    [
+        pytest.param("0.4.8", False, id="below"),
+        pytest.param("0.4.9", True, id="lower_bound"),
+        pytest.param("0.4.11", True, id="upper_bound"),
+        pytest.param("0.4.12", False, id="above"),
+    ],
+)
+def test_jax_dependency_resolver_ml_dtypes_pin_boundaries(version: str, expected: bool) -> None:
+    deps = JaxDependencyResolver().resolve(PackageSpec(name="jax", version=version))
+    assert (PackageDependency("ml_dtypes", version_specifiers=["<=0.2.0"]) in deps) == expected
+
+
+#############################
+#     Tests for _is_within  #
+#############################
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        pytest.param("2.5.0", True, id="exact_inside"),
+        pytest.param("2.0.0", True, id="exact_lower_bound"),
+        pytest.param("3.0.0", False, id="exact_upper_bound"),
+        pytest.param("1.9.0", False, id="exact_below"),
+        pytest.param("2.5.*", True, id="wildcard_inside"),
+        pytest.param("2.*", True, id="wildcard_major_inside"),
+        pytest.param("1.*", False, id="wildcard_below"),
+        pytest.param("3.*", False, id="wildcard_above"),
+        pytest.param("", False, id="latest"),
+    ],
+)
+def test_is_within(text: str, expected: bool) -> None:
+    assert (
+        _is_within(parse_version_request(text), lower=Version("2.0.0"), upper=Version("3.0.0"))
+        == expected
+    )

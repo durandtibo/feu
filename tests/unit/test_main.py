@@ -279,3 +279,85 @@ def test_check_valid_version_default_options() -> None:
             "pkg_version": "2.0.2",
             "target": Target(python_version="3.12", free_threaded=False, os="macos", arch="arm64"),
         }
+
+
+######################################################
+#     Tests for the version request of the CLI      #
+######################################################
+
+
+@click_available
+def test_install_without_pkg_version() -> None:
+    runner = CliRunner()
+    mock = Mock()
+    with patch("feu.__main__.install_package_closest_version", mock):
+        result = runner.invoke(install, ["--pkg-name", "numpy"])
+        assert result.exit_code == 0
+        assert mock.call_args.kwargs["package"] == PackageSpec(name="numpy", version="", extras=[])
+
+
+@click_available
+def test_install_with_empty_pkg_version() -> None:
+    runner = CliRunner()
+    mock = Mock()
+    with patch("feu.__main__.install_package_closest_version", mock):
+        result = runner.invoke(install, ["--pkg-name", "numpy", "--pkg-version="])
+        assert result.exit_code == 0
+        assert mock.call_args.kwargs["package"] == PackageSpec(name="numpy", version="", extras=[])
+
+
+@click_available
+def test_install_with_wildcard_pkg_version() -> None:
+    runner = CliRunner()
+    mock = Mock()
+    with patch("feu.__main__.install_package_closest_version", mock):
+        result = runner.invoke(install, ["--pkg-name", "numpy", "--pkg-version", "1.*"])
+        assert result.exit_code == 0
+        assert mock.call_args.kwargs["package"] == PackageSpec(
+            name="numpy", version="1.*", extras=[]
+        )
+
+
+NUMPY_PY39 = ["--pkg-name", "numpy", "--python-version", "3.9", "--os", "linux", "--arch", "x86_64"]
+
+
+@click_available
+def test_find_closest_version_without_pkg_version() -> None:
+    result = CliRunner().invoke(find_closest_version, NUMPY_PY39)
+    assert result.output.strip() == "2.0.2"
+
+
+@click_available
+def test_find_closest_version_with_empty_pkg_version() -> None:
+    result = CliRunner().invoke(find_closest_version, [*NUMPY_PY39, "--pkg-version="])
+    assert result.output.strip() == "2.0.2"
+
+
+@click_available
+def test_find_closest_version_with_wildcard_pkg_version() -> None:
+    result = CliRunner().invoke(find_closest_version, [*NUMPY_PY39, "--pkg-version", "1.*"])
+    assert result.output.strip() == "1.26.4"
+
+
+@click_available
+def test_find_closest_version_with_unmatched_wildcard_pkg_version() -> None:
+    result = CliRunner().invoke(find_closest_version, [*NUMPY_PY39, "--pkg-version", "3.*"])
+    assert result.output.strip() == "None"
+
+
+@click_available
+def test_check_valid_version_without_pkg_version() -> None:
+    result = CliRunner().invoke(check_valid_version, NUMPY_PY39)
+    assert result.output.strip() == "True"
+
+
+@click_available
+def test_check_valid_version_with_wildcard_pkg_version() -> None:
+    result = CliRunner().invoke(check_valid_version, [*NUMPY_PY39, "--pkg-version", "2.*"])
+    assert result.output.strip() == "True"
+
+
+@click_available
+def test_check_valid_version_with_unmatched_wildcard_pkg_version() -> None:
+    result = CliRunner().invoke(check_valid_version, [*NUMPY_PY39, "--pkg-version", "3.*"])
+    assert result.output.strip() == "False"

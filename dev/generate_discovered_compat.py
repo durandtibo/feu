@@ -16,9 +16,14 @@ import re
 from pathlib import Path
 
 from feu.compat import discover_compat_targets
+from feu.compat.discoverers.duckdb import IGNORED_VERSIONS as DUCKDB_IGNORED_VERSIONS
 from feu.compat.packages import get_package_names
+from feu.version import fetch_pypi_wheel_filenames, sort_versions
+from feu.version.filtering import filter_stable_versions, filter_valid_versions
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+IGNORED_VERSIONS = {"duckdb": DUCKDB_IGNORED_VERSIONS}
 
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "src" / "feu" / "compat" / "discovered"
 
@@ -32,12 +37,16 @@ hand: re-run the script to refresh this module.
 
 from __future__ import annotations
 
-__all__ = ["PKG_NAME", "compat"]
+__all__ = ["PKG_NAME", "VERSIONS", "compat"]
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 PKG_NAME = {pkg_name!r}
+
+# The stable, valid releases that existed when the module was generated, in
+# PEP 440 order. A wildcard version request is matched against them.
+VERSIONS = {versions!r}
 
 
 def compat() -> dict[Target, list[VersionRange]]:
@@ -52,11 +61,23 @@ def module_name(pkg_name: str) -> str:
     return re.sub(r"[^0-9a-zA-Z_]", "_", pkg_name).lower()
 
 
+def fetch_known_versions(pkg_name: str) -> tuple[str, ...]:
+    r"""Fetch the stable, valid, non-ignored releases of a package.
+
+    Returns:
+        The versions in PEP 440 order.
+    """
+    versions = filter_stable_versions(filter_valid_versions(fetch_pypi_wheel_filenames(pkg_name)))
+    ignored = IGNORED_VERSIONS.get(pkg_name, frozenset())
+    return tuple(sort_versions([v for v in versions if v not in ignored]))
+
+
 def generate(pkg_name: str) -> None:
     r"""Discover and write the compatibility module for one package."""
     logger.info("Discovering compatibility targets for %s...", pkg_name)
     compat = discover_compat_targets(pkg_name)
-    content = MODULE_TEMPLATE.format(pkg_name=pkg_name, compat=compat)
+    versions = fetch_known_versions(pkg_name)
+    content = MODULE_TEMPLATE.format(pkg_name=pkg_name, compat=compat, versions=versions)
     path = OUTPUT_DIR / f"{module_name(pkg_name)}.py"
     path.write_text(content)
     logger.info("Wrote %s", path)

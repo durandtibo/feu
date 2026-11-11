@@ -32,7 +32,16 @@ def cli() -> None:
 
 @click.command()
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
-@click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
+@click.option(
+    "-v",
+    "--pkg-version",
+    "pkg_version",
+    help="Package version request: an exact version, a wildcard (e.g. '2.*') or an "
+    "empty string for the latest version.",
+    required=False,
+    type=str,
+    default="",
+)
 @click.option(
     "-e",
     "--pkg-extras",
@@ -74,7 +83,9 @@ def install(
 
     Args:
         pkg_name: The package name e.g. ``'pandas'``.
-        pkg_version: The target version of the package to install.
+        pkg_version: The version request of the package to install:
+            an exact version, a wildcard (e.g. ``'2.*'``) or an empty
+            string for the latest version.
         pkg_extras: Optional package extra dependencies, separated by
             commas e.g. ``'dev,doc'``. An empty string means no extra.
         installer_name: The package installer name to use to install
@@ -102,7 +113,16 @@ def install(
 
 @click.command()
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
-@click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
+@click.option(
+    "-v",
+    "--pkg-version",
+    "pkg_version",
+    help="Package version request: an exact version, a wildcard (e.g. '2.*') or an "
+    "empty string for the latest version.",
+    required=False,
+    type=str,
+    default="",
+)
 @click.option(
     "-p",
     "--python-version",
@@ -158,7 +178,9 @@ def find_closest_version(
 
     Args:
         pkg_name: The package name.
-        pkg_version: The package version to check.
+        pkg_version: The package version request to check: an exact
+            version, a wildcard (e.g. ``'2.*'``) or an empty string for
+            the latest version.
         python_version: The python version. If not provided, the
             current python version is used.
         free_threaded: Whether the target is a free-threaded build.
@@ -187,7 +209,16 @@ def find_closest_version(
 
 @click.command()
 @click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
-@click.option("-v", "--pkg-version", "pkg_version", help="Package version", required=True, type=str)
+@click.option(
+    "-v",
+    "--pkg-version",
+    "pkg_version",
+    help="Package version request: an exact version, a wildcard (e.g. '2.*') or an "
+    "empty string for the latest version.",
+    required=False,
+    type=str,
+    default="",
+)
 @click.option(
     "-p",
     "--python-version",
@@ -243,7 +274,9 @@ def check_valid_version(
 
     Args:
         pkg_name: The package name.
-        pkg_version: The package version to check.
+        pkg_version: The package version request to check: an exact
+            version, a wildcard (e.g. ``'2.*'``) or an empty string for
+            the latest version.
         python_version: The python version. If not provided, the
             current python version is used.
         free_threaded: Whether the target is a free-threaded build.

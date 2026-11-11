@@ -7,12 +7,16 @@ hand: re-run the script to refresh this module.
 
 from __future__ import annotations
 
-__all__ = ["PKG_NAME", "compat"]
+__all__ = ["PKG_NAME", "VERSIONS", "compat"]
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 PKG_NAME = "xy"
+
+# The stable, valid releases that existed when the module was generated, in
+# PEP 440 order. A wildcard version request is matched against them.
+VERSIONS = ("0.0.1", "0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9")
 
 
 def compat() -> dict[Target, list[VersionRange]]:

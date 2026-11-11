@@ -25,7 +25,6 @@ from feu.utils.package import (
     PackageSpec,
     extract_package_extras,
     extract_package_name,
-    is_wildcard_version,
 )
 from feu.version import (
     fetch_pypi_versions,
@@ -96,9 +95,14 @@ def install_package_closest_version(
     This function finds the closest valid version if the specified
     version is not compatible with the target. By default, the target
     is the current environment: the Python version, the free-threaded
-    flag, the OS and the CPU architecture. A wildcard version
-    (e.g. ``'2.12.*'``) cannot be checked against the compatibility
-    registry, so the package is installed as specified.
+    flag, the OS and the CPU architecture.
+
+    The package version is a version request: an exact version
+    (``'2.0.2'``), a wildcard (``'2.*'``) or ``''``/``None`` for the
+    latest version. A request is resolved to the latest compatible
+    version. If that version lies in an open-ended range, the request
+    itself is installed, so the installer picks the real latest
+    release.
 
     Args:
         installer: The installer specification.
@@ -107,10 +111,13 @@ def install_package_closest_version(
             environment (``resolve_target()``).
 
     Raises:
-        RuntimeError: If no package version is specified, or if no
-            installer is registered for the installer name.
+        RuntimeError: If no installer is registered for the installer
+            name.
         UnsupportedVersionError: If no version of the package is
-            valid for the target.
+            valid for the target, or if no known version satisfies a
+            wildcard request.
+        ValueError: If the package version is not a valid version
+            request.
         subprocess.CalledProcessError: If the installation command
             fails.
 
@@ -125,21 +132,12 @@ def install_package_closest_version(
 
         ```
     """
-    pkg_version = package.version
-    if pkg_version is None:
-        msg = f"A package version must be specified for {package.name}"
-        raise RuntimeError(msg)
-    if is_wildcard_version(pkg_version):
-        # Wildcard versions (e.g. '2.12.*') cannot be resolved against the
-        # compatibility matrix, so install the package as specified.
-        install_package(installer=installer, package=package)
-        return
     install_package(
         installer=installer,
         package=package.with_version(
             find_closest_version(
                 pkg_name=package.name,
-                pkg_version=pkg_version,
+                pkg_version=package.version,
                 target=resolve_target() if target is None else target,
             )
         ),

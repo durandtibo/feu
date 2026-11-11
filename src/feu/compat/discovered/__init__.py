@@ -26,8 +26,9 @@ def register_discovered(registry: CompatRegistry) -> None:
     compatibility constraints.
 
     Every submodule of ``feu.compat.discovered`` is imported and must
-    define ``PKG_NAME`` (the real package name) and a ``compat()``
-    function returning the precomputed output of
+    define ``PKG_NAME`` (the real package name), ``VERSIONS`` (the
+    known stable releases, used to resolve wildcard version requests)
+    and a ``compat()`` function returning the precomputed output of
     ``discover_compat_targets`` for that package.
 
     Args:
@@ -36,3 +37,4 @@ def register_discovered(registry: CompatRegistry) -> None:
     for module_info in pkgutil.iter_modules(__path__):
         module = importlib.import_module(f"{__name__}.{module_info.name}")
         registry.register_many({module.PKG_NAME: module.compat()})
+        registry.register_versions(module.PKG_NAME, module.VERSIONS)

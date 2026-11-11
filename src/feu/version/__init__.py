@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = [
     "PackageBounds",
+    "VersionRequest",
     "compare_version",
     "fetch_latest_major_versions",
     "fetch_latest_major_versions_map",
@@ -28,6 +29,7 @@ __all__ = [
     "latest_major_versions",
     "latest_minor_versions",
     "latest_version",
+    "parse_version_request",
     "partition_package_bounds",
     "read_pyproject_dependencies",
     "read_pyproject_optional_dependencies",
@@ -73,4 +75,5 @@ from feu.version.pyproject import (
     read_pyproject_optional_dependencies,
     read_pyproject_package_bounds,
 )
+from feu.version.request import VersionRequest, parse_version_request
 from feu.version.runtime import get_package_version, get_python_major_minor

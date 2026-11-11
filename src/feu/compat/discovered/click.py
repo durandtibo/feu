@@ -7,12 +7,80 @@ hand: re-run the script to refresh this module.
 
 from __future__ import annotations
 
-__all__ = ["PKG_NAME", "compat"]
+__all__ = ["PKG_NAME", "VERSIONS", "compat"]
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 PKG_NAME = "click"
+
+# The stable, valid releases that existed when the module was generated, in
+# PEP 440 order. A wildcard version request is matched against them.
+VERSIONS = (
+    "0.1",
+    "0.2",
+    "0.3",
+    "0.4",
+    "0.5",
+    "0.5.1",
+    "0.6",
+    "0.7",
+    "1.0",
+    "1.1",
+    "2.0",
+    "2.1",
+    "2.2",
+    "2.3",
+    "2.4",
+    "2.5",
+    "2.6",
+    "3.0",
+    "3.1",
+    "3.2",
+    "3.3",
+    "4.0",
+    "4.1",
+    "5.0",
+    "5.1",
+    "6.0",
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.4",
+    "6.5",
+    "6.6",
+    "6.7",
+    "7.0",
+    "7.1",
+    "7.1.1",
+    "7.1.2",
+    "8.0.0",
+    "8.0.1",
+    "8.0.2",
+    "8.0.3",
+    "8.0.4",
+    "8.1.0",
+    "8.1.1",
+    "8.1.2",
+    "8.1.3",
+    "8.1.4",
+    "8.1.5",
+    "8.1.6",
+    "8.1.7",
+    "8.1.8",
+    "8.2.0",
+    "8.2.1",
+    "8.2.2",
+    "8.3.0",
+    "8.3.1",
+    "8.3.2",
+    "8.3.3",
+    "8.4.0",
+    "8.4.1",
+    "8.4.2",
+    "8.5.0",
+    "8.5.1",
+)
 
 
 def compat() -> dict[Target, list[VersionRange]]:

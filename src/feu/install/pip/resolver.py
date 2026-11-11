@@ -24,12 +24,35 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
-from feu.utils.package import PackageDependency, is_wildcard_version
+from feu.utils.package import PackageDependency
+from feu.version.request import parse_version_request
 
 if TYPE_CHECKING:
     from feu.utils.package import PackageSpec
+    from feu.version.request import VersionRequest
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+
+def _is_within(request: VersionRequest, lower: Version, upper: Version) -> bool:
+    r"""Indicate if the whole version request lies in ``[lower, upper)``.
+
+    Args:
+        request: The version request.
+        lower: The lower bound (inclusive).
+        upper: The upper bound (exclusive).
+
+    Returns:
+        ``True`` if every version that satisfies the request is in the
+            interval. A wildcard that straddles a bound and the latest
+            request are not within.
+    """
+    if request.exact is not None:
+        return lower <= request.exact < upper
+    if request.prefix is not None:
+        lowest = Version(".".join(str(part) for part in request.prefix))
+        return lowest >= lower and request.entirely_below(upper)
+    return False
 
 
 class BaseDependencyResolver(ABC):
@@ -152,16 +175,12 @@ class JaxDependencyResolver(DependencyResolver):
 
     def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         deps = super().resolve(package)
-        if package.version is None:
-            msg = f"Missing package version for {package.name}"
-            raise RuntimeError(msg)
-        deps.append(PackageDependency("jaxlib", version_specifiers=[f"=={package.version}"]))
-        if is_wildcard_version(package.version):
-            return deps
-        ver = Version(package.version)
-        if ver < Version("0.4.26"):
+        request = parse_version_request(package.version)
+        if not request.is_latest:
+            deps.append(PackageDependency("jaxlib", version_specifiers=[f"=={request.text}"]))
+        if request.entirely_below(Version("0.4.26")):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
-        if Version("0.4.9") <= ver <= Version("0.4.11"):
+        if _is_within(request, lower=Version("0.4.9"), upper=Version("0.4.12")):
             # https://github.com/google/jax/issues/17693
             deps.append(PackageDependency("ml_dtypes", version_specifiers=["<=0.2.0"]))
         return deps
@@ -209,12 +228,7 @@ class Numpy2DependencyResolver(DependencyResolver):
 
     def resolve(self, package: PackageSpec) -> list[PackageDependency]:
         deps = super().resolve(package)
-        if package.version is None:
-            msg = f"Missing package version for {package.name}"
-            raise RuntimeError(msg)
-        if not is_wildcard_version(package.version) and Version(package.version) < Version(
-            self._min_version
-        ):
+        if parse_version_request(package.version).entirely_below(Version(self._min_version)):
             deps.append(PackageDependency("numpy", version_specifiers=["<2.0.0"]))
         return deps
 

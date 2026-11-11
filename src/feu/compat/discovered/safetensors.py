@@ -7,12 +7,45 @@ hand: re-run the script to refresh this module.
 
 from __future__ import annotations
 
-__all__ = ["PKG_NAME", "compat"]
+__all__ = ["PKG_NAME", "VERSIONS", "compat"]
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import Target
 
 PKG_NAME = "safetensors"
+
+# The stable, valid releases that existed when the module was generated, in
+# PEP 440 order. A wildcard version request is matched against them.
+VERSIONS = (
+    "0.0.1",
+    "0.2.0",
+    "0.2.1",
+    "0.2.2",
+    "0.2.3",
+    "0.2.4",
+    "0.2.5",
+    "0.2.6",
+    "0.2.7",
+    "0.2.8",
+    "0.3.0",
+    "0.3.1",
+    "0.3.2",
+    "0.3.3",
+    "0.4.0",
+    "0.4.1",
+    "0.4.2",
+    "0.4.3",
+    "0.4.4",
+    "0.4.5",
+    "0.5.0",
+    "0.5.1",
+    "0.5.2",
+    "0.5.3",
+    "0.6.1",
+    "0.6.2",
+    "0.7.0",
+    "0.8.0",
+)
 
 
 def compat() -> dict[Target, list[VersionRange]]:

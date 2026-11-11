@@ -723,3 +723,320 @@ def test_compat_registry_find_closest_version_returns_registered_gap_string() ->
         {"numpy": {T311: [VersionRange("1.0", "1.5"), VersionRange("2.0.0.post0", None)]}}
     )
     assert registry.find_closest_version("numpy", "1.7", T311) == "2.0.0.post0"
+
+
+####################################
+#     Tests for register_versions  #
+####################################
+
+VERSIONS = ["1.26.4", "1.0.0", "2.0.0", "2.3.2", "2.4.0", "2.10.0", "2.4.0"]
+
+
+def test_compat_registry_register_versions_sorts_by_pep440_and_removes_duplicates() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("numpy", VERSIONS)
+    assert registry.get_compatible_versions("numpy", T311) == [
+        "1.0.0",
+        "1.26.4",
+        "2.0.0",
+        "2.3.2",
+        "2.4.0",
+        "2.10.0",
+    ]
+
+
+def test_compat_registry_register_versions_canonicalises_name() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("Scikit_Learn", ["1.0.0"])
+    assert registry.get_compatible_versions("scikit-learn", T311) == ["1.0.0"]
+
+
+def test_compat_registry_register_versions_exist_ok_false() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("numpy", ["1.0.0"])
+    with pytest.raises(RuntimeError, match="Versions are already registered for package numpy"):
+        registry.register_versions("numpy", ["2.0.0"])
+
+
+def test_compat_registry_register_versions_exist_ok_true() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("numpy", ["1.0.0"])
+    registry.register_versions("numpy", ["2.0.0"], exist_ok=True)
+    assert registry.get_compatible_versions("numpy", T311) == ["2.0.0"]
+
+
+def test_compat_registry_register_versions_invalid_version() -> None:
+    registry = CompatRegistry()
+    with pytest.raises(InvalidVersion, match="not-a-version"):
+        registry.register_versions("numpy", ["1.0.0", "not-a-version"])
+
+
+def test_compat_registry_register_versions_does_not_mutate_input() -> None:
+    versions = list(VERSIONS)
+    CompatRegistry().register_versions("numpy", versions)
+    assert versions == VERSIONS
+
+
+###########################################
+#     Tests for get_compatible_versions   #
+###########################################
+
+
+@pytest.fixture
+def numpy_registry() -> CompatRegistry:
+    registry = CompatRegistry(
+        {"numpy": {T311: [VersionRange("1.0.0", "1.26.4"), VersionRange("2.3.2", None)]}}
+    )
+    registry.register_versions("numpy", VERSIONS)
+    return registry
+
+
+def test_compat_registry_get_compatible_versions_whole_output(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.get_compatible_versions("numpy", T311) == [
+        "1.0.0",
+        "1.26.4",
+        "2.3.2",
+        "2.4.0",
+        "2.10.0",
+    ]
+
+
+def test_compat_registry_get_compatible_versions_none_is_latest(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.get_compatible_versions("numpy", T311, None) == [
+        "1.0.0",
+        "1.26.4",
+        "2.3.2",
+        "2.4.0",
+        "2.10.0",
+    ]
+
+
+def test_compat_registry_get_compatible_versions_wildcard(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.get_compatible_versions("numpy", T311, "2.*") == [
+        "2.3.2",
+        "2.4.0",
+        "2.10.0",
+    ]
+
+
+def test_compat_registry_get_compatible_versions_wildcard_minor_is_not_a_string_prefix(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.get_compatible_versions("numpy", T311, "2.1.*") == []
+
+
+def test_compat_registry_get_compatible_versions_exact(numpy_registry: CompatRegistry) -> None:
+    assert numpy_registry.get_compatible_versions("numpy", T311, "2.4.0") == ["2.4.0"]
+
+
+def test_compat_registry_get_compatible_versions_exact_in_gap(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.get_compatible_versions("numpy", T311, "2.0.0") == []
+
+
+def test_compat_registry_get_compatible_versions_no_registered_versions() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", None)]}})
+    assert registry.get_compatible_versions("numpy", T311) == []
+
+
+def test_compat_registry_get_compatible_versions_unsupported_target() -> None:
+    registry = CompatRegistry({"numpy": {T311: []}})
+    registry.register_versions("numpy", VERSIONS)
+    assert registry.get_compatible_versions("numpy", T311) == []
+
+
+def test_compat_registry_get_compatible_versions_unconfigured_target_accepts_all() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("numpy", ["1.0.0", "2.0.0"])
+    assert registry.get_compatible_versions("numpy", T311) == ["1.0.0", "2.0.0"]
+
+
+def test_compat_registry_get_compatible_versions_unbounded_min() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange(None, "1.26.4")]}})
+    registry.register_versions("numpy", VERSIONS)
+    assert registry.get_compatible_versions("numpy", T311) == ["1.0.0", "1.26.4"]
+
+
+def test_compat_registry_get_compatible_versions_invalid_wildcard(
+    numpy_registry: CompatRegistry,
+) -> None:
+    with pytest.raises(ValueError, match="invalid version wildcard"):
+        numpy_registry.get_compatible_versions("numpy", T311, "2.*.1")
+
+
+########################################################
+#     Tests for is_valid_version with a version request #
+########################################################
+
+
+@pytest.mark.parametrize("request_", ["2.4.*", "2.*", "1.*", "", None, "1.26.*"])
+def test_compat_registry_is_valid_version_request_true(
+    numpy_registry: CompatRegistry, request_: str | None
+) -> None:
+    assert numpy_registry.is_valid_version("numpy", request_, T311)
+
+
+@pytest.mark.parametrize("request_", ["3.*", "1.24.*", "2.1.*", "0.*"])
+def test_compat_registry_is_valid_version_request_false(
+    numpy_registry: CompatRegistry, request_: str
+) -> None:
+    assert not numpy_registry.is_valid_version("numpy", request_, T311)
+
+
+def test_compat_registry_is_valid_version_request_no_data_for_package() -> None:
+    assert not CompatRegistry().is_valid_version("numpy", "2.*", T311)
+
+
+def test_compat_registry_is_valid_version_latest_no_data_for_package() -> None:
+    assert not CompatRegistry().is_valid_version("numpy", "", T311)
+
+
+def test_compat_registry_is_valid_version_request_ranges_but_no_versions() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", None)]}})
+    assert not registry.is_valid_version("numpy", "2.*", T311)
+
+
+def test_compat_registry_is_valid_version_request_unsupported_entry() -> None:
+    registry = CompatRegistry({"numpy": {T311: []}})
+    registry.register_versions("numpy", VERSIONS)
+    assert not registry.is_valid_version("numpy", "", T311)
+
+
+def test_compat_registry_is_valid_version_exact_is_unchanged(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.is_valid_version("numpy", "2.4.0", T311)
+
+
+def test_compat_registry_is_valid_version_exact_in_gap_is_unchanged(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert not numpy_registry.is_valid_version("numpy", "2.0.0", T311)
+
+
+def test_compat_registry_is_valid_version_invalid_wildcard(
+    numpy_registry: CompatRegistry,
+) -> None:
+    with pytest.raises(ValueError, match="invalid version wildcard"):
+        numpy_registry.is_valid_version("numpy", "*", T311)
+
+
+def test_compat_registry_is_valid_version_regression_empty_does_not_raise_invalid_version(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.is_valid_version("numpy", "", T311) is True
+
+
+########################################################
+#     Tests for find_closest_version with a request    #
+########################################################
+
+
+def test_compat_registry_find_closest_version_open_wildcard_returns_request(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.find_closest_version("numpy", "2.*", T311) == "2.*"
+
+
+def test_compat_registry_find_closest_version_latest_returns_empty_request(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.find_closest_version("numpy", "", T311) == ""
+
+
+def test_compat_registry_find_closest_version_none_returns_empty_request(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.find_closest_version("numpy", None, T311) == ""
+
+
+def test_compat_registry_find_closest_version_closed_wildcard_returns_latest_match(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.find_closest_version("numpy", "1.*", T311) == "1.26.4"
+
+
+def test_compat_registry_find_closest_version_closed_latest_returns_latest_match() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", "1.26.4")]}})
+    registry.register_versions("numpy", VERSIONS)
+    assert registry.find_closest_version("numpy", "", T311) == "1.26.4"
+
+
+def test_compat_registry_find_closest_version_wildcard_without_match_raises(
+    numpy_registry: CompatRegistry,
+) -> None:
+    with pytest.raises(UnsupportedVersionError, match=r"matches '1\.24\.\*' for target"):
+        numpy_registry.find_closest_version("numpy", "1.24.*", T311)
+
+
+def test_compat_registry_find_closest_version_latest_without_match_raises() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("5.0.0", None)]}})
+    registry.register_versions("numpy", ["1.0.0"])
+    with pytest.raises(UnsupportedVersionError, match="No version of package numpy is available"):
+        registry.find_closest_version("numpy", "", T311)
+
+
+def test_compat_registry_find_closest_version_request_unsupported_entry_raises() -> None:
+    registry = CompatRegistry({"numpy": {T311: []}})
+    registry.register_versions("numpy", VERSIONS)
+    with pytest.raises(UnsupportedVersionError, match="No version of package numpy is compatible"):
+        registry.find_closest_version("numpy", "2.*", T311)
+
+
+def test_compat_registry_find_closest_version_request_no_data_returns_request() -> None:
+    assert CompatRegistry().find_closest_version("numpy", "2.*", T311) == "2.*"
+
+
+def test_compat_registry_find_closest_version_latest_no_data_returns_empty() -> None:
+    assert CompatRegistry().find_closest_version("numpy", "", T311) == ""
+
+
+def test_compat_registry_find_closest_version_request_ranges_but_no_versions() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", None)]}})
+    assert registry.find_closest_version("numpy", "2.*", T311) == "2.*"
+
+
+def test_compat_registry_find_closest_version_request_unconfigured_target_returns_request() -> None:
+    registry = CompatRegistry()
+    registry.register_versions("numpy", ["1.0.0", "2.0.0"])
+    assert registry.find_closest_version("numpy", "2.*", T311) == "2.*"
+
+
+def test_compat_registry_find_closest_version_open_range_with_unbounded_min() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange(None, None)]}})
+    registry.register_versions("numpy", ["1.0.0"])
+    assert registry.find_closest_version("numpy", "1.*", T311) == "1.*"
+
+
+def test_compat_registry_find_closest_version_open_range_above_the_match() -> None:
+    registry = CompatRegistry(
+        {"numpy": {T311: [VersionRange("1.0.0", "1.26.4"), VersionRange("2.3.2", None)]}}
+    )
+    registry.register_versions("numpy", ["1.0.0", "1.26.4", "2.3.2"])
+    assert registry.find_closest_version("numpy", "1.*", T311) == "1.26.4"
+
+
+def test_compat_registry_find_closest_version_exact_is_unchanged(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.find_closest_version("numpy", "2.0.0", T311) == "2.3.2"
+
+
+def test_compat_registry_find_closest_version_invalid_wildcard(
+    numpy_registry: CompatRegistry,
+) -> None:
+    with pytest.raises(ValueError, match="invalid version wildcard"):
+        numpy_registry.find_closest_version("numpy", "2.4*", T311)
+
+
+def test_compat_registry_find_closest_version_regression_empty_does_not_raise_invalid_version(
+    numpy_registry: CompatRegistry,
+) -> None:
+    assert numpy_registry.find_closest_version("numpy", "", T311) == ""

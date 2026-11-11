@@ -2,7 +2,7 @@ from unittest.mock import Mock, call, patch
 
 import pytest
 
-from feu.compat import Target
+from feu.compat import Target, UnsupportedVersionError
 from feu.install import (
     InstallResult,
     get_available_installers,
@@ -155,13 +155,56 @@ def test_install_package_closest_version_explicit_target_is_used() -> None:
         run_mock.assert_called_once_with("pip install numpy==2.0.2")
 
 
-def test_install_package_closest_version_missing_package_version() -> None:
+@pytest.mark.parametrize("version", ["", None])
+def test_install_package_closest_version_latest_is_not_pinned(version: str | None) -> None:
     with (
-        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
-        pytest.raises(RuntimeError, match="A package version must be specified for numpy"),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.14"))),
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
-            installer=InstallerSpec("uv"), package=PackageSpec(name="numpy")
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version=version)
+        )
+        run_mock.assert_called_once_with("pip install numpy")
+
+
+def test_install_package_closest_version_open_wildcard_is_installed_as_requested() -> None:
+    with (
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.14"))),
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.*")
+        )
+        run_mock.assert_called_once_with("pip install numpy==2.*")
+
+
+def test_install_package_closest_version_closed_wildcard_is_resolved() -> None:
+    with (
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.9"))),
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.*")
+        )
+        run_mock.assert_called_once_with("pip install numpy==1.26.4")
+
+
+def test_install_package_closest_version_wildcard_without_match_raises_before_install() -> None:
+    with (
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.14"))),
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        pytest.raises(UnsupportedVersionError, match=r"matches '1\.24\.\*'"),
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.24.*")
+        )
+    run_mock.assert_not_called()
+
+
+def test_install_package_closest_version_invalid_wildcard() -> None:
+    with pytest.raises(ValueError, match="invalid version wildcard"):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.*.1")
         )
 
 
