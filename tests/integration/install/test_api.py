@@ -4,6 +4,7 @@ import pytest
 
 from feu import is_package_available
 from feu.compat import Target, find_closest_version
+from feu.imports import clear_availability_caches
 from feu.install import (
     InstallerSpec,
     PipInstaller,
@@ -18,7 +19,7 @@ from feu.version import get_python_major_minor
 
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
-    is_package_available.cache_clear()
+    clear_availability_caches()
 
 
 @pytest.fixture(scope="module")

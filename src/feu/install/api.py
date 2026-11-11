@@ -7,6 +7,7 @@ __all__ = ["install_package", "install_package_closest_version"]
 from typing import TYPE_CHECKING
 
 from feu.compat import Target, find_closest_version, resolve_target
+from feu.imports import clear_availability_caches
 from feu.install.installer import get_default_installer_registry
 
 if TYPE_CHECKING:
@@ -25,7 +26,9 @@ def install_package(
 
     The package is installed as specified, without any version
     compatibility check. Use ``install_package_closest_version`` to
-    install the closest compatible version.
+    install the closest compatible version. The cached availability
+    checks (``feu.imports.clear_availability_caches``) are cleared after
+    a successful installation.
 
     Args:
         installer: The installer specification.
@@ -57,6 +60,9 @@ def install_package(
         )
         raise RuntimeError(msg)
     registry.find(installer.name)(arguments=installer.arguments).install(package)
+    # The installation can change the installed packages, so the cached
+    # availability checks (e.g. ``is_package_available("numpy")``) are stale.
+    clear_availability_caches()
 
 
 def install_package_closest_version(

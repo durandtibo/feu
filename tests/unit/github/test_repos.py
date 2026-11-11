@@ -235,7 +235,7 @@ def test_fetch_github_repos_caching(
         assert result1 is result2  # Same object due to caching
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_github_repos_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_github_repos(owner="testowner")

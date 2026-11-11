@@ -136,20 +136,10 @@ def test_fetch_data_invalid_json(monkeypatch: pytest.MonkeyPatch) -> None:
         fetch_data(url="https://my_url")
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_data_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_data(url="https://my_url")
-
-
-@requests_available
-@patch("feu.utils.http.is_urllib3_available", lambda: False)
-def test_fetch_data_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = make_mock_session(get=Mock(return_value=make_mock_response()))
-    monkeypatch.setattr(requests, "Session", lambda: session)
-
-    assert fetch_data(url="https://my_url") == {"key": "value"}
-    session.get.assert_called_once_with(url="https://my_url", timeout=10)
 
 
 ####################################
@@ -254,17 +244,7 @@ def test_fetch_response_request_exception(monkeypatch: pytest.MonkeyPatch) -> No
         fetch_response(url="https://my_url")
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_response_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_response(url="https://my_url")
-
-
-@requests_available
-@patch("feu.utils.http.is_urllib3_available", lambda: False)
-def test_fetch_response_no_urllib3(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = make_mock_session(get=Mock(return_value=make_mock_response()))
-    monkeypatch.setattr(requests, "Session", lambda: session)
-
-    assert fetch_response(url="https://my_url").json() == {"key": "value"}
-    session.get.assert_called_once_with(url="https://my_url", timeout=10)

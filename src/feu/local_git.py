@@ -13,12 +13,10 @@ from typing import TYPE_CHECKING
 
 from packaging.version import InvalidVersion, Version
 
-from feu.imports import check_git, is_git_available
+from feu.imports import check_git
 
-if TYPE_CHECKING or is_git_available():
+if TYPE_CHECKING:
     import git
-else:  # pragma: no cover
-    from feu.utils.fallback.git import git
 
 
 def get_tags() -> list[git.TagReference]:
@@ -34,7 +32,7 @@ def get_tags() -> list[git.TagReference]:
             oldest to the most recent.
 
     Raises:
-        RuntimeError: if the ``gitpython`` package is not installed.
+        MissingPackageError: if the ``gitpython`` package is not installed.
         git.InvalidGitRepositoryError: if the current directory is
             not in a git repository.
 
@@ -50,6 +48,8 @@ def get_tags() -> list[git.TagReference]:
         ```
     """
     check_git()
+    import git  # noqa: PLC0415
+
     with git.Repo(search_parent_directories=True) as repo:
         return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
@@ -70,8 +70,8 @@ def get_last_tag_name(raise_error: bool = True) -> str | None:
             ``raise_error=False``.
 
     Raises:
-        RuntimeError: if no tag was found and ``raise_error=True``, or
-            if the ``gitpython`` package is not installed.
+        RuntimeError: if no tag was found and ``raise_error=True``.
+        MissingPackageError: if the ``gitpython`` package is not installed.
 
     Example:
         ```pycon
@@ -111,8 +111,9 @@ def get_last_version_tag_name(raise_error: bool = True) -> str | None:
 
     Raises:
         RuntimeError: if no version tag was found and
-            ``raise_error=True``, or if the ``gitpython`` package is
-            not installed.
+            ``raise_error=True``.
+        MissingPackageError: if the ``gitpython`` package is not
+            installed.
 
     Example:
         ```pycon

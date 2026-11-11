@@ -38,7 +38,7 @@ def create_repo_mock() -> MagicMock:
 
 @git_available
 def test_get_tags_sorted() -> None:
-    with patch("feu.local_git.git.Repo", Mock(return_value=create_repo_mock())):
+    with patch("git.Repo", Mock(return_value=create_repo_mock())):
         result = get_tags()
     assert [t.name for t in result] == ["v1", "v2"]
 
@@ -47,7 +47,7 @@ def test_get_tags_sorted() -> None:
 def test_get_tags_empty() -> None:
     repo = MagicMock(tags=[])
     repo.__enter__.return_value = repo
-    with patch("feu.local_git.git.Repo", Mock(return_value=repo)):
+    with patch("git.Repo", Mock(return_value=repo)):
         result = get_tags()
     assert result == []
 
@@ -55,12 +55,12 @@ def test_get_tags_empty() -> None:
 @git_available
 def test_get_tags_closes_repo() -> None:
     repo = create_repo_mock()
-    with patch("feu.local_git.git.Repo", Mock(return_value=repo)):
+    with patch("git.Repo", Mock(return_value=repo)):
         get_tags()
     repo.__exit__.assert_called_once()
 
 
-@patch("feu.imports.git.is_git_available", lambda: False)
+@patch("feu.imports.optional.is_git_available", lambda: False)
 def test_get_tags_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_tags()
@@ -98,7 +98,7 @@ def test_get_last_tag_name_empty_no_raise() -> None:
         assert get_last_tag_name(raise_error=False) is None
 
 
-@patch("feu.imports.git.is_git_available", lambda: False)
+@patch("feu.imports.optional.is_git_available", lambda: False)
 def test_get_last_tag_name_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_last_tag_name()
@@ -179,7 +179,7 @@ def test_get_last_version_tag_name_no_version_tag() -> None:
         get_last_version_tag_name()
 
 
-@patch("feu.imports.git.is_git_available", lambda: False)
+@patch("feu.imports.optional.is_git_available", lambda: False)
 def test_get_last_version_tag_name_no_git() -> None:
     with pytest.raises(RuntimeError, match=r"'git' package is required but not installed."):
         get_last_version_tag_name()

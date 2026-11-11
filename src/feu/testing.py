@@ -46,8 +46,6 @@ __all__ = [
     "sklearn_not_available",
     "torch_available",
     "torch_not_available",
-    "urllib3_available",
-    "urllib3_not_available",
     "uv_available",
     "uv_not_available",
     "xarray_available",
@@ -62,7 +60,6 @@ from feu.imports import (
     is_package_available,
     is_requests_available,
     is_rich_available,
-    is_urllib3_available,
 )
 from feu.install import is_pip_available, is_uv_available
 
@@ -133,9 +130,6 @@ sklearn_available, sklearn_not_available = _skipif_marks(is_package_available("s
 torch_available: pytest.MarkDecorator
 torch_not_available: pytest.MarkDecorator
 torch_available, torch_not_available = _skipif_marks(is_package_available("torch"), "PyTorch")
-urllib3_available: pytest.MarkDecorator
-urllib3_not_available: pytest.MarkDecorator
-urllib3_available, urllib3_not_available = _skipif_marks(is_urllib3_available(), "urllib3")
 uv_available: pytest.MarkDecorator
 uv_not_available: pytest.MarkDecorator
 uv_available, uv_not_available = _skipif_marks(is_uv_available(), "uv")
