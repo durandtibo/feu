@@ -366,3 +366,11 @@ def test_read_pyproject_optional_dependencies_invalid_toml(tmp_path: Path) -> No
     path.write_text("this is not : valid [ toml")
     with pytest.raises(tomllib.TOMLDecodeError):
         read_pyproject_optional_dependencies(path)
+
+
+def test_read_pyproject_dependencies_name_is_canonical(tmp_path: Path) -> None:
+    path = tmp_path / "pyproject.toml"
+    path.write_text('[project]\nname = "x"\ndependencies = ["Scikit_Learn>=1.0"]\n')
+    assert read_pyproject_dependencies(path) == [
+        PackageBounds(name="scikit-learn", lower="1.0", upper=None, section="project.dependencies")
+    ]

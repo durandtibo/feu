@@ -21,6 +21,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
 
+from packaging.utils import canonicalize_name
 from packaging.version import Version
 
 from feu.utils.package import PackageDependency, is_wildcard_version
@@ -410,7 +411,9 @@ class XarrayDependencyResolver(Numpy2DependencyResolver):
 class DependencyResolverRegistry:
     r"""Implement the main dependency resolver registry.
 
-    The dependency resolvers are indexed by name.
+    The dependency resolvers are indexed by canonical package name
+    (PEP 503), so ``"Scikit-Learn"`` and ``"scikit_learn"`` find the
+    same resolver.
     """
 
     registry: ClassVar[dict[str, BaseDependencyResolver]] = {
@@ -420,7 +423,6 @@ class DependencyResolverRegistry:
         "pyarrow": PyarrowDependencyResolver(),
         "scikit-learn": SklearnDependencyResolver(),
         "scipy": ScipyDependencyResolver(),
-        "sklearn": SklearnDependencyResolver(),
         "torch": TorchDependencyResolver(),
         "xarray": XarrayDependencyResolver(),
     }
@@ -455,14 +457,15 @@ class DependencyResolverRegistry:
 
             ```
         """
-        if package.name in cls.registry and not exist_ok:
+        name = canonicalize_name(package.name)
+        if name in cls.registry and not exist_ok:
             msg = (
                 f"A dependency resolver is already registered for the package "
-                f"{package.name}. Please use `exist_ok=True` if you want to overwrite the "
+                f"{name}. Please use `exist_ok=True` if you want to overwrite the "
                 "dependency resolver for this package"
             )
             raise RuntimeError(msg)
-        cls.registry[package.name] = resolver
+        cls.registry[name] = resolver
 
     @classmethod
     def has_resolver(cls, package: PackageSpec) -> bool:
@@ -485,7 +488,7 @@ class DependencyResolverRegistry:
 
             ```
         """
-        return package.name in cls.registry
+        return canonicalize_name(package.name) in cls.registry
 
     @classmethod
     def find_resolver(cls, package: PackageSpec) -> BaseDependencyResolver:
@@ -507,4 +510,4 @@ class DependencyResolverRegistry:
 
             ```
         """
-        return cls.registry.get(package.name, DependencyResolver())
+        return cls.registry.get(canonicalize_name(package.name), DependencyResolver())

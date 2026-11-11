@@ -55,7 +55,8 @@ def latest_version(versions: Sequence[str]) -> str:
         versions: A list of version strings to compare.
 
     Returns:
-        The highest (latest) version in the list based on PEP 440 ordering.
+        The highest (latest) version in the list based on PEP 440
+            ordering, as it is written in ``versions``.
 
     Raises:
         ValueError: If ``versions`` is empty.
@@ -69,13 +70,15 @@ def latest_version(versions: Sequence[str]) -> str:
         '1.0.1'
         >>> latest_version(["1.2.0", "2.0.0a1"])
         '2.0.0a1'
+        >>> latest_version(["1.0-1", "1.0"])
+        '1.0-1'
 
         ```
     """
     if not versions:
         msg = "versions list must not be empty"
         raise ValueError(msg)
-    return str(max(Version(v) for v in versions))
+    return max(versions, key=Version)
 
 
 def sort_versions(versions: Sequence[str], reverse: bool = False) -> list[str]:

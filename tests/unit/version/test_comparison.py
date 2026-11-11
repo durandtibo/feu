@@ -96,3 +96,11 @@ def test_sort_versions_single_item() -> None:
 
 def test_sort_versions_empty() -> None:
     assert sort_versions([]) == []
+
+
+def test_latest_version_returns_the_input_string() -> None:
+    assert latest_version(["1.0-1", "1.0"]) == "1.0-1"
+
+
+def test_latest_version_returns_the_input_string_not_normalised() -> None:
+    assert latest_version(["1.0.0", "2.0-1"]) == "2.0-1"

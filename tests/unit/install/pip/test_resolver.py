@@ -601,7 +601,6 @@ def test_dependency_resolver_registry_registry() -> None:
         "pyarrow",
         "scikit-learn",
         "scipy",
-        "sklearn",
         "torch",
         "xarray",
     }
@@ -611,7 +610,7 @@ def test_dependency_resolver_registry_registry() -> None:
 def test_dependency_resolver_registry_add_resolver() -> None:
     resolver = Mock(spec=BaseDependencyResolver)
     DependencyResolverRegistry.add_resolver(PackageSpec("my_package"), resolver)
-    assert DependencyResolverRegistry.registry["my_package"] == resolver
+    assert DependencyResolverRegistry.registry["my-package"] == resolver
 
 
 @patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
@@ -621,7 +620,7 @@ def test_dependency_resolver_registry_add_resolver_exist_ok_true() -> None:
         PackageSpec("my_package"), Mock(spec=BaseDependencyResolver)
     )
     DependencyResolverRegistry.add_resolver(PackageSpec("my_package"), resolver, exist_ok=True)
-    assert DependencyResolverRegistry.registry["my_package"] == resolver
+    assert DependencyResolverRegistry.registry["my-package"] == resolver
 
 
 @patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
@@ -663,3 +662,37 @@ def test_dependency_resolver_registry_find_resolver_default() -> None:
     assert DependencyResolverRegistry.find_resolver(PackageSpec("my_package")).equal(
         DependencyResolver()
     )
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn", "SCIKIT.LEARN"])
+def test_dependency_resolver_registry_add_resolver_canonical_name(name: str) -> None:
+    resolver = Mock(spec=BaseDependencyResolver)
+    DependencyResolverRegistry.add_resolver(PackageSpec(name), resolver)
+    assert DependencyResolverRegistry.registry == {"scikit-learn": resolver}
+
+
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn", "SCIKIT.LEARN"])
+def test_dependency_resolver_registry_has_resolver_canonical_name(name: str) -> None:
+    assert DependencyResolverRegistry.has_resolver(PackageSpec(name))
+
+
+@pytest.mark.parametrize("name", ["Scikit-Learn", "scikit_learn", "SCIKIT.LEARN"])
+def test_dependency_resolver_registry_find_resolver_canonical_name(name: str) -> None:
+    resolver = DependencyResolverRegistry.find_resolver(PackageSpec(name))
+    assert isinstance(resolver, SklearnDependencyResolver)
+
+
+def test_dependency_resolver_registry_has_resolver_sklearn_module_name_false() -> None:
+    assert not DependencyResolverRegistry.has_resolver(PackageSpec("sklearn"))
+
+
+@patch.dict(DependencyResolverRegistry.registry, {}, clear=True)
+def test_dependency_resolver_registry_add_resolver_other_spelling_conflicts() -> None:
+    DependencyResolverRegistry.add_resolver(
+        PackageSpec("scikit-learn"), Mock(spec=BaseDependencyResolver)
+    )
+    with pytest.raises(RuntimeError, match=r"already registered for the package scikit-learn"):
+        DependencyResolverRegistry.add_resolver(
+            PackageSpec("Scikit_Learn"), Mock(spec=BaseDependencyResolver)
+        )

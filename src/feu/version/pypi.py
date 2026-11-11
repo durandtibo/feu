@@ -17,8 +17,29 @@ from datetime import date, datetime
 from functools import lru_cache
 
 from packaging.requirements import InvalidRequirement, Requirement
+from packaging.utils import canonicalize_name
 
 from feu.utils.http import fetch_data
+
+
+def _package_url(package: str, version: str | None = None) -> str:
+    r"""Build the PyPI JSON API URL of a package.
+
+    The package name is canonicalised (PEP 503), so ``"Scikit_Learn"``
+    and ``"scikit-learn"`` give the same URL.
+
+    Args:
+        package: The package name.
+        version: The release version, or ``None`` for the whole
+            project.
+
+    Returns:
+        The URL of the JSON document.
+    """
+    name = canonicalize_name(package)
+    if version is None:
+        return f"https://pypi.org/pypi/{name}/json"
+    return f"https://pypi.org/pypi/{name}/{version}/json"
 
 
 def _to_date(value: date | str) -> date:
@@ -100,7 +121,7 @@ def fetch_pypi_requires_python(package: str) -> dict[str, str | None]:
 
         ```
     """
-    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
+    metadata = fetch_data(url=_package_url(package), timeout=10)
     result: dict[str, str | None] = {}
     for version, files in metadata["releases"].items():
         requires_python = None
@@ -133,7 +154,7 @@ def fetch_pypi_wheel_filenames(package: str) -> dict[str, tuple[str, ...]]:
 
         ```
     """
-    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
+    metadata = fetch_data(url=_package_url(package), timeout=10)
     result: dict[str, tuple[str, ...]] = {}
     for version, files in metadata["releases"].items():
         result[version] = tuple(
@@ -150,8 +171,8 @@ def fetch_pypi_pinned_dependency_version(package: str, version: str, dependency:
     This is only able to detect an exact pin (e.g. ``dependency==1.2.3``).
     It is intended for packages that pin a compiled dependency to an
     exact version per release, e.g. ``pydantic`` pinning
-    ``pydantic-core``. The package name comparison is case-sensitive.
-    The result is cached.
+    ``pydantic-core``. The package names are compared in their
+    canonical form (PEP 503). The result is cached.
 
     Args:
         package: The package name.
@@ -173,13 +194,13 @@ def fetch_pypi_pinned_dependency_version(package: str, version: str, dependency:
 
         ```
     """
-    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/{version}/json", timeout=10)
+    metadata = fetch_data(url=_package_url(package, version), timeout=10)
     for requirement_str in metadata["info"].get("requires_dist") or []:
         try:
             requirement = Requirement(requirement_str)
         except InvalidRequirement:  # pragma: no cover
             continue
-        if requirement.name != dependency:
+        if canonicalize_name(requirement.name) != canonicalize_name(dependency):
             continue
         for specifier in requirement.specifier:
             if specifier.operator == "==":
@@ -229,7 +250,7 @@ def fetch_pypi_versions(
 
         ```
     """
-    metadata = fetch_data(url=f"https://pypi.org/pypi/{package}/json", timeout=10)
+    metadata = fetch_data(url=_package_url(package), timeout=10)
     releases = metadata["releases"]
     if ignore_yanked:
         releases = {version: files for version, files in releases.items() if not _is_yanked(files)}

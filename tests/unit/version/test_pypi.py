@@ -13,6 +13,7 @@ from feu.version import (
     fetch_pypi_versions,
     fetch_pypi_wheel_filenames,
 )
+from feu.version.pypi import _package_url
 
 if is_requests_available():
     import requests
@@ -52,7 +53,7 @@ def test_fetch_pypi_versions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package") == ("1.2.0", "1.2.3", "2.0.0")
-    session.get.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10.0)
+    session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
 @requests_available
@@ -61,7 +62,7 @@ def test_fetch_pypi_versions_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(requests, "Session", lambda: session)
 
     assert fetch_pypi_versions("my_package", reverse=True) == ("2.0.0", "1.2.3", "1.2.0")
-    session.get.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10.0)
+    session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
 @patch("feu.imports.requests.is_requests_available", lambda: False)
@@ -251,7 +252,7 @@ def test_fetch_pypi_requires_python(monkeypatch: pytest.MonkeyPatch) -> None:
         "1.3.0": None,
         "2.0.0": None,
     }
-    session.get.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10.0)
+    session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
 @patch("feu.imports.requests.is_requests_available", lambda: False)
@@ -311,7 +312,7 @@ def test_fetch_pypi_wheel_filenames(monkeypatch: pytest.MonkeyPatch) -> None:
         "1.2.0": (),
         "1.3.0": (),
     }
-    session.get.assert_called_once_with(url="https://pypi.org/pypi/my_package/json", timeout=10.0)
+    session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
 @patch("feu.imports.requests.is_requests_available", lambda: False)
@@ -386,3 +387,49 @@ def test_fetch_pypi_pinned_dependency_version_no_requires_dist(
 def test_fetch_pypi_pinned_dependency_version_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core")
+
+
+####################################
+#     Tests for canonical names    #
+####################################
+
+
+@pytest.mark.parametrize(
+    ("package", "expected"),
+    [
+        pytest.param("numpy", "https://pypi.org/pypi/numpy/json", id="canonical"),
+        pytest.param("NumPy", "https://pypi.org/pypi/numpy/json", id="uppercase"),
+        pytest.param("scikit_learn", "https://pypi.org/pypi/scikit-learn/json", id="underscore"),
+        pytest.param("Zope.Interface", "https://pypi.org/pypi/zope-interface/json", id="dot"),
+        pytest.param("a--b", "https://pypi.org/pypi/a-b/json", id="run_of_separators"),
+    ],
+)
+def test_package_url(package: str, expected: str) -> None:
+    assert _package_url(package) == expected
+
+
+def test_package_url_with_version() -> None:
+    assert (
+        _package_url("Pydantic_Core", "2.23.2") == "https://pypi.org/pypi/pydantic-core/2.23.2/json"
+    )
+
+
+@requests_available
+def test_fetch_pypi_versions_canonicalises_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    session = make_mock_session(get=Mock(return_value=make_mock_response()))
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    fetch_pypi_versions("Scikit_Learn")
+    session.get.assert_called_once_with(url="https://pypi.org/pypi/scikit-learn/json", timeout=10.0)
+
+
+@requests_available
+def test_fetch_pypi_pinned_dependency_version_dependency_name_is_canonical(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session = make_mock_session(
+        get=Mock(return_value=make_mock_pinned_dependency_response(["pydantic_core==2.23.2"]))
+    )
+    monkeypatch.setattr(requests, "Session", lambda: session)
+
+    assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "Pydantic-Core") == "2.23.2"

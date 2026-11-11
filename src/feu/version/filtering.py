@@ -237,7 +237,8 @@ def latest_major_versions(versions: Sequence[str]) -> list[str]:
 
     Returns:
         A list containing the latest version for each major version,
-            sorted by major version number.
+            sorted by major version number. The strings are the ones
+            of ``versions``.
 
     Raises:
         packaging.version.InvalidVersion: If a version string is not
@@ -252,13 +253,13 @@ def latest_major_versions(versions: Sequence[str]) -> list[str]:
 
         ```
     """
-    by_major = {}
+    by_major: dict[int, tuple[Version, str]] = {}
     for v_str in versions:
         v = Version(v_str)
         current = by_major.get(v.major)
-        if current is None or v > current:
-            by_major[v.major] = v
-    return [str(by_major[k]) for k in sorted(by_major)]
+        if current is None or v > current[0]:
+            by_major[v.major] = (v, v_str)
+    return [by_major[k][1] for k in sorted(by_major)]
 
 
 def latest_minor_versions(versions: Sequence[str]) -> list[str]:
@@ -275,7 +276,8 @@ def latest_minor_versions(versions: Sequence[str]) -> list[str]:
 
     Returns:
         A list containing the latest version for each minor version,
-            sorted by major and minor version numbers.
+            sorted by major and minor version numbers. The strings are
+            the ones of ``versions``.
 
     Raises:
         packaging.version.InvalidVersion: If a version string is not
@@ -290,14 +292,14 @@ def latest_minor_versions(versions: Sequence[str]) -> list[str]:
 
         ```
     """
-    by_minor = {}
+    by_minor: dict[tuple[int, int], tuple[Version, str]] = {}
     for v_str in versions:
         v = Version(v_str)
         key = (v.major, v.minor)
         current = by_minor.get(key)
-        if current is None or v > current:
-            by_minor[key] = v
-    return [str(by_minor[k]) for k in sorted(by_minor)]
+        if current is None or v > current[0]:
+            by_minor[key] = (v, v_str)
+    return [by_minor[k][1] for k in sorted(by_minor)]
 
 
 def unique_versions(versions: Sequence[str]) -> list[str]:
