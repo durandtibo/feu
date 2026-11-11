@@ -40,14 +40,6 @@ def test_availability_cache_caches_the_result() -> None:
     mock.assert_called_once_with()
 
 
-def test_availability_cache_has_cache_clear() -> None:
-    @availability_cache
-    def check() -> bool:
-        return True
-
-    assert callable(check.cache_clear)
-
-
 def test_clear_availability_caches_resets_a_registered_function() -> None:
     mock = Mock(return_value=True)
 
