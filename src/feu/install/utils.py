@@ -19,7 +19,7 @@ import shutil
 from functools import cache
 from typing import TYPE_CHECKING, NamedTuple
 
-from feu.compat import Target, find_closest_version, get_default_registry
+from feu.compat import Target, find_closest_version, get_default_registry, resolve_target
 from feu.install import InstallerRegistry
 from feu.utils.package import (
     PackageSpec,
@@ -31,7 +31,6 @@ from feu.version import (
     fetch_pypi_versions,
     filter_stable_versions,
     filter_valid_versions,
-    get_python_major_minor,
     sort_versions,
 )
 
@@ -88,25 +87,30 @@ def install_package(installer: InstallerSpec, package: PackageSpec) -> None:
     InstallerRegistry.install(installer=installer, package=package)
 
 
-def install_package_closest_version(installer: InstallerSpec, package: PackageSpec) -> None:
+def install_package_closest_version(
+    installer: InstallerSpec, package: PackageSpec, *, target: Target | None = None
+) -> None:
     r"""Install a package and associated packages by using the specified
     installer.
 
     This function finds the closest valid version if the specified
-    version is not compatible with the current Python version (the
-    OS and the CPU architecture are not considered). A wildcard version
+    version is not compatible with the target. By default, the target
+    is the current environment: the Python version, the free-threaded
+    flag, the OS and the CPU architecture. A wildcard version
     (e.g. ``'2.12.*'``) cannot be checked against the compatibility
     registry, so the package is installed as specified.
 
     Args:
         installer: The installer specification.
         package: The package specification.
+        target: The compatibility target. ``None`` means the current
+            environment (``resolve_target()``).
 
     Raises:
         RuntimeError: If no package version is specified, or if no
             installer is registered for the installer name.
         UnsupportedVersionError: If no version of the package is
-            valid for the current Python version.
+            valid for the target.
         subprocess.CalledProcessError: If the installation command
             fails.
 
@@ -136,7 +140,7 @@ def install_package_closest_version(installer: InstallerSpec, package: PackageSp
             find_closest_version(
                 pkg_name=package.name,
                 pkg_version=pkg_version,
-                target=Target(python_version=get_python_major_minor()),
+                target=resolve_target() if target is None else target,
             )
         ),
     )
