@@ -17,16 +17,8 @@ PKG_NAME = "numpy"
 # The stable, valid releases that existed when the module was generated, in
 # PEP 440 order. A wildcard version request is matched against them.
 VERSIONS = (
-    "0.9.6",
-    "0.9.8",
     "1.0",
-    "1.0.3",
-    "1.0.4",
-    "1.1.1",
-    "1.2.0",
-    "1.2.1",
     "1.3.0",
-    "1.4.0",
     "1.4.1",
     "1.5.0",
     "1.5.1",
@@ -191,7 +183,7 @@ def compat() -> dict[Target, list[VersionRange]]:
             VersionRange(min="1.21.2", max="2.2.6")
         ],
         Target(python_version="3.10", free_threaded=False, os="macos", arch="x86_64"): [
-            VersionRange(min="1.21.4", max="2.2.6")
+            VersionRange(min="1.21.3", max="2.2.6")
         ],
         Target(python_version="3.10", free_threaded=False, os="macos", arch="arm64"): [
             VersionRange(min="1.21.3", max="2.2.6")

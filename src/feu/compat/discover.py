@@ -30,7 +30,7 @@ from packaging.version import Version
 
 from feu.compat.registry import VersionRange
 from feu.compat.target import DEFAULT_TARGETS
-from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
+from feu.compat.wheel_tags import WheelTag, parse_wheel_filename
 from feu.version import (
     fetch_pypi_pinned_dependency_version,
     fetch_pypi_requires_python,
@@ -129,7 +129,7 @@ def is_compatible(requires_python: str | None, python_version: str) -> bool:
         return True
 
 
-def tags_match_exactly(tag: WheelTags, wanted: WheelTags) -> bool:
+def tags_match_exactly(tag: WheelTag, wanted: WheelTag) -> bool:
     r"""Indicate if a wheel tag runs on a wanted platform.
 
     The ``os``, ``arch`` and ``free_threaded`` fields must be equal. An
@@ -146,10 +146,10 @@ def tags_match_exactly(tag: WheelTags, wanted: WheelTags) -> bool:
 
     Example:
         ```pycon
-        >>> from feu.compat.wheel_tags import WheelTags
+        >>> from feu.compat.wheel_tags import WheelTag
         >>> from feu.compat import tags_match_exactly
-        >>> tag = WheelTags("3.9", False, "linux", "x86_64", abi3=True)
-        >>> tags_match_exactly(tag, WheelTags("3.12", False, "linux", "x86_64"))
+        >>> tag = WheelTag("3.9", False, "linux", "x86_64", abi3=True)
+        >>> tags_match_exactly(tag, WheelTag("3.12", False, "linux", "x86_64"))
         True
 
         ```
@@ -165,7 +165,7 @@ def tags_match_exactly(tag: WheelTags, wanted: WheelTags) -> bool:
     return tag.python_version == wanted.python_version
 
 
-def _is_tag_compatible(tag: WheelTags, wanted: WheelTags, requires_python: str | None) -> bool:
+def _is_tag_compatible(tag: WheelTag, wanted: WheelTag, requires_python: str | None) -> bool:
     r"""Indicate if a wheel tag of a package without companion is
     compatible with a wanted platform.
 
@@ -237,7 +237,7 @@ def group_into_ranges(
 
 def _tags_by_version(
     wheel_filenames: Mapping[str, tuple[str, ...]],
-) -> dict[str, set[WheelTags]]:
+) -> dict[str, set[WheelTag]]:
     r"""Parse the wheel file names of each release.
 
     Args:
@@ -256,8 +256,8 @@ def _companion_tags(
     pkg_name: str,
     companion: Companion,
     version: str,
-    companion_tags: dict[str, set[WheelTags]] | None,
-) -> set[WheelTags]:
+    companion_tags: dict[str, set[WheelTag]] | None,
+) -> set[WheelTag]:
     r"""Get the tags of the companion release of a release.
 
     Args:
@@ -280,8 +280,8 @@ def _companion_tags(
 
 
 def _default_judge(
-    pkg_name: str, tags: Mapping[str, set[WheelTags]]
-) -> Callable[[str, WheelTags], bool]:
+    pkg_name: str, tags: Mapping[str, set[WheelTag]]
+) -> Callable[[str, WheelTag], bool]:
     r"""Create the compatibility check of a package without companion.
 
     Args:
@@ -295,7 +295,7 @@ def _default_judge(
     has_pure_python_wheel = any(tag.python_version is None for t in tags.values() for tag in t)
     requires_python = fetch_pypi_requires_python(pkg_name) if has_pure_python_wheel else {}
 
-    def judge(version: str, wanted: WheelTags) -> bool:
+    def judge(version: str, wanted: WheelTag) -> bool:
         python_requirement = requires_python.get(version)
         if not tags[version]:
             # A release without wheel is treated as pure Python only if some release
@@ -311,8 +311,8 @@ def _default_judge(
 
 
 def _companion_judge(
-    pkg_name: str, companion: Companion, tags: Mapping[str, set[WheelTags]]
-) -> Callable[[str, WheelTags], bool]:
+    pkg_name: str, companion: Companion, tags: Mapping[str, set[WheelTag]]
+) -> Callable[[str, WheelTag], bool]:
     r"""Create the compatibility check of a package with a companion.
 
     Args:
@@ -324,8 +324,8 @@ def _companion_judge(
         A function that indicates if a release is compatible with a
             wanted platform.
     """
-    companion_tags: dict[str, set[WheelTags]] | None = None
-    effective: dict[str, set[WheelTags]] = {}
+    companion_tags: dict[str, set[WheelTag]] | None = None
+    effective: dict[str, set[WheelTag]] = {}
     for version, version_tags in tags.items():
         # A pure-Python wheel of the package says nothing about the platform.
         platform_tags = {tag for tag in version_tags if tag.python_version is not None}
@@ -336,7 +336,7 @@ def _companion_judge(
             companion_tags = _tags_by_version(fetch_pypi_wheel_filenames(companion.package))
         effective[version] = _companion_tags(pkg_name, companion, version, companion_tags)
 
-    def judge(version: str, wanted: WheelTags) -> bool:
+    def judge(version: str, wanted: WheelTag) -> bool:
         return any(tags_match_exactly(tag, wanted) for tag in effective[version])
 
     return judge
@@ -424,7 +424,7 @@ def discover_compat_targets(
 
     result: dict[Target, list[VersionRange]] = {}
     for target in targets:
-        wanted = WheelTags(
+        wanted = WheelTag(
             python_version=target.python_version,
             free_threaded=target.free_threaded,
             os=target.os,

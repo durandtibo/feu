@@ -17,7 +17,6 @@ PKG_NAME = "pyarrow"
 # The stable, valid releases that existed when the module was generated, in
 # PEP 440 order. A wildcard version request is matched against them.
 VERSIONS = (
-    "0.1.0",
     "0.2.0",
     "0.3.0",
     "0.4.0",

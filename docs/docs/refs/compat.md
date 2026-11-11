@@ -32,7 +32,7 @@ package are known to work.
 `discover_compat_targets(pkg_name, targets=DEFAULT_TARGETS, *, companion=None,
 ignore_versions=None)` computes compatibility data from PyPI rather than
 requiring it to be hand-maintained, with one algorithm for every package. For
-each release, it parses the wheel file names (via `WheelTags` /
+each release, it parses the wheel file names (via `WheelTag` /
 `parse_wheel_filename`) and the `requires-python` metadata to determine, per
 target (Python version, OS, arch, free-threaded), the range of package
 versions that support it. It returns a `Discovery`: the considered versions

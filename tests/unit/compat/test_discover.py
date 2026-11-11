@@ -12,7 +12,7 @@ from feu.compat import (
     SameVersion,
     Target,
     VersionRange,
-    WheelTags,
+    WheelTag,
     discover_compat_targets,
     group_into_ranges,
     is_compatible,
@@ -139,50 +139,50 @@ def test_group_into_ranges_isolated_versions() -> None:
 #     Tests for tags_match_exactly     #
 ########################################
 
-LINUX_TAG = WheelTags("3.11", False, "linux", "x86_64")
+LINUX_TAG = WheelTag("3.11", False, "linux", "x86_64")
 
 
 def test_tags_match_exactly_true() -> None:
-    assert tags_match_exactly(LINUX_TAG, WheelTags("3.11", False, "linux", "x86_64"))
+    assert tags_match_exactly(LINUX_TAG, WheelTag("3.11", False, "linux", "x86_64"))
 
 
 @pytest.mark.parametrize(
     "wanted",
     [
-        WheelTags("3.12", False, "linux", "x86_64"),
-        WheelTags("3.11", True, "linux", "x86_64"),
-        WheelTags("3.11", False, "macos", "x86_64"),
-        WheelTags("3.11", False, "linux", "arm64"),
+        WheelTag("3.12", False, "linux", "x86_64"),
+        WheelTag("3.11", True, "linux", "x86_64"),
+        WheelTag("3.11", False, "macos", "x86_64"),
+        WheelTag("3.11", False, "linux", "arm64"),
     ],
 )
-def test_tags_match_exactly_false(wanted: WheelTags) -> None:
+def test_tags_match_exactly_false(wanted: WheelTag) -> None:
     assert not tags_match_exactly(LINUX_TAG, wanted)
 
 
 def test_tags_match_exactly_abi3_newer_python() -> None:
     assert tags_match_exactly(
-        WheelTags("3.9", False, "linux", "x86_64", abi3=True),
-        WheelTags("3.13", False, "linux", "x86_64"),
+        WheelTag("3.9", False, "linux", "x86_64", abi3=True),
+        WheelTag("3.13", False, "linux", "x86_64"),
     )
 
 
 def test_tags_match_exactly_abi3_older_python() -> None:
     assert not tags_match_exactly(
-        WheelTags("3.10", False, "linux", "x86_64", abi3=True),
-        WheelTags("3.9", False, "linux", "x86_64"),
+        WheelTag("3.10", False, "linux", "x86_64", abi3=True),
+        WheelTag("3.9", False, "linux", "x86_64"),
     )
 
 
 def test_tags_match_exactly_abi3_without_python_version() -> None:
     assert not tags_match_exactly(
-        WheelTags(None, False, "linux", "x86_64", abi3=True),
-        WheelTags("3.9", False, "linux", "x86_64"),
+        WheelTag(None, False, "linux", "x86_64", abi3=True),
+        WheelTag("3.9", False, "linux", "x86_64"),
     )
 
 
 def test_tags_match_exactly_pure_python_never_matches_a_platform() -> None:
     assert not tags_match_exactly(
-        WheelTags(None, False, None, None), WheelTags("3.11", False, "linux", "x86_64")
+        WheelTag(None, False, None, None), WheelTag("3.11", False, "linux", "x86_64")
     )
 
 
@@ -190,7 +190,7 @@ def test_tags_match_exactly_pure_python_never_matches_a_platform() -> None:
 #     Tests for _is_tag_compatible #
 ####################################
 
-WANTED = WheelTags("3.11", False, "linux", "x86_64")
+WANTED = WheelTag("3.11", False, "linux", "x86_64")
 
 
 def test_is_tag_compatible_exact() -> None:
@@ -198,41 +198,41 @@ def test_is_tag_compatible_exact() -> None:
 
 
 def test_is_tag_compatible_other_os() -> None:
-    assert not _is_tag_compatible(WheelTags("3.11", False, "macos", "x86_64"), WANTED, None)
+    assert not _is_tag_compatible(WheelTag("3.11", False, "macos", "x86_64"), WANTED, None)
 
 
 def test_is_tag_compatible_other_arch() -> None:
-    assert not _is_tag_compatible(WheelTags("3.11", False, "linux", "arm64"), WANTED, None)
+    assert not _is_tag_compatible(WheelTag("3.11", False, "linux", "arm64"), WANTED, None)
 
 
 def test_is_tag_compatible_other_free_threading() -> None:
-    assert not _is_tag_compatible(WheelTags("3.11", True, "linux", "x86_64"), WANTED, None)
+    assert not _is_tag_compatible(WheelTag("3.11", True, "linux", "x86_64"), WANTED, None)
 
 
 def test_is_tag_compatible_other_python() -> None:
-    assert not _is_tag_compatible(WheelTags("3.10", False, "linux", "x86_64"), WANTED, None)
+    assert not _is_tag_compatible(WheelTag("3.10", False, "linux", "x86_64"), WANTED, None)
 
 
 def test_is_tag_compatible_abi3() -> None:
-    assert _is_tag_compatible(WheelTags("3.9", False, "linux", "x86_64", abi3=True), WANTED, None)
+    assert _is_tag_compatible(WheelTag("3.9", False, "linux", "x86_64", abi3=True), WANTED, None)
 
 
 def test_is_tag_compatible_abi3_too_new() -> None:
     assert not _is_tag_compatible(
-        WheelTags("3.12", False, "linux", "x86_64", abi3=True), WANTED, None
+        WheelTag("3.12", False, "linux", "x86_64", abi3=True), WANTED, None
     )
 
 
 def test_is_tag_compatible_pure_python_allowed() -> None:
-    assert _is_tag_compatible(WheelTags(None, False, None, None), WANTED, ">=3.9")
+    assert _is_tag_compatible(WheelTag(None, False, None, None), WANTED, ">=3.9")
 
 
 def test_is_tag_compatible_pure_python_not_allowed() -> None:
-    assert not _is_tag_compatible(WheelTags(None, False, None, None), WANTED, ">=3.12")
+    assert not _is_tag_compatible(WheelTag(None, False, None, None), WANTED, ">=3.12")
 
 
 def test_is_tag_compatible_pure_python_without_requirement() -> None:
-    assert _is_tag_compatible(WheelTags(None, False, None, None), WANTED, None)
+    assert _is_tag_compatible(WheelTag(None, False, None, None), WANTED, None)
 
 
 #######################################
@@ -247,7 +247,7 @@ def test_tags_by_version() -> None:
             "2.0": (),
         }
     ) == {
-        "1.0": {WheelTags("3.11", False, "linux", "x86_64"), WheelTags(None, False, None, None)},
+        "1.0": {WheelTag("3.11", False, "linux", "x86_64"), WheelTag(None, False, None, None)},
         "2.0": set(),
     }
 
@@ -305,7 +305,7 @@ def test_companion_judge_does_not_fetch_the_companion_when_platform_wheels_exist
 
 
 def test_companion_judge_fetches_the_companion_once() -> None:
-    pure = WheelTags(None, False, None, None)
+    pure = WheelTag(None, False, None, None)
     fetch_mock = Mock(return_value={})
     with patch(f"{MODULE}.fetch_pypi_wheel_filenames", fetch_mock):
         _companion_judge("pkg", SameVersion("lib"), {"1.0": {pure}, "2.0": {pure}})
@@ -565,3 +565,48 @@ def test_discover_compat_targets_does_not_mutate_the_registries() -> None:
     ignored = dict(IGNORED_VERSIONS)
     _discover({"1.0": (f"pkg-1.0-cp311-cp311-{LINUX}.whl",)})
     assert (companions, ignored) == (COMPANIONS, IGNORED_VERSIONS)
+
+
+##############################################################
+#     Tests for the wheels that the old parser dropped       #
+##############################################################
+
+MACOS_ARM_T = Target(python_version="3.11", os="macos", arch="arm64")
+MACOS_X86_T = Target(python_version="3.11", os="macos", arch="x86_64")
+
+
+def test_discover_compat_targets_universal2_wheel_counts_for_both_macos_architectures() -> None:
+    wheels = {"1.0": ("pkg-1.0-cp311-cp311-macosx_11_0_universal2.whl",)}
+    assert _discover(wheels, (MACOS_ARM_T, MACOS_X86_T)).targets == {
+        MACOS_ARM_T: [VersionRange("1.0", None)],
+        MACOS_X86_T: [VersionRange("1.0", None)],
+    }
+
+
+def test_discover_compat_targets_abi3_universal2_wheel() -> None:
+    wheels = {"1.0": ("pkg-1.0-cp39-abi3-macosx_10_9_universal2.whl",)}
+    assert _discover(wheels, (MACOS_ARM_T,)).targets == {MACOS_ARM_T: [VersionRange("1.0", None)]}
+
+
+def test_discover_compat_targets_compressed_macos_tags_count_for_both_architectures() -> None:
+    wheels = {"1.0": ("pkg-1.0-cp311-cp311-macosx_10_9_x86_64.macosx_11_0_arm64.whl",)}
+    assert _discover(wheels, (MACOS_ARM_T, MACOS_X86_T)).targets == {
+        MACOS_ARM_T: [VersionRange("1.0", None)],
+        MACOS_X86_T: [VersionRange("1.0", None)],
+    }
+
+
+def test_discover_compat_targets_musllinux_wheel_is_out_of_scope() -> None:
+    wheels = {"1.0": ("pkg-1.0-cp311-cp311-musllinux_1_2_x86_64.whl",)}
+    assert _discover(wheels).targets == {T311: []}
+
+
+def test_discover_compat_targets_abi3t_wheel_is_a_stable_abi_free_threaded_wheel() -> None:
+    target = Target(python_version="3.15", free_threaded=True, os="linux", arch="x86_64")
+    wheels = {"1.0": (f"pkg-1.0-cp314-abi3t-{LINUX}.whl",)}
+    assert _discover(wheels, (target,)).targets == {target: [VersionRange("1.0", None)]}
+
+
+def test_discover_compat_targets_abi3t_wheel_is_not_for_a_regular_build() -> None:
+    wheels = {"1.0": (f"pkg-1.0-cp39-abi3t-{LINUX}.whl",)}
+    assert _discover(wheels).targets == {T311: []}

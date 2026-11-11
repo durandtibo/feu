@@ -17,11 +17,6 @@ PKG_NAME = "scipy"
 # The stable, valid releases that existed when the module was generated, in
 # PEP 440 order. A wildcard version request is matched against them.
 VERSIONS = (
-    "0.4.4",
-    "0.5.2",
-    "0.6.0",
-    "0.7.0",
-    "0.7.2",
     "0.8.0",
     "0.9.0",
     "0.10.0",
