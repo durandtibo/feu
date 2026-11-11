@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from packaging.version import Version
 
-from feu.compat.discoverers import discover_compat_targets
+from feu.compat import discover_compat_targets
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version.pypi import _fetch_pypi_project
@@ -34,7 +34,7 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
     # assert a non-empty, internally consistent result rather than exact
     # version numbers, to stay resilient to upstream releases.
     target = Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
-    compat = discover_compat_targets("numpy", targets=(target,))
+    compat = discover_compat_targets("numpy", targets=(target,)).targets
     assert set(compat) == {target}
     ranges = compat[target]
     assert len(ranges) == 1
@@ -48,18 +48,37 @@ def test_discover_compat_targets_numpy_linux_free_threaded() -> None:
 def test_discover_compat_targets_polars_split_runtime_package() -> None:
     # polars started splitting its compiled backend into per-CPU-feature
     # "runtime" packages (e.g. polars-runtime-32) that it pins to an exact
-    # version; PolarsCompatDiscoverer has special-cased logic to resolve
-    # platform support through that pinned runtime package instead of
-    # polars' own (pure-Python) wheel. Assert a non-empty, internally
+    # version; the polars companion rule resolves platform support through that
+    # pinned runtime package instead of polars' own (pure-Python) wheel. Assert a non-empty, internally
     # consistent result rather than exact version numbers, to stay
     # resilient to upstream releases.
     target = Target(python_version="3.11", os="linux", arch="x86_64")
-    compat = discover_compat_targets("polars", targets=(target,))
+    compat = discover_compat_targets("polars", targets=(target,)).targets
     assert set(compat) == {target}
     ranges = compat[target]
     assert len(ranges) >= 1
     assert ranges[0].min is not None
     assert Version(ranges[0].min)
+
+
+@requests_available
+def test_discover_compat_targets_versions() -> None:
+    """Test that the considered versions are the stable releases."""
+    versions = discover_compat_targets("requests", targets=()).versions
+    assert list(versions) == sorted(versions, key=Version)
+    assert "2.32.5" in versions
+    assert not [v for v in versions if Version(v).is_prerelease]
+
+
+@requests_available
+def test_discover_compat_targets_pydantic_pure_wheel_next_to_compiled_wheels() -> None:
+    """Test that pydantic 1.x, which ships a pure wheel next to its compiled
+    wheels, is judged by its compiled wheels."""
+    target = Target(python_version="3.12", os="linux", arch="x86_64")
+    ranges = discover_compat_targets("pydantic", targets=(target,)).targets[target]
+    assert ranges
+    assert ranges[0].min is not None
+    assert Version(ranges[0].min) >= Version("1.10")
 
 
 @requests_not_available

@@ -4,7 +4,13 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from feu.compat.target import Target, resolve_target
+from feu.compat.target import (
+    DEFAULT_TARGETS,
+    PLATFORMS,
+    PYTHON_VERSIONS,
+    Target,
+    resolve_target,
+)
 
 
 def test_target_defaults() -> None:
@@ -136,3 +142,52 @@ def test_resolve_target_python_version_default_from_interpreter() -> None:
 def test_target_rejects_trailing_or_leading_characters(python_version: str) -> None:
     with pytest.raises(ValueError, match="invalid python_version"):
         Target(python_version=python_version)
+
+
+########################################
+#     Tests for the shipped targets    #
+########################################
+
+
+def test_python_versions() -> None:
+    assert PYTHON_VERSIONS == ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15")
+
+
+def test_platforms() -> None:
+    assert PLATFORMS == (
+        ("linux", "x86_64"),
+        ("linux", "arm64"),
+        ("macos", "x86_64"),
+        ("macos", "arm64"),
+        ("windows", "x86_64"),
+        ("windows", "arm64"),
+    )
+
+
+def test_default_targets_count() -> None:
+    # 3.9 to 3.12: 6 platforms; 3.13 to 3.15: 6 platforms, with and without free threading.
+    assert len(DEFAULT_TARGETS) == 4 * 6 + 3 * 12
+
+
+def test_default_targets_are_unique() -> None:
+    assert len(set(DEFAULT_TARGETS)) == len(DEFAULT_TARGETS)
+
+
+def test_default_targets_have_a_concrete_platform() -> None:
+    assert all(target.os is not None and target.arch is not None for target in DEFAULT_TARGETS)
+
+
+def test_default_targets_free_threaded_from_python_313() -> None:
+    assert {t.python_version for t in DEFAULT_TARGETS if t.free_threaded} == {
+        "3.13",
+        "3.14",
+        "3.15",
+    }
+
+
+def test_default_targets_first() -> None:
+    assert DEFAULT_TARGETS[0] == Target("3.9", False, "linux", "x86_64")
+
+
+def test_default_targets_last() -> None:
+    assert DEFAULT_TARGETS[-1] == Target("3.15", True, "windows", "arm64")

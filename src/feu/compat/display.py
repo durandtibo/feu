@@ -1,66 +1,29 @@
-r"""Contain functions to automatically discover package/Python-version
-compatibility constraints from PyPI metadata."""
+r"""Contain functions to display the discovered compatibility."""
 
 from __future__ import annotations
 
-__all__ = [
-    "DEFAULT_PYTHON_VERSIONS",
-    "DEFAULT_TARGETS",
-    "is_compatible",
-    "show_compat_targets",
-]
+__all__ = ["show_compat_targets"]
 
 from typing import TYPE_CHECKING
 
-from packaging.specifiers import InvalidSpecifier, SpecifierSet
-from packaging.version import Version
-
-from feu.compat.target import Target
+from feu.compat.discover import Discovery
 from feu.imports import check_rich
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from feu.compat.registry import VersionRange
-
-DEFAULT_PYTHON_VERSIONS = ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15")
-
-DEFAULT_TARGETS: tuple[Target, ...] = tuple(
-    Target(python_version=python_version, free_threaded=free_threaded, os=os, arch=arch)
-    for python_version in DEFAULT_PYTHON_VERSIONS
-    for free_threaded in ((False, True) if Version(python_version) >= Version("3.13") else (False,))
-    for os in ("linux", "macos", "windows")
-    for arch in ("x86_64", "arm64")
-)
-
-
-def is_compatible(requires_python: str | None, python_version: str) -> bool:
-    r"""Indicate if a ``requires_python`` specifier allows a given Python
-    version.
-
-    Args:
-        requires_python: The ``requires_python`` specifier string, or
-            ``None`` if the release does not declare one.
-        python_version: The Python version to check (e.g., ``"3.11"``).
-
-    Returns:
-        ``True`` if the release is compatible or declares no
-            constraint, ``False`` otherwise.
-    """
-    if not requires_python:
-        return True
-    try:
-        return SpecifierSet(requires_python).contains(python_version, prereleases=True)
-    except InvalidSpecifier:
-        return True
+    from feu.compat.target import Target
 
 
 def show_compat_targets(
-    compat: dict[Target, list[VersionRange]], pkg_name: str | None = None
+    compat: Discovery | Mapping[Target, list[VersionRange]], pkg_name: str | None = None
 ) -> None:
     r"""Print the output of ``discover_compat_targets`` as a table.
 
     Args:
-        compat: The mapping of ``Target`` to a list of ``VersionRange``,
-            as returned by ``discover_compat_targets``.
+        compat: The output of ``discover_compat_targets``, or a mapping
+            of ``Target`` to a list of ``VersionRange``.
         pkg_name: The package name to show in the table title, if any.
 
     Raises:
@@ -85,7 +48,8 @@ def show_compat_targets(
     table.add_column("Arch")
     table.add_column("Versions")
 
-    for target, ranges in compat.items():
+    targets = compat.targets if isinstance(compat, Discovery) else compat
+    for target, ranges in targets.items():
         table.add_row(
             target.python_version,
             str(target.free_threaded),
