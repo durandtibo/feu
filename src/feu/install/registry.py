@@ -6,7 +6,7 @@ __all__ = ["InstallerRegistry"]
 
 from typing import TYPE_CHECKING, ClassVar
 
-from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
+from feu.install.pip import PipInstaller, UvInstaller
 
 if TYPE_CHECKING:
     from feu.install.installer import BaseInstaller
@@ -18,8 +18,8 @@ class InstallerRegistry:
     r"""Implement the main installer registry.
 
     The registry maps an installer name to an installer class. It is
-    shared by the whole process. The installers ``"pip"``, ``"pipx"``
-    and ``"uv"`` are registered by default.
+    shared by the whole process. The installers ``"pip"`` and
+    ``"uv"`` are registered by default.
 
     Example:
         ```pycon
@@ -32,7 +32,6 @@ class InstallerRegistry:
 
     registry: ClassVar[dict[str, type[BaseInstaller]]] = {
         "pip": PipInstaller,
-        "pipx": PipxInstaller,
         "uv": UvInstaller,
     }
 

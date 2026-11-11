@@ -91,8 +91,9 @@ def install(
         installer_name: The package installer name to use to install
             the packages.
         installer_args: Optional arguments to pass to the package
-            installer, as a single string e.g. ``'--upgrade'``. The
-            valid arguments depend on the package installer.
+            installer, as a single string e.g. ``'--upgrade'``. It is
+            split once with ``shlex.split``. The valid arguments
+            depend on the package installer.
 
     Example:
         ```console

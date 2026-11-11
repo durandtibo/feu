@@ -1,3 +1,4 @@
+import sys
 from unittest.mock import Mock, call, patch
 
 import pytest
@@ -12,10 +13,9 @@ from feu.install import (
     install_package_closest_version,
     install_packages_all_versions,
     is_pip_available,
-    is_pipx_available,
     is_uv_available,
 )
-from feu.testing import pip_available, pipx_available, uv_available
+from feu.testing import pip_available, uv_available
 from feu.utils.installer import InstallerSpec
 from feu.utils.package import PackageSpec
 
@@ -23,7 +23,6 @@ from feu.utils.package import PackageSpec
 @pytest.fixture(autouse=True)
 def _reset() -> None:
     is_pip_available.cache_clear()
-    is_pipx_available.cache_clear()
     is_uv_available.cache_clear()
     get_available_installers.cache_clear()
 
@@ -34,36 +33,42 @@ def _reset() -> None:
 
 
 def test_install_package_pip_numpy() -> None:
-    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_command") as run_mock:
         install_package(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
         )
-        run_mock.assert_called_once_with("pip install numpy==2.0.0")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.0.0"])
 
 
 def test_install_package_pip_pandas() -> None:
-    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_command") as run_mock:
         install_package(
             installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.1.1")
         )
-        run_mock.assert_called_once_with("pip install pandas==2.1.1 numpy<2.0.0")
+        run_mock.assert_called_once_with(
+            [sys.executable, "-m", "pip", "install", "pandas==2.1.1", "numpy<2.0.0"]
+        )
 
 
 def test_install_package_uv_numpy() -> None:
-    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_command") as run_mock:
         install_package(
             installer=InstallerSpec("uv"), package=PackageSpec(name="numpy", version="2.0.0")
         )
-        run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
+        run_mock.assert_called_once_with(
+            ["uv", "pip", "install", "--python", sys.executable, "numpy==2.0.0"]
+        )
 
 
 def test_install_package_pip_numpy_with_args() -> None:
-    with patch("feu.install.pip.installer.run_bash_command") as run_mock:
+    with patch("feu.install.pip.installer.run_command") as run_mock:
         install_package(
             installer=InstallerSpec("pip", arguments="-U"),
             package=PackageSpec(name="numpy", version="2.0.0"),
         )
-        run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+        run_mock.assert_called_once_with(
+            [sys.executable, "-m", "pip", "install", "-U", "numpy==2.0.0"]
+        )
 
 
 #####################################################
@@ -74,57 +79,63 @@ def test_install_package_pip_numpy_with_args() -> None:
 def test_install_package_closest_version_pip_numpy() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
         )
-        run_mock.assert_called_once_with("pip install numpy==2.0.0")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.0.0"])
 
 
 def test_install_package_closest_version_pip_pandas() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="pandas", version="2.1.1")
         )
-        run_mock.assert_called_once_with("pip install pandas==2.1.1 numpy<2.0.0")
+        run_mock.assert_called_once_with(
+            [sys.executable, "-m", "pip", "install", "pandas==2.1.1", "numpy<2.0.0"]
+        )
 
 
 def test_install_package_closest_version_uv_numpy() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("uv"), package=PackageSpec(name="numpy", version="2.0.0")
         )
-        run_mock.assert_called_once_with("uv pip install numpy==2.0.0")
+        run_mock.assert_called_once_with(
+            ["uv", "pip", "install", "--python", sys.executable, "numpy==2.0.0"]
+        )
 
 
 def test_install_package_closest_version_pip_numpy_with_args() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip", arguments="-U"),
             package=PackageSpec(name="numpy", version="2.0.0"),
         )
-        run_mock.assert_called_once_with("pip install -U numpy==2.0.0")
+        run_mock.assert_called_once_with(
+            [sys.executable, "-m", "pip", "install", "-U", "numpy==2.0.0"]
+        )
 
 
 def test_install_package_closest_version_pip_wildcard() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="torch", version="2.12.*")
         )
-        run_mock.assert_called_once_with("pip install torch==2.12.*")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "torch==2.12.*"])
 
 
 def test_install_package_closest_version_default_target_is_the_full_current_target() -> None:
@@ -132,7 +143,7 @@ def test_install_package_closest_version_default_target_is_the_full_current_targ
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=current)),
         patch("feu.install.utils.find_closest_version", Mock(return_value="2.0.2")) as find_mock,
-        patch("feu.install.pip.installer.run_bash_command"),
+        patch("feu.install.pip.installer.run_command"),
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.3.0")
@@ -144,7 +155,7 @@ def test_install_package_closest_version_explicit_target_is_used() -> None:
     target = Target(python_version="3.9", os="linux", arch="x86_64")
     with (
         patch("feu.install.utils.find_closest_version", Mock(return_value="2.0.2")) as find_mock,
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"),
@@ -152,47 +163,47 @@ def test_install_package_closest_version_explicit_target_is_used() -> None:
             target=target,
         )
         find_mock.assert_called_once_with(pkg_name="numpy", pkg_version="2.3.0", target=target)
-        run_mock.assert_called_once_with("pip install numpy==2.0.2")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.0.2"])
 
 
 @pytest.mark.parametrize("version", ["", None])
 def test_install_package_closest_version_latest_is_not_pinned(version: str | None) -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.14"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version=version)
         )
-        run_mock.assert_called_once_with("pip install numpy")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy"])
 
 
 def test_install_package_closest_version_open_wildcard_is_installed_as_requested() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.14"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.*")
         )
-        run_mock.assert_called_once_with("pip install numpy==2.*")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.*"])
 
 
 def test_install_package_closest_version_closed_wildcard_is_resolved() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.9"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.*")
         )
-        run_mock.assert_called_once_with("pip install numpy==1.26.4")
+        run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==1.26.4"])
 
 
 def test_install_package_closest_version_wildcard_without_match_raises_before_install() -> None:
     with (
         patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.14"))),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
         pytest.raises(UnsupportedVersionError, match=r"matches '1\.24\.\*'"),
     ):
         install_package_closest_version(
@@ -264,7 +275,7 @@ def test_install_all_versions_pip() -> None:
             Mock(return_value=("1.0.0", "1.1.0")),
         ),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         result = install_all_versions(
             installer=InstallerSpec("pip"),
@@ -272,7 +283,10 @@ def test_install_all_versions_pip() -> None:
             target=Target(python_version="3.11"),
         )
         run_mock.assert_has_calls(
-            [call("pip install numpy==1.0.0"), call("pip install numpy==1.1.0")]
+            [
+                call([sys.executable, "-m", "pip", "install", "numpy==1.0.0"]),
+                call([sys.executable, "-m", "pip", "install", "numpy==1.1.0"]),
+            ]
         )
         assert result == InstallResult(installed=["1.0.0", "1.1.0"], failed=[])
 
@@ -284,7 +298,7 @@ def test_install_all_versions_start_date() -> None:
     with (
         patch("feu.install.utils.fetch_pypi_versions", fetch_mock),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
-        patch("feu.install.pip.installer.run_bash_command"),
+        patch("feu.install.pip.installer.run_command"),
     ):
         install_all_versions(
             installer=InstallerSpec("pip"),
@@ -304,14 +318,16 @@ def test_install_all_versions_with_extras() -> None:
             Mock(return_value=("1.0.0",)),
         ),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         result = install_all_versions(
             installer=InstallerSpec("pip"),
             package="my_package[performance]",
             target=Target(python_version="3.11"),
         )
-        run_mock.assert_called_once_with("pip install my_package[performance]==1.0.0")
+        run_mock.assert_called_once_with(
+            [sys.executable, "-m", "pip", "install", "my_package[performance]==1.0.0"]
+        )
         assert result == InstallResult(installed=["1.0.0"], failed=[])
 
 
@@ -325,7 +341,7 @@ def test_install_all_versions_partial_failure() -> None:
         ),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
         patch(
-            "feu.install.pip.installer.run_bash_command",
+            "feu.install.pip.installer.run_command",
             Mock(side_effect=[None, RuntimeError("boom"), None]),
         ),
     ):
@@ -347,7 +363,7 @@ def test_install_all_versions_all_fail() -> None:
         ),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
         patch(
-            "feu.install.pip.installer.run_bash_command",
+            "feu.install.pip.installer.run_command",
             Mock(side_effect=RuntimeError("boom")),
         ),
     ):
@@ -373,7 +389,7 @@ def test_install_packages_all_versions() -> None:
             Mock(return_value=("1.0.0",)),
         ),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
-        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+        patch("feu.install.pip.installer.run_command") as run_mock,
     ):
         result = install_packages_all_versions(
             installer=InstallerSpec("pip"),
@@ -381,7 +397,10 @@ def test_install_packages_all_versions() -> None:
             target=Target(python_version="3.11"),
         )
         run_mock.assert_has_calls(
-            [call("pip install numpy==1.0.0"), call("pip install my_package==1.0.0")]
+            [
+                call([sys.executable, "-m", "pip", "install", "numpy==1.0.0"]),
+                call([sys.executable, "-m", "pip", "install", "my_package==1.0.0"]),
+            ]
         )
         assert result == {
             "numpy": InstallResult(installed=["1.0.0"], failed=[]),
@@ -396,7 +415,7 @@ def test_install_packages_all_versions_start_date() -> None:
     with (
         patch("feu.install.utils.fetch_pypi_versions", fetch_mock),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
-        patch("feu.install.pip.installer.run_bash_command"),
+        patch("feu.install.pip.installer.run_command"),
     ):
         install_packages_all_versions(
             installer=InstallerSpec("pip"),
@@ -420,7 +439,7 @@ def test_install_packages_all_versions_with_failure() -> None:
         ),
         patch("feu.install.utils.get_default_registry", Mock(return_value=registry_mock)),
         patch(
-            "feu.install.pip.installer.run_bash_command",
+            "feu.install.pip.installer.run_command",
             Mock(side_effect=[None, RuntimeError("boom"), None, None]),
         ),
     ):
@@ -447,20 +466,6 @@ def test_is_pip_available() -> None:
 @pip_available
 def test_is_pip_available_true() -> None:
     assert is_pip_available()
-
-
-#######################################
-#     Tests for is_pipx_available     #
-#######################################
-
-
-def test_is_pipx_available() -> None:
-    assert isinstance(is_pipx_available(), bool)
-
-
-@pipx_available
-def test_is_pipx_available_true() -> None:
-    assert is_pipx_available()
 
 
 #####################################
@@ -495,21 +500,6 @@ def test_get_available_installers_pip_not_available() -> None:
 @pip_available
 def test_get_available_installers_pip() -> None:
     assert "pip" in get_available_installers()
-
-
-@patch("feu.install.utils.is_pipx_available", lambda: True)
-def test_get_available_installers_pipx_available() -> None:
-    assert "pipx" in get_available_installers()
-
-
-@patch("feu.install.utils.is_pipx_available", lambda: False)
-def test_get_available_installers_pipx_not_available() -> None:
-    assert "pipx" not in get_available_installers()
-
-
-@pipx_available
-def test_get_available_installers_pipx() -> None:
-    assert "pipx" in get_available_installers()
 
 
 @patch("feu.install.utils.is_uv_available", lambda: True)
