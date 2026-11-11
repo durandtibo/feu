@@ -73,7 +73,7 @@ def test_install_package_pip_numpy_with_args() -> None:
 
 def test_install_package_closest_version_pip_numpy() -> None:
     with (
-        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
         patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
@@ -84,7 +84,7 @@ def test_install_package_closest_version_pip_numpy() -> None:
 
 def test_install_package_closest_version_pip_pandas() -> None:
     with (
-        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
         patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
@@ -95,7 +95,7 @@ def test_install_package_closest_version_pip_pandas() -> None:
 
 def test_install_package_closest_version_uv_numpy() -> None:
     with (
-        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
         patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
@@ -106,7 +106,7 @@ def test_install_package_closest_version_uv_numpy() -> None:
 
 def test_install_package_closest_version_pip_numpy_with_args() -> None:
     with (
-        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
         patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
@@ -118,7 +118,7 @@ def test_install_package_closest_version_pip_numpy_with_args() -> None:
 
 def test_install_package_closest_version_pip_wildcard() -> None:
     with (
-        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
         patch("feu.install.pip.installer.run_bash_command") as run_mock,
     ):
         install_package_closest_version(
@@ -127,9 +127,37 @@ def test_install_package_closest_version_pip_wildcard() -> None:
         run_mock.assert_called_once_with("pip install torch==2.12.*")
 
 
+def test_install_package_closest_version_default_target_is_the_full_current_target() -> None:
+    current = Target(python_version="3.9", free_threaded=False, os="linux", arch="x86_64")
+    with (
+        patch("feu.install.utils.resolve_target", Mock(return_value=current)),
+        patch("feu.install.utils.find_closest_version", Mock(return_value="2.0.2")) as find_mock,
+        patch("feu.install.pip.installer.run_bash_command"),
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.3.0")
+        )
+        find_mock.assert_called_once_with(pkg_name="numpy", pkg_version="2.3.0", target=current)
+
+
+def test_install_package_closest_version_explicit_target_is_used() -> None:
+    target = Target(python_version="3.9", os="linux", arch="x86_64")
+    with (
+        patch("feu.install.utils.find_closest_version", Mock(return_value="2.0.2")) as find_mock,
+        patch("feu.install.pip.installer.run_bash_command") as run_mock,
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"),
+            package=PackageSpec(name="numpy", version="2.3.0"),
+            target=target,
+        )
+        find_mock.assert_called_once_with(pkg_name="numpy", pkg_version="2.3.0", target=target)
+        run_mock.assert_called_once_with("pip install numpy==2.0.2")
+
+
 def test_install_package_closest_version_missing_package_version() -> None:
     with (
-        patch("feu.install.utils.get_python_major_minor", Mock(return_value="3.12")),
+        patch("feu.install.utils.resolve_target", Mock(return_value=Target(python_version="3.12"))),
         pytest.raises(RuntimeError, match="A package version must be specified for numpy"),
     ):
         install_package_closest_version(

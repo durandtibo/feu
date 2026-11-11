@@ -22,20 +22,22 @@ if is_module_available("numpy.linalg"):
 
 ## Version Comparison
 
-Compare package versions to determine compatibility:
+Compare the installed version of a package to a given version. `compare_version` takes the package
+name, a comparison operator and the version to compare with, and returns `False` if the package is
+not installed:
 
 ```python
+import operator
+
 from feu import compare_version
 
-# Compare versions
-result = compare_version("2.0.0", "1.5.0")
-print(result)  # Returns 1 (first version is greater)
+# True if the installed version of numpy is at least 1.5.0
+result = compare_version("numpy", operator.ge, "1.5.0")
+print(result)
 
-result = compare_version("1.0.0", "2.0.0")
-print(result)  # Returns -1 (first version is less)
-
-result = compare_version("1.5.0", "1.5.0")
-print(result)  # Returns 0 (versions are equal)
+# True if the installed version of numpy is lower than 2.0.0
+result = compare_version("numpy", operator.lt, "2.0.0")
+print(result)
 ```
 
 ## Getting Package Version
@@ -71,6 +73,11 @@ closest = find_closest_version(
 )
 print(f"Closest valid version: {closest}")  # Will return "1.23.2"
 ```
+
+A target that leaves `os` and `arch` to `None` matches every platform: the answer is the union of
+the versions published for at least one platform. `install_package_closest_version` uses the full
+current target (Python version, free-threaded flag, OS and architecture) unless `target=` is given.
+Use `get_default_registry().has_package(name)` to detect an unknown package.
 
 A package that is not configured for the target accepts any version. If the package is configured
 but no version of it supports the target, `is_valid_version` returns `False` and

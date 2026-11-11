@@ -45,9 +45,10 @@ def test_get_default_registry_is_singleton() -> None:
 
 def test_get_default_registry_not_populated_with_defaults() -> None:
     # register_defaults is currently disabled, so the human-curated defaults
-    # must not be present in the registry.
-    registry = get_default_registry()
-    assert registry.get_config(pkg_name="numpy", target=T311) == []
+    # must not be present in the registry: only the discovered data is.
+    with patch("feu.compat.interface.register_discovered"):
+        registry = get_default_registry()
+    assert registry.state == {}
 
 
 def test_get_default_registry_uses_discovered() -> None:
@@ -81,9 +82,7 @@ def test_register_compat_exist_ok_false_raises() -> None:
 
 def test_register_compat_numpy_without_exist_ok() -> None:
     register_compat({"numpy": {T311: [VersionRange("9.9.9", None)]}})
-    assert get_default_registry().get_config(pkg_name="numpy", target=T311) == [
-        VersionRange("9.9.9", None)
-    ]
+    assert get_default_registry().state["numpy"][T311] == [VersionRange("9.9.9", None)]
 
 
 ########################################
@@ -98,8 +97,11 @@ def test_find_closest_version_delegates_to_default_registry() -> None:
     mock_find.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", target=T311)
 
 
-def test_find_closest_version_ignores_disabled_defaults() -> None:
-    assert find_closest_version(pkg_name="numpy", pkg_version="0.1.0", target=T311) == "0.1.0"
+def test_find_closest_version_unknown_package_is_permissive() -> None:
+    assert (
+        find_closest_version(pkg_name="not-a-real-package", pkg_version="0.1.0", target=T311)
+        == "0.1.0"
+    )
 
 
 ##################################
@@ -114,5 +116,5 @@ def test_is_valid_version_delegates_to_default_registry() -> None:
     mock_valid.assert_called_once_with(pkg_name="numpy", pkg_version="2.0.2", target=T311)
 
 
-def test_is_valid_version_ignores_disabled_defaults() -> None:
-    assert is_valid_version(pkg_name="numpy", pkg_version="0.1.0", target=T311)
+def test_is_valid_version_unknown_package_is_permissive() -> None:
+    assert is_valid_version(pkg_name="not-a-real-package", pkg_version="0.1.0", target=T311)

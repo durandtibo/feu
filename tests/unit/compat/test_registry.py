@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from packaging.version import Version
 
-from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange
+from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange, _parse
 from feu.compat.target import Target
 
 T311 = Target(python_version="3.11")
@@ -181,12 +181,12 @@ def test_compat_registry_free_threaded_must_match_exactly() -> None:
     assert registry.get_config(pkg_name="my_package", target=non_free_threaded) == []
 
 
-def test_compat_registry_most_recent_wins_among_ties() -> None:
+def test_compat_registry_equal_specificity_entries_are_merged() -> None:
     registry = CompatRegistry()
     registry.register(
         "my_package",
         Target(python_version="3.11", os="linux"),
-        ranges=[VersionRange("1.0.0", None)],
+        ranges=[VersionRange("1.0.0", "1.5.0")],
     )
     registry.register(
         "my_package",
@@ -194,10 +194,9 @@ def test_compat_registry_most_recent_wins_among_ties() -> None:
         ranges=[VersionRange("2.0.0", None)],
     )
     target = Target(python_version="3.11", os="linux", arch="x86_64")
-    # Both entries match with equal specificity (one non-None field each);
-    # the most recently registered one wins.
     assert registry.get_config(pkg_name="my_package", target=target) == [
-        VersionRange("2.0.0", None)
+        VersionRange("1.0.0", "1.5.0"),
+        VersionRange("2.0.0", None),
     ]
 
 
@@ -446,3 +445,168 @@ def test_compat_registry_is_valid_version_unsupported_false() -> None:
     registry = CompatRegistry()
     registry.register("my_package", T315, ranges=[])
     assert not registry.is_valid_version(pkg_name="my_package", pkg_version="2.0.0", target=T315)
+
+
+#########################################
+#     Tests for unspecified platform    #
+#########################################
+
+LINUX_X86 = Target(python_version="3.11", os="linux", arch="x86_64")
+MACOS_ARM = Target(python_version="3.11", os="macos", arch="arm64")
+WINDOWS_X86 = Target(python_version="3.11", os="windows", arch="x86_64")
+
+
+@pytest.fixture
+def platform_registry() -> CompatRegistry:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("1.0.0", "2.0.0")])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("1.5.0", "3.0.0")])
+    registry.register("my_package", WINDOWS_X86, ranges=[VersionRange("5.0.0", "6.0.0")])
+    return registry
+
+
+def test_compat_registry_unspecified_platform_returns_union(
+    platform_registry: CompatRegistry,
+) -> None:
+    assert platform_registry.get_config(pkg_name="my_package", target=T311) == [
+        VersionRange("1.0.0", "3.0.0"),
+        VersionRange("5.0.0", "6.0.0"),
+    ]
+
+
+def test_compat_registry_unspecified_arch_matches_the_os() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("1.0.0", "2.0.0")])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("3.0.0", "4.0.0")])
+    target = Target(python_version="3.11", os="macos")
+    assert registry.get_config(pkg_name="my_package", target=target) == [
+        VersionRange("3.0.0", "4.0.0")
+    ]
+
+
+def test_compat_registry_unspecified_os_matches_the_arch() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("1.0.0", "2.0.0")])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("3.0.0", "4.0.0")])
+    target = Target(python_version="3.11", arch="arm64")
+    assert registry.get_config(pkg_name="my_package", target=target) == [
+        VersionRange("3.0.0", "4.0.0")
+    ]
+
+
+def test_compat_registry_fully_specified_target_uses_its_entry(
+    platform_registry: CompatRegistry,
+) -> None:
+    assert platform_registry.get_config(pkg_name="my_package", target=MACOS_ARM) == [
+        VersionRange("1.5.0", "3.0.0")
+    ]
+
+
+def test_compat_registry_wildcard_entry_loses_to_concrete_entry_for_unspecified_lookup() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", T311, ranges=[VersionRange("1.0.0", None)])
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("5.0.0", None)])
+    assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("5.0.0", None)]
+
+
+def test_compat_registry_unspecified_platform_python_version_must_match(
+    platform_registry: CompatRegistry,
+) -> None:
+    assert platform_registry.get_config(pkg_name="my_package", target=T310) == []
+
+
+def test_compat_registry_unspecified_platform_open_range_wins_the_union() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("1.0.0", None)])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("2.0.0", "3.0.0")])
+    assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("1.0.0", None)]
+
+
+def test_compat_registry_unspecified_platform_contained_range_is_absorbed() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("1.0.0", "5.0.0")])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("2.0.0", "3.0.0")])
+    assert registry.get_config(pkg_name="my_package", target=T311) == [
+        VersionRange("1.0.0", "5.0.0")
+    ]
+
+
+def test_compat_registry_unspecified_platform_unbounded_min() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[VersionRange("2.0.0", "3.0.0")])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange(None, "2.5.0")])
+    assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange(None, "3.0.0")]
+
+
+def test_compat_registry_unspecified_platform_explicit_empty_with_other_platform() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[])
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("1.0.0", None)])
+    assert registry.get_config(pkg_name="my_package", target=T311) == [VersionRange("1.0.0", None)]
+
+
+def test_compat_registry_unspecified_platform_all_empty_is_unsupported() -> None:
+    registry = CompatRegistry()
+    registry.register("my_package", LINUX_X86, ranges=[])
+    registry.register("my_package", MACOS_ARM, ranges=[])
+    assert registry.is_unsupported(pkg_name="my_package", target=T311)
+
+
+def test_compat_registry_find_closest_version_unspecified_platform(
+    platform_registry: CompatRegistry,
+) -> None:
+    assert (
+        platform_registry.find_closest_version(
+            pkg_name="my_package", pkg_version="99.0.0", target=T311
+        )
+        == "6.0.0"
+    )
+
+
+def test_compat_registry_is_valid_version_unspecified_platform(
+    platform_registry: CompatRegistry,
+) -> None:
+    assert platform_registry.is_valid_version(
+        pkg_name="my_package", pkg_version="2.5.0", target=T311
+    )
+
+
+def test_compat_registry_register_does_not_mutate_inputs_on_union() -> None:
+    registry = CompatRegistry()
+    ranges = [VersionRange("1.0.0", "2.0.0")]
+    registry.register("my_package", LINUX_X86, ranges=ranges)
+    registry.register("my_package", MACOS_ARM, ranges=[VersionRange("1.5.0", "3.0.0")])
+    registry.get_config(pkg_name="my_package", target=T311)
+    assert registry.state["my_package"][LINUX_X86] == [VersionRange("1.0.0", "2.0.0")]
+
+
+########################################
+#     Tests for has_package            #
+########################################
+
+
+def test_compat_registry_has_package_true() -> None:
+    registry = CompatRegistry({"numpy": {T311: [VersionRange("1.0.0", None)]}})
+    assert registry.has_package("numpy")
+
+
+def test_compat_registry_has_package_true_for_unsupported_entry() -> None:
+    registry = CompatRegistry({"numpy": {T311: []}})
+    assert registry.has_package("numpy")
+
+
+def test_compat_registry_has_package_false() -> None:
+    assert not CompatRegistry().has_package("numpy")
+
+
+########################################
+#     Tests for _parse                 #
+########################################
+
+
+def test_parse_none() -> None:
+    assert _parse(None) is None
+
+
+def test_parse_version() -> None:
+    assert _parse("1.2.3") == Version("1.2.3")

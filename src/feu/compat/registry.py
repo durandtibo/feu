@@ -32,6 +32,18 @@ class VersionRange(NamedTuple):
     max: str | None
 
 
+def _parse(version: str | None) -> Version | None:
+    r"""Parse an optional version string.
+
+    Args:
+        version: The version string, or ``None``.
+
+    Returns:
+        The parsed version, or ``None`` if ``version`` is ``None``.
+    """
+    return None if version is None else Version(version)
+
+
 class UnsupportedVersionError(Exception):
     r"""Raised when no package version is compatible with a given
     target."""
@@ -46,11 +58,13 @@ class CompatRegistry:
     falls within any of the registered ranges; an empty list means no
     version is valid for that target. A lookup target matches a
     stored entry when ``python_version`` and ``free_threaded`` are
-    equal, and the stored entry's ``os``/``arch`` are either ``None``
-    (wildcard) or equal to the lookup target's ``os``/``arch``. Among
-    all matching entries, the most specific one (most non-``None``
-    ``os``/``arch`` fields) wins; ties are broken by most-recently
-    registered.
+    equal, and each of ``os``/``arch`` is ``None`` in the stored entry
+    (wildcard), ``None`` in the lookup target (unspecified, i.e. any
+    platform) or equal. Among all matching entries, the most specific
+    ones (most non-``None`` ``os``/``arch`` fields) are kept and the
+    answer is the union of their ranges. A lookup target that leaves
+    ``os``/``arch`` to ``None`` therefore gets the versions published
+    for at least one platform.
 
     Args:
         initial_state: Optional initial mapping of package
@@ -162,20 +176,26 @@ class CompatRegistry:
         Args:
             entry_target: The registered target. Its ``os`` and
                 ``arch`` act as wildcards when they are ``None``.
-            lookup: The target to look up.
+            lookup: The target to look up. Its ``os`` and ``arch``
+                act as wildcards when they are ``None`` ("any
+                platform").
 
         Returns:
             ``True`` if ``python_version`` and ``free_threaded`` are
-                equal, and ``os`` and ``arch`` are either ``None`` in
-                ``entry_target`` or equal to those of ``lookup``.
+                equal, and each of ``os`` and ``arch`` is ``None`` in
+                ``entry_target``, ``None`` in ``lookup`` or equal.
         """
         if entry_target.python_version != lookup.python_version:
             return False
         if entry_target.free_threaded != lookup.free_threaded:
             return False
-        if entry_target.os is not None and entry_target.os != lookup.os:
+        if entry_target.os is not None and lookup.os is not None and entry_target.os != lookup.os:
             return False
-        return not (entry_target.arch is not None and entry_target.arch != lookup.arch)
+        return not (
+            entry_target.arch is not None
+            and lookup.arch is not None
+            and entry_target.arch != lookup.arch
+        )
 
     @staticmethod
     def _specificity(entry_target: Target) -> int:
@@ -190,6 +210,34 @@ class CompatRegistry:
         """
         return (entry_target.os is not None) + (entry_target.arch is not None)
 
+    @staticmethod
+    def _merge_ranges(ranges: list[VersionRange]) -> list[VersionRange]:
+        r"""Merge overlapping version ranges.
+
+        Args:
+            ranges: The ranges to merge. They can be in any order.
+
+        Returns:
+            The union of the ranges, sorted by ascending minimum
+                version. Two ranges that overlap (the bounds are
+                inclusive) are merged into one.
+        """
+        parsed = sorted(
+            ((_parse(r.min), _parse(r.max), r) for r in ranges),
+            key=lambda item: (item[0] is not None, item[0] or Version("0")),
+        )
+        merged: list[VersionRange] = []
+        merged_max: Version | None = None
+        for min_version, max_version, version_range in parsed:
+            if merged and (merged_max is None or min_version is None or min_version <= merged_max):
+                if merged_max is not None and (max_version is None or max_version > merged_max):
+                    merged[-1] = VersionRange(merged[-1].min, version_range.max)
+                    merged_max = max_version
+                continue
+            merged.append(version_range)
+            merged_max = max_version
+        return merged
+
     def _resolve_ranges(self, pkg_name: str, target: Target) -> list[VersionRange] | None:
         r"""Resolve the raw registered ranges for a package/target,
         preserving the distinction between "no entry registered"
@@ -201,22 +249,44 @@ class CompatRegistry:
             target: The compatibility target.
 
         Returns:
-            The ranges of the most specific entry matching ``target``
-                (the most recently registered one on a tie), or
-                ``None`` if no entry matches.
+            The union of the ranges of the most specific entries
+                matching ``target``, or ``None`` if no entry
+                matches.
         """
         if pkg_name not in self._state:
             return None
-        best: list[VersionRange] | None = None
+        best: list[list[VersionRange]] = []
         best_specificity = -1
         for entry_target, ranges in self._state[pkg_name].items():
             if not self._matches(entry_target, target):
                 continue
             specificity = self._specificity(entry_target)
-            if specificity >= best_specificity:
+            if specificity > best_specificity:
                 best_specificity = specificity
-                best = ranges
-        return best
+                best = []
+            if specificity == best_specificity:
+                best.append(ranges)
+        if not best:
+            return None
+        if len(best) == 1:
+            return best[0]
+        return self._merge_ranges([r for ranges in best for r in ranges])
+
+    def has_package(self, pkg_name: str) -> bool:
+        r"""Indicate if at least one configuration is registered for a
+        package.
+
+        An unknown package is permissive (any version is valid), so
+        this method lets the caller detect that case.
+
+        Args:
+            pkg_name: The package name to check (e.g., ``"numpy"``).
+
+        Returns:
+            ``True`` if a configuration is registered for the
+                package, otherwise ``False``.
+        """
+        return bool(self._state.get(pkg_name))
 
     def get_config(self, pkg_name: str, target: Target) -> list[VersionRange]:
         r"""Get the list of valid version ranges for a package and
