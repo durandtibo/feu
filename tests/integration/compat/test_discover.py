@@ -4,6 +4,8 @@ import pytest
 from packaging.version import Version
 
 from feu.compat import discover_compat_targets
+from feu.compat.registry import PackageData
+from feu.compat.shipped import format_package_data, parse_package_data
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
 from feu.version.pypi import _fetch_pypi_project
@@ -85,3 +87,12 @@ def test_discover_compat_targets_pydantic_pure_wheel_next_to_compiled_wheels() -
 def test_discover_compat_targets_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         discover_compat_targets("numpy")
+
+
+@requests_available
+def test_generate_the_data_of_a_small_package_round_trips() -> None:
+    """Test that the data of a package is formatted, then parsed back to
+    the same value."""
+    discovery = discover_compat_targets("xy")
+    text = format_package_data("xy", "2026-11-09", discovery.versions, discovery.targets)
+    assert parse_package_data(text) == PackageData(discovery.versions, discovery.targets)

@@ -133,6 +133,7 @@ def test_parse_wheel_filename(filename: str, expected: tuple[WheelTag, ...]) -> 
         pytest.param("pkg-1.0-pp310-pypy310_pp73-manylinux2014_x86_64.whl", id="pypy"),
         pytest.param("pkg-1.0-graalpy311-graalpy242_311_native-win_amd64.whl", id="graalpy"),
         pytest.param("pkg-1.0-cp27-cp27mu-manylinux1_x86_64.whl", id="cpython_2"),
+        pytest.param("pkg-1.0-py3-abi3-any.whl", id="abi3_without_cpython"),
     ],
 )
 def test_parse_wheel_filename_out_of_scope(filename: str) -> None:

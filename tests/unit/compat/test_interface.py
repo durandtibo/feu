@@ -13,6 +13,7 @@ from feu.compat.interface import (
     register_compat,
 )
 from feu.compat.registry import CompatRegistry, VersionRange
+from feu.compat.shipped import ShippedData
 from feu.compat.target import Target
 
 if TYPE_CHECKING:
@@ -44,23 +45,22 @@ def test_get_default_compat_registry_is_singleton() -> None:
     assert registry1 is registry2
 
 
-def test_get_default_compat_registry_not_populated_with_defaults() -> None:
-    # register_defaults is currently disabled, so the human-curated defaults
-    # must not be present in the registry: only the discovered data is.
-    with patch("feu.compat.interface.register_discovered"):
-        registry = get_default_compat_registry()
-    assert registry.state == {}
+def test_get_default_compat_registry_uses_the_shipped_data() -> None:
+    assert "numpy" in get_default_compat_registry().packages()
 
 
-def test_get_default_compat_registry_uses_discovered() -> None:
-    with patch(
-        "feu.compat.interface.register_discovered",
-        side_effect=lambda registry: registry.register_many(
-            {"numpy": {T311: [VersionRange("0.0.1", None)]}}
-        ),
-    ):
-        registry = get_default_compat_registry()
-    assert registry.get_config(pkg_name="numpy", target=T311) == [VersionRange("0.0.1", None)]
+def test_get_default_compat_registry_does_not_load_a_package_at_creation() -> None:
+    with patch.object(ShippedData, "load") as load_mock:
+        get_default_compat_registry()
+        load_mock.assert_not_called()
+
+
+def test_get_default_compat_registry_loads_a_package_on_first_lookup() -> None:
+    registry = get_default_compat_registry()
+    with patch.object(ShippedData, "load", wraps=ShippedData().load) as load_mock:
+        registry.has_package("numpy")
+        registry.has_package("numpy")
+        load_mock.assert_called_once_with("numpy")
 
 
 #################################

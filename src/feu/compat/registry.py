@@ -7,10 +7,17 @@ closest valid version and validation of a given version.
 
 from __future__ import annotations
 
-__all__ = ["CompatRegistry", "UnsupportedVersionError", "VersionRange"]
+__all__ = [
+    "CompatRegistry",
+    "DataLoader",
+    "PackageData",
+    "UnsupportedVersionError",
+    "VersionRange",
+]
 
 import copy
-from typing import TYPE_CHECKING, NamedTuple
+from types import MappingProxyType
+from typing import TYPE_CHECKING, NamedTuple, Protocol
 
 from packaging.utils import canonicalize_name
 from packaging.version import Version
@@ -18,7 +25,7 @@ from packaging.version import Version
 from feu.version.request import parse_version_request
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Collection, Iterable, Mapping
 
     from feu.compat.target import Target
 
@@ -35,6 +42,38 @@ class VersionRange(NamedTuple):
 
     min: str | None
     max: str | None
+
+
+class PackageData(NamedTuple):
+    r"""Represent the compatibility data of one package.
+
+    Args:
+        versions: The known releases, in PEP 440 order.
+        targets: The ranges of each target.
+    """
+
+    versions: tuple[str, ...]
+    targets: dict[Target, list[VersionRange]]
+
+
+class DataLoader(Protocol):
+    r"""Define the interface of the loader of the data of a registry.
+
+    A registry asks its loader for the list of packages (cheap) and
+    loads the data of a package the first time it needs it.
+    """
+
+    def packages(self) -> Collection[str]:
+        r"""Get the canonical names of the packages that have data."""
+        ...
+
+    def load(self, name: str) -> PackageData:
+        r"""Load the data of a package.
+
+        Args:
+            name: The canonical package name.
+        """
+        ...
 
 
 def _parse(version: str | None) -> Version | None:
@@ -77,6 +116,12 @@ class CompatRegistry:
             constraints. If provided, the state is deep-copied to
             prevent external mutations. It is validated like
             ``register``, and the package names are canonicalised.
+        loader: Optional loader of the data of the packages. The data
+            of a package is loaded the first time the package is
+            looked up or registered into, so creating the registry
+            and listing its packages cost nothing. A registration into
+            a package that is not loaded yet loads it first, so the
+            conflict check and ``exist_ok`` see the loaded entries.
 
     Raises:
         ValueError: If a range of ``initial_state`` is invalid (see
@@ -99,23 +144,71 @@ class CompatRegistry:
     """
 
     def __init__(
-        self, initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None
+        self,
+        initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None,
+        *,
+        loader: DataLoader | None = None,
     ) -> None:
         self._state: dict[str, dict[Target, list[VersionRange]]] = {}
         self._versions: dict[str, tuple[str, ...]] = {}
+        self._loader = loader
+        self._loaded: set[str] = set()
         self.register_many(copy.deepcopy(initial_state or {}))
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(\n  {self._state}\n)"
+        return f"{self.__class__.__qualname__}(packages={len(self.packages())})"
 
     def __str__(self) -> str:
         return self.__repr__()
 
+    def _ensure_loaded(self, name: str) -> None:
+        r"""Load the data of a package from the loader, once.
+
+        Args:
+            name: The canonical package name.
+        """
+        if self._loader is None or name in self._loaded:
+            return
+        self._loaded.add(name)
+        if name not in self._loader.packages():
+            return
+        data = self._loader.load(name)
+        self._versions[name] = data.versions
+        for target, ranges in data.targets.items():
+            self._validate_ranges(name, ranges)
+            self._state.setdefault(name, {})[target] = list(ranges)
+
     @property
-    def state(self) -> dict[str, dict[Target, list[VersionRange]]]:
-        r"""The registered package constraints, as a mapping of package
-        name to ``Target`` to a list of ``VersionRange``."""
-        return self._state
+    def state(self) -> Mapping[str, Mapping[Target, list[VersionRange]]]:
+        r"""A read-only view of the registered package constraints, as a
+        mapping of canonical package name to ``Target`` to a list of
+        ``VersionRange``. Reading it loads the data of every package of
+        the loader."""
+        for name in self.packages():
+            self._ensure_loaded(name)
+        return MappingProxyType({name: MappingProxyType(c) for name, c in self._state.items()})
+
+    def packages(self) -> list[str]:
+        r"""Get the packages of the registry.
+
+        Returns:
+            The sorted canonical names of the registered packages and
+                of the packages that the loader can load. No data is
+                loaded.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry({"NumPy": {Target("3.11"): [VersionRange("1.0", None)]}})
+            >>> registry.packages()
+            ['numpy']
+
+            ```
+        """
+        names = set(self._state)
+        if self._loader is not None:
+            names.update(self._loader.packages())
+        return sorted(names)
 
     def register(
         self,
@@ -147,6 +240,7 @@ class CompatRegistry:
         """
         name = canonicalize_name(pkg_name)
         self._validate_ranges(name, ranges)
+        self._ensure_loaded(name)
         configs = self._state.get(name, {})
 
         if target in configs and not exist_ok:
@@ -292,7 +386,9 @@ class CompatRegistry:
                 matching ``target``, or ``None`` if no entry
                 matches.
         """
-        configs = self._state.get(canonicalize_name(pkg_name))
+        name = canonicalize_name(pkg_name)
+        self._ensure_loaded(name)
+        configs = self._state.get(name)
         if configs is None:
             return None
         best: list[list[VersionRange]] = []
@@ -326,7 +422,9 @@ class CompatRegistry:
             ``True`` if a configuration is registered for the
                 package, otherwise ``False``.
         """
-        return bool(self._state.get(canonicalize_name(pkg_name)))
+        name = canonicalize_name(pkg_name)
+        self._ensure_loaded(name)
+        return bool(self._state.get(name))
 
     def get_config(self, pkg_name: str, target: Target) -> list[VersionRange]:
         r"""Get the list of valid version ranges for a package and
@@ -506,6 +604,7 @@ class CompatRegistry:
             ```
         """
         name = canonicalize_name(pkg_name)
+        self._ensure_loaded(name)
         if name in self._versions and not exist_ok:
             msg = (
                 f"Versions are already registered for package {name}. Please use "
@@ -554,7 +653,9 @@ class CompatRegistry:
             ```
         """
         request = parse_version_request(pkg_version)
-        known = self._versions.get(canonicalize_name(pkg_name), ())
+        name = canonicalize_name(pkg_name)
+        self._ensure_loaded(name)
+        known = self._versions.get(name, ())
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             return []
         ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
@@ -636,7 +737,9 @@ class CompatRegistry:
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             msg = f"No version of package {pkg_name} is compatible with target {target}"
             raise UnsupportedVersionError(msg)
-        if canonicalize_name(pkg_name) not in self._versions:
+        name = canonicalize_name(pkg_name)
+        self._ensure_loaded(name)
+        if name not in self._versions:
             return request.text
         compatible = self.get_compatible_versions(pkg_name, target, request.text)
         if not compatible:

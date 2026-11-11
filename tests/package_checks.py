@@ -27,9 +27,25 @@ def check_version() -> None:
     assert isinstance(get_package_version("feu"), Version)
 
 
+def check_compat() -> None:
+    logger.info("Checking the shipped compatibility data...")
+    from feu.compat import (
+        Target,
+        find_closest_version,
+        get_default_compat_registry,
+    )
+
+    target = Target(python_version="3.9", os="linux", arch="x86_64")
+    # numpy 2.0.2 is the last release for Python 3.9, so a wheel without the
+    # data files (an unknown package accepts any version) fails here.
+    assert find_closest_version("numpy", "99.0.0", target) == "2.0.2"
+    assert "numpy" in get_default_compat_registry().packages()
+
+
 def main() -> None:
     check_imports()
     check_version()
+    check_compat()
 
 
 if __name__ == "__main__":
