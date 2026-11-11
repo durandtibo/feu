@@ -16,15 +16,10 @@ from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
 
 from feu.compat.target import Target
-from feu.imports import check_rich, is_rich_available
+from feu.imports import check_rich
 
 if TYPE_CHECKING:
     from feu.compat.registry import VersionRange
-
-if is_rich_available():  # pragma: no cover
-    from rich import get_console
-    from rich.table import Table
-
 
 DEFAULT_PYTHON_VERSIONS = ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15")
 
@@ -69,7 +64,7 @@ def show_compat_targets(
         pkg_name: The package name to show in the table title, if any.
 
     Raises:
-        RuntimeError: if the ``rich`` package is not installed.
+        MissingPackageError: if the ``rich`` package is not installed.
 
     Example:
         ```pycon
@@ -80,6 +75,8 @@ def show_compat_targets(
         ```
     """
     check_rich()
+    from rich import get_console  # noqa: PLC0415
+    from rich.table import Table  # noqa: PLC0415
 
     table = Table(title=f"Compatibility for {pkg_name}" if pkg_name else "Compatibility")
     table.add_column("Python")

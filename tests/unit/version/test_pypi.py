@@ -65,7 +65,7 @@ def test_fetch_pypi_versions_reverse(monkeypatch: pytest.MonkeyPatch) -> None:
     session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_pypi_versions_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_versions("my_package")
@@ -255,7 +255,7 @@ def test_fetch_pypi_requires_python(monkeypatch: pytest.MonkeyPatch) -> None:
     session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_pypi_requires_python_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_requires_python("my_package")
@@ -315,7 +315,7 @@ def test_fetch_pypi_wheel_filenames(monkeypatch: pytest.MonkeyPatch) -> None:
     session.get.assert_called_once_with(url="https://pypi.org/pypi/my-package/json", timeout=10.0)
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_pypi_wheel_filenames_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_wheel_filenames("my_package")
@@ -383,7 +383,7 @@ def test_fetch_pypi_pinned_dependency_version_no_requires_dist(
     assert fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core") is None
 
 
-@patch("feu.imports.requests.is_requests_available", lambda: False)
+@patch("feu.imports.optional.is_requests_available", lambda: False)
 def test_fetch_pypi_pinned_dependency_version_no_requests() -> None:
     with pytest.raises(RuntimeError, match=r"'requests' package is required but not installed."):
         fetch_pypi_pinned_dependency_version("pydantic", "2.9.0", "pydantic-core")

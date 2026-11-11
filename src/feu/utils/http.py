@@ -6,22 +6,10 @@ __all__ = ["fetch_data", "fetch_response"]
 
 from typing import TYPE_CHECKING, Any
 
-from feu.imports import (
-    check_requests,
-    is_requests_available,
-    is_urllib3_available,
-)
+from feu.imports import check_requests
 
-if TYPE_CHECKING or is_requests_available():
+if TYPE_CHECKING:
     import requests
-    from requests.adapters import HTTPAdapter
-else:  # pragma: no cover
-    from feu.utils.fallback.requests import HTTPAdapter, requests
-
-if TYPE_CHECKING or is_urllib3_available():
-    from urllib3.util.retry import Retry
-else:  # pragma: no cover
-    from feu.utils.fallback.urllib3 import Retry
 
 
 def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]:
@@ -45,8 +33,8 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
 
     Raises:
         RuntimeError: If the request times out, if a network or HTTP error occurs,
-            if the response body contains invalid JSON, or if
-            ``requests`` is not installed.
+            or if the response body contains invalid JSON.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -67,8 +55,8 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
     r"""Retrieve data from a given URL with automatic retry logic.
 
     This function performs an HTTP GET request with a configured retry policy
-    for transient errors (429, 500, 502, 503, 504). If urllib3 is available,
-    it applies exponential backoff with up to 5 retry attempts. The function
+    for transient errors (429, 500, 502, 503, 504), with exponential
+    backoff and up to 5 retry attempts. The function
     validates the HTTP response and raises detailed errors for failures.
 
     Args:
@@ -83,8 +71,9 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         A ``requests.Response`` object containing the HTTP response.
 
     Raises:
-        RuntimeError: If the request times out, if a network/HTTP error occurs,
-            or if ``requests`` is not installed.
+        RuntimeError: If the request times out, or if a network/HTTP error
+            occurs.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -95,17 +84,19 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
         ```
     """
     check_requests()
+    import requests  # noqa: PLC0415
+    from requests.adapters import HTTPAdapter  # noqa: PLC0415
+    from urllib3.util.retry import Retry  # noqa: PLC0415
+
     with requests.Session() as session:
-        if is_urllib3_available():
-            retry = Retry(
-                total=5,
-                backoff_factor=0.5,
-                status_forcelist=[429, 500, 502, 503, 504],
-                allowed_methods=["GET"],
-                raise_on_status=False,
-            )
-            adapter = HTTPAdapter(max_retries=retry)
-            session.mount("https://", adapter)
+        retry = Retry(
+            total=5,
+            backoff_factor=0.5,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET"],
+            raise_on_status=False,
+        )
+        session.mount("https://", HTTPAdapter(max_retries=retry))
 
         try:
             resp = session.get(url=url, timeout=timeout, **kwargs)

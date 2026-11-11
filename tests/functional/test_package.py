@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from feu.imports import is_package_available
+from feu.imports import clear_availability_caches
 from feu.testing import (
     click_available,
     jax_available,
@@ -20,7 +20,7 @@ from feu.testing import (
 
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
-    is_package_available.cache_clear()
+    clear_availability_caches()
 
 
 @click_available

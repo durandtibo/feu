@@ -1,0 +1,302 @@
+r"""Contain the command line interface.
+
+The command line interface requires the ``click`` package, which can be
+installed with ``pip install 'feu[cli]'``. It provides the commands
+``install``, ``find-closest-version``, and ``check-valid-version``,
+which are run with ``python -m feu <command>``.
+"""
+
+from __future__ import annotations
+
+import click
+
+from feu.compat import (
+    UnsupportedVersionError,
+    find_closest_version as find_closest_version_,
+    is_valid_version,
+    resolve_target,
+)
+from feu.install import InstallerSpec, install_package_closest_version
+from feu.utils.package import PackageSpec
+
+
+@click.group()
+def cli() -> None:
+    r"""Implement the main entrypoint, which groups the commands."""
+
+
+@click.command()
+@click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
+@click.option(
+    "-v",
+    "--pkg-version",
+    "pkg_version",
+    help="Package version request: an exact version, a wildcard (e.g. '2.*') or an "
+    "empty string for the latest version.",
+    required=False,
+    type=str,
+    default="",
+)
+@click.option(
+    "-e",
+    "--pkg-extras",
+    "pkg_extras",
+    help="Package extra dependencies",
+    required=True,
+    type=str,
+    default="",
+)
+@click.option(
+    "-i",
+    "--installer-name",
+    "installer_name",
+    help="Optional installer name",
+    required=True,
+    type=str,
+    default="pip",
+)
+@click.option(
+    "-a",
+    "--installer-args",
+    "installer_args",
+    help="Optional installer arguments",
+    required=True,
+    type=str,
+    default="",
+)
+def install(
+    pkg_name: str,
+    pkg_version: str,
+    pkg_extras: str,
+    installer_name: str,
+    installer_args: str,
+) -> None:
+    r"""Install a package and associated packages.
+
+    The closest version compatible with the current Python version is
+    installed if ``pkg_version`` is not compatible.
+
+    Args:
+        pkg_name: The package name e.g. ``'pandas'``.
+        pkg_version: The version request of the package to install:
+            an exact version, a wildcard (e.g. ``'2.*'``) or an empty
+            string for the latest version.
+        pkg_extras: Optional package extra dependencies, separated by
+            commas e.g. ``'dev,doc'``. An empty string means no extra.
+        installer_name: The package installer name to use to install
+            the packages.
+        installer_args: Optional arguments to pass to the package
+            installer, as a single string e.g. ``'--upgrade'``. It is
+            split once with ``shlex.split``. The valid arguments
+            depend on the package installer.
+
+    Example:
+        ```console
+        $ python -m feu install --installer-name=pip --pkg-name=numpy --pkg-version=2.0.2
+
+        ```
+    """
+    pkg_extras = pkg_extras.strip()
+    install_package_closest_version(
+        installer=InstallerSpec(name=installer_name, arguments=installer_args),
+        package=PackageSpec(
+            name=pkg_name,
+            version=pkg_version,
+            extras=pkg_extras.split(",") if pkg_extras else [],
+        ),
+    )
+
+
+@click.command()
+@click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
+@click.option(
+    "-v",
+    "--pkg-version",
+    "pkg_version",
+    help="Package version request: an exact version, a wildcard (e.g. '2.*') or an "
+    "empty string for the latest version.",
+    required=False,
+    type=str,
+    default="",
+)
+@click.option(
+    "-p",
+    "--python-version",
+    "python_version",
+    help="Python version. If not provided, the current python version is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+@click.option(
+    "-f",
+    "--free-threaded",
+    "free_threaded",
+    help="Whether the target is a free-threaded build. If not provided, the "
+    "current interpreter's free-threaded status is used.",
+    required=False,
+    type=bool,
+    default=None,
+)
+@click.option(
+    "-o",
+    "--os",
+    "os_",
+    help="Target OS. If not provided, the current OS is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+@click.option(
+    "-r",
+    "--arch",
+    "arch",
+    help="Target CPU architecture. If not provided, the current architecture is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+def find_closest_version(
+    pkg_name: str,
+    pkg_version: str,
+    *,
+    python_version: str | None,
+    free_threaded: bool | None,
+    os_: str | None,
+    arch: str | None,
+) -> None:
+    r"""Print the closest valid version given the package name and
+    version, and the target (python version, free-threaded build, OS,
+    and CPU architecture).
+
+    ``None`` is printed if no version of the package is valid for the
+    target.
+
+    Args:
+        pkg_name: The package name.
+        pkg_version: The package version request to check: an exact
+            version, a wildcard (e.g. ``'2.*'``) or an empty string for
+            the latest version.
+        python_version: The python version. If not provided, the
+            current python version is used.
+        free_threaded: Whether the target is a free-threaded build.
+            If not provided, the current interpreter's free-threaded
+            status is used.
+        os_: The target OS. If not provided, the current OS is used.
+        arch: The target CPU architecture. If not provided, the
+            current architecture is used.
+
+    Example:
+        ```console
+        $ python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+
+        ```
+    """
+    try:
+        version = find_closest_version_(
+            pkg_name=pkg_name,
+            pkg_version=pkg_version,
+            target=resolve_target(python_version, free_threaded, os_, arch),
+        )
+    except UnsupportedVersionError:
+        version = None
+    print(version)  # noqa: T201
+
+
+@click.command()
+@click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True, type=str)
+@click.option(
+    "-v",
+    "--pkg-version",
+    "pkg_version",
+    help="Package version request: an exact version, a wildcard (e.g. '2.*') or an "
+    "empty string for the latest version.",
+    required=False,
+    type=str,
+    default="",
+)
+@click.option(
+    "-p",
+    "--python-version",
+    "python_version",
+    help="Python version. If not provided, the current python version is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+@click.option(
+    "-f",
+    "--free-threaded",
+    "free_threaded",
+    help="Whether the target is a free-threaded build. If not provided, the "
+    "current interpreter's free-threaded status is used.",
+    required=False,
+    type=bool,
+    default=None,
+)
+@click.option(
+    "-o",
+    "--os",
+    "os_",
+    help="Target OS. If not provided, the current OS is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+@click.option(
+    "-r",
+    "--arch",
+    "arch",
+    help="Target CPU architecture. If not provided, the current architecture is used.",
+    required=False,
+    type=str,
+    default=None,
+)
+def check_valid_version(
+    pkg_name: str,
+    pkg_version: str,
+    *,
+    python_version: str | None,
+    free_threaded: bool | None,
+    os_: str | None,
+    arch: str | None,
+) -> None:
+    r"""Print if the specified package version is valid for the given
+    target (python version, free-threaded build, OS, and CPU
+    architecture).
+
+    ``True`` is printed if the version is valid or if the package is
+    not configured for the target, otherwise ``False`` is printed.
+
+    Args:
+        pkg_name: The package name.
+        pkg_version: The package version request to check: an exact
+            version, a wildcard (e.g. ``'2.*'``) or an empty string for
+            the latest version.
+        python_version: The python version. If not provided, the
+            current python version is used.
+        free_threaded: Whether the target is a free-threaded build.
+            If not provided, the current interpreter's free-threaded
+            status is used.
+        os_: The target OS. If not provided, the current OS is used.
+        arch: The target CPU architecture. If not provided, the
+            current architecture is used.
+
+    Example:
+        ```console
+        $ python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+
+        ```
+    """
+    print(  # noqa: T201
+        is_valid_version(
+            pkg_name=pkg_name,
+            pkg_version=pkg_version,
+            target=resolve_target(python_version, free_threaded, os_, arch),
+        )
+    )
+
+
+cli.add_command(install)
+cli.add_command(find_closest_version)
+cli.add_command(check_valid_version)

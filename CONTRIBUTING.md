@@ -253,7 +253,7 @@ feu/
 │   ├── install/          # Installation utilities (incl. install/pip)
 │   ├── local_git.py      # Git tag utilities
 │   ├── testing.py        # Pytest skip marks for optional dependencies
-│   ├── utils/            # Utility functions (incl. utils/fallback)
+│   ├── utils/            # Utility functions
 │   └── version/          # Version management
 ├── tests/               # Test suite
 │   ├── unit/           # Unit tests

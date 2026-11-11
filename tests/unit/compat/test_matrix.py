@@ -106,7 +106,7 @@ def test_show_compat_targets_multiple_ranges(capsys: pytest.CaptureFixture) -> N
 
 def test_show_compat_targets_without_rich_package() -> None:
     with (
-        patch("feu.imports.rich.is_rich_available", lambda: False),
+        patch("feu.imports.optional.is_rich_available", lambda: False),
         pytest.raises(RuntimeError, match=r"'rich' package is required but not installed."),
     ):
         show_compat_targets({})

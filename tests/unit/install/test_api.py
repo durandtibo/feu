@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from feu.compat import Target, UnsupportedVersionError
+from feu.imports import package_available
 from feu.install import (
     Installer,
     InstallerSpec,
@@ -281,3 +282,42 @@ def test_install_package_closest_version_custom_registry() -> None:
             registry=registry,
         )
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.0.0"])
+
+
+#############################################
+#     Tests for the availability caches     #
+#############################################
+
+
+def test_install_package_clears_the_availability_caches_after_a_success() -> None:
+    with (
+        patch("feu.install.installer.run_command"),
+        patch("feu.install.api.clear_availability_caches") as clear_mock,
+    ):
+        install_package(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
+        )
+        clear_mock.assert_called_once_with()
+
+
+def test_install_package_does_not_clear_the_availability_caches_after_a_failure() -> None:
+    with (
+        patch("feu.install.installer.run_command", Mock(side_effect=RuntimeError("boom"))),
+        patch("feu.install.api.clear_availability_caches") as clear_mock,
+        pytest.raises(RuntimeError, match="boom"),
+    ):
+        install_package(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.0.0")
+        )
+    clear_mock.assert_not_called()
+
+
+def test_install_package_refreshes_package_available() -> None:
+    with patch("feu.imports.package.find_spec", Mock(return_value=None)):
+        assert not package_available("feu_probe_package")
+    with patch("feu.install.installer.run_command"):
+        install_package(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="feu_probe_package")
+        )
+    with patch("feu.imports.package.find_spec", Mock(return_value=object())):
+        assert package_available("feu_probe_package")

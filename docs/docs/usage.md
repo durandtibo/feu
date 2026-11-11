@@ -20,6 +20,17 @@ if is_module_available("numpy.linalg"):
     print("NumPy linear algebra module is available!")
 ```
 
+The checks are cached. `is_package_available` only looks the package up, while `is_module_available`
+imports the module, so a package that is installed but broken (for example a missing shared
+library) is reported as not available and a warning is logged. `install_package` clears the cache
+after a successful installation. Call `feu.imports.clear_availability_caches()` if you change
+`sys.path` or `sys.modules` yourself.
+
+The optional libraries of `feu` (`click`, `gitpython`, `requests`, `rich`) are imported lazily:
+`import feu` imports none of them. A feature that needs one of them raises
+`feu.imports.MissingPackageError` (a `ModuleNotFoundError` and a `RuntimeError`) when it is
+missing. The message gives the `pip install` and `uv pip install` commands.
+
 ## Version Comparison
 
 Compare the installed version of a package to a given version. `compare_version` takes the package
@@ -303,7 +314,7 @@ def test_http_feature():
 Each mark has an `..._available` variant (skips the test if the dependency is _not_ available) and
 an `..._not_available` variant (skips the test if the dependency _is_ available). Marks are
 provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `polars`,
-`pyarrow`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `urllib3`, `uv`, and `xarray`.
+`pyarrow`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `uv`, and `xarray`.
 
 ## Common Use Cases
 
