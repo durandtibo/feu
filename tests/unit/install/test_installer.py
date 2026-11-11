@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from feu.install.installer import BaseInstaller
 from feu.utils.package import PackageSpec
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class MockInstaller(BaseInstaller):
     """A mock installer for testing BaseInstaller abstract methods."""
 
-    def __init__(self, arguments: str = "") -> None:
+    def __init__(self, arguments: str | Sequence[str] = "") -> None:
         self._arguments = arguments
         self.install_called = False
         self.last_package = None
@@ -22,7 +27,7 @@ class MockInstaller(BaseInstaller):
         self.last_package = package
 
     @classmethod
-    def instantiate_with_arguments(cls, arguments: str) -> MockInstaller:
+    def instantiate_with_arguments(cls, arguments: str | Sequence[str]) -> MockInstaller:
         return cls(arguments=arguments)
 
 

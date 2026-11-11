@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from typing import Self
 
     from feu.utils.package import PackageSpec
@@ -29,7 +30,7 @@ class BaseInstaller(ABC):
         >>> from feu.utils.package import PackageSpec
         >>> installer = PipInstaller()
         >>> installer
-        PipInstaller(arguments='')
+        PipInstaller(arguments=())
         >>> installer.install(PackageSpec(name="pandas", version="2.2.2"))  # doctest: +SKIP
 
         ```
@@ -79,11 +80,12 @@ class BaseInstaller(ABC):
 
     @classmethod
     @abstractmethod
-    def instantiate_with_arguments(cls, arguments: str) -> Self:
+    def instantiate_with_arguments(cls, arguments: str | Sequence[str]) -> Self:
         r"""Instantiate an installer instance with custom arguments.
 
         Args:
-            arguments: The installer arguments.
+            arguments: The installer arguments, as a string (split
+                once with ``shlex.split``) or a sequence of strings.
 
         Returns:
             An instantiated installer.
@@ -93,7 +95,7 @@ class BaseInstaller(ABC):
             >>> from feu.install.pip import PipInstaller
             >>> installer = PipInstaller.instantiate_with_arguments("-U")
             >>> installer
-            PipInstaller(arguments='-U')
+            PipInstaller(arguments=('-U',))
 
             ```
         """

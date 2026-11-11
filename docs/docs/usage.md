@@ -135,14 +135,29 @@ install_package(
     package=PackageSpec(name="numpy", version="2.0.2"),
 )
 
-# Install the closest valid version for your Python environment. The compatibility is
-# checked against the current Python version only, and a wildcard version (e.g. "2.0.*")
-# is installed as specified.
+# Install the closest valid version for your environment. The compatibility is checked
+# against the current target (Python version, free-threaded flag, OS and architecture).
 install_package_closest_version(
     installer=InstallerSpec(name="pip"),
     package=PackageSpec(name="numpy", version="2.0.2"),
 )
 ```
+
+The installers run an argument vector, never a shell string. `pip` is run as
+`<sys.executable> -m pip install ...` and `uv` as `uv pip install --python <sys.executable> ...`,
+so the packages are installed in the interpreter that runs `feu`. A `RuntimeError` is raised if
+`pip` is not available in that interpreter (for example in an environment created by `uv venv`) or
+if `uv` is not on the `PATH`. The installer arguments are a string, split once with
+`shlex.split`, or a list of strings, which is used as is:
+
+```python
+InstallerSpec(name="pip", arguments="-U --pre")
+InstallerSpec(name="pip", arguments=["--index-url", "https://example.com/my index"])
+```
+
+`pipx` is no longer a built-in installer: it installs an application into an isolated environment,
+which is not an installation into the current environment. Register your own installer with
+`InstallerRegistry.add_installer` if you need it.
 
 ## Managing Package Configurations
 
@@ -285,7 +300,7 @@ def test_http_feature():
 
 Each mark has an `..._available` variant (skips the test if the dependency is _not_ available) and
 an `..._not_available` variant (skips the test if the dependency _is_ available). Marks are
-provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `pipx`, `polars`,
+provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `polars`,
 `pyarrow`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `urllib3`, `uv`, and `xarray`.
 
 ## Common Use Cases

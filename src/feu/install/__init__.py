@@ -13,7 +13,6 @@ __all__ = [
     "install_package_closest_version",
     "install_packages_all_versions",
     "is_pip_available",
-    "is_pipx_available",
     "is_uv_available",
 ]
 
@@ -28,6 +27,5 @@ from feu.install.utils import (
     install_package_closest_version,
     install_packages_all_versions,
     is_pip_available,
-    is_pipx_available,
     is_uv_available,
 )

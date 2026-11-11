@@ -10,13 +10,13 @@ __all__ = [
     "install_package_closest_version",
     "install_packages_all_versions",
     "is_pip_available",
-    "is_pipx_available",
     "is_uv_available",
 ]
 
 import logging
-import shutil
 from functools import cache
+from importlib.util import find_spec
+from shutil import which
 from typing import TYPE_CHECKING, NamedTuple
 
 from feu.compat import Target, find_closest_version, get_default_registry, resolve_target
@@ -309,12 +309,14 @@ def install_packages_all_versions(
 
 @cache
 def is_pip_available() -> bool:
-    r"""Check if ``pip`` is available.
+    r"""Check if ``pip`` is available in the interpreter that runs
+    ``feu``.
 
     The result is cached.
 
     Returns:
-        ``True`` if ``pip`` is available, otherwise ``False``.
+        ``True`` if the ``pip`` module is available, otherwise
+            ``False``.
 
     Example:
         ```pycon
@@ -323,26 +325,7 @@ def is_pip_available() -> bool:
 
         ```
     """
-    return shutil.which("pip") is not None
-
-
-@cache
-def is_pipx_available() -> bool:
-    r"""Check if ``pipx`` is available.
-
-    The result is cached.
-
-    Returns:
-        ``True`` if ``pipx`` is available, otherwise ``False``.
-
-    Example:
-        ```pycon
-        >>> from feu.install import is_pipx_available
-        >>> is_pipx_available()
-
-        ```
-    """
-    return shutil.which("pipx") is not None
+    return find_spec("pip") is not None
 
 
 @cache
@@ -361,7 +344,7 @@ def is_uv_available() -> bool:
 
         ```
     """
-    return shutil.which("uv") is not None
+    return which("uv") is not None
 
 
 @cache
@@ -372,7 +355,7 @@ def get_available_installers() -> tuple[str, ...]:
 
     Returns:
         The names of the installers found on the ``PATH``, among
-            ``"pip"``, ``"pipx"`` and ``"uv"``.
+            ``"pip"`` and ``"uv"``.
 
     Example:
         ```pycon
@@ -385,8 +368,6 @@ def get_available_installers() -> tuple[str, ...]:
     installers = []
     if is_pip_available():
         installers.append("pip")
-    if is_pipx_available():
-        installers.append("pipx")
     if is_uv_available():
         installers.append("uv")
     return tuple(installers)

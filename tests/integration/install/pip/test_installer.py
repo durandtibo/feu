@@ -4,8 +4,8 @@ import pytest
 
 from feu import is_package_available
 from feu.compat import Target, find_closest_version
-from feu.install.pip import PipInstaller, PipxInstaller, UvInstaller
-from feu.testing import pip_available, pipx_available, uv_available
+from feu.install.pip import PipInstaller, UvInstaller
+from feu.testing import pip_available, uv_available
 from feu.utils.package import PackageSpec
 from feu.version import get_python_major_minor
 
@@ -30,12 +30,6 @@ def package() -> PackageSpec:
 @pip_available
 def test_pip_installer(package: PackageSpec) -> None:
     PipInstaller().install(package)
-
-
-@pipx_available
-def test_pipx_installer(package: PackageSpec) -> None:
-    # By design, pipx always installs each tool into its own isolated virtual environment.
-    PipxInstaller().install(package)
 
 
 @uv_available

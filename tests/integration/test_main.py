@@ -12,7 +12,7 @@ from feu.testing import (
     pip_available,
     uv_available,
 )
-from feu.utils.command import run_bash_command
+from feu.utils.command import run_command
 
 # Use `sys.executable` rather than the literal "python": the bare command
 # name is not guaranteed to resolve to the interpreter running these tests
@@ -29,22 +29,38 @@ PYTHON = sys.executable
 @click_available
 @pip_available
 def test_install_default_installer() -> None:
-    run_bash_command(f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10")
+    run_command([PYTHON, "-m", "feu", "install", "--pkg-name=coola", "--pkg-version=1.1.10"])
 
 
 @click_available
 @pip_available
 def test_install_installer_pip() -> None:
-    run_bash_command(
-        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=pip"
+    run_command(
+        [
+            PYTHON,
+            "-m",
+            "feu",
+            "install",
+            "--pkg-name=coola",
+            "--pkg-version=1.1.10",
+            "--installer-name=pip",
+        ]
     )
 
 
 @click_available
 @uv_available
 def test_install_uv() -> None:
-    run_bash_command(
-        f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=uv"
+    run_command(
+        [
+            PYTHON,
+            "-m",
+            "feu",
+            "install",
+            "--pkg-name=coola",
+            "--pkg-version=1.1.10",
+            "--installer-name=uv",
+        ]
     )
 
 
@@ -122,12 +138,20 @@ def test_find_closest_version_all_options() -> None:
 
 def test_invalid() -> None:
     with pytest.raises(CalledProcessError):
-        run_bash_command(f"{PYTHON} -m feu invalid")
+        run_command([PYTHON, "-m", "feu", "invalid"])
 
 
 @click_not_available
 def test_install_not_click() -> None:
     with pytest.raises(CalledProcessError):
-        run_bash_command(
-            f"{PYTHON} -m feu install --pkg-name=coola --pkg-version=1.1.10 --installer-name=pip"
+        run_command(
+            [
+                PYTHON,
+                "-m",
+                "feu",
+                "install",
+                "--pkg-name=coola",
+                "--pkg-version=1.1.10",
+                "--installer-name=pip",
+            ]
         )

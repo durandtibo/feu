@@ -32,8 +32,6 @@ __all__ = [
     "pandas_not_available",
     "pip_available",
     "pip_not_available",
-    "pipx_available",
-    "pipx_not_available",
     "polars_available",
     "polars_not_available",
     "pyarrow_available",
@@ -66,7 +64,7 @@ from feu.imports import (
     is_rich_available,
     is_urllib3_available,
 )
-from feu.install import is_pip_available, is_pipx_available, is_uv_available
+from feu.install import is_pip_available, is_uv_available
 
 
 def _skipif_marks(
@@ -114,9 +112,6 @@ pandas_available, pandas_not_available = _skipif_marks(is_package_available("pan
 pip_available: pytest.MarkDecorator
 pip_not_available: pytest.MarkDecorator
 pip_available, pip_not_available = _skipif_marks(is_pip_available(), "pip")
-pipx_available: pytest.MarkDecorator
-pipx_not_available: pytest.MarkDecorator
-pipx_available, pipx_not_available = _skipif_marks(is_pipx_available(), "pipx")
 polars_available: pytest.MarkDecorator
 polars_not_available: pytest.MarkDecorator
 polars_available, polars_not_available = _skipif_marks(is_package_available("polars"), "polars")
