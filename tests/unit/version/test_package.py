@@ -1,21 +1,27 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
+
+import pytest
 
 from feu.version import (
     PackageBounds,
-    fetch_latest_major_versions,
     fetch_latest_major_versions_map,
-    fetch_latest_minor_versions,
     fetch_latest_minor_versions_map,
     fetch_latest_stable_version,
     fetch_latest_version,
-    fetch_sampled_latest_minor_versions,
+    fetch_latest_versions,
+    fetch_package_versions,
     fetch_versions,
 )
 
+if TYPE_CHECKING:
+    from contextlib import AbstractContextManager
+    from pathlib import Path
+
 MODULE = "feu.version.package"
+VERSIONS = ("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3")
 
 
 def make_bounds(name: str, lower: str | None = None, upper: str | None = None) -> PackageBounds:
@@ -24,310 +30,138 @@ def make_bounds(name: str, lower: str | None = None, upper: str | None = None) -
     return PackageBounds(name=name, lower=lower, upper=upper, section="project.dependencies")
 
 
+def patched_versions(versions: tuple[str, ...] = VERSIONS) -> AbstractContextManager[Mock]:
+    return patch(f"{MODULE}.fetch_pypi_versions", Mock(return_value=versions))
+
+
 ####################################
 #     Tests for fetch_versions     #
 ####################################
 
 
 def test_fetch_versions() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_versions("my_package") == (
-            "1.0.0",
-            "1.0.1",
-            "1.1.0",
-            "1.1.2",
-            "2.0.0",
-            "2.0.3",
-        )
+    with patched_versions():
+        assert fetch_versions("my_package") == VERSIONS
 
 
 def test_fetch_versions_lower() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+    with patched_versions():
         assert fetch_versions("my_package", lower="1.1.0") == ("1.1.0", "1.1.2", "2.0.0", "2.0.3")
 
 
-def test_fetch_versions_upper() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_versions("my_package", upper="2.0.0") == ("1.0.0", "1.0.1", "1.1.0", "1.1.2")
+def test_fetch_versions_upper_is_exclusive() -> None:
+    with patched_versions():
+        assert fetch_versions("my_package", upper="1.1.0") == ("1.0.0", "1.0.1")
 
 
 def test_fetch_versions_range() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+    with patched_versions():
         assert fetch_versions("my_package", lower="1.1.0", upper="2.0.0") == ("1.1.0", "1.1.2")
 
 
-#################################################
-#     Tests for fetch_latest_major_versions     #
-#################################################
+def test_fetch_versions_filters_invalid_unstable_and_duplicates_and_sorts() -> None:
+    with patched_versions(("2.0.0", "1.10.0", "1.9.0", "1.9.0", "2.0.0rc1", "not-a-version")):
+        assert fetch_versions("my_package") == ("1.9.0", "1.10.0", "2.0.0")
 
 
-def test_fetch_latest_major_versions() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions("my_package") == ("1.1.2", "2.0.3")
+def test_fetch_versions_bounds_are_keyword_only() -> None:
+    with patched_versions(), pytest.raises(TypeError, match="positional argument"):
+        fetch_versions("my_package", "1.1.0")  # ty: ignore[too-many-positional-arguments]
 
 
-def test_fetch_latest_major_versions_lower() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions("my_package", lower="1.1.0") == ("1.1.2", "2.0.3")
+#########################################
+#     Tests for fetch_latest_versions   #
+#########################################
 
 
-def test_fetch_latest_major_versions_upper() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions("my_package", upper="2.0.0") == ("1.1.2",)
+def test_fetch_latest_versions_major() -> None:
+    with patched_versions():
+        assert fetch_latest_versions("my_package", group="major") == ("1.1.2", "2.0.3")
 
 
-def test_fetch_latest_major_versions_range() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions("my_package", lower="1.1.0", upper="2.0.0") == ("1.1.2",)
+def test_fetch_latest_versions_minor() -> None:
+    with patched_versions():
+        assert fetch_latest_versions("my_package", group="minor") == ("1.0.1", "1.1.2", "2.0.3")
 
 
-def test_fetch_latest_major_versions_include_lower_bound() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions("my_package", include_lower_bound=True) == (
-            "1.0.0",
+def test_fetch_latest_versions_invalid_group() -> None:
+    with pytest.raises(ValueError, match=r"group must be 'major' or 'minor' but received 'patch'"):
+        fetch_latest_versions("my_package", group="patch")  # ty: ignore[invalid-argument-type]
+
+
+def test_fetch_latest_versions_group_is_required() -> None:
+    with pytest.raises(TypeError, match="group"):
+        fetch_latest_versions("my_package")  # ty: ignore[missing-argument]
+
+
+@pytest.mark.parametrize(("group", "expected"), [("major", ("1.1.2",)), ("minor", ("1.1.2",))])
+def test_fetch_latest_versions_range(group: str, expected: tuple[str, ...]) -> None:
+    with patched_versions():
+        assert (
+            fetch_latest_versions("my_package", group=group, lower="1.1.0", upper="2.0.0")  # ty: ignore[invalid-argument-type]
+            == expected
+        )
+
+
+def test_fetch_latest_versions_include_lower_bound_with_lower() -> None:
+    with patched_versions():
+        assert fetch_latest_versions(
+            "my_package", group="major", lower="1.1.0", include_lower_bound=True
+        ) == ("1.1.0", "1.1.2", "2.0.3")
+
+
+def test_fetch_latest_versions_minor_include_lower_bound_with_lower() -> None:
+    with patched_versions():
+        assert fetch_latest_versions(
+            "my_package", group="minor", lower="1.0.1", include_lower_bound=True
+        ) == ("1.0.1", "1.1.2", "2.0.3")
+
+
+def test_fetch_latest_versions_include_lower_bound_without_lower_has_no_effect() -> None:
+    # Regression test: the docstring says that include_lower_bound has no effect when
+    # lower is None, but the first version used to be added.
+    with patched_versions():
+        assert fetch_latest_versions("my_package", group="major", include_lower_bound=True) == (
             "1.1.2",
             "2.0.3",
         )
 
 
-def test_fetch_latest_major_versions_include_lower_bound_with_lower() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions(
-            "my_package", lower="1.1.0", include_lower_bound=True
-        ) == ("1.1.0", "1.1.2", "2.0.3")
-
-
-def test_fetch_latest_major_versions_include_lower_bound_no_duplicate() -> None:
-    # 1.1.0 is both the lower bound and the latest patch for major 1 — must appear only once.
-    mock = Mock(return_value=("1.1.0", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_major_versions(
-            "my_package", lower="1.1.0", include_lower_bound=True
-        ) == ("1.1.0", "2.0.3")
-
-
-def test_fetch_latest_major_versions_include_lower_bound_empty_range() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert (
-            fetch_latest_major_versions("my_package", lower="9.0.0", include_lower_bound=True) == ()
-        )
-
-
-#################################################
-#     Tests for fetch_latest_minor_versions     #
-#################################################
-
-
-def test_fetch_latest_minor_versions() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions("my_package") == ("1.0.1", "1.1.2", "2.0.3")
-
-
-def test_fetch_latest_minor_versions_lower() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions("my_package", lower="1.1.0") == ("1.1.2", "2.0.3")
-
-
-def test_fetch_latest_minor_versions_upper() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions("my_package", upper="2.0.0") == ("1.0.1", "1.1.2")
-
-
-def test_fetch_latest_minor_versions_range() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions("my_package", lower="1.1.0", upper="2.0.0") == ("1.1.2",)
-
-
-def test_fetch_latest_minor_versions_include_lower_bound() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions("my_package", include_lower_bound=True) == (
-            "1.0.0",
+def test_fetch_latest_versions_minor_include_lower_bound_without_lower_has_no_effect() -> None:
+    with patched_versions():
+        assert fetch_latest_versions("my_package", group="minor", include_lower_bound=True) == (
             "1.0.1",
             "1.1.2",
             "2.0.3",
         )
 
 
-def test_fetch_latest_minor_versions_include_lower_bound_with_lower() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions(
-            "my_package", lower="1.1.0", include_lower_bound=True
-        ) == ("1.1.0", "1.1.2", "2.0.3")
-
-
-def test_fetch_latest_minor_versions_include_lower_bound_no_duplicate() -> None:
-    # 1.1.0 is both the lower bound and the latest patch for 1.1.x — must appear only once.
-    mock = Mock(return_value=("1.1.0", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_minor_versions(
-            "my_package", lower="1.1.0", include_lower_bound=True
+def test_fetch_latest_versions_include_lower_bound_no_duplicate() -> None:
+    # 1.1.0 is both the lower bound and the latest patch for major 1: it must appear once.
+    with patched_versions(("1.1.0", "2.0.0", "2.0.3")):
+        assert fetch_latest_versions(
+            "my_package", group="major", lower="1.1.0", include_lower_bound=True
         ) == ("1.1.0", "2.0.3")
 
 
-def test_fetch_latest_minor_versions_include_lower_bound_empty_range() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
+def test_fetch_latest_versions_include_lower_bound_empty_range() -> None:
+    with patched_versions(()):
         assert (
-            fetch_latest_minor_versions("my_package", lower="9.0.0", include_lower_bound=True) == ()
-        )
-
-
-##########################################################
-#     Tests for fetch_sampled_latest_minor_versions      #
-##########################################################
-
-
-def test_fetch_sampled_latest_minor_versions_default_n() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests") == (
-            "1.0.0",
-            "1.1.0",
-            "1.2.0",
-            "1.3.0",
-            "1.4.0",
-            "1.5.0",
-        )
-
-
-def test_fetch_sampled_latest_minor_versions_n2() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests", n=2) == (
-            "1.0.0",
-            "1.2.0",
-            "1.4.0",
-            "1.5.0",
-        )
-
-
-def test_fetch_sampled_latest_minor_versions_n3() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests", n=3) == ("1.0.0", "1.3.0", "1.5.0")
-
-
-def test_fetch_sampled_latest_minor_versions_n5() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests", n=5) == ("1.0.0", "1.5.0")
-
-
-def test_fetch_sampled_latest_minor_versions_n_larger_than_versions() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests", n=100) == ("1.0.0", "1.5.0")
-
-
-def test_fetch_sampled_latest_minor_versions_always_includes_last_version() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert "1.5.0" in fetch_sampled_latest_minor_versions("requests", n=100)
-
-
-def test_fetch_sampled_latest_minor_versions_empty_versions() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests") == ()
-
-
-def test_fetch_sampled_latest_minor_versions_single_version() -> None:
-    mock = Mock(return_value=("2.0.0",))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests") == ("2.0.0",)
-
-
-def test_fetch_sampled_latest_minor_versions_with_lower_bound() -> None:
-    mock = Mock(return_value=("1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions("requests", lower="1.2", n=2) == (
-            "1.2.0",
-            "1.4.0",
-            "1.5.0",
-        )
-
-
-def test_fetch_sampled_latest_minor_versions_passes_lower_bound() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        fetch_sampled_latest_minor_versions("requests", lower="1.2")
-    mock.assert_called_once_with(package="requests", lower="1.2", upper=None)
-
-
-def test_fetch_sampled_latest_minor_versions_passes_upper_bound() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        fetch_sampled_latest_minor_versions("requests", upper="2.0")
-    mock.assert_called_once_with(package="requests", lower=None, upper="2.0")
-
-
-def test_fetch_sampled_latest_minor_versions_passes_lower_and_upper_bounds() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        fetch_sampled_latest_minor_versions("requests", lower="1.2", upper="2.0")
-    mock.assert_called_once_with(package="requests", lower="1.2", upper="2.0")
-
-
-def test_fetch_sampled_latest_minor_versions_include_lower_bound() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions(
-            "requests", lower="1.0", n=2, include_lower_bound=True
-        ) == ("1.0.0", "1.2.0", "1.4.0", "1.5.0")
-
-
-def test_fetch_sampled_latest_minor_versions_include_lower_bound_not_in_sampled() -> None:
-    # 1.0.1 is the lower bound first version but not picked by every-2nd sampling.
-    mock = Mock(
-        return_value=("1.0.1", "1.0.2", "1.0.3", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0")
-    )
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions(
-            "requests", lower="1.0.1", n=2, include_lower_bound=True
-        ) == ("1.0.1", "1.0.3", "1.2.0", "1.4.0", "1.5.0")
-
-
-def test_fetch_sampled_latest_minor_versions_include_lower_bound_no_duplicate() -> None:
-    # 1.0.0 is both the lower bound and picked by sampling — must appear only once.
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions(
-            "requests", lower="1.0.0", n=3, include_lower_bound=True
-        ) == ("1.0.0", "1.3.0", "1.5.0")
-
-
-def test_fetch_sampled_latest_minor_versions_include_lower_bound_none_lower_has_no_effect() -> None:
-    mock = Mock(return_value=("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0"))
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert fetch_sampled_latest_minor_versions(
-            "requests", lower=None, n=2, include_lower_bound=True
-        ) == fetch_sampled_latest_minor_versions("requests", lower=None, n=2)
-
-
-def test_fetch_sampled_latest_minor_versions_include_lower_bound_empty_range() -> None:
-    mock = Mock(return_value=())
-    with patch(f"{MODULE}.fetch_latest_minor_versions", mock):
-        assert (
-            fetch_sampled_latest_minor_versions("requests", lower="9.0.0", include_lower_bound=True)
+            fetch_latest_versions(
+                "my_package", group="major", lower="9.0.0", include_lower_bound=True
+            )
             == ()
         )
+
+
+def test_fetch_latest_versions_sorted_by_pep440() -> None:
+    with patched_versions(("1.9.0", "1.10.0", "1.2.0")):
+        assert fetch_latest_versions("my_package", group="minor") == ("1.2.0", "1.9.0", "1.10.0")
+
+
+def test_fetch_latest_versions_is_a_tuple() -> None:
+    with patched_versions():
+        assert isinstance(fetch_latest_versions("my_package", group="major"), tuple)
 
 
 ##########################################
@@ -336,285 +170,175 @@ def test_fetch_sampled_latest_minor_versions_include_lower_bound_empty_range() -
 
 
 def test_fetch_latest_version() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.1", "1.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_version("my_package") == "2.0.3"
+    with patched_versions((*VERSIONS, "3.0.0rc1")):
+        assert fetch_latest_version("my_package") == "3.0.0rc1"
 
 
-def test_fetch_latest_version_random() -> None:
-    mock = Mock(return_value=("3.1.0", "2.0.1", "2.1.0", "1.1.2", "2.0.0", "2.0.3"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_version("my_package") == "3.1.0"
+def test_fetch_latest_version_ignores_invalid_versions() -> None:
+    with patched_versions(("1.0.0", "not-a-version")):
+        assert fetch_latest_version("my_package") == "1.0.0"
 
 
-#################################################
-#     Tests for fetch_latest_stable_version     #
-#################################################
+def test_fetch_latest_version_no_version() -> None:
+    with patched_versions(()), pytest.raises(ValueError, match="versions list must not be empty"):
+        fetch_latest_version("my_package")
+
+
+###################################################
+#     Tests for fetch_latest_stable_version       #
+###################################################
 
 
 def test_fetch_latest_stable_version() -> None:
-    mock = Mock(return_value=("1.0.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_stable_version("my_package") == "2.0.0"
+    with patched_versions((*VERSIONS, "3.0.0rc1")):
+        assert fetch_latest_stable_version("my_package") == "2.0.3"
 
 
-def test_fetch_latest_stable_version_random() -> None:
-    mock = Mock(return_value=("2.1.0", "1.0.0a1", "2.0.0", "2.0.0.dev1", "3.0.0.post1"))
-    with patch(f"{MODULE}.fetch_pypi_versions", mock):
-        assert fetch_latest_stable_version("my_package") == "2.1.0"
+def test_fetch_latest_stable_version_no_stable_version() -> None:
+    with (
+        patched_versions(("1.0.0rc1",)),
+        pytest.raises(ValueError, match="versions list must not be empty"),
+    ):
+        fetch_latest_stable_version("my_package")
 
 
-##################################################
-#     Tests for fetch_latest_major_versions_map  #
-##################################################
+###########################################################
+#     Tests for fetch_latest_{major,minor}_versions_map   #
+###########################################################
 
 
-def test_fetch_latest_major_versions_map_empty_sequence() -> None:
-    assert fetch_latest_major_versions_map([]) == {}
-
-
-def test_fetch_latest_major_versions_map_single_package() -> None:
-    with patch(
-        f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.21.6", "1.22.4"])
-    ) as mock:
-        result = fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21")])
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
-    assert result == {"numpy": ["1.21.6", "1.22.4"]}
-
-
-def test_fetch_latest_major_versions_map_multiple_packages() -> None:
-    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
-        return iter({"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}[name])
-
-    with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
-        result = fetch_latest_major_versions_map(
-            [
-                make_bounds("numpy", lower="1.21"),
-                make_bounds("torch", lower="2.0"),
-            ]
-        )
-
-    assert result == {"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}
-
-
-def test_fetch_latest_major_versions_map_passes_lower_bound() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
-        fetch_latest_major_versions_map([make_bounds("numpy", lower="1.24")])
-    mock.assert_called_once_with("numpy", lower="1.24", include_lower_bound=False)
-
-
-def test_fetch_latest_major_versions_map_passes_none_lower_bound() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
-        fetch_latest_major_versions_map([make_bounds("numpy", lower=None)])
-    mock.assert_called_once_with("numpy", lower=None, include_lower_bound=False)
-
-
-def test_fetch_latest_major_versions_map_upper_bound_is_ignored() -> None:
-    # upper is present in PackageBounds but not passed to fetch_latest_major_versions.
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.21.6"])) as mock:
-        fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21", upper="2.0")])
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
-
-
-def test_fetch_latest_major_versions_map_returns_list_not_iterator() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.21.6"])):
-        result = fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21")])
-    assert isinstance(result["numpy"], list)
-
-
-def test_fetch_latest_major_versions_map_empty_versions() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])):
-        result = fetch_latest_major_versions_map([make_bounds("numpy", lower="99.0")])
-    assert result == {"numpy": []}
-
-
-def test_fetch_latest_major_versions_map_duplicate_package_last_wins() -> None:
-    # If the same package name appears twice, the last entry overwrites the first.
-    calls: list[tuple[str, str | None]] = []
-
-    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
-        calls.append((name, lower))
-        return iter(["1.21.6"] if lower == "1.21" else ["1.24.0"])
-
-    with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
-        result = fetch_latest_major_versions_map(
-            [
-                make_bounds("numpy", lower="1.21"),
-                make_bounds("numpy", lower="1.24"),
-            ]
-        )
-
-    assert result == {"numpy": ["1.24.0"]}
-    assert calls == [("numpy", "1.21"), ("numpy", "1.24")]
-
-
-def test_fetch_latest_major_versions_map_preserves_package_names() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter(["1.0", "2.0"])):
-        result = fetch_latest_major_versions_map([make_bounds("scikit-learn", lower="1.0")])
-    assert "scikit-learn" in result
+def test_fetch_latest_major_versions_map() -> None:
+    with patched_versions():
+        assert fetch_latest_major_versions_map(
+            [make_bounds("a"), make_bounds("b", lower="1.1.0")]
+        ) == {
+            "a": ["1.1.2", "2.0.3"],
+            "b": ["1.1.2", "2.0.3"],
+        }
 
 
 def test_fetch_latest_major_versions_map_include_lower_bound() -> None:
-    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
-        return iter(
-            {
-                "numpy": ["1.21.0", "1.21.6", "2.0.0"],
-                "torch": ["2.0.0", "2.0.1"],
-            }[name]
-        )
-
-    with patch(f"{MODULE}.fetch_latest_major_versions", side_effect=side_effect):
-        result = fetch_latest_major_versions_map(
-            [
-                make_bounds("numpy", lower="1.21"),
-                make_bounds("torch", lower="2.0"),
-            ],
-            include_lower_bound=True,
-        )
-
-    assert result == {"numpy": ["1.21.0", "1.21.6", "2.0.0"], "torch": ["2.0.0", "2.0.1"]}
+    with patched_versions():
+        assert fetch_latest_major_versions_map(
+            [make_bounds("a", lower="1.1.0"), make_bounds("b")], include_lower_bound=True
+        ) == {"a": ["1.1.0", "1.1.2", "2.0.3"], "b": ["1.1.2", "2.0.3"]}
 
 
-def test_fetch_latest_major_versions_map_passes_include_lower_bound() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
-        fetch_latest_major_versions_map(
-            [make_bounds("numpy", lower="1.21")],
-            include_lower_bound=True,
-        )
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=True)
-
-
-def test_fetch_latest_major_versions_map_passes_include_lower_bound_false_by_default() -> None:
-    with patch(f"{MODULE}.fetch_latest_major_versions", return_value=iter([])) as mock:
-        fetch_latest_major_versions_map([make_bounds("numpy", lower="1.21")])
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
-
-
-##################################################
-#     Tests for fetch_latest_minor_versions_map  #
-##################################################
-
-
-def test_fetch_latest_minor_versions_map_empty_sequence() -> None:
-    assert fetch_latest_minor_versions_map([]) == {}
-
-
-def test_fetch_latest_minor_versions_map_single_package() -> None:
-    with patch(
-        f"{MODULE}.fetch_latest_minor_versions", return_value=iter(["1.21.6", "1.22.4"])
-    ) as mock:
-        result = fetch_latest_minor_versions_map([make_bounds("numpy", lower="1.21")])
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
-    assert result == {"numpy": ["1.21.6", "1.22.4"]}
-
-
-def test_fetch_latest_minor_versions_map_multiple_packages() -> None:
-    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
-        return iter({"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}[name])
-
-    with patch(f"{MODULE}.fetch_latest_minor_versions", side_effect=side_effect):
-        result = fetch_latest_minor_versions_map(
-            [
-                make_bounds("numpy", lower="1.21"),
-                make_bounds("torch", lower="2.0"),
-            ]
-        )
-
-    assert result == {"numpy": ["1.21.6", "1.22.4"], "torch": ["2.0.1", "2.1.0"]}
-
-
-def test_fetch_latest_minor_versions_map_passes_lower_bound() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter([])) as mock:
-        fetch_latest_minor_versions_map([make_bounds("numpy", lower="1.24")])
-    mock.assert_called_once_with("numpy", lower="1.24", include_lower_bound=False)
-
-
-def test_fetch_latest_minor_versions_map_passes_none_lower_bound() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter([])) as mock:
-        fetch_latest_minor_versions_map([make_bounds("numpy", lower=None)])
-    mock.assert_called_once_with("numpy", lower=None, include_lower_bound=False)
-
-
-def test_fetch_latest_minor_versions_map_upper_bound_is_ignored() -> None:
-    # upper is present in PackageBounds but not passed to fetch_latest_minor_versions.
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter(["1.21.6"])) as mock:
-        fetch_latest_minor_versions_map([make_bounds("numpy", lower="1.21", upper="2.0")])
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
-
-
-def test_fetch_latest_minor_versions_map_returns_list_not_iterator() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter(["1.21.6"])):
-        result = fetch_latest_minor_versions_map([make_bounds("numpy", lower="1.21")])
-    assert isinstance(result["numpy"], list)
-
-
-def test_fetch_latest_minor_versions_map_empty_versions() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter([])):
-        result = fetch_latest_minor_versions_map([make_bounds("numpy", lower="99.0")])
-    assert result == {"numpy": []}
-
-
-def test_fetch_latest_minor_versions_map_duplicate_package_last_wins() -> None:
-    # If the same package name appears twice, the last entry overwrites the first.
-    calls: list[tuple[str, str | None]] = []
-
-    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
-        calls.append((name, lower))
-        return iter(["1.21.6"] if lower == "1.21" else ["1.24.0"])
-
-    with patch(f"{MODULE}.fetch_latest_minor_versions", side_effect=side_effect):
-        result = fetch_latest_minor_versions_map(
-            [
-                make_bounds("numpy", lower="1.21"),
-                make_bounds("numpy", lower="1.24"),
-            ]
-        )
-
-    assert result == {"numpy": ["1.24.0"]}
-    assert calls == [("numpy", "1.21"), ("numpy", "1.24")]
-
-
-def test_fetch_latest_minor_versions_map_preserves_package_names() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter(["1.0", "2.0"])):
-        result = fetch_latest_minor_versions_map(
-            [
-                make_bounds("scikit-learn", lower="1.0"),
-            ]
-        )
-    assert "scikit-learn" in result
+def test_fetch_latest_minor_versions_map() -> None:
+    with patched_versions():
+        assert fetch_latest_minor_versions_map([make_bounds("a")]) == {
+            "a": ["1.0.1", "1.1.2", "2.0.3"]
+        }
 
 
 def test_fetch_latest_minor_versions_map_include_lower_bound() -> None:
-    def side_effect(name: str, lower: str | None, include_lower_bound: bool) -> Any:  # noqa: ARG001
-        return iter(
-            {
-                "numpy": ["1.21.0", "1.21.6", "1.22.4"],
-                "torch": ["2.0.0", "2.0.1"],
-            }[name]
-        )
-
-    with patch(f"{MODULE}.fetch_latest_minor_versions", side_effect=side_effect):
-        result = fetch_latest_minor_versions_map(
-            [
-                make_bounds("numpy", lower="1.21"),
-                make_bounds("torch", lower="2.0"),
-            ],
-            include_lower_bound=True,
-        )
-
-    assert result == {"numpy": ["1.21.0", "1.21.6", "1.22.4"], "torch": ["2.0.0", "2.0.1"]}
+    with patched_versions():
+        assert fetch_latest_minor_versions_map(
+            [make_bounds("a", lower="1.0.1"), make_bounds("b")], include_lower_bound=True
+        ) == {"a": ["1.0.1", "1.1.2", "2.0.3"], "b": ["1.0.1", "1.1.2", "2.0.3"]}
 
 
-def test_fetch_latest_minor_versions_map_passes_include_lower_bound() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter([])) as mock:
-        fetch_latest_minor_versions_map(
-            [make_bounds("numpy", lower="1.21")],
-            include_lower_bound=True,
-        )
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=True)
+def test_fetch_latest_versions_map_last_entry_wins() -> None:
+    with patched_versions():
+        assert fetch_latest_minor_versions_map(
+            [make_bounds("a", lower="1.1.0"), make_bounds("a", lower="2.0.0")]
+        ) == {"a": ["2.0.3"]}
 
 
-def test_fetch_latest_minor_versions_map_passes_include_lower_bound_false_by_default() -> None:
-    with patch(f"{MODULE}.fetch_latest_minor_versions", return_value=iter([])) as mock:
-        fetch_latest_minor_versions_map([make_bounds("numpy", lower="1.21")])
-    mock.assert_called_once_with("numpy", lower="1.21", include_lower_bound=False)
+def test_fetch_latest_versions_map_empty() -> None:
+    assert fetch_latest_major_versions_map([]) == {}
+
+
+def test_fetch_latest_major_versions_map_include_lower_bound_is_keyword_only() -> None:
+    with pytest.raises(TypeError, match="positional argument"):
+        fetch_latest_major_versions_map([], True)  # ty: ignore[too-many-positional-arguments]
+
+
+############################################
+#     Tests for fetch_package_versions     #
+############################################
+
+PYPROJECT = """\
+[project]
+name = "demo"
+dependencies = ["Packaging>=1.0.0", "numpy>=1.1.0,<3"]
+
+[project.optional-dependencies]
+dev = ["scikit_learn>=1.0.1"]
+
+[dependency-groups]
+test = ["pytest>=7"]
+"""
+
+
+@pytest.fixture
+def pyproject(tmp_path: Path) -> Path:
+    path = tmp_path / "pyproject.toml"
+    path.write_text(PYPROJECT)
+    return path
+
+
+def test_fetch_package_versions_whole_output(pyproject: Path) -> None:
+    with patched_versions():
+        assert fetch_package_versions(pyproject) == {
+            "numpy": ["1.1.0", "1.1.2", "2.0.3"],
+            "packaging": ["1.0.0", "1.1.2", "2.0.3"],
+            "scikit-learn": ["1.0.1", "1.1.2", "2.0.3"],
+        }
+
+
+def test_fetch_package_versions_packaging_uses_the_major_versions(pyproject: Path) -> None:
+    with patched_versions():
+        assert fetch_package_versions(pyproject)["packaging"] == ["1.0.0", "1.1.2", "2.0.3"]
+
+
+def test_fetch_package_versions_other_packages_use_the_minor_versions(pyproject: Path) -> None:
+    with patched_versions():
+        assert fetch_package_versions(pyproject)["numpy"] == ["1.1.0", "1.1.2", "2.0.3"]
+
+
+def test_fetch_package_versions_names_are_canonical_and_sorted(pyproject: Path) -> None:
+    with patched_versions():
+        assert list(fetch_package_versions(pyproject)) == ["numpy", "packaging", "scikit-learn"]
+
+
+def test_fetch_package_versions_ignores_dependency_groups(pyproject: Path) -> None:
+    with patched_versions():
+        assert "pytest" not in fetch_package_versions(pyproject)
+
+
+def test_fetch_package_versions_include_lower_bound_false(pyproject: Path) -> None:
+    with patched_versions():
+        assert fetch_package_versions(pyproject, include_lower_bound=False)["numpy"] == [
+            "1.1.2",
+            "2.0.3",
+        ]
+
+
+def test_fetch_package_versions_major_only(pyproject: Path) -> None:
+    with patched_versions():
+        assert fetch_package_versions(pyproject, major_only=("NumPy",))["numpy"] == [
+            "1.1.0",
+            "1.1.2",
+            "2.0.3",
+        ]
+
+
+def test_fetch_package_versions_major_only_empty(pyproject: Path) -> None:
+    with patched_versions():
+        assert fetch_package_versions(pyproject, major_only=())["packaging"] == [
+            "1.0.0",
+            "1.0.1",
+            "1.1.2",
+            "2.0.3",
+        ]
+
+
+def test_fetch_package_versions_accepts_a_string_path(pyproject: Path) -> None:
+    with patched_versions():
+        assert "numpy" in fetch_package_versions(str(pyproject))
+
+
+def test_fetch_package_versions_missing_file(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError, match=r"pyproject\.toml"):
+        fetch_package_versions(tmp_path / "pyproject.toml")

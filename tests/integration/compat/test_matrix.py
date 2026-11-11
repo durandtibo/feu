@@ -6,7 +6,7 @@ from packaging.version import Version
 from feu.compat.discoverers import discover_compat_targets
 from feu.compat.target import Target
 from feu.testing import requests_available, requests_not_available
-from feu.version import fetch_pypi_requires_python
+from feu.version.pypi import _fetch_pypi_project
 
 # NOTE: these tests hit the real PyPI index. Bounds are asserted rather
 # than exact snapshots, because upstream projects keep publishing new
@@ -19,19 +19,12 @@ from feu.version import fetch_pypi_requires_python
 
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
-    fetch_pypi_requires_python.cache_clear()
+    _fetch_pypi_project.cache_clear()
 
 
 ##############################################
 #     Tests for discover_compat_targets      #
 ##############################################
-
-
-@pytest.fixture(autouse=True)
-def _reset_wheel_cache() -> None:
-    from feu.version.pypi import fetch_pypi_wheel_filenames
-
-    fetch_pypi_wheel_filenames.cache_clear()
 
 
 @requests_available

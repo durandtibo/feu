@@ -1,21 +1,24 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import pytest
+from packaging.version import Version
 
 from feu.testing import requests_available, requests_not_available
 from feu.version import (
     fetch_pypi_pinned_dependency_version,
+    fetch_pypi_project,
     fetch_pypi_requires_python,
     fetch_pypi_versions,
     fetch_pypi_wheel_filenames,
 )
+from feu.version.pypi import _fetch_pypi_project
 
 
 @pytest.fixture(autouse=True)
 def _reset_cache() -> None:
-    fetch_pypi_versions.cache_clear()
-    fetch_pypi_requires_python.cache_clear()
-    fetch_pypi_wheel_filenames.cache_clear()
+    _fetch_pypi_project.cache_clear()
     fetch_pypi_pinned_dependency_version.cache_clear()
 
 
@@ -30,6 +33,30 @@ def test_fetch_pypi_versions_requests() -> None:
     assert isinstance(versions, tuple)
     assert len(versions) >= 157
     assert "2.32.5" in versions
+
+
+@requests_available
+def test_fetch_pypi_versions_are_in_pep440_order() -> None:
+    """Test that the versions are sorted by version and not as strings
+    ("1.10.0" is after "1.9.0")."""
+    versions = fetch_pypi_versions("numpy")
+    assert versions == tuple(sorted(versions, key=Version))
+
+
+@requests_available
+def test_fetch_pypi_versions_non_canonical_name() -> None:
+    """Test that a non-canonical name gives the versions of the
+    project."""
+    assert fetch_pypi_versions("Scikit_Learn") == fetch_pypi_versions("scikit-learn")
+
+
+@requests_available
+def test_fetch_pypi_project_requests() -> None:
+    """Test that the Simple API gives the metadata of a project."""
+    project = fetch_pypi_project("requests")
+    file = next(f for f in project.releases["2.32.5"] if f.filename.endswith(".whl"))
+    assert file.requires_python == ">=3.9"
+    assert file.uploaded is not None
 
 
 @requests_available
@@ -54,7 +81,7 @@ def test_fetch_pypi_versions_no_requests() -> None:
 @requests_available
 def test_fetch_pypi_requires_python_requests() -> None:
     mapping = fetch_pypi_requires_python("requests")
-    assert isinstance(mapping, dict)
+    assert isinstance(mapping, Mapping)
     assert {
         version: mapping[version]
         for version in (
@@ -86,7 +113,7 @@ def test_fetch_pypi_requires_python_requests() -> None:
 @requests_available
 def test_fetch_pypi_requires_python_torch() -> None:
     mapping = fetch_pypi_requires_python("torch")
-    assert isinstance(mapping, dict)
+    assert isinstance(mapping, Mapping)
     assert {version: mapping[version] for version in ("2.6.0", "2.7.0", "2.7.1", "2.8.0")} == {
         "2.6.0": ">=3.9.0",
         "2.7.0": ">=3.9.0",
@@ -109,7 +136,7 @@ def test_fetch_pypi_requires_python_no_requests() -> None:
 @requests_available
 def test_fetch_pypi_wheel_filenames_numpy() -> None:
     mapping = fetch_pypi_wheel_filenames("numpy")
-    assert isinstance(mapping, dict)
+    assert isinstance(mapping, Mapping)
     assert all(isinstance(filenames, tuple) for filenames in mapping.values())
     filenames = mapping["2.0.2"]
     assert filenames
