@@ -13,14 +13,15 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   # Test with all dependencies across multiple Python versions and operating systems
   all:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -69,6 +70,8 @@ jobs:
   min:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false

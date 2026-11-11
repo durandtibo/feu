@@ -21,8 +21,7 @@ on:
 
 # Declare default permissions as read only, narrowed to just what's needed
 # (consistent with the least-privilege style used across the other workflows).
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   analysis:

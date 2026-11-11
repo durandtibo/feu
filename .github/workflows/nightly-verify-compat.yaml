@@ -9,19 +9,22 @@ on:
     - cron: "0 6 * * 3" # run every Wednesday at 6:00 AM UTC
   workflow_dispatch: # to trigger manually
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   # Load the shared python-version/OS matrix from workflow-config-action once,
   # and pass it down to the job below.
   get-matrix:
     uses: ./.github/workflows/lib-get-test-matrix.yaml
+    permissions:
+      contents: read
 
   all:
     needs: get-matrix
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    permissions:
+      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false
