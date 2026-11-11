@@ -84,17 +84,18 @@ class Target:
 
 
 def resolve_target(
-    python_version: str | None = None,
-    free_threaded: bool | None = None,
-    os: str | None = None,
-    arch: str | None = None,
+    python_version: str | None = None, *, free_threaded: bool | None = None
 ) -> Target:
-    r"""Resolve a ``Target`` from optional, possibly partial inputs.
+    r"""Resolve the ``Target`` of an environment.
+
+    The platform (OS and CPU architecture) is always the current one.
+    The Python version and the free-threaded flag can be chosen, e.g.
+    by a CI matrix that checks other Python versions, and fall back to
+    the current interpreter.
 
     If ``python_version`` ends with ``t``, the target is a
     free-threaded build. In that case, ``free_threaded=False`` is
-    invalid because it contradicts the ``t`` suffix. Any unspecified
-    argument falls back to the current interpreter/environment value.
+    invalid because it contradicts the ``t`` suffix.
 
     Args:
         python_version: The Python version, e.g. ``"3.11"`` or
@@ -103,12 +104,9 @@ def resolve_target(
         free_threaded: Whether the target is a free-threaded build.
             If not provided, it is inferred from ``python_version`` or
             the current interpreter's free-threaded status.
-        os: The target OS. If not provided, the current OS is used.
-        arch: The target CPU architecture. If not provided, the
-            current architecture is used.
 
     Returns:
-        The resolved target.
+        The resolved target, with the current OS and architecture.
 
     Raises:
         ValueError: if ``python_version`` ends with ``t`` and
@@ -117,8 +115,9 @@ def resolve_target(
     Example:
         ```pycon
         >>> from feu.compat.target import resolve_target
-        >>> resolve_target(python_version="3.14t", os="linux", arch="x86_64")
-        Target(python_version='3.14', free_threaded=True, os='linux', arch='x86_64')
+        >>> target = resolve_target(python_version="3.14t")
+        >>> target.python_version, target.free_threaded
+        ('3.14', True)
 
         ```
     """
@@ -137,8 +136,8 @@ def resolve_target(
     return Target(
         python_version=python_version,
         free_threaded=free_threaded,
-        os=os or get_current_os(),
-        arch=arch or get_current_arch(),
+        os=get_current_os(),
+        arch=get_current_arch(),
     )
 
 

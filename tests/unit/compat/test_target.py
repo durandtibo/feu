@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
 import pytest
@@ -11,6 +12,9 @@ from feu.compat.target import (
     Target,
     resolve_target,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 def test_target_defaults() -> None:
@@ -85,56 +89,85 @@ def test_target_arch_none_is_valid() -> None:
 ######################################
 
 
+@pytest.fixture
+def current_platform() -> Generator[None]:
+    with (
+        patch("feu.compat.target.get_current_os", Mock(return_value="macos")),
+        patch("feu.compat.target.get_current_arch", Mock(return_value="arm64")),
+    ):
+        yield
+
+
+@pytest.mark.usefixtures("current_platform")
 def test_resolve_target_all_options() -> None:
-    assert resolve_target(
-        python_version="3.10", free_threaded=True, os="linux", arch="x86_64"
-    ) == Target(python_version="3.10", free_threaded=True, os="linux", arch="x86_64")
+    assert resolve_target(python_version="3.10", free_threaded=True) == Target(
+        python_version="3.10", free_threaded=True, os="macos", arch="arm64"
+    )
 
 
+@pytest.mark.usefixtures("current_platform")
 def test_resolve_target_default_options() -> None:
     with (
         patch("feu.compat.target.get_python_version", Mock(return_value="3.12")),
         patch("feu.compat.target.is_free_threaded", Mock(return_value=False)),
-        patch("feu.compat.target.get_current_os", Mock(return_value="macos")),
-        patch("feu.compat.target.get_current_arch", Mock(return_value="arm64")),
     ):
         assert resolve_target() == Target(
             python_version="3.12", free_threaded=False, os="macos", arch="arm64"
         )
 
 
+@pytest.mark.usefixtures("current_platform")
+def test_resolve_target_platform_is_always_the_current_one() -> None:
+    target = resolve_target(python_version="3.10")
+    assert (target.os, target.arch) == ("macos", "arm64")
+
+
+def test_resolve_target_has_no_os_or_arch_parameter() -> None:
+    with pytest.raises(TypeError, match="unexpected keyword argument 'os'"):
+        resolve_target(python_version="3.10", os="linux")  # ty: ignore[unknown-argument]
+
+
+def test_resolve_target_free_threaded_is_keyword_only() -> None:
+    with pytest.raises(TypeError, match="positional argument"):
+        resolve_target("3.10", True)  # ty: ignore[too-many-positional-arguments]
+
+
+@pytest.mark.usefixtures("current_platform")
 def test_resolve_target_free_threaded_default_from_python_version() -> None:
     with patch("feu.compat.target.is_free_threaded", Mock(return_value=False)):
-        assert resolve_target(python_version="3.14t", os="linux", arch="x86_64") == Target(
-            python_version="3.14", free_threaded=True, os="linux", arch="x86_64"
+        assert resolve_target(python_version="3.14t") == Target(
+            python_version="3.14", free_threaded=True, os="macos", arch="arm64"
         )
 
 
+@pytest.mark.usefixtures("current_platform")
 def test_resolve_target_free_threaded_true_with_suffix() -> None:
-    assert resolve_target(
-        python_version="3.14t", free_threaded=True, os="linux", arch="x86_64"
-    ) == Target(python_version="3.14", free_threaded=True, os="linux", arch="x86_64")
+    assert resolve_target(python_version="3.14t", free_threaded=True) == Target(
+        python_version="3.14", free_threaded=True, os="macos", arch="arm64"
+    )
 
 
 def test_resolve_target_free_threaded_false_with_suffix_raises_error() -> None:
     with pytest.raises(ValueError, match="indicates a free-threaded build"):
-        resolve_target(python_version="3.14t", free_threaded=False, os="linux", arch="x86_64")
+        resolve_target(python_version="3.14t", free_threaded=False)
 
 
+@pytest.mark.usefixtures("current_platform")
 def test_resolve_target_free_threaded_none_uses_interpreter_status() -> None:
     with patch("feu.compat.target.is_free_threaded", Mock(return_value=True)):
-        assert resolve_target(python_version="3.14", os="linux", arch="x86_64") == Target(
-            python_version="3.14", free_threaded=True, os="linux", arch="x86_64"
+        assert resolve_target(python_version="3.14") == Target(
+            python_version="3.14", free_threaded=True, os="macos", arch="arm64"
         )
 
 
+@pytest.mark.usefixtures("current_platform")
 def test_resolve_target_python_version_default_from_interpreter() -> None:
     with (
         patch("feu.compat.target.get_python_version", Mock(return_value="3.13t")),
         patch("feu.compat.target.is_free_threaded", Mock(return_value=True)),
     ):
-        assert resolve_target(os="linux", arch="x86_64") == Target(
-            python_version="3.13", free_threaded=True, os="linux", arch="x86_64"
+        assert resolve_target() == Target(
+            python_version="3.13", free_threaded=True, os="macos", arch="arm64"
         )
 
 
