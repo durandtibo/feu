@@ -59,10 +59,13 @@ action/reusable workflow over copy-pasting steps.
   runtime tool invoked outside of a pinned action (e.g. `npx <pkg>`) should
   also pin an explicit version, so a bot-authored PR can't pick up an
   unreviewed upstream release.
-- **Permissions**: top-level `permissions:` is always the least the workflow
-  needs — `contents: read` or `{}` — and any job that needs more (e.g.
-  `contents: write` to push, `id-token: write` for OIDC) declares it on that
-  job only, never widening the workflow default.
+- **Permissions**: every workflow sets `permissions: {}` at the workflow
+  level (it grants nothing, never a grant), and every job declares its own
+  minimum `permissions` (`contents: read` for most; more, e.g.
+  `contents: write` to push or `id-token: write` for OIDC, only on the job
+  that needs it). This includes the jobs that call a reusable workflow: their
+  `permissions` cap what the called workflow can use, so they must grant at
+  least what its jobs declare.
 - **Timeouts**: every job sets `timeout-minutes`, sized to what the job
   actually does (2 for a config-read job, 5 for most checks, 10 for slower
   jobs like Scorecard or benchmarks) so a hung step can't occupy a runner

@@ -27,13 +27,14 @@ on:
 
   workflow_dispatch: # Allows manual triggering for testing purposes
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   get-versions:
     runs-on: ubuntu-slim
     timeout-minutes: 2
+    permissions:
+      contents: read
     outputs:
       package_versions: ${{ steps.read-json.outputs.json-content }}
       package_names: ${{ steps.package-names.outputs.package_names }}

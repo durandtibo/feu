@@ -12,13 +12,14 @@ on:
       - main
   workflow_dispatch: # to trigger manually
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   verify-workflows:
     runs-on: ubuntu-slim
     timeout-minutes: 5
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout

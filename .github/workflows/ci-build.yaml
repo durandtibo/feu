@@ -11,14 +11,15 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   # Load the extras from pyproject.toml's [project.optional-dependencies],
   # plus "" for a baseline "no extra" build.
   get-extras:
     uses: ./.github/workflows/lib-get-package-extras.yaml
+    permissions:
+      contents: read
     with:
       extra-values: '[""]'
 
@@ -31,6 +32,8 @@ jobs:
     needs: get-extras
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -60,6 +63,8 @@ jobs:
   build-all:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false

@@ -12,14 +12,15 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   # Load the extras from pyproject.toml's [project.optional-dependencies],
   # plus "all" to also test installing every extra at once.
   get-extras:
     uses: ./.github/workflows/lib-get-package-extras.yaml
+    permissions:
+      contents: read
     with:
       extra-values: '["all"]'
 
@@ -27,6 +28,8 @@ jobs:
     needs: get-extras
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    permissions:
+      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false

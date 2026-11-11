@@ -4,8 +4,7 @@ on:
     - cron: "40 8 * * *" # run at 8:40 AM UTC
   workflow_dispatch: # to trigger manually
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   # Get the package names and their version bounds from
@@ -15,14 +14,20 @@ jobs:
   # "urllib3", "cli" installs "click", "git" installs "gitpython").
   get-versions:
     uses: ./.github/workflows/lib-get-package-versions.yaml
+    permissions:
+      contents: read
   # Load the shared python-version/OS matrix once, and pass it down to every
   # job below that needs it.
   get-matrix:
     uses: ./.github/workflows/lib-get-test-matrix.yaml
+    permissions:
+      contents: read
 
   stable:
     needs: get-matrix
     uses: ./.github/workflows/nightly-test-package.yaml
+    permissions:
+      contents: read
     with:
       install-cmd: "uv pip install feu"
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
@@ -30,6 +35,8 @@ jobs:
   stable-all:
     needs: get-matrix
     uses: ./.github/workflows/nightly-test-package.yaml
+    permissions:
+      contents: read
     with:
       install-cmd: 'uv pip install "feu[all]"'
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
@@ -37,12 +44,16 @@ jobs:
   stable-extras:
     needs: get-matrix
     uses: ./.github/workflows/nightly-test-package-extras.yaml
+    permissions:
+      contents: read
     with:
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
 
   latest:
     needs: get-matrix
     uses: ./.github/workflows/nightly-test-package.yaml
+    permissions:
+      contents: read
     with:
       install-cmd: "uv pip install --pre feu"
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
@@ -50,6 +61,8 @@ jobs:
   latest-all:
     needs: get-matrix
     uses: ./.github/workflows/nightly-test-package.yaml
+    permissions:
+      contents: read
     with:
       install-cmd: 'uv pip install --pre "feu[all]"'
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
@@ -57,6 +70,8 @@ jobs:
   latest-extras:
     needs: get-matrix
     uses: ./.github/workflows/nightly-test-package-extras.yaml
+    permissions:
+      contents: read
     with:
       install-args: "--pre"
       test-matrix: ${{ needs.get-matrix.outputs.test_matrix }}
@@ -76,6 +91,8 @@ jobs:
       matrix:
         package-name: ${{ fromJson(needs.get-versions.outputs.package_names) }}
     uses: ./.github/workflows/nightly-test-package-dep.yaml
+    permissions:
+      contents: read
     with:
       package-name: ${{ matrix.package-name }}
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions)[matrix.package-name]) }}

@@ -40,13 +40,14 @@ on:
         type: string
         default: "[]"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   get-extras:
     runs-on: ubuntu-slim
     timeout-minutes: 2
+    permissions:
+      contents: read
     outputs:
       extras: ${{ steps.extras.outputs.extras }}
     steps:
