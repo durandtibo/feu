@@ -5,7 +5,8 @@ from __future__ import annotations
 
 __all__ = [
     "find_closest_version",
-    "get_default_registry",
+    "get_compatible_versions",
+    "get_default_compat_registry",
     "is_valid_version",
     "register_compat",
 ]
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 
 
 @cache
-def get_default_registry() -> CompatRegistry:
+def get_default_compat_registry() -> CompatRegistry:
     r"""Return the default global compatibility registry.
 
     The registry is created on the first call and reused on all
@@ -35,8 +36,8 @@ def get_default_registry() -> CompatRegistry:
 
     Example:
         ```pycon
-        >>> from feu.compat import get_default_registry, Target
-        >>> registry = get_default_registry()
+        >>> from feu.compat import get_default_compat_registry, Target
+        >>> registry = get_default_compat_registry()
         >>> registry.is_valid_version("numpy", "2.0.2", Target(python_version="3.11"))
         True
 
@@ -49,6 +50,7 @@ def get_default_registry() -> CompatRegistry:
 
 def register_compat(
     mapping: dict[str, dict[Target, list[VersionRange]]],
+    *,
     exist_ok: bool = False,
 ) -> None:
     r"""Register custom package configurations into the default global
@@ -74,10 +76,16 @@ def register_compat(
 
         ```
     """
-    get_default_registry().register_many(mapping, exist_ok=exist_ok)
+    get_default_compat_registry().register_many(mapping, exist_ok=exist_ok)
 
 
-def find_closest_version(pkg_name: str, pkg_version: str | None, target: Target) -> str:
+def find_closest_version(
+    pkg_name: str,
+    pkg_version: str | None,
+    target: Target,
+    *,
+    registry: CompatRegistry | None = None,
+) -> str:
     r"""Find the closest valid version for a package using the default
     registry.
 
@@ -87,6 +95,8 @@ def find_closest_version(pkg_name: str, pkg_version: str | None, target: Target)
             version, a wildcard (e.g. ``"2.*"``) or ``""``/``None``
             for the latest version.
         target: The compatibility target.
+        registry: The compatibility registry. ``None`` means the
+            default registry.
 
     Returns:
         The closest valid version as a string. An exact version is
@@ -112,12 +122,17 @@ def find_closest_version(pkg_name: str, pkg_version: str | None, target: Target)
 
         ```
     """
-    return get_default_registry().find_closest_version(
-        pkg_name=pkg_name, pkg_version=pkg_version, target=target
-    )
+    registry = get_default_compat_registry() if registry is None else registry
+    return registry.find_closest_version(pkg_name=pkg_name, pkg_version=pkg_version, target=target)
 
 
-def is_valid_version(pkg_name: str, pkg_version: str | None, target: Target) -> bool:
+def is_valid_version(
+    pkg_name: str,
+    pkg_version: str | None,
+    target: Target,
+    *,
+    registry: CompatRegistry | None = None,
+) -> bool:
     r"""Check if a package version is valid for a target using the
     default registry.
 
@@ -127,6 +142,8 @@ def is_valid_version(pkg_name: str, pkg_version: str | None, target: Target) -> 
             exact version, a wildcard (e.g. ``"2.*"``) or
             ``""``/``None`` for the latest version.
         target: The compatibility target.
+        registry: The compatibility registry. ``None`` means the
+            default registry.
 
     Returns:
         ``True`` if valid or unconfigured, ``False`` otherwise,
@@ -147,6 +164,47 @@ def is_valid_version(pkg_name: str, pkg_version: str | None, target: Target) -> 
 
         ```
     """
-    return get_default_registry().is_valid_version(
-        pkg_name=pkg_name, pkg_version=pkg_version, target=target
-    )
+    registry = get_default_compat_registry() if registry is None else registry
+    return registry.is_valid_version(pkg_name=pkg_name, pkg_version=pkg_version, target=target)
+
+
+def get_compatible_versions(
+    pkg_name: str,
+    target: Target,
+    pkg_version: str | None = "",
+    *,
+    registry: CompatRegistry | None = None,
+) -> list[str]:
+    r"""Get the known versions that are valid for a target and satisfy
+    a version request, using the default registry.
+
+    Args:
+        pkg_name: The package name (e.g., ``"numpy"``).
+        target: The compatibility target.
+        pkg_version: The version request: an exact version, a
+            wildcard (e.g. ``"2.*"``) or ``""``/``None`` for every
+            version.
+        registry: The compatibility registry. ``None`` means the
+            default registry.
+
+    Returns:
+        The known compatible versions that satisfy the request, in
+            PEP 440 order (see
+            ``CompatRegistry.get_compatible_versions``).
+
+    Raises:
+        ValueError: If ``pkg_version`` is not a valid version request.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import get_compatible_versions, Target
+        >>> versions = get_compatible_versions(
+        ...     "numpy", Target(python_version="3.9", os="linux", arch="x86_64"), "1.26.*"
+        ... )
+        >>> versions[-1]
+        '1.26.4'
+
+        ```
+    """
+    registry = get_default_compat_registry() if registry is None else registry
+    return registry.get_compatible_versions(pkg_name, target, pkg_version)

@@ -6,7 +6,7 @@ from feu.compat import (
     Target,
     UnsupportedVersionError,
     find_closest_version,
-    get_default_registry,
+    get_default_compat_registry,
     is_valid_version,
 )
 
@@ -42,13 +42,13 @@ def test_is_valid_version_numpy_python_39_platform_unspecified() -> None:
 
 def test_default_registry_has_numpy() -> None:
     """Test that the default registry knows numpy."""
-    assert get_default_registry().has_package("numpy")
+    assert get_default_compat_registry().has_package("numpy")
 
 
 def test_default_registry_does_not_have_unknown_package() -> None:
     """Test that the default registry does not know an unknown
     package."""
-    assert not get_default_registry().has_package("not-a-real-package")
+    assert not get_default_compat_registry().has_package("not-a-real-package")
 
 
 #######################################################
@@ -90,7 +90,7 @@ def test_find_closest_version_numpy_python_314_unmatched_wildcard_raises() -> No
 
 def test_get_compatible_versions_numpy_python_39_wildcard() -> None:
     """Test the compatible versions of a wildcard on the shipped data."""
-    assert get_default_registry().get_compatible_versions("numpy", PY39, "1.26.*") == [
+    assert get_default_compat_registry().get_compatible_versions("numpy", PY39, "1.26.*") == [
         "1.26.0",
         "1.26.1",
         "1.26.2",

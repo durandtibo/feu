@@ -16,7 +16,7 @@ package are known to work.
   unsupported for a stretch, then supported again from `2.8` onward).
 - **`CompatRegistry`** stores package constraints populated from the
   automatically discovered data of `feu.compat.discovered` (loaded by
-  `get_default_registry()`), and user calls to `register_compat()`. A
+  `get_default_compat_registry()`), and user calls to `register_compat()`. A
   target registered with an empty list of ranges is explicitly
   unsupported, whereas a package/target with no entry is unconfigured and
   accepts any version.

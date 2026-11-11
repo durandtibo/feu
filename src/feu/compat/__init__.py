@@ -15,7 +15,8 @@ __all__ = [
     "WheelTags",
     "discover_compat_targets",
     "find_closest_version",
-    "get_default_registry",
+    "get_compatible_versions",
+    "get_default_compat_registry",
     "is_valid_version",
     "parse_wheel_filename",
     "register_compat",
@@ -32,7 +33,8 @@ from feu.compat.discoverers import (
 )
 from feu.compat.interface import (
     find_closest_version,
-    get_default_registry,
+    get_compatible_versions,
+    get_default_compat_registry,
     is_valid_version,
     register_compat,
 )
