@@ -1,376 +1,300 @@
 # Usage Guide
 
-This guide demonstrates the main features and use cases of `feu`.
+This guide shows the main features of `feu`. The examples are doctests: they are run by the test
+suite (`tests/unit/test_docs.py`), so they cannot drift from the code. The examples that need the
+network are marked as skipped. The rules the package follows are in [Properties](properties.md).
 
 ## Checking Package Availability
 
-You can check if packages or modules are available in your environment:
+`is_package_available` looks a package up without importing it, `is_module_available` imports the
+module. The checks are cached, so call `clear_availability_caches()` if you change `sys.path` or
+`sys.modules` yourself. `install_package` clears the caches after a successful installation.
 
-```python
-from feu import is_package_available, is_module_available
+```pycon
+>>> from feu import is_module_available, is_package_available
+>>> is_package_available("packaging")
+True
+>>> is_package_available("not_an_installed_package")
+False
+>>> is_module_available("packaging.version")
+True
 
-# Check if a package is installed
-if is_package_available("numpy"):
-    print("NumPy is available!")
-else:
-    print("NumPy is not installed")
-
-# Check if a specific module is available
-if is_module_available("numpy.linalg"):
-    print("NumPy linear algebra module is available!")
 ```
 
-The checks are cached. `is_package_available` only looks the package up, while `is_module_available`
-imports the module, so a package that is installed but broken (for example a missing shared
-library) is reported as not available and a warning is logged. `install_package` clears the cache
-after a successful installation. Call `feu.imports.clear_availability_caches()` if you change
-`sys.path` or `sys.modules` yourself.
+A module that is installed but broken (for example a missing shared library) is reported as not
+available by `is_module_available`, and a warning is logged.
 
 The optional libraries of `feu` (`click`, `gitpython`, `requests`, `rich`) are imported lazily:
 `import feu` imports none of them. A feature that needs one of them raises
-`feu.imports.MissingPackageError` (a `ModuleNotFoundError` and a `RuntimeError`) when it is
-missing. The message gives the `pip install` and `uv pip install` commands.
+`feu.imports.MissingPackageError`, which is a `ModuleNotFoundError` and a `RuntimeError`. The message
+gives the `pip install` and `uv pip install` commands:
 
-## Version Comparison
+```pycon
+>>> from feu.imports import MissingPackageError, check_package
+>>> try:
+...     check_package("not_an_installed_package")
+... except MissingPackageError as error:
+...     print(error.name)
+...
+not_an_installed_package
 
-Compare the installed version of a package to a given version. `compare_version` takes the package
-name, a comparison operator and the version to compare with, and returns `False` if the package is
-not installed:
-
-```python
-import operator
-
-from feu import compare_version
-
-# True if the installed version of numpy is at least 1.5.0
-result = compare_version("numpy", operator.ge, "1.5.0")
-print(result)
-
-# True if the installed version of numpy is lower than 2.0.0
-result = compare_version("numpy", operator.lt, "2.0.0")
-print(result)
 ```
 
-## Getting Package Version
+## Version Comparison and Requests
 
-Retrieve the installed version of a package:
+`compare_version` compares the installed version of a package to a version. It returns `False` if
+the package is not installed:
 
-```python
-from feu import get_package_version
+```pycon
+>>> import operator
+>>> from feu import compare_version
+>>> compare_version("packaging", operator.ge, "20.0")
+True
+>>> compare_version("not_an_installed_package", operator.ge, "1.0")
+False
 
-# Get the version of an installed package
-version = get_package_version("numpy")
-print(f"NumPy version: {version}")
 ```
-
-## Finding Compatible Versions
-
-Find the closest valid package version for your Python version:
-
-```python
-from feu.compat import Target, find_closest_version, is_valid_version
-
-# Check if a specific version is valid for your Python version
-is_valid = is_valid_version(
-    pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
-)
-print(f"NumPy 2.0.2 is valid for Python 3.10: {is_valid}")
-
-# Find the closest valid version
-closest = find_closest_version(
-    pkg_name="numpy",
-    pkg_version="1.0.0",  # This is too old for Python 3.11
-    target=Target(python_version="3.11"),
-)
-print(f"Closest valid version: {closest}")  # Will return "1.23.2"
-```
-
-A target that leaves `os` and `arch` to `None` matches every platform: the answer is the union of
-the versions published for at least one platform. `install_package_closest_version` uses the full
-current target (Python version, free-threaded flag, OS and architecture) unless `target=` is given.
-Use `get_default_compat_registry().has_package(name)` to detect an unknown package.
-
-A package that is not configured for the target accepts any version. If the package is configured
-but no version of it supports the target, `is_valid_version` returns `False` and
-`find_closest_version` raises `feu.compat.UnsupportedVersionError`.
-
-`Target` also accepts the optional `free_threaded`, `os` and `arch` arguments. Use
-`resolve_target` to build a target from partial inputs, falling back to the current interpreter
-and platform:
-
-```python
-from feu.compat import resolve_target
-
-target = resolve_target(python_version="3.14t", os="linux", arch="x86_64")
-```
-
-### Version Requests
 
 Wherever a function takes the version of a package to install or to validate, it accepts a version
 *request*: an exact version (`"2.4.0"`), a wildcard (`"2.4.*"`, `"2.*"`) or an empty string / `None`
 for the latest version. A wildcard is digits and dots followed by one trailing `.*`; anything else
-with a `*` raises `ValueError`.
+with a `*` raises `ValueError`:
 
-```python
-from feu.compat import Target, find_closest_version, is_valid_version
+```pycon
+>>> from feu.version import parse_version_request
+>>> parse_version_request("2.4.*")
+VersionRequest(text='2.4.*', exact=None, prefix=(2, 4))
+>>> parse_version_request("").is_latest
+True
+>>> parse_version_request("2.*.1")
+Traceback (most recent call last):
+    ...
+ValueError: invalid version wildcard '2.*.1': a wildcard is digits and dots followed by one trailing '.*', e.g. '2.4.*'
 
-target = Target(python_version="3.9", os="linux", arch="x86_64")
-
-is_valid_version("numpy", "1.*", target)  # True: a 1.x release supports Python 3.9
-is_valid_version("numpy", "3.*", target)  # False: there is no 3.x release
-find_closest_version("numpy", "1.*", target)  # "1.26.4": the latest compatible 1.x release
-find_closest_version("numpy", "", target)  # "2.0.2": the latest release that supports Python 3.9
 ```
 
-A request is resolved against the versions the registry knows. When the latest compatible release
-lies in an open-ended range (the newest release was compatible when the data was generated), the
-request itself is returned (`"2.*"` or `""`), so that the installer picks the real latest release.
-`install_package_closest_version` checks every request this way and raises
-`UnsupportedVersionError` before running any command if no compatible version matches. A package
-with no registered versions has no data: a wildcard or empty request is invalid for
-`is_valid_version` and is returned unchanged by `find_closest_version`. Use
-`registry.register_versions(name, versions)` to give a package its versions.
+## Finding Compatible Versions
+
+A `Target` is the environment a constraint applies to: the Python version, the free-threaded flag,
+the operating system and the CPU architecture. `os` and `arch` left to `None` mean "any platform"
+when a target is used for a lookup: the answer is then the union of the versions published for at
+least one platform. `resolve_target()` is the current environment (the platform is always the
+current one).
+
+```pycon
+>>> from feu.compat import Target, find_closest_version, is_valid_version
+>>> target = Target(python_version="3.9", os="linux", arch="x86_64")
+>>> is_valid_version("numpy", "2.0.2", target)
+True
+>>> is_valid_version("numpy", "2.3.0", target)
+False
+>>> find_closest_version("numpy", "99.0.0", target)
+'2.0.2'
+
+```
+
+A request is resolved against the versions that the shipped data knows. When the latest compatible
+release lies in an open-ended range (the newest release was compatible when the data was
+generated), the request itself is returned, so that the installer picks the real latest release:
+
+```pycon
+>>> find_closest_version("numpy", "1.*", target)
+'1.26.4'
+>>> find_closest_version("numpy", "", target)
+'2.0.2'
+>>> find_closest_version("numpy", "1.24.*", Target("3.14", os="linux", arch="x86_64"))
+Traceback (most recent call last):
+    ...
+feu.compat.registry.UnsupportedVersionError: No version of package numpy matches '1.24.*' for target Target(python_version='3.14', free_threaded=False, os='linux', arch='x86_64')
+
+```
+
+A package without data accepts any version, which `has_package` lets you detect. If the package is
+configured but no version supports the target, `is_valid_version` returns `False` and
+`find_closest_version` raises `feu.compat.UnsupportedVersionError`.
+
+```pycon
+>>> from feu.compat import get_default_compat_registry, get_compatible_versions
+>>> registry = get_default_compat_registry()
+>>> registry.has_package("numpy"), registry.has_package("not-a-package")
+(True, False)
+>>> get_compatible_versions("numpy", target, "1.26.*")
+['1.26.0', '1.26.1', '1.26.2', '1.26.3', '1.26.4']
+
+```
+
+The built-in data is one JSON file per package in `feu/compat/data`. It is parsed the first time a
+package is looked up, and `registry.packages()` lists the packages without parsing any file.
+
+## Your Own Constraints
+
+Register a constraint and the versions you know in a registry instance. Every function takes an
+optional `registry=`; `register_compat` adds to the default registry. A registration into a shipped
+package first loads it, so the conflict check sees the shipped entries (use `exist_ok=True` to
+overwrite).
+
+```pycon
+>>> from feu.compat import CompatRegistry, VersionRange, get_compatible_versions
+>>> target = Target(python_version="3.11")
+>>> registry = CompatRegistry()
+>>> registry.register("my_package", target, ranges=[VersionRange("1.2.0", "2.0.0")])
+>>> registry.register_versions("my_package", ["1.2.0", "1.5.0", "2.0.0", "3.0.0"])
+>>> find_closest_version("my_package", "3.0.0", target, registry=registry)
+'2.0.0'
+>>> get_compatible_versions("my_package", target, "1.*", registry=registry)
+['1.2.0', '1.5.0']
+
+```
 
 ## Installing Packages
 
-Install packages with automatic version selection:
+`install_package` installs as written. `install_package_closest_version` first resolves the
+version request for the current target (or `target=`), and raises `UnsupportedVersionError` before
+running any command if no compatible version matches.
 
 ```python
 from feu import install_package, install_package_closest_version
 from feu.install import InstallerSpec
 from feu.utils.package import PackageSpec
 
-# Install a package with a specific version
 install_package(
     installer=InstallerSpec(name="pip"),
     package=PackageSpec(name="numpy", version="2.0.2"),
 )
-
-# Install the closest valid version for your environment. The compatibility is checked
-# against the current target (Python version, free-threaded flag, OS and architecture).
 install_package_closest_version(
-    installer=InstallerSpec(name="pip"),
-    package=PackageSpec(name="numpy", version="2.0.2"),
+    installer=InstallerSpec(name="uv", arguments="--upgrade"),
+    package=PackageSpec(name="numpy", version="2.*"),
 )
 ```
 
-The installers run an argument vector, never a shell string. `pip` is run as
-`<sys.executable> -m pip install ...` and `uv` as `uv pip install --python <sys.executable> ...`,
-so the packages are installed in the interpreter that runs `feu`. A `RuntimeError` is raised if
-`pip` is not available in that interpreter (for example in an environment created by `uv venv`) or
-if `uv` is not on the `PATH`. The installer arguments are a string, split once with
-`shlex.split`, or a list of strings, which is used as is:
+An installer builds one command, as an argument vector (never a shell string), and the packages are
+installed in the interpreter that runs `feu`: `pip` runs as `<sys.executable> -m pip install ...`
+and `uv` as `uv pip install --python <sys.executable> ...`. A `RuntimeError` is raised before any
+command if `pip` is not available in that interpreter (for example in an environment created by
+`uv venv`) or if `uv` is not on the `PATH`.
 
-```python
-InstallerSpec(name="pip", arguments="-U --pre")
-InstallerSpec(name="pip", arguments=["--index-url", "https://example.com/my index"])
+```pycon
+>>> from packaging.requirements import Requirement
+>>> from feu.install import InstallerSpec, PipInstaller
+>>> command = PipInstaller("-U --pre").command([Requirement("numpy==2.0.2")])
+>>> command[1:]
+['-m', 'pip', 'install', '-U', '--pre', 'numpy==2.0.2']
+>>> InstallerSpec("pip", arguments="-U --pre").arguments
+('-U', '--pre')
+
 ```
 
-`pipx` is no longer a built-in installer: it installs an application into an isolated environment,
-which is not an installation into the current environment. Register your own installer with
-`feu.install.register_installer(name, installer_class)` if you need it. Dependency resolvers
-(for example `pandas` before 2.2.2 needs `numpy<2.0.0`) are functions from a `PackageSpec` to a list
-of `packaging.requirements.Requirement`, registered with `feu.install.register_resolver(name, resolver)`.
+The arguments of an installer are a string, split once with `shlex.split`, or a list of strings,
+which is used as is. `pipx` is not a built-in installer: it installs an application into an isolated
+environment, not into the current environment.
 
-## Managing Package Configurations
+### Dependency resolvers
 
-Add custom package configurations to the default compatibility registry:
+Some packages need an extra requirement: `pandas` before 2.2.2 needs `numpy<2.0.0`. A resolver is a
+function from a `PackageSpec` to a list of `packaging.requirements.Requirement`. The resolver reasons
+on the whole version request:
 
-```python
-from feu.compat import Target, get_default_compat_registry
-from feu.compat.registry import VersionRange
+```pycon
+>>> from feu.install.resolver import resolve
+>>> from feu.utils.package import PackageSpec
+>>> resolve(PackageSpec("pandas", "2.1.1"))
+[<Requirement('pandas==2.1.1')>, <Requirement('numpy<2.0.0')>]
+>>> resolve(PackageSpec("pandas", "2.1.*"))
+[<Requirement('pandas==2.1.*')>, <Requirement('numpy<2.0.0')>]
+>>> resolve(PackageSpec("pandas", "2.*"))
+[<Requirement('pandas==2.*')>]
 
-registry = get_default_compat_registry()
-
-# Add a custom package configuration
-registry.register(
-    pkg_name="my_package",
-    target=Target(python_version="3.11"),
-    ranges=[VersionRange("1.2.0", "2.0.0")],
-    exist_ok=True,
-)
-
-# Get the configuration for a package
-config = registry.get_config(pkg_name="my_package", target=Target(python_version="3.11"))
-print(config)  # [VersionRange(min='1.2.0', max='2.0.0')]
-
-# Get version ranges as Version objects
-ranges = registry.get_version_ranges(pkg_name="numpy", target=Target(python_version="3.11"))
-for min_version, max_version in ranges:
-    print(f"Min: {min_version}, Max: {max_version}")
 ```
 
-## Working with Git Repositories
-
-If you have installed the `git` extra (`pip install 'feu[git]'`), you can work with git repositories:
-
-```python
-from feu.local_git import get_last_tag_name, get_last_version_tag_name, get_tags
-
-# Get all tags, sorted by date/time
-tags = get_tags()
-print(f"Tags: {[tag.name for tag in tags]}")
-
-# Get the name of the most recent tag
-last_tag = get_last_tag_name()
-print(f"Last tag: {last_tag}")
-
-# Get the name of the most recent version tag (e.g. "v1.2.3")
-last_version_tag = get_last_version_tag_name()
-print(f"Last version tag: {last_version_tag}")
-
-# By default, a RuntimeError is raised if no tag is found.
-# Use raise_error=False to return None instead.
-last_tag = get_last_tag_name(raise_error=False)
-last_version_tag = get_last_version_tag_name(raise_error=False)
-```
-
-## Supported Packages
-
-`feu` includes built-in version compatibility information for common packages:
-
-- **Scientific Computing**: numpy, scipy, pandas, polars, xarray, duckdb
-- **Machine Learning**: torch, jax, scikit-learn
-- **Data Handling**: pyarrow, safetensors, xy
-- **Visualization**: matplotlib, bokeh
-- **Web**: requests, click
-- **Validation**: pydantic
-
-Each package has defined minimum and maximum versions for different Python versions (3.9, 3.10,
-3.11, 3.12, 3.13, 3.14, 3.15), and some packages also account for free-threaded builds, OS, and
-CPU architecture (see [Discovering Compatibility from PyPI](#discovering-compatibility-from-pypi)
-below).
+Register your own installer or resolver in the default registries with `register_installer(name,
+installer_class)` and `register_resolver(package, resolver)`. See the
+[architecture](dev/architecture.md) page.
 
 ## Discovering Compatibility from PyPI
 
-In addition to the built-in registry, `feu` can query PyPI directly to discover which package
-versions are compatible with a given target (Python version, free-threadedness, OS, and
-architecture):
+`feu` can query PyPI to discover which package versions are compatible with each target. The result
+is the data that `dev/generate_compat_data.py` writes to `feu/compat/data`:
 
 ```python
 from feu.compat import discover_compat_targets, show_compat_targets
 
-# Discover the compatibility matrix for a package by inspecting its wheels on PyPI.
-# The result has the considered `versions` and the `targets` ranges.
+# The considered versions and the ranges of each target, from the wheels on PyPI.
 discovery = discover_compat_targets("numpy")
 
 # Pretty-print the matrix as a table (requires the `rich` extra)
 show_compat_targets(discovery, pkg_name="numpy")
 ```
 
-This is useful to keep the built-in registry up to date, or to inspect compatibility for packages
-that are not part of the registry.
+## Working with Git Repositories
+
+If you have installed the `git` extra (`pip install 'feu[git]'`):
+
+```python
+from feu.local_git import get_last_tag_name, get_last_version_tag_name, get_tags
+
+tags = get_tags()  # sorted by commit date
+last_tag = get_last_tag_name()
+last_version_tag = get_last_version_tag_name()  # e.g. "v1.2.3"
+
+# By default, a RuntimeError is raised if no tag is found.
+last_tag = get_last_tag_name(raise_error=False)  # None instead
+```
 
 ## Working with GitHub
 
-If you have installed the `requests` extra (`pip install 'feu[requests]'`), you can query GitHub
-repository metadata:
+If you have installed the `requests` extra (`pip install 'feu[requests]'`):
 
 ```python
 from feu.github import fetch_github_metadata, fetch_github_repos, sort_repos_by_key
 
-# Fetch metadata for a single repository. Authentication headers are built automatically
-# from the `GITHUB_TOKEN` environment variable, if set, to increase the rate limit.
-metadata = fetch_github_metadata(owner="durandtibo", repo="feu")
-print(metadata)
-
-# Fetch all repositories of a user or organization
-repos = fetch_github_repos(owner="durandtibo")
-
-# Sort repositories by a metadata key, e.g. "stargazers_count"
-sorted_repos = sort_repos_by_key(repos, key="stargazers_count", reverse=True)
+# The `GITHUB_TOKEN` environment variable, if set, increases the rate limit.
+metadata = fetch_github_metadata(owner="durandtibo", repo="feu")  # a read-only mapping
+repos = fetch_github_repos(owner="durandtibo")  # a tuple of read-only mappings
+by_stars = sort_repos_by_key(repos, key="stargazers_count", reverse=True)
 ```
 
 ## Testing Utilities
 
-`feu` provides testing utilities for checking package availability in tests:
+`feu.testing` provides `pytest` marks to skip a test when an optional dependency is (not) available:
 
 ```python
-from feu.testing import (
-    click_available,
-    git_available,
-    requests_available,
-)
+from feu.testing import click_available, requests_not_available
 
 
-# Use as pytest marks (skip the test if the dependency is unavailable)
 @click_available
-def test_click_feature():
-    # This test only runs if click is available
-    pass
+def test_cli_feature(): ...
 
 
-@git_available
-def test_git_feature():
-    # This test only runs if gitpython is available
-    pass
-
-
-@requests_available
-def test_http_feature():
-    # This test only runs if requests is available
-    pass
+@requests_not_available
+def test_error_without_requests(): ...
 ```
 
 Each mark has an `..._available` variant (skips the test if the dependency is _not_ available) and
 an `..._not_available` variant (skips the test if the dependency _is_ available). Marks are
-provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `polars`,
-`pyarrow`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `uv`, and `xarray`.
+provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `polars`, `pyarrow`,
+`requests`, `rich`, `scipy`, `sklearn`, `torch`, `uv`, and `xarray`.
 
 ## Common Use Cases
 
-### Use Case 1: Multi-Python Version Project
+### Install the compatible version of a dependency in a CI matrix
 
-If you're maintaining a project that supports multiple Python versions:
+```pycon
+>>> from feu.compat import Target, find_closest_version
+>>> for python_version in ("3.9", "3.10"):
+...     target = Target(python_version, os="linux", arch="x86_64")
+...     print(python_version, find_closest_version("numpy", "99.0.0", target))
+...
+3.9 2.0.2
+3.10 2.2.6
 
-```python
-import sys
-from feu.compat import Target, find_closest_version
-
-python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-
-# Find compatible numpy version
-numpy_version = find_closest_version(
-    pkg_name="numpy", pkg_version="2.0.0", target=Target(python_version=python_version)
-)
-print(f"Installing numpy {numpy_version} for Python {python_version}")
 ```
 
-### Use Case 2: Safe Package Installation
+### Conditional imports
 
-Before installing a package, check if the version is compatible:
+```pycon
+>>> from feu import is_package_available
+>>> USE_FAST_PATH = is_package_available("not_an_installed_package")
+>>> USE_FAST_PATH
+False
 
-```python
-import sys
-from feu.compat import Target, is_valid_version
-from feu import install_package
-from feu.install import InstallerSpec
-from feu.utils.package import PackageSpec
-
-python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-desired_version = "2.0.2"
-
-if is_valid_version("numpy", desired_version, Target(python_version=python_version)):
-    install_package(
-        installer=InstallerSpec(name="pip"),
-        package=PackageSpec(name="numpy", version=desired_version),
-    )
-else:
-    print(f"Version {desired_version} is not compatible with Python {python_version}")
-```
-
-### Use Case 3: Conditional Imports
-
-Use package availability checks for conditional imports:
-
-```python
-from feu import is_package_available
-
-if is_package_available("torch"):
-    import torch
-
-    USE_PYTORCH = True
-else:
-    USE_PYTORCH = False
-    print("PyTorch not available, using fallback implementation")
 ```

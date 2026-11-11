@@ -21,6 +21,9 @@ nav:
   - Get Started: get_started.md
   - Usage Guide: usage.md
   - CLI Reference: cli.md
+  - Properties: properties.md
+  - Architecture: dev/architecture.md
+  - Migration to 0.9: migration.md
   - API Reference:
       - Main Functions: refs/root.md
       - Compat: refs/compat.md
@@ -38,6 +41,7 @@ repo_url: https://github.com/durandtibo/feu
 repo_name: durandtibo/feu
 
 markdown_extensions:
+  - mkdocs-click
   - pymdownx.highlight
   - pymdownx.superfences
   - pymdownx.snippets
