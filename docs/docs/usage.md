@@ -93,6 +93,33 @@ from feu.compat import resolve_target
 target = resolve_target(python_version="3.14t", os="linux", arch="x86_64")
 ```
 
+### Version Requests
+
+Wherever a function takes the version of a package to install or to validate, it accepts a version
+*request*: an exact version (`"2.4.0"`), a wildcard (`"2.4.*"`, `"2.*"`) or an empty string / `None`
+for the latest version. A wildcard is digits and dots followed by one trailing `.*`; anything else
+with a `*` raises `ValueError`.
+
+```python
+from feu.compat import Target, find_closest_version, is_valid_version
+
+target = Target(python_version="3.9", os="linux", arch="x86_64")
+
+is_valid_version("numpy", "1.*", target)  # True: a 1.x release supports Python 3.9
+is_valid_version("numpy", "3.*", target)  # False: there is no 3.x release
+find_closest_version("numpy", "1.*", target)  # "1.26.4": the latest compatible 1.x release
+find_closest_version("numpy", "", target)  # "2.0.2": the latest release that supports Python 3.9
+```
+
+A request is resolved against the versions the registry knows. When the latest compatible release
+lies in an open-ended range (the newest release was compatible when the data was generated), the
+request itself is returned (`"2.*"` or `""`), so that the installer picks the real latest release.
+`install_package_closest_version` checks every request this way and raises
+`UnsupportedVersionError` before running any command if no compatible version matches. A package
+with no registered versions has no data: a wildcard or empty request is invalid for
+`is_valid_version` and is returned unchanged by `find_closest_version`. Use
+`registry.register_versions(name, versions)` to give a package its versions.
+
 ## Installing Packages
 
 Install packages with automatic version selection:

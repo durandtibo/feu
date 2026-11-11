@@ -77,23 +77,30 @@ def register_compat(
     get_default_registry().register_many(mapping, exist_ok=exist_ok)
 
 
-def find_closest_version(pkg_name: str, pkg_version: str, target: Target) -> str:
+def find_closest_version(pkg_name: str, pkg_version: str | None, target: Target) -> str:
     r"""Find the closest valid version for a package using the default
     registry.
 
     Args:
         pkg_name: The package name to check (e.g., ``"numpy"``).
-        pkg_version: The requested package version.
+        pkg_version: The requested package version: an exact
+            version, a wildcard (e.g. ``"2.*"``) or ``""``/``None``
+            for the latest version.
         target: The compatibility target.
 
     Returns:
-        The closest valid version as a string. The requested version
-            is returned unchanged if it is valid or if the package is
-            not configured for the target.
+        The closest valid version as a string. An exact version is
+            returned unchanged if it is valid or if the package is not
+            configured for the target. A wildcard or empty request is
+            resolved to the latest compatible version, or returned
+            unchanged if it lies in an open-ended range (see
+            ``CompatRegistry.find_closest_version``).
 
     Raises:
         UnsupportedVersionError: If no package version is valid for
-            the given target.
+            the given target, or if no known version satisfies a
+            wildcard request.
+        ValueError: If ``pkg_version`` is not a valid version request.
 
     Example:
         ```pycon
@@ -110,19 +117,25 @@ def find_closest_version(pkg_name: str, pkg_version: str, target: Target) -> str
     )
 
 
-def is_valid_version(pkg_name: str, pkg_version: str, target: Target) -> bool:
+def is_valid_version(pkg_name: str, pkg_version: str | None, target: Target) -> bool:
     r"""Check if a package version is valid for a target using the
     default registry.
 
     Args:
         pkg_name: The package name to check (e.g., ``"numpy"``).
-        pkg_version: The package version to validate.
+        pkg_version: The package version request to validate: an
+            exact version, a wildcard (e.g. ``"2.*"``) or
+            ``""``/``None`` for the latest version.
         target: The compatibility target.
 
     Returns:
         ``True`` if valid or unconfigured, ``False`` otherwise,
             including when no package version is valid for the
-            target.
+            target. A wildcard or empty request is valid if a known
+            compatible version satisfies it.
+
+    Raises:
+        ValueError: If ``pkg_version`` is not a valid version request.
 
     Example:
         ```pycon

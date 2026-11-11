@@ -15,7 +15,11 @@ from typing import TYPE_CHECKING, NamedTuple
 from packaging.utils import canonicalize_name
 from packaging.version import Version
 
+from feu.version.request import parse_version_request
+
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from feu.compat.target import Target
 
 
@@ -98,6 +102,7 @@ class CompatRegistry:
         self, initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None
     ) -> None:
         self._state: dict[str, dict[Target, list[VersionRange]]] = {}
+        self._versions: dict[str, tuple[str, ...]] = {}
         self.register_many(copy.deepcopy(initial_state or {}))
 
     def __repr__(self) -> str:
@@ -392,20 +397,18 @@ class CompatRegistry:
         resolved.sort(key=lambda r: (r[0] is not None, r[0]))
         return resolved
 
-    def find_closest_version(self, pkg_name: str, pkg_version: str, target: Target) -> str:
-        r"""Find the closest valid version for a package.
+    def _find_closest_exact_version(self, pkg_name: str, pkg_version: str, target: Target) -> str:
+        r"""Find the closest valid version for an exact version.
 
         Args:
             pkg_name: The package name to check (e.g., ``"numpy"``).
-            pkg_version: The requested package version.
+            pkg_version: The requested exact package version.
             target: The compatibility target.
 
         Returns:
-            The closest valid version as a string. The requested
-                version is returned unchanged if it is valid or if
-                the package is not configured for the target.
-                Otherwise, the nearest range boundary is returned, as
-                it was registered.
+            The requested version if it is valid or if the package is
+                not configured for the target, otherwise the nearest
+                range boundary, as it was registered.
 
         Raises:
             UnsupportedVersionError: If no package version is valid
@@ -451,28 +454,241 @@ class CompatRegistry:
         msg = "unreachable: version did not match any range, boundary, or gap"  # pragma: no cover
         raise AssertionError(msg)  # pragma: no cover
 
-    def is_valid_version(self, pkg_name: str, pkg_version: str, target: Target) -> bool:
-        r"""Check if a package version is valid for a target.
+    def _is_valid_exact_version(self, pkg_name: str, pkg_version: str, target: Target) -> bool:
+        r"""Check if an exact package version is valid for a target.
 
         Args:
             pkg_name: The package name to check (e.g., ``"numpy"``).
-            pkg_version: The package version to validate.
+            pkg_version: The exact package version to validate.
             target: The compatibility target.
 
         Returns:
             ``True`` if valid for any registered range or
-            unconfigured, ``False`` otherwise, including when no
-            package version is valid for the given target.
+                unconfigured, ``False`` otherwise, including when no
+                package version is valid for the given target.
         """
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             return False
         version = Version(pkg_version)
         ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
         # If unconfigured (no ranges), any version is valid
-        if not ranges:
-            return True
+        return not ranges or self._in_ranges(version, ranges)
+
+    def register_versions(
+        self, pkg_name: str, versions: Iterable[str], *, exist_ok: bool = False
+    ) -> None:
+        r"""Register the versions the registry knows for a package.
+
+        A wildcard or empty version request (e.g. ``"2.*"``) is matched
+        against these versions.
+
+        Args:
+            pkg_name: The package name (e.g., ``"numpy"``). It is
+                canonicalised (PEP 503).
+            versions: The known versions, in any order. Duplicates are
+                removed and the versions are sorted by PEP 440 order.
+            exist_ok: If ``False``, a ``RuntimeError`` is raised when
+                versions are already registered for the package. Set
+                to ``True`` to overwrite.
+
+        Raises:
+            RuntimeError: If versions are already registered for the
+                package and ``exist_ok`` is ``False``.
+            packaging.version.InvalidVersion: If a version is not a
+                valid PEP 440 version.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry
+            >>> registry = CompatRegistry()
+            >>> registry.register_versions("numpy", ["2.0.0", "1.26.4", "2.0.2"])
+
+            ```
+        """
+        name = canonicalize_name(pkg_name)
+        if name in self._versions and not exist_ok:
+            msg = (
+                f"Versions are already registered for package {name}. Please use "
+                "`exist_ok=True` if you want to overwrite them"
+            )
+            raise RuntimeError(msg)
+        self._versions[name] = tuple(sorted(dict.fromkeys(versions), key=Version))
+
+    def get_compatible_versions(
+        self, pkg_name: str, target: Target, pkg_version: str | None = ""
+    ) -> list[str]:
+        r"""Get the known versions that are valid for a target and
+        satisfy a version request.
+
+        Args:
+            pkg_name: The package name (e.g., ``"numpy"``).
+            target: The compatibility target.
+            pkg_version: The version request: an exact version, a
+                wildcard (e.g. ``"2.*"``) or ``""``/``None`` for every
+                version.
+
+        Returns:
+            The versions registered with ``register_versions`` that lie
+                in a valid range of the target and satisfy the
+                request, in PEP 440 order. The list is empty if the
+                package has no registered versions, if no version is
+                valid for the target, or if nothing matches. A package
+                that has no configuration for the target accepts every
+                known version.
+
+        Raises:
+            ValueError: If ``pkg_version`` is not a valid version
+                request.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> target = Target(python_version="3.11")
+            >>> registry = CompatRegistry({"numpy": {target: [VersionRange("1.0.0", "1.26.4")]}})
+            >>> registry.register_versions("numpy", ["1.0.0", "1.26.4", "2.0.0"])
+            >>> registry.get_compatible_versions("numpy", target)
+            ['1.0.0', '1.26.4']
+            >>> registry.get_compatible_versions("numpy", target, "2.*")
+            []
+
+            ```
+        """
+        request = parse_version_request(pkg_version)
+        known = self._versions.get(canonicalize_name(pkg_name), ())
+        if self.is_unsupported(pkg_name=pkg_name, target=target):
+            return []
+        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
+        return [
+            version
+            for version in known
+            if request.matches(Version(version))
+            and (not ranges or self._in_ranges(Version(version), ranges))
+        ]
+
+    @staticmethod
+    def _in_ranges(version: Version, ranges: list[tuple[Version | None, Version | None]]) -> bool:
+        r"""Indicate if a version lies in at least one range.
+
+        Args:
+            version: The version to check.
+            ranges: The ``(min, max)`` ranges, a ``None`` bound being
+                unconstrained.
+
+        Returns:
+            ``True`` if ``version`` is in a range, otherwise
+                ``False``.
+        """
         return any(
             (min_version is None or min_version <= version)
             and (max_version is None or version <= max_version)
             for min_version, max_version in ranges
         )
+
+    def find_closest_version(self, pkg_name: str, pkg_version: str | None, target: Target) -> str:
+        r"""Find the closest valid version for a package.
+
+        Args:
+            pkg_name: The package name to check (e.g., ``"numpy"``).
+            pkg_version: The requested package version: an exact
+                version (e.g. ``"2.0.2"``), a wildcard (e.g.
+                ``"2.*"``) or ``""``/``None`` for the latest
+                version.
+            target: The compatibility target.
+
+        Returns:
+            The version to install, as a string.
+
+            - For an exact version: the version itself if it is valid
+              or if the package is not configured for the target,
+              otherwise the nearest range boundary, as it was
+              registered.
+            - For a wildcard or the latest version: the latest known
+              compatible version that satisfies the request. If it
+              lies in an open-ended range, the request itself is
+              returned (``"2.*"``, or ``""``) so that the installer
+              picks the real latest release, which may be newer than
+              the registered versions. If the registry has no versions
+              for the package, the request is returned unchanged.
+
+        Raises:
+            UnsupportedVersionError: If no package version is valid
+                for the given target, or if no known version
+                satisfies a wildcard request.
+            ValueError: If ``pkg_version`` is not a valid version
+                request.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> target = Target(python_version="3.11")
+            >>> registry = CompatRegistry({"numpy": {target: [VersionRange("1.0.0", "1.26.4")]}})
+            >>> registry.register_versions("numpy", ["1.0.0", "1.26.4", "2.0.0"])
+            >>> registry.find_closest_version("numpy", "2.0.0", target)
+            '1.26.4'
+            >>> registry.find_closest_version("numpy", "", target)
+            '1.26.4'
+
+            ```
+        """
+        request = parse_version_request(pkg_version)
+        if request.exact is not None:
+            return self._find_closest_exact_version(pkg_name, request.text, target)
+        if self.is_unsupported(pkg_name=pkg_name, target=target):
+            msg = f"No version of package {pkg_name} is compatible with target {target}"
+            raise UnsupportedVersionError(msg)
+        if canonicalize_name(pkg_name) not in self._versions:
+            return request.text
+        compatible = self.get_compatible_versions(pkg_name, target, request.text)
+        if not compatible:
+            what = f"matches {request.text!r}" if request.text else "is available"
+            msg = f"No version of package {pkg_name} {what} for target {target}"
+            raise UnsupportedVersionError(msg)
+        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
+        latest = Version(compatible[-1])
+        if not ranges or any(
+            max_version is None and (min_version is None or min_version <= latest)
+            for min_version, max_version in ranges
+        ):
+            return request.text
+        return compatible[-1]
+
+    def is_valid_version(self, pkg_name: str, pkg_version: str | None, target: Target) -> bool:
+        r"""Check if a package version is valid for a target.
+
+        Args:
+            pkg_name: The package name to check (e.g., ``"numpy"``).
+            pkg_version: The package version request: an exact
+                version, a wildcard (e.g. ``"2.*"``) or
+                ``""``/``None`` for the latest version.
+            target: The compatibility target.
+
+        Returns:
+            For an exact version: ``True`` if valid for any registered
+            range or unconfigured, ``False`` otherwise, including when
+            no package version is valid for the given target. For a
+            wildcard or the latest version: ``True`` if at least one
+            known compatible version satisfies the request (see
+            ``get_compatible_versions``); a package without registered
+            versions gives ``False``.
+
+        Raises:
+            ValueError: If ``pkg_version`` is not a valid version
+                request.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> target = Target(python_version="3.11")
+            >>> registry = CompatRegistry({"numpy": {target: [VersionRange("1.0.0", "1.26.4")]}})
+            >>> registry.register_versions("numpy", ["1.0.0", "1.26.4", "2.0.0"])
+            >>> registry.is_valid_version("numpy", "1.*", target)
+            True
+            >>> registry.is_valid_version("numpy", "2.*", target)
+            False
+
+            ```
+        """
+        request = parse_version_request(pkg_version)
+        if request.exact is not None:
+            return self._is_valid_exact_version(pkg_name, request.text, target)
+        return bool(self.get_compatible_versions(pkg_name, target, request.text))

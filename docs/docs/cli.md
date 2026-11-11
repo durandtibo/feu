@@ -27,7 +27,7 @@ python -m feu install [OPTIONS]
 ### Options
 
 - `-n, --pkg-name TEXT` - Package name (required)
-- `-v, --pkg-version TEXT` - Package version (required)
+- `-v, --pkg-version TEXT` - Package version request: an exact version (`2.0.2`), a wildcard (`2.*`) or an empty string for the latest version (optional, default: latest)
 - `-e, --pkg-extras TEXT` - Package extra dependencies (required, comma-separated; pass an empty string for none)
 - `-i, --installer-name TEXT` - Installer name (default: "pip")
 - `-a, --installer-args TEXT` - Installer arguments (default: "", i.e. none)
@@ -69,7 +69,7 @@ python -m feu find-closest-version [OPTIONS]
 ### Options
 
 - `-n, --pkg-name TEXT` - Package name (required)
-- `-v, --pkg-version TEXT` - Package version to check (required)
+- `-v, --pkg-version TEXT` - Package version request to check: an exact version (`2.0.2`), a wildcard (`2.*`) or an empty string for the latest version (optional, default: latest)
 - `-p, --python-version TEXT` - Python version, e.g. "3.10", "3.11" (optional; defaults to the
   current Python version)
 - `-f, --free-threaded BOOLEAN` - Whether the target is a free-threaded build (optional; defaults
@@ -130,7 +130,7 @@ python -m feu check-valid-version [OPTIONS]
 ### Options
 
 - `-n, --pkg-name TEXT` - Package name (required)
-- `-v, --pkg-version TEXT` - Package version to check (required)
+- `-v, --pkg-version TEXT` - Package version request to check: an exact version (`2.0.2`), a wildcard (`2.*`) or an empty string for the latest version (optional, default: latest)
 - `-p, --python-version TEXT` - Python version, e.g. "3.10", "3.11" (optional; defaults to the
   current Python version)
 - `-f, --free-threaded BOOLEAN` - Whether the target is a free-threaded build (optional; defaults
