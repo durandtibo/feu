@@ -69,7 +69,7 @@ are new rules. Today the package breaks properties 1, 3, 4, 6, 7, 8, 9, 11, 14 a
 | F8  | **`import feu` is not light.** 117 ms cumulative (`-X importtime`): `feu.compat` 70 ms (it imports the discovery code and the version fetchers), `requests` 43 ms. After `import feu`, `requests`, `urllib3` and `rich` are in `sys.modules` (`feu.compat.matrix` imports `rich` at module level, against `CLAUDE.md`). The first lookup builds the registry from 17 Python modules: 0.10 s.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | **[verified]**                  | 1, 2     |
 | F9  | **The shipped data is 3,500 lines of generated Python** (172 KB, 17 modules plus `__init__`), imported whole to answer a question about one package. The list of packages is hard-coded in `compat/packages.py`, the generator reads it, the registry finds the modules with `pkgutil`: a new package needs edits in several places. Of the 1,020 targets, only 361 are distinct per `(package, python, free_threaded)` (the platforms mostly agree). The generator writes `repr(dict)` and relies on the pre-commit formatter.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | **[verified]**/**[reading]**    | 5, 10    |
 | F10 | **Four registries, four implementations.** `InstallerRegistry` and `DependencyResolverRegistry` are class-level global state (`ClassVar[dict]`, classmethods); `CompatRegistry` and `CompatDiscovererRegistry` are instances. Each re-implements `register`, `register_many`, `has_*`, `find_*` and the "already registered" error. There are two functions named `get_default_registry` (`feu.compat` and `feu.compat.discoverers`). `add_resolver`/`has_resolver` take a whole `PackageSpec` to read `.name`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | **[reading]**                   | 6        |
-| F11 | **Discovery is 1,122 lines for one algorithm.** `CompatDiscoverer`, `DuckdbCompatDiscoverer`, `JaxCompatDiscoverer`, `PolarsCompatDiscoverer`, `PydanticCompatDiscoverer`, a base class, a registry and `utils.py`. They differ by data: a version to ignore (`duckdb 0.0.0`), a _companion_ package whose wheels carry the platform tags (`jaxlib` at the same version; `polars-runtime-32` and `pydantic-core` at the pinned version). There are two near-identical matchers (`_is_tag_compatible` in `default.py`, `tags_match_exactly` in `utils.py`) and `polars.py` and `pydantic.py` are the same file with two constants.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | **[reading]**                   | 5        |
+| F11 | **Discovery is 1,122 lines for one algorithm.** `CompatDiscoverer`, `DuckdbCompatDiscoverer`, `JaxCompatDiscoverer`, `PolarsCompatDiscoverer`, `PydanticCompatDiscoverer`, a base class, a registry and `utils.py`. They differ by data: a version to ignore (`duckdb 0.0.0`), a _companion_ package whose wheels carry the platform tags (`jaxlib` at the same version; `polars-runtime-32` and `pydantic-core` at the pinned version). There are two near-identical matchers (`_is_tag_compatible` in `default.py`, `tags_match_exactly` in `utils.py`) and `polars.py` and `pydantic.py` are the same file with two constants (**verified** with `diff` after renaming the identifiers: only names and docstrings differ). The two matchers give the same answer for platform wheels; they differ only for pure-Python wheels (`_is_tag_compatible` lets `requires-python` decide, `tags_match_exactly` never matches them), which is exactly the behaviour that the `companion` rule of 3.5 has to keep.                                                                                                  | **[reading]**                   | 5        |
 | F12 | **PyPI access.** `fetch_pypi_versions`, `fetch_pypi_requires_python` and `fetch_pypi_wheel_filenames` download the same JSON document three times. All use the `releases` key, which the PyPI documentation lists as **deprecated** ("use the Index API"). The Simple API in JSON form (PEP 691 and 700) returns the version list, the file names, `requires-python`, `yanked` and `upload-time` in one request, and is smaller (numpy: 2.8 MB against 3.7 MB). `fetch_pypi_versions` returns versions sorted **as strings** (`"1.10" < "1.9"`). Cached functions return mutable `dict`s. The pinned-dependency lookup ignores environment markers. The package name is not quoted in the URL.                                                                                                                                                                                                                                                                                                                                                                                                                | **[verified]**/**[reading]**    | 7, 9, 10 |
 | F13 | **Optional imports are five copies of one file** (`imports/{click,git,requests,rich,urllib3}.py`, about 90 lines each), plus a `decorator_package_available` that returns `None` when a package is missing (no consumer in `src`), plus four fallback modules that build fake `click`/`git`/`requests`/`urllib3` objects, plus `TYPE_CHECKING or is_x_available()` blocks in four modules. The checks are cached with `lru_cache` and nothing resets them: after `install_package("numpy")`, `is_package_available("numpy")` can stay `False`, and the tests call `cache_clear()` function by function. `is_module_available` catches only `ImportError`, so a broken install (missing shared library) crashes the caller. `coola` already solved all of this (`availability_cache`, `clear_availability_caches`, `module_available` that logs and returns `False`, `MissingPackageError`, `lazy_exports`). `requests` depends on `urllib3`, so the separate `urllib3` import helper is redundant (the `urllib3>=2.0` pin of the `requests` extra is not: it defines the range the CI matrix tests, see 3.2). | **[reading]**/**[downstream]**  | 1, 2, 9  |
 | F14 | **CLI.** `install` has no way to say which environment it targets and does not need one (it installs into the current interpreter); `--pkg-extras`, `--installer-name` and `--installer-args` are `required=True` **and** have defaults; `--free-threaded` is `type=bool` (`--free-threaded true`); the three commands repeat the same four options; `find-closest-version` prints the literal `None` and exits `0` for an unsupported package; `check-valid-version` always exits `0`; no `--version`; logging is never configured, so the `execute the following command` log is invisible; there is no console script, only `python -m feu`.                                                                                                                                                                                                                                                                                                                                                                                                                                                               | **[reading]**                   | 11       |
@@ -135,8 +135,10 @@ def package_available(name: str) -> bool:  # find_spec, the package is not impor
 
 
 @availability_cache
-def module_available(name: str) -> bool:  # imports the module; any failure of a broken install is False
-    ...  # and is logged with logger.warning(..., exc_info=True)
+def module_available(name: str) -> bool:
+    # imports the module; any failure of a broken install is False, and is logged
+    # with logger.warning(..., exc_info=True)
+    ...
 
 
 def clear_availability_caches() -> None: ...
@@ -261,8 +263,9 @@ upper=None, include_lower_bound=False)` with `group` in `{"major", "minor"}`, wh
 ### 3.5 `feu.compat` (property 3, 4, 5, 7)
 
 **Target.** `Target(python_version, free_threaded=False, os=None, arch=None)` is unchanged (frozen,
-validated with `fullmatch`). `resolve_target(python_version=None, *, free_threaded=None, os=None,
-arch=None)` makes the options keyword-only and stays the only way to get the current environment.
+validated with `fullmatch`). `resolve_target(python_version=None, *, free_threaded=None)` is the only way to get the current
+environment: the Python version and the free-threaded flag can be chosen (a CI matrix checks other
+Python versions), the **platform is always the current one** (D6, below).
 
 **Matching rule (fixes F1).** A lookup field set to `None` means "any". An entry matches a lookup
 when `python_version` and `free_threaded` are equal and each of `os`/`arch` is `None` in the entry,
@@ -343,11 +346,21 @@ free_threaded, os, arch)` through three small tables:
 
 `free_threaded` is `abi in {"cp3Xt", "abi3t"}` (a regular expression, not `endswith("t")`); `abi3t`
 is a stable-ABI tag like `abi3`. `parse_wheel_filename` returns a tuple of tags (empty only for the
-documented out-of-scope platforms). See D6 and D7. **D6 (decision: only the platforms the package
-supports now; more later, without redesign):** the platform knowledge is in three places only, the
-closed `VALID_OS`/`VALID_ARCH` sets of `target.py`, the table above, and the `PLATFORMS` constant
-that builds `DEFAULT_TARGETS`; adding a platform (musl, a 32-bit arch) is a new row in each plus a
-regeneration, and the data format, the registry and the CLI do not change.
+documented out-of-scope platforms). See D6 and D7.
+
+**Platforms (decision D6: for now, only the current platform; more platforms must stay possible).**
+Every operation that acts on the environment (`install_package_closest_version`, the CLI, the
+default of `resolve_target`) uses `get_current_os()` and `get_current_arch()`; no public option
+selects another OS or architecture for now: the CLI has no `--os`/`--arch` and `resolve_target` has
+no `os`/`arch` parameter. What stays, because the shipped data needs it: `Target.os`/`Target.arch`
+(the key of the data and of the registry), the data for every platform `feu` can run on (the weekly
+bot generates the whole grid, since `feu` is installed on all of them), and the matching rule of D1
+for a `Target` that leaves them to `None`. Adding platforms later is additive, in this order:
+(1) the closed `VALID_OS`/`VALID_ARCH` sets and the `PLATFORMS` constant of `target.py` that builds
+`DEFAULT_TARGETS`; (2) a row in the platform table above (musl, a 32-bit arch); (3) regenerate the
+data; (4) give `resolve_target` its `os=None, arch=None` parameters back and add `--os`/`--arch` to
+`target_options` (the default stays "the current platform", so no caller breaks). The data format,
+the registry, the discovery function and the installers do not change in any of the four steps.
 
 **Discovery.** One function replaces 1,122 lines:
 
@@ -506,7 +519,7 @@ is added; `python -m feu` keeps working.
 | Command                  | Options                                                                                                                                                                                                                      | Output and exit status                                                                                                                               |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `install`                | `-n/--pkg-name`, `-v/--pkg-version` (a version request, default `""` = latest), `-e/--pkg-extras` (default `""`), `-i/--installer-name` (default `pip`), `-a/--installer-args` (default `""`, split with `shlex.split` once) | installs into the **current** interpreter, for the **current** target; `1` on `UnsupportedVersionError`                                              |
-| `find-closest-version`   | `-n`, `-v` (a request, default `""`), `-p/--python-version`, `--free-threaded/--no-free-threaded`, `-o/--os`, `-r/--arch` (one shared `target_options` decorator)                                                            | stdout: the version to install (for an open-ended wildcard or `""`: the request itself, 3.9); unsupported: message on stderr, empty stdout, exit `1` |
+| `find-closest-version`   | `-n`, `-v` (a request, default `""`), `-p/--python-version`, `--free-threaded/--no-free-threaded` (one shared `target_options` decorator; **no `--os`/`--arch`**, D6: the platform is the current one)                       | stdout: the version to install (for an open-ended wildcard or `""`: the request itself, 3.9); unsupported: message on stderr, empty stdout, exit `1` |
 | `check-valid-version`    | same as above                                                                                                                                                                                                                | stdout `True`/`False` (unchanged); exit `0` when valid, `1` when not                                                                                 |
 | `package-versions` (new) | `--pyproject`, `--output`, `--major-only` (repeatable, default `packaging`)                                                                                                                                                  | writes the JSON of `fetch_package_versions` (3.4)                                                                                                    |
 
@@ -514,8 +527,9 @@ is added; `python -m feu` keeps working.
 `--free-threaded true` no longer parses (the one consumer found does not use it).
 
 Global: `--version`, `--verbose` (configures logging to stderr; no short flag, `-v` is the
-package version). All short and long names of the three existing commands are unchanged, because an
-external action uses them (section 5). `install` does **not** get target options: it installs into
+package version). The short and long names of the options that stay are unchanged, because an
+external action uses them (section 5; it passes `--python-version` and never `--os`/`--arch`).
+`--os` and `--arch` are removed for now (D6); they come back with the platform work described in 3.5. `install` does **not** get target options: it installs into
 the interpreter that runs it, so any other target would contradict property 8; installing into
 another environment is a different feature (section 10).
 
@@ -656,7 +670,7 @@ check_package(package, *, install=None), raise_package_missing_error(...), Missi
 is_click_available(), check_click()  # also git, requests, rich
 
 # feu.compat
-Target, resolve_target(python_version=None, *, free_threaded=None, os=None, arch=None)
+Target, resolve_target(python_version=None, *, free_threaded=None)  # platform: always the current one (D6)
 VersionRange, CompatRegistry, UnsupportedVersionError
 get_default_compat_registry(), register_compat(mapping, *, exist_ok=False)
 find_closest_version(pkg_name, pkg_version, target, *, registry=None)  # pkg_version: a version request
@@ -693,23 +707,24 @@ Registry, run_command, fetch_data, fetch_response, PackageSpec
 
 Old to new, for the migration page:
 
-| Old                                                                                                                                 | New                                                                                                                          |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `feu.compat.get_default_registry`, `feu.compat.discoverers.get_default_registry`                                                    | `get_default_compat_registry`; the second one is deleted                                                                     |
-| `InstallerRegistry.add_installer(...)`, `DependencyResolverRegistry.add_resolver(PackageSpec, ...)`                                 | `register_installer(name, ...)`, `register_resolver(name, ...)`                                                              |
-| `BaseInstaller`, `BasePipInstaller`, `PipxInstaller`, `BaseDependencyResolver`, the seven `*DependencyResolver`                     | `Installer`, `PipInstaller`, `UvInstaller`; a resolver is a function                                                         |
-| `InstallerSpec("pip", arguments="-U")`                                                                                              | `InstallerSpec("pip", arguments=("-U",))`                                                                                    |
-| `run_bash_command("pip install x")`                                                                                                 | `run_command(["pip", "install", "x"])`                                                                                       |
-| `BaseCompatDiscoverer`, `CompatDiscoverer`, `*CompatDiscoverer`, `CompatDiscovererRegistry`, `register_discoverers`                 | `discover_compat_targets(..., companion=...)`                                                                                |
-| `feu.compat.discovered`, `feu.compat.packages.get_package_names`                                                                    | `feu/compat/data/*.json`, `CompatRegistry.packages()`                                                                        |
-| `feu.version.normalize_package_name`                                                                                                | `packaging.utils.canonicalize_name`                                                                                          |
-| `read_pyproject_dependencies`, `read_pyproject_optional_dependencies`, `read_pyproject_package_bounds`                              | `read_pyproject_bounds`                                                                                                      |
-| `fetch_latest_{major,minor}_versions[_map]`, `fetch_sampled_latest_minor_versions`                                                  | `fetch_latest_versions(group=...)`, `fetch_package_versions`                                                                 |
-| `feu.version.get_python_major_minor`                                                                                                | `feu.utils.platform.get_python_version`                                                                                      |
-| `feu.imports.{click,git,requests,rich,urllib3}`; `decorator_package_available`; `raise_*_missing_error`; `@lru_cache` on the checks | `feu.imports.optional`, `package.py` (port of `coola.utils.imports`), `availability_cache`, `check_*`, `MissingPackageError` |
-| `feu.imports.urllib3`, `check_urllib3`, `is_urllib3_available`, the `urllib3` mark of `feu.testing`                                 | deleted (`check_requests` covers it); `feu[requests]` is **unchanged** (it keeps `requests` and the `urllib3>=2.0` pin)      |
-| `is_wildcard_version`, a wildcard skipped by the compatibility check and by the resolvers, `RuntimeError` for no version            | `parse_version_request`; a wildcard, `""` and `None` are resolved and checked like a version                                 |
-| `feu.github`                                                                                                                        | kept (D3); it uses the new `fetch_data`/`fetch_response`, and the cached functions return read-only values (3.10)            |
+| Old                                                                                                                                 | New                                                                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `feu.compat.get_default_registry`, `feu.compat.discoverers.get_default_registry`                                                    | `get_default_compat_registry`; the second one is deleted                                                                                                         |
+| `InstallerRegistry.add_installer(...)`, `DependencyResolverRegistry.add_resolver(PackageSpec, ...)`                                 | `register_installer(name, ...)`, `register_resolver(name, ...)`                                                                                                  |
+| `BaseInstaller`, `BasePipInstaller`, `PipxInstaller`, `BaseDependencyResolver`, the seven `*DependencyResolver`                     | `Installer`, `PipInstaller`, `UvInstaller`; a resolver is a function                                                                                             |
+| `InstallerSpec("pip", arguments="-U")`                                                                                              | `InstallerSpec("pip", arguments=("-U",))`                                                                                                                        |
+| `run_bash_command("pip install x")`                                                                                                 | `run_command(["pip", "install", "x"])`                                                                                                                           |
+| `BaseCompatDiscoverer`, `CompatDiscoverer`, `*CompatDiscoverer`, `CompatDiscovererRegistry`, `register_discoverers`                 | `discover_compat_targets(..., companion=...)`                                                                                                                    |
+| `feu.compat.discovered`, `feu.compat.packages.get_package_names`                                                                    | `feu/compat/data/*.json`, `CompatRegistry.packages()`                                                                                                            |
+| `feu.version.normalize_package_name`                                                                                                | `packaging.utils.canonicalize_name`                                                                                                                              |
+| `read_pyproject_dependencies`, `read_pyproject_optional_dependencies`, `read_pyproject_package_bounds`                              | `read_pyproject_bounds`                                                                                                                                          |
+| `fetch_latest_{major,minor}_versions[_map]`, `fetch_sampled_latest_minor_versions`                                                  | `fetch_latest_versions(group=...)`, `fetch_package_versions`                                                                                                     |
+| `feu.version.get_python_major_minor`                                                                                                | `feu.utils.platform.get_python_version`                                                                                                                          |
+| `resolve_target(python_version, free_threaded, os, arch)`; CLI `--os`, `--arch`; `--free-threaded true`                             | `resolve_target(python_version=None, *, free_threaded=None)` (the platform is the current one, D6); no `--os`/`--arch`; `--free-threaded` / `--no-free-threaded` |
+| `feu.imports.{click,git,requests,rich,urllib3}`; `decorator_package_available`; `raise_*_missing_error`; `@lru_cache` on the checks | `feu.imports.optional`, `package.py` (port of `coola.utils.imports`), `availability_cache`, `check_*`, `MissingPackageError`                                     |
+| `feu.imports.urllib3`, `check_urllib3`, `is_urllib3_available`, the `urllib3` mark of `feu.testing`                                 | deleted (`check_requests` covers it); `feu[requests]` is **unchanged** (it keeps `requests` and the `urllib3>=2.0` pin)                                          |
+| `is_wildcard_version`, a wildcard skipped by the compatibility check and by the resolvers, `RuntimeError` for no version            | `parse_version_request`; a wildcard, `""` and `None` are resolved and checked like a version                                                                     |
+| `feu.github`                                                                                                                        | kept (D3); it uses the new `fetch_data`/`fetch_response`, and the cached functions return read-only values (3.10)                                                |
 
 ## 5. Dependents
 
@@ -782,7 +797,9 @@ generated data (section 8).
 ## 7. Changes to reach the target state
 
 One branch and one pull request per step (`CLAUDE.md`), stacked where a step needs the previous
-one. The order keeps every step releasable and puts the correctness fixes first.
+one. The order keeps every step releasable and puts the correctness fixes first. All the steps ship
+in the next release, `0.9.0` (D12; `pyproject.toml` is already at `0.9.0a0`); `1.0.0` is a later
+decision.
 
 | Step | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Fixes       | Breaking                                                                |
 | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------- |
@@ -794,7 +811,7 @@ one. The order keeps every step releasable and puts the correctness fixes first.
 | 5    | **Imports: port `coola.utils.imports`** (`package.py`, `optional.py`, `lazy.py`, with their docstrings and tests): `availability_cache`, `clear_availability_caches` (called after a successful `install_package`), `MissingPackageError`, `check_*`; keep `is_package_available`/`is_module_available` as aliases; no `urllib3` helper, no decorators; delete `utils/fallback`; lazy `requests`/`git`/`rich`; `lazy_exports` in `feu/__init__.py`. Import test.                                                                                                                                                                                          | F8, F13     | yes (small)                                                             |
 | 6    | **PyPI.** `fetch_pypi_project` on the Simple API, frozen types, PEP 440 order, one `fetch_latest_versions`, `read_pyproject_bounds`, `fetch_package_versions`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | F5, F12     | yes                                                                     |
 | 7    | **Discovery and data**, in three commits: (a) one discovery function with `companion=` on top of the **current** tag parser, data regenerated: the diff must be **empty**; (b) the `packaging`-based tag parser, data regenerated, the diff is reviewed and explained in the PR; (c) JSON data, lazy loader, delete `discovered/`, `packages.py`, `matrix.py`, `discoverers/`; adapt the bot workflow.                                                                                                                                                                                                                                                    | F2, F9, F11 | yes (data format, discoverers)                                          |
-| 8    | **CLI.** `feu/cli.py`, exit codes, `target_options`, `--version`, `--verbose`, the console script, `package-versions`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | F14, F16    | yes (CLI exit codes)                                                    |
+| 8    | **CLI.** `feu/cli.py`, exit codes, `target_options` (`--python-version`, `--free-threaded`; `--os`/`--arch` and the `os`/`arch` parameters of `resolve_target` are removed, D6), `--version`, `--verbose`, the console script, `package-versions`.                                                                                                                                                                                                                                                                                                                                                                                                        | F14, F16    | yes (CLI exit codes)                                                    |
 | 9    | **Scope.** Adapt `feu.github` to the new HTTP helper and read-only returns (D3: kept). Keyword-only `raise_error` and distinct messages in `local_git`. Classifiers (Windows), `docs/docs/refs/*`.                                                                                                                                                                                                                                                                                                                                                                                                                                                        | F15, F18    | yes (small)                                                             |
 | 10   | **Documentation.** Rewrite the user guide around the properties of section 1, add `docs/docs/dev/architecture.md` (layers, data flow, how to add a package, an installer, a resolver, a companion), the migration page, the README, `cli.md` (generated with `mkdocs-click` so it cannot drift).                                                                                                                                                                                                                                                                                                                                                          | F6          | no                                                                      |
 | 11   | **Downstream and cleanup.** Migrate the ten `dev/generate_versions.py` and the action; then delete `utils/io.py`, `utils/mapping.py`, `bounds.get_package_bounds`. Declare `1.0.0` when the properties hold and the downstream repositories run on the new API.                                                                                                                                                                                                                                                                                                                                                                                           | F15         | yes                                                                     |
@@ -893,7 +910,7 @@ tested.
   with real data (the contract of the external action); `--version`; `package-versions` on a
   `pyproject.toml` in `tmp_path`.
 - **`tests/package_checks.py`** (run on the built wheel): add `find_closest_version("numpy", "99.0.0",
-resolve_target("3.12", os="linux", arch="x86_64"))` and `get_default_compat_registry().packages()`
+Target("3.12", os="linux", arch="x86_64"))` and `get_default_compat_registry().packages()`
   so that a wheel without the JSON files fails.
 - **Docs**: the examples of the user guide are doctests (`xdoctest` is already a dev dependency), so
   F6 cannot come back.
@@ -901,6 +918,20 @@ resolve_target("3.12", os="linux", arch="x86_64"))` and `get_default_compat_regi
   ruff rule that ignores `PLC0415` in tests (it contradicts `CLAUDE.md`): remove the ignore.
 
 ## 9. Decisions for the maintainers
+
+Decisions recorded so far (the text of each decision follows):
+
+| Decision | Recorded                                                                                                                           |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| D1       | Follow the recommendation (any platform, union)                                                                                    |
+| D2       | Yes. Only `pip` and `uv` are supported                                                                                             |
+| D3       | **No: `feu.github` is kept for now** (3.10)                                                                                        |
+| D4       | Follow the recommendation (keep `requests`, imported lazily)                                                                       |
+| D5       | Follow the recommendation (discoverers as data); verified by a prototype (section 11)                                              |
+| D6       | Only the current platform for now; more platforms must stay possible (3.5: no `--os`/`--arch`, no `os`/`arch` in `resolve_target`) |
+| D7-D11   | Follow the recommendation                                                                                                          |
+| D12      | Not important for now: the next release is `0.9.0` (`pyproject.toml` is already at `0.9.0a0`)                                      |
+| D13-D16  | Follow the recommendation (D13 names, D14 `versions` list, D15 deviations from the issue, D16 no data)                             |
 
 **D1. What does `Target("3.12")` (platform unspecified) mean?** _Recommended: "any platform", answered
 by the union of the most specific entries._ It fixes F1 for the documented examples without
@@ -1055,6 +1086,15 @@ Decision: Not important for now. Just consider it is `0.9.0`.
 - **Full specifiers as a request** (`>=2,<3`, `~=2.4`, `!=2.4.1`): the request has three forms. A
   specifier set would be a fourth form (`SpecifierSet.filter` on the known versions) and is a clean
   extension of `VersionRequest`; it is left out because the issue asks for the three.
+- **Items of `review/suggestions.md` that this design does not take:** property-based tests with
+  `hypothesis` (a new dev dependency; parametrised tests over real file names and literals are used
+  instead, section 8); the time-of-check/time-of-use race of `save_json(exist_ok=False)` (the function
+  is kept as is until the downstream scripts stop using it, 3.8); the `users/{owner}/repos` endpoint of
+  `fetch_github_repos`, which lists public repositories only (`feu.github` is kept unchanged in this
+  respect, D3); the import of `pytest` by `feu.testing` (documented, unchanged: the module exists for
+  test suites); a `Target.python_version` as a tuple of integers (the string is kept, because it is the
+  key of the shipped data and the public type).
+- **Targets for another platform** through the CLI or `resolve_target`: D6, later, additive (3.5).
 - **Other index servers** (`--index-url`): `feu` talks to `pypi.org` only.
 - **The GitHub Actions workflows** (`.github/workflows/`), the `.make/` subtree and `docs/mkdocs.yml`
   were not audited; only the files named in section 5 were looked at. `review/suggestions.md` made
@@ -1092,47 +1132,47 @@ Of the 188 names, 103 appear by name in the first version of the document. The o
 
 ### 11.2 Use cases
 
-| #   | Use case (where it is used)                                                                              | Target                                                                                      | Status       |
-| --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------ |
-| 1   | `is_package_available`, `is_module_available` (README, guide, `arkas`, action tests)                     | `package_available`/`module_available` with the old names as aliases (3.2)                  | changed      |
-| 2   | `is_<pkg>_available`, `check_<pkg>` for click, git, requests, rich                                       | same pairs, `module_available`-based, `MissingPackageError`                                 | changed      |
-| 3   | `feu.testing` marks (`arkas`, action tests)                                                              | unchanged (`numpy_available`, `uv_available`, ...); no `pipx`, `urllib3`                    | covered      |
-| 4   | `compare_version(package, op, version)` (`iden`, `batchtensor`, `grizz`, `arkas`), `get_package_version` | unchanged; a non-PEP 440 distribution gives `None`                                          | covered      |
-| 5   | `latest_version`, `sort_versions`, `filter_*`, `latest_{major,minor}_versions`                           | unchanged names; return the input strings                                                   | changed      |
-| 6   | PyPI: `fetch_pypi_versions` (date filters, yanked), `wheel_filenames`, `requires_python`, pinned dep     | one `fetch_pypi_project`; same functions, PEP 440 order, Simple API                         | changed      |
-| 7   | `fetch_versions`, `fetch_latest_version`, `fetch_latest_stable_version`                                  | kept                                                                                        | covered      |
-| 8   | `fetch_latest_{major,minor}_versions[_map]`, `fetch_sampled_latest_minor_versions`                       | `fetch_latest_versions(group=...)`; the sampled variant is `filter_every_n_versions` + last | changed      |
-| 9   | Read bounds from `pyproject.toml`; `PackageBounds`, `partition_package_bounds`, `get_package_bounds`     | `read_pyproject_bounds`; the two helpers are comprehensions                                 | changed      |
-| 10  | `Target`, `resolve_target` (CLI, docs)                                                                   | kept; options keyword-only                                                                  | covered      |
-| 11  | `find_closest_version`, `is_valid_version` with an exact version; unconfigured package is permissive     | kept; fixed for `Target("3.9")` (F1)                                                        | covered      |
-| 12  | Wildcard (`2.*`) and empty version, for install **and** validation (issue #1032)                         | 3.9, simulated on live data (section 6)                                                     | covered      |
-| 13  | `CompatRegistry` methods; `get_default_registry().register(...)` on a shipped package (`usage.md`)       | kept; loading rule for the lazy files                                                       | gap fixed 2  |
-| 14  | `register_compat(mapping, exist_ok=)`; `UnsupportedVersionError`                                         | kept (`exist_ok` keyword-only)                                                              | covered      |
-| 15  | `discover_compat_targets(pkg)` for a package not in the registry                                         | the default path of the one function                                                        | covered      |
-| 16  | Special packages `duckdb`, `jax`, `polars`, `pydantic`                                                   | table entries; **identical output for 17 of 17 packages** after fixing the rule             | gap fixed 1  |
-| 17  | Custom discoverer class + `register_discoverers`                                                         | `companion=` / `ignore_versions=`                                                           | dropped (D5) |
-| 18  | `show_compat_targets(compat, pkg_name)`, `debug/compat_targets.py`                                       | accepts a `Discovery` or the mapping                                                        | gap fixed 6  |
-| 19  | `get_package_names()` (generator, `install_all_versions.py`)                                             | `CompatRegistry.packages()`                                                                 | changed      |
-| 20  | `parse_wheel_filename`, `WheelTags`                                                                      | `WheelTag`; universal2, compressed, abi3 + universal2 now parsed                            | changed      |
-| 21  | `install_package(InstallerSpec, PackageSpec)` with `pip` and `uv`                                        | kept; `sys.executable -m pip`; spec arguments given as a string still work                  | gap fixed 3  |
-| 22  | `pip` in an environment without pip (a `uv venv`)                                                        | clear `MissingPackageError` instead of installing elsewhere                                 | gap fixed 4  |
-| 23  | `pipx`                                                                                                   | removed                                                                                     | dropped (D2) |
-| 24  | `install_package_closest_version`                                                                        | uses the full current target; accepts requests                                              | changed      |
-| 25  | `InstallerRegistry.add_installer`, a custom `BaseInstaller`                                              | `register_installer`, subclass `Installer`                                                  | changed      |
-| 26  | Dependency resolvers: numpy < 2 pins, jax + jaxlib, `Scikit-Learn` spelled any way                       | table + functions, canonical names, request-aware                                           | changed      |
-| 27  | `get_installable_versions`, `install_all_versions`, `InstallResult`; nightly `--installer uv`            | kept; `install_packages_all_versions` becomes a comprehension in the script                 | changed      |
-| 28  | `is_pip_available`, `is_uv_available`; `get_available_installers`                                        | first two kept; the last has no consumer                                                    | changed      |
-| 29  | `run_bash_command("...")`                                                                                | `run_command([...])`                                                                        | changed      |
-| 30  | CLI `install`, `find-closest-version` (action: stdout is the version), `check-valid-version`             | flags unchanged; exit codes; `--free-threaded` is a flag                                    | changed      |
-| 31  | `python -m feu`                                                                                          | kept, plus a console script                                                                 | covered      |
-| 32  | `feu.local_git` (`iden`); `feu.github`                                                                   | kept (D3, 3.10)                                                                             | covered      |
-| 33  | `save_json`, `sort_by_keys` and five `feu.version` functions in ten `dev/generate_versions.py`           | kept until migrated; `package-versions` replaces them                                       | covered      |
-| 34  | `PackageSpec(extras=[...])`                                                                              | a list is accepted and becomes a tuple                                                      | gap fixed 3  |
-| 35  | `requests` extra pinning `urllib3>=2.0` (CI matrix key `urllib3`)                                        | pin kept                                                                                    | gap fixed 5  |
-| 36  | Weekly bot of the data, 10-minute timeout                                                                | same requests as today (pinned lookups for polars and pydantic took 8 s in the prototype)   | covered      |
-| 37  | Windows                                                                                                  | argv lists, `windows` in the tables; **not run**                                            | covered      |
-| 38  | Platforms beyond `linux`/`macos`/`windows` x `x86_64`/`arm64`                                            | out of scope for now (D6); additive later (3.5)                                             | dropped (D6) |
-| 39  | `import feu` for `from feu import compare_version`                                                       | `lazy_exports`; the 12 names resolve on first use                                           | covered      |
+| #   | Use case (where it is used)                                                                              | Target                                                                                                        | Status       |
+| --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------ |
+| 1   | `is_package_available`, `is_module_available` (README, guide, `arkas`, action tests)                     | `package_available`/`module_available` with the old names as aliases (3.2)                                    | changed      |
+| 2   | `is_<pkg>_available`, `check_<pkg>` for click, git, requests, rich                                       | same pairs, `module_available`-based, `MissingPackageError`                                                   | changed      |
+| 3   | `feu.testing` marks (`arkas`, action tests)                                                              | unchanged (`numpy_available`, `uv_available`, ...); no `pipx`, `urllib3`                                      | covered      |
+| 4   | `compare_version(package, op, version)` (`iden`, `batchtensor`, `grizz`, `arkas`), `get_package_version` | unchanged; a non-PEP 440 distribution gives `None`                                                            | covered      |
+| 5   | `latest_version`, `sort_versions`, `filter_*`, `latest_{major,minor}_versions`                           | unchanged names; return the input strings                                                                     | changed      |
+| 6   | PyPI: `fetch_pypi_versions` (date filters, yanked), `wheel_filenames`, `requires_python`, pinned dep     | one `fetch_pypi_project`; same functions, PEP 440 order, Simple API                                           | changed      |
+| 7   | `fetch_versions`, `fetch_latest_version`, `fetch_latest_stable_version`                                  | kept                                                                                                          | covered      |
+| 8   | `fetch_latest_{major,minor}_versions[_map]`, `fetch_sampled_latest_minor_versions`                       | `fetch_latest_versions(group=...)`; the sampled variant is `filter_every_n_versions` + last                   | changed      |
+| 9   | Read bounds from `pyproject.toml`; `PackageBounds`, `partition_package_bounds`, `get_package_bounds`     | `read_pyproject_bounds`; the two helpers are comprehensions                                                   | changed      |
+| 10  | `Target`, `resolve_target` (CLI, docs)                                                                   | kept; options keyword-only                                                                                    | covered      |
+| 11  | `find_closest_version`, `is_valid_version` with an exact version; unconfigured package is permissive     | kept; fixed for `Target("3.9")` (F1)                                                                          | covered      |
+| 12  | Wildcard (`2.*`) and empty version, for install **and** validation (issue #1032)                         | 3.9, simulated on live data (section 6)                                                                       | covered      |
+| 13  | `CompatRegistry` methods; `get_default_registry().register(...)` on a shipped package (`usage.md`)       | kept; loading rule for the lazy files                                                                         | gap fixed 2  |
+| 14  | `register_compat(mapping, exist_ok=)`; `UnsupportedVersionError`                                         | kept (`exist_ok` keyword-only)                                                                                | covered      |
+| 15  | `discover_compat_targets(pkg)` for a package not in the registry                                         | the default path of the one function                                                                          | covered      |
+| 16  | Special packages `duckdb`, `jax`, `polars`, `pydantic`                                                   | table entries; **identical output for 17 of 17 packages** after fixing the rule                               | gap fixed 1  |
+| 17  | Custom discoverer class + `register_discoverers`                                                         | `companion=` / `ignore_versions=`                                                                             | dropped (D5) |
+| 18  | `show_compat_targets(compat, pkg_name)`, `debug/compat_targets.py`                                       | accepts a `Discovery` or the mapping                                                                          | gap fixed 6  |
+| 19  | `get_package_names()` (generator, `install_all_versions.py`)                                             | `CompatRegistry.packages()`                                                                                   | changed      |
+| 20  | `parse_wheel_filename`, `WheelTags`                                                                      | `WheelTag`; universal2, compressed, abi3 + universal2 now parsed                                              | changed      |
+| 21  | `install_package(InstallerSpec, PackageSpec)` with `pip` and `uv`                                        | kept; `sys.executable -m pip`; spec arguments given as a string still work                                    | gap fixed 3  |
+| 22  | `pip` in an environment without pip (a `uv venv`)                                                        | clear `MissingPackageError` instead of installing elsewhere                                                   | gap fixed 4  |
+| 23  | `pipx`                                                                                                   | removed                                                                                                       | dropped (D2) |
+| 24  | `install_package_closest_version`                                                                        | uses the full current target; accepts requests                                                                | changed      |
+| 25  | `InstallerRegistry.add_installer`, a custom `BaseInstaller`                                              | `register_installer`, subclass `Installer`                                                                    | changed      |
+| 26  | Dependency resolvers: numpy < 2 pins, jax + jaxlib, `Scikit-Learn` spelled any way                       | table + functions, canonical names, request-aware                                                             | changed      |
+| 27  | `get_installable_versions`, `install_all_versions`, `InstallResult`; nightly `--installer uv`            | kept; `install_packages_all_versions` becomes a comprehension in the script                                   | changed      |
+| 28  | `is_pip_available`, `is_uv_available`; `get_available_installers`                                        | first two kept; the last has no consumer                                                                      | changed      |
+| 29  | `run_bash_command("...")`                                                                                | `run_command([...])`                                                                                          | changed      |
+| 30  | CLI `install`, `find-closest-version` (action: stdout is the version), `check-valid-version`             | flags unchanged; exit codes; `--free-threaded` is a flag                                                      | changed      |
+| 31  | `python -m feu`                                                                                          | kept, plus a console script                                                                                   | covered      |
+| 32  | `feu.local_git` (`iden`); `feu.github`                                                                   | kept (D3, 3.10)                                                                                               | covered      |
+| 33  | `save_json`, `sort_by_keys` and five `feu.version` functions in ten `dev/generate_versions.py`           | kept until migrated; `package-versions` replaces them                                                         | covered      |
+| 34  | `PackageSpec(extras=[...])`                                                                              | a list is accepted and becomes a tuple                                                                        | gap fixed 3  |
+| 35  | `requests` extra pinning `urllib3>=2.0` (CI matrix key `urllib3`)                                        | pin kept                                                                                                      | gap fixed 5  |
+| 36  | Weekly bot of the data, 10-minute timeout                                                                | same requests as today (pinned lookups for polars and pydantic took 8 s in the prototype)                     | covered      |
+| 37  | Windows                                                                                                  | argv lists, `windows` in the tables; **not run**                                                              | covered      |
+| 38  | Another OS or architecture than the current one, through the CLI or `resolve_target` (`--os`, `--arch`)  | removed for now (D6); the data and `Target.os`/`Target.arch` stay, and the options come back additively (3.5) | dropped (D6) |
+| 39  | `import feu` for `from feu import compare_version`                                                       | `lazy_exports`; the 12 names resolve on first use                                                             | covered      |
 
 ### 11.3 Gaps found, and what changed in the design
 
@@ -1164,11 +1204,11 @@ Of the 188 names, 103 appear by name in the first version of the document. The o
 
 ### 11.4 What is still not verified
 
-- **D6 is read as "the supported platform vocabulary stays closed for now"** (`linux`/`macos`/
-  `windows`, `x86_64`/`arm64`; adding one is additive, 3.5). If it means "only answer for the platform
-  that runs `feu`", then `--os`/`--arch` of the CLI and the cross-platform lookups of `Target` would be
-  dropped for now. The data format and the registry would not change (the files must still cover every
-  platform, because `feu` runs on all of them), only the public options. This needs a confirmation.
+- **D6 is applied literally: "only support the current platform".** The options that select another
+  platform are removed (`--os`, `--arch`, and the `os`/`arch` parameters of `resolve_target`), and the
+  design lists the four additive steps that bring more platforms back (3.5). The earlier reading of
+  the first revision (a closed vocabulary only) was weaker; the data format and the registry are the
+  same under both, so switching back is a change of the public options only.
 - The unified discovery was run against **today's PyPI data** with the **current** tag parser. The
   effect of the new parser (universal2, compressed tags, `abi3t`) on the shipped numbers is the diff of
   step 7(b); it is not computed here.
@@ -1200,3 +1240,137 @@ The unit tests shrink in the same places (one test per generated data module, on
 subclass, one per `imports/*` copy are replaced by parametrised tests), and the tests that patch the
 collaborator are completed by the integration tests of section 8, so that a defect like F1 is caught
 by a test that asks a question of the real data.
+
+## Appendix: reproducing the probes
+
+All commands run from the repository root with `.venv/bin/python` (3.14.10), on `main` `9e473b2`,
+with network access for the PyPI ones. Nothing writes in the repository.
+
+| Claim                                                    | Command                                                                                                                                                                    |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F1: a target without `os`/`arch` clamps nothing          | `from feu.compat import *; find_closest_version("numpy", "2.3.0", Target(python_version="3.9"))` against the same call with `os="linux", arch="x86_64"`                    |
+| F2, F3: wheel tags and names                             | `parse_wheel_filename("numpy-2.0.0-cp312-cp312-macosx_11_0_universal2.whl")`; `is_valid_version("Scikit-Learn", "0.1", resolve_target("3.14", os="linux", arch="x86_64"))` |
+| F8: import cost                                          | `python -X importtime -c "import feu" 2>&1 \| sort -t'\|' -k2 -n \| tail`                                                                                                  |
+| Cache not needed for speed                               | `timeit` of `importlib.util.find_spec("click")` over 2,000 calls                                                                                                           |
+| F12: `releases` is deprecated; the Simple API has it all | `curl -s https://docs.pypi.org/api/json/` (search "Deprecated keys"); `curl -s -H "Accept: application/vnd.pypi.simple.v1+json" https://pypi.org/simple/click/`            |
+| F19: requests raise `InvalidVersion`                     | `is_valid_version("numpy", v, t)` for `v` in `"2.4.*"`, `""`, `None`                                                                                                       |
+| Downstream consumers                                     | `gh search code "<query>" --owner durandtibo --json repository,path`, then `gh api repos/<repo>/contents/<path> --jq .content \| base64 -d`                                |
+| `uv` with `--python`, no `pip` in a `uv venv`            | `uv venv v1; uv pip install --dry-run --python v1/bin/python packaging; v1/bin/python -m pip --version`                                                                    |
+
+**Prototype of the unified discovery (3.5).** It reuses the current helpers and the current tag
+parser, so its output must equal that of the current discoverers; run it as
+`python proto.py duckdb jax polars pydantic click numpy ...`. It took 0 to 8 seconds per package
+with the PyPI responses cached by the first call (the `pydantic` pinned lookups included). This is
+also the shape of the gate of step 7(a): same input, old and new code, byte-identical output.
+
+```python
+from dataclasses import dataclass
+
+from feu.compat.discoverers import get_default_registry as discoverers
+from feu.compat.discoverers.default import _is_tag_compatible
+from feu.compat.discoverers.utils import (
+    build_compat_ranges,
+    build_tags_by_version,
+    sort_stable_versions,
+)
+from feu.compat.matrix import DEFAULT_TARGETS, is_compatible
+from feu.version import (
+    fetch_pypi_pinned_dependency_version,
+    fetch_pypi_requires_python,
+    fetch_pypi_wheel_filenames,
+)
+
+
+@dataclass(frozen=True)
+class SameVersion:
+    package: str
+
+
+@dataclass(frozen=True)
+class PinnedDependency:
+    package: str
+
+
+COMPANIONS = {
+    "jax": SameVersion("jaxlib"),
+    "polars": PinnedDependency("polars-runtime-32"),
+    "pydantic": PinnedDependency("pydantic-core"),
+}
+IGNORED = {"duckdb": frozenset({"0.0.0"})}
+
+
+def discover(pkg, targets=DEFAULT_TARGETS):
+    filenames = fetch_pypi_wheel_filenames(pkg)
+    versions = [v for v in sort_stable_versions(filenames) if v not in IGNORED.get(pkg, ())]
+    latest = versions[-1] if versions else None
+    own = build_tags_by_version({v: filenames[v] for v in versions})
+    companion = COMPANIONS.get(pkg)
+    companion_tags = (
+        build_tags_by_version(fetch_pypi_wheel_filenames(companion.package)) if companion else {}
+    )
+    tags, judged_by_platform = {}, set()
+    for v in versions:
+        tags[v] = own[v]
+        if companion:  # a pure wheel never counts when there is a companion
+            platform = {t for t in own[v] if t.python_version is not None}
+            if platform:
+                tags[v] = platform
+            else:
+                core = (
+                    v
+                    if isinstance(companion, SameVersion)
+                    else fetch_pypi_pinned_dependency_version(pkg, v, companion.package)
+                )
+                tags[v] = companion_tags.get(core, set()) if core else set()
+            judged_by_platform.add(v)
+    has_pure = any(t.python_version is None for ts in tags.values() for t in ts)
+    requires_python = fetch_pypi_requires_python(pkg) if has_pure else {}
+
+    def is_compatible_with(version, target, wanted):
+        if version in judged_by_platform:
+            return any(
+                _is_tag_compatible(t, wanted, target.python_version, None) for t in tags[version]
+            )
+        if not tags[version]:  # no wheel at all: the sdist rule
+            return has_pure and is_compatible(requires_python.get(version), target.python_version)
+        return any(
+            _is_tag_compatible(t, wanted, target.python_version, requires_python.get(version))
+            for t in tags[version]
+        )
+
+    return build_compat_ranges(versions, latest, targets, is_compatible_with)
+
+
+for pkg in ("duckdb", "jax", "polars", "pydantic", "click", "numpy"):
+    old = discoverers().find_discoverer(pkg).discover(pkg, DEFAULT_TARGETS)
+    assert old == discover(pkg), pkg
+```
+
+**Request resolution (3.9).** The simulation of section 6 is: the known versions are
+`fetch_pypi_versions` filtered to stable and valid releases; the compatible ones are those inside a
+range of `get_version_ranges(pkg, target)`; a prefix keeps the releases whose zero-padded release
+segment starts with the prefix; the answer is the request itself when the last match lies in a range
+with `max=None`, else that version. It reproduces every example of 3.9.
+
+## Appendix: from `review/suggestions.md` to this document
+
+`review/suggestions.md` (written at `54c6bf7`) is the starting point of this review. Each item was
+checked again on `9e473b2`. Where the target differs from its proposal, the reason is given.
+
+| Item | Subject                                   | Here                                     | Differs from the proposal                                                                                    |
+| ---- | ----------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| P1   | the closest version is never clamped      | F1, step 1, D1                           | the under-specified lookup gets a defined meaning (union), instead of a `ValueError`                         |
+| P2   | `pip` from `PATH`                         | F7, 3.6, step 3                          | `uv` uses `--python sys.executable`; the tool is checked, because a `uv venv` has no `pip` (verified)        |
+| P3   | wheel tags dropped                        | F2, 3.5, step 7(b)                       | the same, plus `abi3t` and the explicit out-of-scope list (D6, D7)                                           |
+| P4   | `include_lower_bound` and `lower is None` | F5, 3.4                                  | fixed by construction: one `fetch_latest_versions`                                                           |
+| P5   | `latest_*` return re-serialised strings   | F4, 3.4                                  | the same                                                                                                     |
+| P6   | package names                             | F3, step 2                               | the same (`canonicalize_name` at the boundary)                                                               |
+| P7   | availability cache                        | F13, 3.2, step 5                         | adopted as proposed: the `coola` design, with `clear_availability_caches()` after an install                 |
+| P8   | commands as strings                       | F7, 3.3, 3.6                             | the same; `InstallerSpec` still accepts a string (gap 3 of section 11)                                       |
+| P9   | CLI                                       | F14, 3.7, D9                             | `install` gets **no** target options (it installs into the current interpreter); exit codes carry the result |
+| P10  | four registries                           | F10, 3.3, 3.6                            | one `Registry[T]`; the discoverer registry disappears (D5)                                                   |
+| P11  | PyPI access                               | F12, 3.4, step 6                         | the Simple API (PEP 691/700) instead of the deprecated `releases` key; verified                              |
+| P12  | mutable values from cached functions      | property 9, 3.4, 3.10                    | frozen dataclasses and read-only mappings                                                                    |
+| P13  | duplication                               | F11, F13, F15, 3.2 to 3.6                | `imports` follows `coola` exactly; the discoverers become data; the resolvers a table                        |
+| P14  | hand-kept lists                           | F9, 3.5, D10                             | the list of packages is the list of data files; the Python versions are one constant                         |
+| P15  | smaller items (API, docs, tests)          | F18, 3.10, sections 4 and 8, not covered | most are taken; the exceptions are listed in section 10                                                      |
