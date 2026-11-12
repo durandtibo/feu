@@ -92,6 +92,7 @@ def test_find_closest_version_default_target() -> None:
 
 
 @click_available
+@requests_available
 def test_find_closest_version_unsupported() -> None:
     """Test that an unsupported request gives an empty standard output,
     the message on the standard error and the exit status 1."""

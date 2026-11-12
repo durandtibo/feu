@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from feu.compat import Target, UnsupportedVersionError
-from feu.imports import package_available
+from feu.imports import MissingPackageError, package_available
 from feu.install import (
     Installer,
     InstallerSpec,
@@ -15,6 +15,7 @@ from feu.install import (
     install_package,
     install_package_closest_version,
 )
+from feu.testing import requests_available, requests_not_available
 from feu.utils.package import PackageSpec
 from feu.utils.registry import Registry
 
@@ -118,6 +119,7 @@ def test_install_package_closest_version_pip_numpy_with_args() -> None:
         )
 
 
+@requests_available
 def test_install_package_closest_version_pip_wildcard() -> None:
     with (
         patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.12"))),
@@ -169,6 +171,7 @@ def test_install_package_closest_version_latest_is_not_pinned(version: str | Non
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy"])
 
 
+@requests_available
 def test_install_package_closest_version_open_wildcard_is_installed_as_requested() -> None:
     with (
         patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.14"))),
@@ -180,6 +183,7 @@ def test_install_package_closest_version_open_wildcard_is_installed_as_requested
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.*"])
 
 
+@requests_available
 def test_install_package_closest_version_closed_wildcard_is_resolved() -> None:
     with (
         patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.9"))),
@@ -191,6 +195,7 @@ def test_install_package_closest_version_closed_wildcard_is_resolved() -> None:
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==1.26.4"])
 
 
+@requests_available
 def test_install_package_closest_version_wildcard_without_match_raises_before_install() -> None:
     with (
         patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.14"))),
@@ -199,6 +204,19 @@ def test_install_package_closest_version_wildcard_without_match_raises_before_in
     ):
         install_package_closest_version(
             installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.24.*")
+        )
+    run_mock.assert_not_called()
+
+
+@requests_not_available
+def test_install_package_closest_version_wildcard_requires_requests() -> None:
+    with (
+        patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.9"))),
+        patch("feu.install.installer.run_command") as run_mock,
+        pytest.raises(MissingPackageError, match="'requests' package is required"),
+    ):
+        install_package_closest_version(
+            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.*")
         )
     run_mock.assert_not_called()
 

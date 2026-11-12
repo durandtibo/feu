@@ -92,7 +92,7 @@ True
 >>> target = Target(python_version="3.9", os="linux", arch="x86_64")
 >>> find_closest_version("numpy", "2.3.0", target)
 '2.0.2'
->>> find_closest_version("numpy", "1.*", target)
+>>> find_closest_version("numpy", "1.*", target)  # doctest: +SKIP
 '1.26.4'
 
 ```
