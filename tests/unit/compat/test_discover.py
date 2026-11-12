@@ -14,6 +14,7 @@ from feu.compat import (
     VersionRange,
     WheelTag,
     discover_compat_targets,
+    fetch_known_versions,
     group_into_ranges,
     is_compatible,
     tags_match_exactly,
@@ -610,3 +611,26 @@ def test_discover_compat_targets_abi3t_wheel_is_a_stable_abi_free_threaded_wheel
 def test_discover_compat_targets_abi3t_wheel_is_not_for_a_regular_build() -> None:
     wheels = {"1.0": (f"pkg-1.0-cp39-abi3t-{LINUX}.whl",)}
     assert _discover(wheels).targets == {T311: []}
+
+
+#######################################
+#     Tests for fetch_known_versions  #
+#######################################
+
+
+def test_fetch_known_versions_keeps_the_stable_versions_in_order() -> None:
+    fetch = Mock(return_value=("2.0", "1.10", "1.9", "2.1rc1", "not-a-version"))
+    with patch(f"{MODULE}.fetch_pypi_versions", fetch):
+        assert fetch_known_versions("pkg") == ("1.9", "1.10", "2.0")
+
+
+def test_fetch_known_versions_ignores_the_ignored_versions() -> None:
+    with patch(f"{MODULE}.fetch_pypi_versions", Mock(return_value=("0.0.0", "1.0"))):
+        assert fetch_known_versions("DuckDB") == ("1.0",)
+
+
+def test_fetch_known_versions_downloads_the_package() -> None:
+    fetch = Mock(return_value=())
+    with patch(f"{MODULE}.fetch_pypi_versions", fetch):
+        fetch_known_versions("pkg")
+    fetch.assert_called_once_with("pkg")

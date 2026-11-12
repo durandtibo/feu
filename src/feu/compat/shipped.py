@@ -8,18 +8,17 @@ the canonical package name (PEP 503):
     {
       "package": "numpy",
       "generated": "2026-11-09",
-      "versions": ["1.26.0", "1.26.4", "2.0.0"],
       "targets": [
         {"python": "3.12", "free_threaded": false, "os": "linux", "arch": "x86_64",
          "ranges": [["1.26.0", null]]}
       ]
     }
 
-``versions`` is the list of the stable, valid, non-ignored releases that
-existed when the file was generated, in PEP 440 order. A range whose
-``max`` is ``null`` is open: the latest release was compatible when the
-file was generated. The entries are sorted by ``(python, free_threaded,
-os, arch)``.
+There is no list of versions: a wildcard request is matched against the
+releases downloaded from PyPI (see ``CompatRegistry``), so it never goes
+stale. A range whose ``max`` is ``null`` is open: the latest release was
+compatible when the file was generated. The entries are sorted by
+``(python, free_threaded, os, arch)``.
 
 The list of packages is the list of files, so a package is added by
 running ``dev/generate_compat_data.py`` with its name.
@@ -66,7 +65,6 @@ def _target_key(target: Target) -> tuple[Version, bool, str, str]:
 def format_package_data(
     package: str,
     generated: str,
-    versions: Sequence[str],
     targets: Mapping[Target, Sequence[VersionRange]],
 ) -> str:
     r"""Format the compatibility data of a package as the text of its
@@ -74,13 +72,12 @@ def format_package_data(
 
     The output is deterministic: the same input gives the same text.
     The targets are sorted by ``(python, free_threaded, os, arch)``,
-    one target per line, and the versions one per line.
+    one target per line.
 
     Args:
         package: The canonical package name.
         generated: The generation date, in ISO 8601 format e.g.
             ``"2026-11-09"``.
-        versions: The known releases, in PEP 440 order.
         targets: The ranges of each target.
 
     Returns:
@@ -93,16 +90,12 @@ def format_package_data(
         >>> target = Target("3.12", False, "linux", "x86_64")
         >>> print(
         ...     format_package_data(
-        ...         "numpy", "2026-11-09", ["1.0", "2.0"], {target: [VersionRange("1.0", None)]}
+        ...         "numpy", "2026-11-09", {target: [VersionRange("1.0", None)]}
         ...     )
         ... )
         {
           "package": "numpy",
           "generated": "2026-11-09",
-          "versions": [
-            "1.0",
-            "2.0"
-          ],
           "targets": [
             {"python": "3.12", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["1.0", null]]}
           ]
@@ -111,7 +104,6 @@ def format_package_data(
 
         ```
     """
-    version_lines = ",\n".join(f"    {json.dumps(version)}" for version in versions)
     target_lines = ",\n".join(
         "    "
         + json.dumps(
@@ -129,7 +121,6 @@ def format_package_data(
         "{\n"
         f'  "package": {json.dumps(package)},\n'
         f'  "generated": {json.dumps(generated)},\n'
-        f'  "versions": [\n{version_lines}\n  ],\n'
         f'  "targets": [\n{target_lines}\n  ]\n'
         "}\n"
     )
@@ -142,7 +133,7 @@ def parse_package_data(text: str) -> PackageData:
         text: The text of the JSON file.
 
     Returns:
-        The known versions and the ranges of each target.
+        The ranges of each target.
 
     Raises:
         ValueError: If the text is not valid JSON or does not have the
@@ -152,16 +143,15 @@ def parse_package_data(text: str) -> PackageData:
         ```pycon
         >>> from feu.compat.shipped import parse_package_data
         >>> data = parse_package_data(
-        ...     '{"package": "numpy", "generated": "2026-11-09", "versions": ["1.0"], "targets": []}'
+        ...     '{"package": "numpy", "generated": "2026-11-09", "targets": []}'
         ... )
-        >>> data.versions
-        ('1.0',)
+        >>> data.targets
+        {}
 
         ```
     """
     document: Any = json.loads(text)
     try:
-        versions = tuple(document["versions"])
         targets = {
             Target(
                 python_version=entry["python"],
@@ -174,7 +164,7 @@ def parse_package_data(text: str) -> PackageData:
     except (KeyError, TypeError, IndexError) as exc:
         msg = f"invalid compatibility data: {exc!r}"
         raise ValueError(msg) from exc
-    return PackageData(versions=versions, targets=targets)
+    return PackageData(targets=targets)
 
 
 class ShippedData:
@@ -214,7 +204,7 @@ class ShippedData:
             name: The canonical package name.
 
         Returns:
-            The known versions and the ranges of each target.
+            The ranges of each target.
 
         Raises:
             FileNotFoundError: If there is no data for the package.

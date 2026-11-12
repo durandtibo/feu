@@ -25,7 +25,7 @@ from packaging.version import Version
 from feu.version.request import parse_version_request
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Iterable, Mapping
+    from collections.abc import Callable, Collection, Iterable, Mapping
 
     from feu.compat.target import Target
 
@@ -48,11 +48,9 @@ class PackageData(NamedTuple):
     r"""Represent the compatibility data of one package.
 
     Args:
-        versions: The known releases, in PEP 440 order.
         targets: The ranges of each target.
     """
 
-    versions: tuple[str, ...]
     targets: dict[Target, list[VersionRange]]
 
 
@@ -122,6 +120,15 @@ class CompatRegistry:
             and listing its packages cost nothing. A registration into
             a package that is not loaded yet loads it first, so the
             conflict check and ``exist_ok`` see the loaded entries.
+        version_source: Optional function that returns the releases of
+            a package (given its canonical name), in any order. It is
+            called only to match a wildcard request (e.g. ``"2.*"``)
+            or to list versions, never for an exact version or for
+            the latest version, and only for a package that has
+            ranges. The versions registered with ``register_versions``
+            take precedence. Without a source, a wildcard can only be
+            matched against registered versions. An error of the
+            source (e.g. no network) is not caught.
 
     Raises:
         ValueError: If a range of ``initial_state`` is invalid (see
@@ -148,10 +155,12 @@ class CompatRegistry:
         initial_state: dict[str, dict[Target, list[VersionRange]]] | None = None,
         *,
         loader: DataLoader | None = None,
+        version_source: Callable[[str], Iterable[str]] | None = None,
     ) -> None:
         self._state: dict[str, dict[Target, list[VersionRange]]] = {}
         self._versions: dict[str, tuple[str, ...]] = {}
         self._loader = loader
+        self._version_source = version_source
         self._loaded: set[str] = set()
         self.register_many(copy.deepcopy(initial_state or {}))
 
@@ -173,10 +182,49 @@ class CompatRegistry:
         if name not in self._loader.packages():
             return
         data = self._loader.load(name)
-        self._versions[name] = data.versions
         for target, ranges in data.targets.items():
             self._validate_ranges(name, ranges)
             self._state.setdefault(name, {})[target] = list(ranges)
+
+    def _has_data(self, name: str) -> bool:
+        r"""Indicate if the registry has data for a package.
+
+        Args:
+            name: The canonical package name. Its data must be loaded.
+
+        Returns:
+            ``True`` if the package has ranges or registered versions.
+        """
+        return name in self._state or name in self._versions
+
+    def _can_list_versions(self, name: str) -> bool:
+        r"""Indicate if the versions of a package can be listed.
+
+        Args:
+            name: The canonical package name. Its data must be loaded.
+
+        Returns:
+            ``True`` if versions are registered for the package, or if
+                the package has ranges and a version source is set.
+        """
+        return name in self._versions or (self._version_source is not None and name in self._state)
+
+    def _known_versions(self, name: str) -> tuple[str, ...]:
+        r"""Get the known versions of a package.
+
+        Args:
+            name: The canonical package name. Its data must be loaded.
+
+        Returns:
+            The registered versions if there are some, else the
+                versions of the source (if the package has ranges),
+                else an empty tuple. In PEP 440 order.
+        """
+        if name in self._versions:
+            return self._versions[name]
+        if self._version_source is not None and name in self._state:
+            return tuple(sorted(dict.fromkeys(self._version_source(name)), key=Version))
+        return ()
 
     @property
     def state(self) -> Mapping[str, Mapping[Target, list[VersionRange]]]:
@@ -629,11 +677,13 @@ class CompatRegistry:
                 version.
 
         Returns:
-            The versions registered with ``register_versions`` that lie
-                in a valid range of the target and satisfy the
-                request, in PEP 440 order. The list is empty if the
-                package has no registered versions, if no version is
-                valid for the target, or if nothing matches. A package
+            The known versions that lie in a valid range of the
+                target and satisfy the request, in PEP 440 order. The
+                versions are the registered ones or, if there are none,
+                the ones of the version source (downloaded when the
+                method is called). The list is empty if the package
+                has no data, if no version is valid for the target, or
+                if nothing matches. A package
                 that has no configuration for the target accepts every
                 known version.
 
@@ -657,13 +707,12 @@ class CompatRegistry:
         request = parse_version_request(pkg_version)
         name = canonicalize_name(pkg_name)
         self._ensure_loaded(name)
-        known = self._versions.get(name, ())
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             return []
         ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
         return [
             version
-            for version in known
+            for version in self._known_versions(name)
             if request.matches(Version(version))
             and (not ranges or self._in_ranges(Version(version), ranges))
         ]
@@ -687,6 +736,32 @@ class CompatRegistry:
             for min_version, max_version in ranges
         )
 
+    def _find_closest_latest(self, pkg_name: str, target: Target) -> str:
+        r"""Find the version to install for the latest version.
+
+        No version is downloaded: the latest compatible version is
+        either unbounded (a range is open) or the highest upper bound.
+
+        Args:
+            pkg_name: The package name (e.g., ``"numpy"``). Its data
+                must be loaded and it must have data.
+            target: The compatibility target.
+
+        Returns:
+            ``""`` if the package is not configured for the target or
+                if a range is open, otherwise the highest upper bound,
+                as it was registered.
+
+        Raises:
+            UnsupportedVersionError: If no package version is valid
+                for the given target.
+        """
+        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
+        if not ranges or any(max_version is None for _, max_version in ranges):
+            return ""
+        bounds = [r.max for r in self.get_config(pkg_name=pkg_name, target=target)]
+        return max((b for b in bounds if b is not None), key=Version)
+
     def find_closest_version(self, pkg_name: str, pkg_version: str | None, target: Target) -> str:
         r"""Find the closest valid version for a package.
 
@@ -705,13 +780,17 @@ class CompatRegistry:
               or if the package is not configured for the target,
               otherwise the nearest range boundary, as it was
               registered.
-            - For a wildcard or the latest version: the latest known
-              compatible version that satisfies the request. If it
-              lies in an open-ended range, the request itself is
-              returned (``"2.*"``, or ``""``) so that the installer
-              picks the real latest release, which may be newer than
-              the registered versions. If the registry has no versions
-              for the package, the request is returned unchanged.
+            - For the latest version (``""``/``None``): the request
+              itself if a range is open-ended, otherwise the highest
+              upper bound. No version is downloaded.
+            - For a wildcard: the latest known compatible version
+              that satisfies the request (the versions are the
+              registered ones or the ones of the version source, so
+              they are up to date). If it lies in an open-ended
+              range, the request itself is returned (``"2.*"``) so
+              that the installer picks the real latest release.
+            - If the registry has no data for the package, the
+              request is returned unchanged.
 
         Raises:
             UnsupportedVersionError: If no package version is valid
@@ -741,14 +820,17 @@ class CompatRegistry:
             raise UnsupportedVersionError(msg)
         name = canonicalize_name(pkg_name)
         self._ensure_loaded(name)
-        if name not in self._versions:
+        if not self._has_data(name):
             return request.text
+        if request.is_latest:
+            return self._find_closest_latest(pkg_name, target)
+        if not self._can_list_versions(name):
+            return request.text
+        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
         compatible = self.get_compatible_versions(pkg_name, target, request.text)
         if not compatible:
-            what = f"matches {request.text!r}" if request.text else "is available"
-            msg = f"No version of package {pkg_name} {what} for target {target}"
+            msg = f"No version of package {pkg_name} matches {request.text!r} for target {target}"
             raise UnsupportedVersionError(msg)
-        ranges = self.get_version_ranges(pkg_name=pkg_name, target=target)
         latest = Version(compatible[-1])
         if not ranges or any(
             max_version is None and (min_version is None or min_version <= latest)
@@ -771,10 +853,13 @@ class CompatRegistry:
             For an exact version: ``True`` if valid for any registered
             range or unconfigured, ``False`` otherwise, including when
             no package version is valid for the given target. For a
-            wildcard or the latest version: ``True`` if at least one
-            known compatible version satisfies the request (see
-            ``get_compatible_versions``); a package without registered
-            versions gives ``False``.
+            wildcard: ``True`` if at least one known compatible
+            version satisfies the request (see
+            ``get_compatible_versions``, which downloads the
+            versions); a package without data gives ``False``. For
+            the latest version: ``True`` if the registry has data for
+            the package and a version is valid for the target; no
+            version is downloaded.
 
         Raises:
             ValueError: If ``pkg_version`` is not a valid version
@@ -796,4 +881,10 @@ class CompatRegistry:
         request = parse_version_request(pkg_version)
         if request.exact is not None:
             return self._is_valid_exact_version(pkg_name, request.text, target)
+        if request.is_latest:
+            name = canonicalize_name(pkg_name)
+            self._ensure_loaded(name)
+            return self._has_data(name) and not self.is_unsupported(
+                pkg_name=pkg_name, target=target
+            )
         return bool(self.get_compatible_versions(pkg_name, target, request.text))

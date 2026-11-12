@@ -46,7 +46,7 @@ def generate(pkg_name: str, generated: str, output_dir: Path = OUTPUT_DIR) -> Pa
     logger.info("Discovering compatibility targets for %s...", name)
     discovery = discover_compat_targets(name)
     path = output_dir / f"{name}.json"
-    path.write_text(format_package_data(name, generated, discovery.versions, discovery.targets))
+    path.write_text(format_package_data(name, generated, discovery.targets))
     logger.info("Wrote %s", path)
     return path
 

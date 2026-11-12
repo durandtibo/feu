@@ -14,6 +14,7 @@ __all__ = [
 from functools import cache
 from typing import TYPE_CHECKING
 
+from feu.compat.discover import fetch_known_versions
 from feu.compat.registry import CompatRegistry
 from feu.compat.shipped import ShippedData
 
@@ -45,7 +46,7 @@ def get_default_compat_registry() -> CompatRegistry:
 
         ```
     """
-    return CompatRegistry(loader=ShippedData())
+    return CompatRegistry(loader=ShippedData(), version_source=fetch_known_versions)
 
 
 def register_compat(

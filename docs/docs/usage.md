@@ -92,16 +92,21 @@ False
 
 ```
 
-A request is resolved against the versions that the shipped data knows. When the latest compatible
-release lies in an open-ended range (the newest release was compatible when the data was
-generated), the request itself is returned, so that the installer picks the real latest release:
+The shipped data holds the compatible ranges, not a list of releases. A wildcard (`1.*`) is matched
+against the releases that are **downloaded from PyPI when it is resolved**, so it never goes stale
+and no new `feu` release is needed when a package publishes a version. The exact version and the
+latest version (`""`) need no download: the latest version is the request itself when the last range
+is open-ended (the newest release was compatible when the data was generated), so that the installer
+picks the real latest release, and the highest upper bound otherwise. A wildcard resolves to the
+request itself in the same case. There is no offline fallback: resolving a wildcard without network
+access raises the error of the download.
 
 ```pycon
->>> find_closest_version("numpy", "1.*", target)
+>>> find_closest_version("numpy", "1.*", target)  # doctest: +SKIP
 '1.26.4'
 >>> find_closest_version("numpy", "", target)
 '2.0.2'
->>> find_closest_version("numpy", "1.24.*", Target("3.14", os="linux", arch="x86_64"))
+>>> find_closest_version("numpy", "1.24.*", Target("3.14", os="linux", arch="x86_64"))  # doctest: +SKIP
 Traceback (most recent call last):
     ...
 feu.compat.registry.UnsupportedVersionError: No version of package numpy matches '1.24.*' for target Target(python_version='3.14', free_threaded=False, os='linux', arch='x86_64')
@@ -117,7 +122,7 @@ configured but no version supports the target, `is_valid_version` returns `False
 >>> registry = get_default_compat_registry()
 >>> registry.has_package("numpy"), registry.has_package("not-a-package")
 (True, False)
->>> get_compatible_versions("numpy", target, "1.26.*")
+>>> get_compatible_versions("numpy", target, "1.26.*")  # doctest: +SKIP
 ['1.26.0', '1.26.1', '1.26.2', '1.26.3', '1.26.4']
 
 ```
@@ -127,7 +132,8 @@ package is looked up, and `registry.packages()` lists the packages without parsi
 
 ## Your Own Constraints
 
-Register a constraint and the versions you know in a registry instance. Every function takes an
+Register a constraint and, if you do not want them downloaded, the versions you know in a registry
+instance (`CompatRegistry(version_source=...)` takes your own function to list the versions). Every function takes an
 optional `registry=`; `register_compat` adds to the default registry. A registration into a shipped
 package first loads it, so the conflict check sees the shipped entries (use `exist_ok=True` to
 overwrite).
