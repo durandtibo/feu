@@ -88,7 +88,7 @@ True
 >>> find_closest_version("numpy", "2.3.0", target)
 '2.0.2'
 >>> # A version is a request: an exact version, a wildcard or "" for the latest
->>> find_closest_version("numpy", "1.*", target)  # doctest: +SKIP
+>>> find_closest_version("numpy", "1.*", target)
 '1.26.4'
 >>> # A target without a platform means "any platform"
 >>> find_closest_version("numpy", "2.3.0", Target(python_version="3.9"))
