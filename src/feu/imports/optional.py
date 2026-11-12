@@ -2,8 +2,8 @@ r"""Contain the availability checks of the optional libraries.
 
 ``is_<package>_available`` indicates if a library can be imported and
 ``check_<package>`` raises a ``MissingPackageError`` if it cannot. The
-libraries are the optional dependencies of ``feu``: ``click``,
-``git`` (installed with ``gitpython``), ``requests`` and ``rich``.
+libraries are the optional dependencies of ``feu``: ``click``, ``git``
+(installed with ``gitpython``), ``requests`` and ``rich``.
 """
 
 from __future__ import annotations
@@ -61,8 +61,7 @@ def check_click() -> None:
 
 @availability_cache
 def is_git_available() -> bool:
-    r"""Indicate if the ``git`` package is installed and can be
-    imported.
+    r"""Indicate if the ``git`` package is installed and can be imported.
 
     Returns:
         ``True`` if ``git`` is available otherwise ``False``.

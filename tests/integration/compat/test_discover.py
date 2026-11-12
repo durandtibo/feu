@@ -74,8 +74,8 @@ def test_discover_compat_targets_versions() -> None:
 
 @requests_available
 def test_discover_compat_targets_pydantic_pure_wheel_next_to_compiled_wheels() -> None:
-    """Test that pydantic 1.x, which ships a pure wheel next to its compiled
-    wheels, is judged by its compiled wheels."""
+    """Test that pydantic 1.x, which ships a pure wheel next to its
+    compiled wheels, is judged by its compiled wheels."""
     target = Target(python_version="3.12", os="linux", arch="x86_64")
     ranges = discover_compat_targets("pydantic", targets=(target,)).targets[target]
     assert ranges

@@ -182,8 +182,10 @@ class CompatRegistry:
     def state(self) -> Mapping[str, Mapping[Target, list[VersionRange]]]:
         r"""A read-only view of the registered package constraints, as a
         mapping of canonical package name to ``Target`` to a list of
-        ``VersionRange``. Reading it loads the data of every package of
-        the loader."""
+        ``VersionRange``.
+
+        Reading it loads the data of every package of the loader.
+        """
         for name in self.packages():
             self._ensure_loaded(name)
         return MappingProxyType({name: MappingProxyType(c) for name, c in self._state.items()})

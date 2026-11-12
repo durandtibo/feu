@@ -93,8 +93,8 @@ def test_find_closest_version_default_target() -> None:
 
 @click_available
 def test_find_closest_version_unsupported() -> None:
-    """Test that an unsupported request gives an empty standard output, the
-    message on the standard error and the exit status 1."""
+    """Test that an unsupported request gives an empty standard output,
+    the message on the standard error and the exit status 1."""
     out = _run("find-closest-version", *NUMPY_PY39, "--pkg-version=3.*")
     assert out.returncode == 1
     assert out.stdout == ""
@@ -155,8 +155,8 @@ def test_verbose_logs_go_to_stderr() -> None:
 @click_available
 @requests_available
 def test_package_versions(tmp_path: Path) -> None:
-    """Test that the versions of the dependencies of a project are written
-    as JSON."""
+    """Test that the versions of the dependencies of a project are
+    written as JSON."""
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text('[project]\nname = "demo"\ndependencies = ["requests>=2.30,<2.32"]\n')
     output = tmp_path / "versions.json"

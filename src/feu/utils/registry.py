@@ -1,4 +1,5 @@
-r"""Contain a generic registry to register and look up values by name."""
+r"""Contain a generic registry to register and look up values by
+name."""
 
 from __future__ import annotations
 

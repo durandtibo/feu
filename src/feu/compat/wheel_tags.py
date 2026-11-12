@@ -1,14 +1,15 @@
 r"""Contain the parser of the tags of a wheel file name.
 
 The file name is parsed by ``packaging.utils.parse_wheel_filename``,
-which expands the compressed tag sets (e.g. ``macosx_10_9_x86_64.macosx_11_0_arm64``).
-Each ``(interpreter, abi, platform)`` is then mapped to a ``WheelTag``.
+which expands the compressed tag sets (e.g.
+``macosx_10_9_x86_64.macosx_11_0_arm64``). Each ``(interpreter, abi,
+platform)`` is then mapped to a ``WheelTag``.
 
-The platforms that ``feu`` knows are ``linux``, ``macos`` and ``windows`` on
-``x86_64`` and ``arm64`` (the vocabulary of ``Target``). The other
-platforms (``musllinux``, ``win32``, ``i686``, ``armv7l``, ``ppc64le``,
-...) and the other interpreters (PyPy, GraalPy, ...) are **out of scope**:
-they give no tag.
+The platforms that ``feu`` knows are ``linux``, ``macos`` and
+``windows`` on ``x86_64`` and ``arm64`` (the vocabulary of ``Target``).
+The other platforms (``musllinux``, ``win32``, ``i686``, ``armv7l``,
+``ppc64le``, ...) and the other interpreters (PyPy, GraalPy, ...) are
+**out of scope**: they give no tag.
 """
 
 from __future__ import annotations

@@ -1,8 +1,8 @@
 r"""Contain the entry point of the command line interface.
 
 The command line interface requires the ``click`` package, which can be
-installed with ``pip install 'feu[cli]'``. It is run with
-``python -m feu <command>``.
+installed with ``pip install 'feu[cli]'``. It is run with ``python -m
+feu <command>``.
 """
 
 from __future__ import annotations
