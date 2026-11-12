@@ -302,7 +302,6 @@ new. `find_closest_version` and `is_valid_version` take a version **request**, n
 {
   "package": "numpy",
   "generated": "2026-11-09",
-  "versions": ["1.26.0", "1.26.4", "2.0.0", "2.0.2", "2.3.2"],
   "targets": [
     {
       "python": "3.12",
@@ -315,9 +314,10 @@ new. `find_closest_version` and `is_valid_version` take a version **request**, n
 }
 ```
 
-`versions` is the list of the stable, valid, non-ignored releases that existed when the file was
-generated, in PEP 440 order: it is the "versions the registry knows" that a wildcard is matched
-against (3.9), and every `min`/`max` of a range is one of them (a data-contract test). Entries are
+There is **no list of versions** in the file (D14): a wildcard is matched against the releases
+fetched from PyPI at call time (`feu.compat.fetch_known_versions`: stable, valid, not yanked, not
+in `IGNORED_VERSIONS`), so it never goes stale. A range whose `max` is `null` is open (the latest
+release was compatible when the file was generated). Entries are
 sorted by `(python, free_threaded, os, arch)`; a range whose `max` is `null` is open (the latest
 release was compatible when the file was generated). The default registry
 (`get_default_compat_registry()`) lists the file names with `importlib.resources` (no parsing) and
@@ -575,12 +575,12 @@ def parse_version_request(text: str | None) -> VersionRequest: ...
 
 **Matching.** A prefix `(2, 4)` matches a version whose release segment, zero-padded, starts with
 `2.4` (`2.4`, `2.4.0`, `2.4.17`; not `2.40`, not `2.5`). Pre-releases never match a wildcard: the
-shipped `versions` list contains stable releases only (so a wildcard that names a pre-release is
+fetched list contains stable releases only (so a wildcard that names a pre-release is
 rejected at parse time instead of silently matching nothing; this is stricter than the text of the
 issue, D15).
 
 **Resolution (registry).** `get_compatible_versions(pkg_name, target, pkg_version="")` returns the
-known versions (the `versions` of the data file) that lie in a valid range of the target **and**
+known versions (the registered ones, else `version_source(name)`, i.e. PyPI) that lie in a valid range of the target **and**
 match the request, in PEP 440 order. From it:
 
 | Request                                                                        | `is_valid_version`                                                                    | `find_closest_version` (the version to install)                                                                                                                      |
@@ -613,15 +613,15 @@ find_closest_version("numpy", "1.*", Target("3.9", ...)) -> "1.26.4"  (closed ra
 find_closest_version("numpy", "1.24.*", t) -> UnsupportedVersionError
 ```
 
-**Why a list of versions in the data (D14).** The registry stores _ranges_, and a range alone cannot
-say whether a release exists in a prefix: `"2.9.*"` against `[2.3.2, open)` would be "valid" for a
-package that never had a `2.9`. The issue words it as matching "against the versions the registry
-knows", which requires the registry to know them. One list of strings per package (a few hundred
-bytes to a few KB) is the smallest data that makes the answer true, deterministic and testable
-offline, and it gives the helper that the issue asks for (`get_compatible_versions`) for free.
-A package registered by the user with `register(...)` and no `register_versions(...)` has no list,
-so a wildcard or empty request for it is "no data" (second row of the table), which is the
-behaviour the issue asks for.
+**Where the versions come from (D14).** The registry stores _ranges_, and a range alone cannot say
+whether a release exists in a prefix: `"2.9.*"` against `[2.3.2, open)` would be "valid" for a
+package that never had a `2.9`. The versions are therefore fetched from PyPI, **only to match a
+wildcard** (or by `get_compatible_versions`): the exact version and `""` need no list (`""` is the
+request itself when a range is open, else the highest upper bound), and a package without ranges is
+"no data" and triggers no download. `CompatRegistry(version_source=...)` takes the function (the
+default registry uses `fetch_known_versions`); `register_versions` takes precedence and keeps tests
+and user packages offline. There is **no offline fallback**: an error of the download propagates. A
+shipped list was dropped because it needed a `feu` release for every release of a package.
 
 **CLI.** `--pkg-version` is optional (default `""`) in the three commands that take it. An empty
 value is accepted (`--pkg-version=`), so a workflow can pass an unset input straight through.
@@ -1031,15 +1031,14 @@ the `is_*` names only (no change for users, but two vocabularies across the sibl
 
 Decision: follow recommendation
 
-**D14. Where does a wildcard find its versions?** _Recommended: a `versions` list in each data file
-(3.9)._ Alternatives: (a) match the prefix against the **ranges** only (no data change): offline and
-tiny, but `"2.9.*"` is "valid" for a package that never had a `2.9`, so `is_valid_version` can say
-`True` for an uninstallable request, which is the failure the issue wants to remove; (b) ask PyPI
-(`fetch_pypi_versions`) at call time: exact, but it makes `is_valid_version` a network call, which
-breaks properties 1 and 9 and the offline tests. The list can be stale between two weekly
-refreshes, which is why an open-ended range is handed to `pip` (3.9).
+**D14. Where does a wildcard find its versions?** _Decided: PyPI, at call time, for a wildcard
+only (3.9)._ A `versions` list in each data file was first recommended, then dropped: it goes stale
+between two releases of `feu`, and a wildcard on a release published after the generation was
+wrongly invalid. Matching the prefix against the ranges only was rejected: `"2.9.*"` would be valid
+for a package that never had a `2.9`. The cost is a network call (cached per process by
+`fetch_pypi_project`) for wildcards, and no offline fallback (decided).
 
-Decision: follow recommendation
+Decision: PyPI at call time, wildcards only, no offline fallback
 
 **D15. Where we deviate from the text of the issue.** _Recommended: accept the deviations._
 (1) A wildcard that names a pre-release segment (`2.4.0rc1.*`) raises `ValueError` at parse time;

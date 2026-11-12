@@ -1,17 +1,6 @@
 {
   "package": "xy",
   "generated": "2026-11-11",
-  "versions": [
-    "0.0.1",
-    "0.0.2",
-    "0.0.3",
-    "0.0.4",
-    "0.0.5",
-    "0.0.6",
-    "0.0.7",
-    "0.0.8",
-    "0.0.9"
-  ],
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": []},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": []},

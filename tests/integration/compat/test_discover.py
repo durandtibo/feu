@@ -94,5 +94,5 @@ def test_generate_the_data_of_a_small_package_round_trips() -> None:
     """Test that the data of a package is formatted, then parsed back to
     the same value."""
     discovery = discover_compat_targets("xy")
-    text = format_package_data("xy", "2026-11-09", discovery.versions, discovery.targets)
-    assert parse_package_data(text) == PackageData(discovery.versions, discovery.targets)
+    text = format_package_data("xy", "2026-11-09", discovery.targets)
+    assert parse_package_data(text) == PackageData(discovery.targets)

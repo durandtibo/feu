@@ -9,6 +9,7 @@ from feu.compat import (
     get_default_compat_registry,
     is_valid_version,
 )
+from feu.testing import requests_available
 
 ###################################################
 #     Tests for the shipped compatibility data    #
@@ -59,36 +60,50 @@ PY314 = Target(python_version="3.14", os="linux", arch="x86_64")
 PY39 = Target(python_version="3.9", os="linux", arch="x86_64")
 
 
-@pytest.mark.parametrize("request_", ["2.4.*", "2.*", "", None])
-def test_is_valid_version_numpy_python_314_request_true(request_: str | None) -> None:
-    """Test that an open request is valid on the shipped data."""
+@pytest.mark.parametrize("request_", ["", None])
+def test_is_valid_version_numpy_python_314_latest_true(request_: str | None) -> None:
+    """Test that the latest version is valid on the shipped data,
+    without any download."""
     assert is_valid_version("numpy", request_, PY314)
 
 
+@requests_available
+@pytest.mark.parametrize("request_", ["2.4.*", "2.*"])
+def test_is_valid_version_numpy_python_314_wildcard_true(request_: str) -> None:
+    """Test that a wildcard is matched against the releases downloaded
+    from PyPI."""
+    assert is_valid_version("numpy", request_, PY314)
+
+
+@requests_available
 def test_is_valid_version_numpy_python_314_old_wildcard_false() -> None:
     """Test that a wildcard without any compatible release is
     invalid."""
     assert not is_valid_version("numpy", "1.24.*", PY314)
 
 
+@requests_available
 @pytest.mark.parametrize("request_", ["2.*", ""])
 def test_find_closest_version_numpy_python_314_open_request_is_returned(request_: str) -> None:
     """Test that an open-ended range returns the request itself."""
     assert find_closest_version("numpy", request_, PY314) == request_
 
 
+@requests_available
 def test_find_closest_version_numpy_python_39_closed_wildcard_is_resolved() -> None:
     """Test that a closed range resolves a wildcard to a concrete
     version."""
     assert find_closest_version("numpy", "1.*", PY39) == "1.26.4"
 
 
+@requests_available
 def test_find_closest_version_numpy_python_314_unmatched_wildcard_raises() -> None:
     """Test that a wildcard without any compatible release raises."""
     with pytest.raises(UnsupportedVersionError, match=r"matches '1\.24\.\*'"):
         find_closest_version("numpy", "1.24.*", PY314)
 
 
+@requests_available
 def test_get_compatible_versions_numpy_python_39_wildcard() -> None:
     """Test the compatible versions of a wildcard on the shipped
     data."""
@@ -104,3 +119,11 @@ def test_get_compatible_versions_numpy_python_39_wildcard() -> None:
 def test_is_valid_version_unknown_package_wildcard_false() -> None:
     """Test that a wildcard on a package without data is invalid."""
     assert not is_valid_version("not-a-real-package", "2.*", PY39)
+
+
+@requests_available
+def test_get_compatible_versions_numpy_is_up_to_date() -> None:
+    """Test that the versions come from PyPI, not from the shipped
+    data."""
+    versions = get_default_compat_registry().get_compatible_versions("numpy", PY39)
+    assert versions[-1] == "2.0.2"

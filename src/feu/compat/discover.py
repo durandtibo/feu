@@ -16,6 +16,7 @@ __all__ = [
     "PinnedDependency",
     "SameVersion",
     "discover_compat_targets",
+    "fetch_known_versions",
     "group_into_ranges",
     "is_compatible",
     "tags_match_exactly",
@@ -34,6 +35,7 @@ from feu.compat.wheel_tags import WheelTag, parse_wheel_filename
 from feu.version import (
     fetch_pypi_pinned_dependency_version,
     fetch_pypi_requires_python,
+    fetch_pypi_versions,
     fetch_pypi_wheel_filenames,
     filter_stable_versions,
     filter_valid_versions,
@@ -355,6 +357,31 @@ def _sorted_stable_versions(versions: Collection[str], ignored: Collection[str])
     """
     kept = filter_stable_versions(filter_valid_versions(versions))
     return sorted((v for v in kept if v not in ignored), key=Version)
+
+
+def fetch_known_versions(pkg_name: str) -> tuple[str, ...]:
+    r"""Fetch the releases of a package that the registry considers.
+
+    The versions are downloaded from PyPI when the function is called
+    (the download of a package is cached), so the list is always up to
+    date.
+
+    Args:
+        pkg_name: The package name.
+
+    Returns:
+        The stable, valid, not yanked and not ignored releases (see
+            ``IGNORED_VERSIONS``), in ascending PEP 440 order.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import fetch_known_versions
+        >>> versions = fetch_known_versions("numpy")  # doctest: +SKIP
+
+        ```
+    """
+    ignored = IGNORED_VERSIONS.get(canonicalize_name(pkg_name), frozenset())
+    return tuple(_sorted_stable_versions(fetch_pypi_versions(pkg_name), ignored))
 
 
 def discover_compat_targets(

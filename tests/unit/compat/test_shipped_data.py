@@ -105,43 +105,21 @@ def test_the_ranges_are_sorted_and_do_not_overlap(package: str) -> None:
 
 
 @pytest.mark.parametrize("package", PACKAGES)
-def test_the_versions_are_sorted_in_pep440_order(package: str) -> None:
-    versions = _data(package).versions
-    assert list(versions) == sorted(versions, key=Version)
-
-
-@pytest.mark.parametrize("package", PACKAGES)
-def test_the_versions_are_unique(package: str) -> None:
-    versions = _data(package).versions
-    assert len(set(versions)) == len(versions)
-
-
-@pytest.mark.parametrize("package", PACKAGES)
-def test_the_versions_are_stable(package: str) -> None:
+def test_every_range_bound_is_a_stable_version(package: str) -> None:
+    bounds = [
+        bound
+        for ranges in _data(package).targets.values()
+        for r in ranges
+        for bound in (r.min, r.max)
+        if bound is not None
+    ]
     assert not [
         v
-        for v in _data(package).versions
+        for v in bounds
         if Version(v).is_prerelease or Version(v).is_postrelease or Version(v).is_devrelease
     ]
 
 
 @pytest.mark.parametrize("package", PACKAGES)
-def test_the_versions_are_not_empty(package: str) -> None:
-    assert len(_data(package).versions) > 0
-
-
-@pytest.mark.parametrize("package", PACKAGES)
-def test_every_range_bound_is_a_known_version(package: str) -> None:
-    data = _data(package)
-    bounds = {
-        bound
-        for ranges in data.targets.values()
-        for r in ranges
-        for bound in (r.min, r.max)
-        if bound is not None
-    }
-    assert bounds <= set(data.versions)
-
-
-def test_duckdb_ignores_the_spurious_0_0_0_release() -> None:
-    assert "0.0.0" not in _data("duckdb").versions
+def test_there_is_no_list_of_versions(package: str) -> None:
+    assert "versions" not in _document(package)
