@@ -90,4 +90,5 @@ def is_free_threaded() -> bool:
 
         ```
     """
-    return hasattr(sys, "_is_gil_enabled") and not sys._is_gil_enabled()
+    is_gil_enabled = getattr(sys, "_is_gil_enabled", None)
+    return is_gil_enabled is not None and not is_gil_enabled()
