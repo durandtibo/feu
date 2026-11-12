@@ -213,6 +213,15 @@ wheels = [
 ]
 
 [[package]]
+name = "codespell"
+version = "2.4.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/80/19/45e941380f69c042b43423513d201e6592346f992394347f5e7174c31407/codespell-2.4.3.tar.gz", hash = "sha256:cbe085e331227b37bb86ef8bddd08dc768c704ee9a07ca869852c093fa2793e2", size = 352773, upload-time = "2026-07-15T11:51:54.159Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8b/bf/bdb951d34eb169140b546f44be9ec4525d1acefb9eb5572071f5492b19fc/codespell-2.4.3-py3-none-any.whl", hash = "sha256:af2505b335e8573dbd2d384d1c4ef498f4006f4ba2d6fceca01e55b91f52628a", size = 340736, upload-time = "2026-07-15T11:51:52.925Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -393,12 +402,14 @@ rich = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "codespell" },
     { name = "coverage" },
     { name = "docformatter" },
     { name = "invoke" },
     { name = "invoke-tasklib" },
     { name = "pre-commit" },
     { name = "pygments" },
+    { name = "pyright" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-timeout" },
@@ -407,6 +418,7 @@ dev = [
     { name = "xdoctest" },
 ]
 docs = [
+    { name = "griffe-inherited-docstrings" },
     { name = "mike" },
     { name = "mkdocs-click" },
     { name = "mkdocs-include-markdown-plugin" },
@@ -427,12 +439,14 @@ provides-extras = ["cli", "git", "requests", "rich"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "codespell", specifier = ">=2.4,<3.0" },
     { name = "coverage", extras = ["toml"], specifier = ">=7.16.2,<8.0" },
     { name = "docformatter", specifier = ">=1.7.8,<2.0" },
     { name = "invoke", specifier = ">=3.0,<4.0" },
-    { name = "invoke-tasklib", specifier = ">=0.0.8,<1.0" },
+    { name = "invoke-tasklib", specifier = ">=0.1.0a0,<1.0" },
     { name = "pre-commit", specifier = ">=4.6,<5.0" },
     { name = "pygments", specifier = ">=2.20,<3.0" },
+    { name = "pyright", specifier = ">=1.1.414,<2.0" },
     { name = "pytest", specifier = ">=9.1,<10.0" },
     { name = "pytest-cov", specifier = ">=7.1,<8.0" },
     { name = "pytest-timeout", specifier = ">=2.4,<3.0" },
@@ -441,6 +455,7 @@ dev = [
     { name = "xdoctest", specifier = ">=1.3,<2.0" },
 ]
 docs = [
+    { name = "griffe-inherited-docstrings", specifier = ">=1.1,<2.0" },
     { name = "mike", specifier = ">=2.2,<3.0" },
     { name = "mkdocs-click", specifier = ">=0.9,<1.0" },
     { name = "mkdocs-include-markdown-plugin", specifier = ">=7.3,<8.0" },
@@ -491,6 +506,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c0/ff/fee293f1ec3e1b64db6eb270e00964f29c086d769201474cedb8d1608930/gitpython-3.2.1.tar.gz", hash = "sha256:0f1229ec5c057bdabdeeda8bda4f17bda679ab33dbccc00f24e6a480553c8613", size = 241688, upload-time = "2026-10-14T12:20:20.589Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6b/50/2a923c4dc02522ff9567f07c67ed1deca6d5fa9474f4708168b8088dfa37/gitpython-3.2.1-py3-none-any.whl", hash = "sha256:d66b0832aa8755c1a84892937282df0befb16c97e5a64aeebd68be9c5e323f53", size = 231548, upload-time = "2026-10-14T12:20:18.844Z" },
+]
+
+[[package]]
+name = "griffe-inherited-docstrings"
+version = "1.1.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "griffelib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/32/61/1dd4a7c59618c5e9ee0f61eb9fb934ba11163fa66932c8e2cc99d74f3d7b/griffe_inherited_docstrings-1.1.4.tar.gz", hash = "sha256:ac98890a4505d986254302325959de6c82716968ec499aca009cb91c1d75eecb", size = 32495, upload-time = "2026-10-06T09:07:03.147Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/34/35/364ed24b4cba404a6f02998b381c872f99480a26f0c57687537578d4b5ad/griffe_inherited_docstrings-1.1.4-py3-none-any.whl", hash = "sha256:6c813c567f6f7396d6e1a78575fb7ad0d5b472fc02c1b782f830fcf26ab7254d", size = 10888, upload-time = "2026-10-06T09:07:02.095Z" },
 ]
 
 [[package]]
@@ -549,14 +576,14 @@ wheels = [
 
 [[package]]
 name = "invoke-tasklib"
-version = "0.0.8"
+version = "0.1.0a0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "invoke" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d5/a9/fb6fe70dfce0ec5989f1f6805976c68ffeb21e8735686fa8657d01b5afac/invoke_tasklib-0.0.8.tar.gz", hash = "sha256:3f98f6878245bf3865ab135636dc44e4362383559249f4fd7df40cda1e8dc1e1", size = 15061, upload-time = "2026-10-03T22:29:32.961Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/a7/3abb54b668f3bc03fc53943d3acb88413845ecf824547efd9bc8dd34bfab/invoke_tasklib-0.1.0a0.tar.gz", hash = "sha256:695a29198732bb0ad323410285fcfbe1a1fd8e640e5ad538221c0c135fb95056", size = 158768, upload-time = "2026-11-05T23:44:45.971Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/9c/82d875cc426d18bf62fd7d3ace326e0d808aea867eed48547359c66842ea/invoke_tasklib-0.0.8-py3-none-any.whl", hash = "sha256:2a36e4c11150b73fabf2f9c930aeb66f183ce07a0b6e6de28fc9c08cdaf69d60", size = 16683, upload-time = "2026-10-03T22:29:31.787Z" },
+    { url = "https://files.pythonhosted.org/packages/07/1a/033a988682e140c98ba01b6a069b0414d8ae623df3b243c17799a93afb9c/invoke_tasklib-0.1.0a0-py3-none-any.whl", hash = "sha256:9741d211fd11d5b4e5c49f7365ad3d5073ce0d99b1a4dfd961134c1342069164", size = 89044, upload-time = "2026-11-05T23:44:44.61Z" },
 ]
 
 [[package]]
@@ -1023,6 +1050,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pyright"
+version = "1.1.414"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nodeenv" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e1/1b/244c7b710031ada80f27e579ec20d28a2285dfc318fed0339866b1047f12/pyright-1.1.414.tar.gz", hash = "sha256:523c0a97c60da6333234955c277730c9cf4f5bd6d5399e7b7d2b0fc5d3599524", size = 4154638, upload-time = "2026-09-10T12:26:53.181Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/ba/18b6e682ead424ad24bcc134339ae5d1b931cd9ae260540592a058a91279/pyright-1.1.414-py3-none-any.whl", hash = "sha256:2a6b4b3298c9eec174c5ed83bd338de6eee82df2992f3e1930e6199d381be36f", size = 6225049, upload-time = "2026-09-10T12:26:51.427Z" },
+]
+
+[[package]]
 name = "pytest"
 version = "9.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1240,6 +1280,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/dc/b0/00a2fad58703c850c01a2fedf59b62da5fcfca3a2ddc9823872f93ab0a56/ty-0.0.101-py3-none-win32.whl", hash = "sha256:e21d86b974798909221bdccf1edabf8a072688b6793198dbb19b8479825330b1", size = 13806399, upload-time = "2026-11-11T13:53:25.037Z" },
     { url = "https://files.pythonhosted.org/packages/32/af/220a2beee8c5217ffd6ad5bc0262e2f3410119c0e357448fc91c491693f5/ty-0.0.101-py3-none-win_amd64.whl", hash = "sha256:d216293c9d734f72c74fd55678cb5a8ea04fdd95e1af4acd5f4fcfc9b69dd01b", size = 14379915, upload-time = "2026-11-11T13:53:27.72Z" },
     { url = "https://files.pythonhosted.org/packages/ec/1f/9e608354c59e072b3170f734a3126eeb0f44baf5452b83ca2937217f20c2/ty-0.0.101-py3-none-win_arm64.whl", hash = "sha256:1928805fd233c7cc92ea59cc6b7a28a05a2fcab56e2926a71b0c83f5f0c4f8f8", size = 13922734, upload-time = "2026-11-11T13:53:30.584Z" },
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.16.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/cc/6253133b5bb138fc3306cebfbda2c520f545d36b5be2c7255cc528bb45d6/typing_extensions-4.16.0.tar.gz", hash = "sha256:dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5", size = 113555, upload-time = "2026-07-02T08:40:05.92Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl", hash = "sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8", size = 45571, upload-time = "2026-07-02T08:40:04.659Z" },
 ]
 
 [[package]]

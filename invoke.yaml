@@ -1,3 +1,6 @@
 tasklib:
   package:
     name: feu
+  groups:
+    install: dev,docs
+    update: dev,docs
