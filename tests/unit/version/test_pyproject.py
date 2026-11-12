@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import tomllib
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 
 from feu.version import (
     PackageBounds,
+    read_pyproject_bounds,
     read_pyproject_dependencies,
     read_pyproject_optional_dependencies,
     read_pyproject_package_bounds,
@@ -13,8 +16,6 @@ from feu.version import (
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-import tomllib
 
 
 @pytest.fixture
@@ -374,3 +375,64 @@ def test_read_pyproject_dependencies_name_is_canonical(tmp_path: Path) -> None:
     assert read_pyproject_dependencies(path) == [
         PackageBounds(name="scikit-learn", lower="1.0", upper=None, section="project.dependencies")
     ]
+
+
+########################################
+#     Tests for read_pyproject_bounds  #
+########################################
+
+
+def test_read_pyproject_bounds_whole_output(pyproject: Path) -> None:
+    deps = "project.dependencies"
+    optional = "project.optional-dependencies"
+    assert read_pyproject_bounds(pyproject) == [
+        PackageBounds(name="numpy", lower="1.21", upper="2.0", section=deps),
+        PackageBounds(name="torch", lower="2.0", upper=None, section=deps),
+        PackageBounds(name="requests", lower=None, upper=None, section=deps),
+        PackageBounds(name="coola", lower="0.1", upper="1.0", section=deps),
+        PackageBounds(name="scikit-learn", lower="1.0", upper="2.0", section=deps),
+        PackageBounds(name="pytest", lower="7.0", upper="9.0", section=f"{optional}.dev"),
+        PackageBounds(name="numpy", lower="1.24", upper=None, section=f"{optional}.dev"),
+        PackageBounds(name="scipy", lower="1.0", upper=None, section=f"{optional}.extra"),
+        PackageBounds(name="mypy", lower="1.0", upper="2.0", section="dependency-groups.dev"),
+        PackageBounds(name="numpy", lower=None, upper="3.0", section="dependency-groups.dev"),
+        PackageBounds(name="ruff", lower="0.1", upper=None, section="dependency-groups.lint"),
+    ]
+
+
+def test_read_pyproject_bounds_package_filter(pyproject: Path) -> None:
+    assert [b.section for b in read_pyproject_bounds(pyproject, package="numpy")] == [
+        "project.dependencies",
+        "project.optional-dependencies.dev",
+        "dependency-groups.dev",
+    ]
+
+
+def test_read_pyproject_bounds_package_filter_is_canonical(pyproject: Path) -> None:
+    assert read_pyproject_bounds(pyproject, package="Scikit_Learn") == read_pyproject_bounds(
+        pyproject, package="scikit-learn"
+    )
+
+
+def test_read_pyproject_bounds_unknown_package(pyproject: Path) -> None:
+    assert read_pyproject_bounds(pyproject, package="not-a-package") == []
+
+
+def test_read_pyproject_bounds_skips_include_group(pyproject: Path) -> None:
+    assert not [b for b in read_pyproject_bounds(pyproject) if b.name == "include-group"]
+
+
+def test_read_pyproject_bounds_package_is_keyword_only(pyproject: Path) -> None:
+    with pytest.raises(TypeError, match="positional argument"):
+        read_pyproject_bounds(pyproject, "numpy")  # ty: ignore[too-many-positional-arguments]
+
+
+def test_read_pyproject_bounds_missing_file(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError, match=r"missing\.toml"):
+        read_pyproject_bounds(tmp_path / "missing.toml")
+
+
+def test_read_pyproject_bounds_parses_the_file_once(pyproject: Path) -> None:
+    with patch("feu.version.pyproject.tomllib.load", wraps=tomllib.load) as load_mock:
+        read_pyproject_bounds(pyproject)
+        load_mock.assert_called_once()

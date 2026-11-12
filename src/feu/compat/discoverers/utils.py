@@ -20,7 +20,7 @@ from feu.compat.wheel_tags import WheelTags, parse_wheel_filename
 from feu.version import filter_stable_versions, filter_valid_versions
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Sequence
+    from collections.abc import Callable, Iterable, Mapping, Sequence
 
     from feu.compat.target import Target
 
@@ -40,7 +40,7 @@ def sort_stable_versions(versions: Iterable[str]) -> list[str]:
 
 
 def build_tags_by_version(
-    wheel_filenames: dict[str, tuple[str, ...]],
+    wheel_filenames: Mapping[str, tuple[str, ...]],
 ) -> dict[str, set[WheelTags]]:
     r"""Build a mapping of version to the wheel tags parsed from its
     published wheel filenames.

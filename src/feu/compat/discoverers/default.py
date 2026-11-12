@@ -19,7 +19,7 @@ from feu.version import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
     from feu.compat.registry import VersionRange
     from feu.compat.target import Target
@@ -64,7 +64,7 @@ class CompatDiscoverer(BaseCompatDiscoverer):
 def discover_from_wheel_filenames(
     pkg_name: str,
     targets: Sequence[Target],
-    wheel_filenames: dict[str, tuple[str, ...]],
+    wheel_filenames: Mapping[str, tuple[str, ...]],
 ) -> dict[Target, list[VersionRange]]:
     r"""Compute the compatibility target ranges from a pre-fetched
     mapping of version to wheel filenames.

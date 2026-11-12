@@ -4,23 +4,21 @@ PyPI."""
 from __future__ import annotations
 
 __all__ = [
-    "fetch_latest_major_versions",
     "fetch_latest_major_versions_map",
-    "fetch_latest_minor_versions",
     "fetch_latest_minor_versions_map",
     "fetch_latest_stable_version",
     "fetch_latest_version",
-    "fetch_sampled_latest_minor_versions",
+    "fetch_latest_versions",
+    "fetch_package_versions",
     "fetch_versions",
 ]
 
+from typing import TYPE_CHECKING, Literal
 
-from typing import TYPE_CHECKING
+from packaging.utils import canonicalize_name
 
 from feu.version.comparison import latest_version, sort_versions
 from feu.version.filtering import (
-    filter_every_n_versions,
-    filter_last_n_versions,
     filter_range_versions,
     filter_stable_versions,
     filter_valid_versions,
@@ -29,15 +27,17 @@ from feu.version.filtering import (
     unique_versions,
 )
 from feu.version.pypi import fetch_pypi_versions
+from feu.version.pyproject import read_pyproject_bounds
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Collection, Sequence
+    from pathlib import Path
 
-    from feu.version import PackageBounds
+    from feu.version.bound import PackageBounds
 
 
 def fetch_versions(
-    package: str, lower: str | None = None, upper: str | None = None
+    package: str, *, lower: str | None = None, upper: str | None = None
 ) -> tuple[str, ...]:
     r"""Get the valid stable versions for a given package.
 
@@ -68,17 +68,21 @@ def fetch_versions(
     return tuple(versions)
 
 
-def fetch_latest_major_versions(
+def fetch_latest_versions(
     package: str,
+    *,
+    group: Literal["major", "minor"],
     lower: str | None = None,
     upper: str | None = None,
     include_lower_bound: bool = False,
 ) -> tuple[str, ...]:
-    r"""Get the latest version for each major version for a given
+    r"""Get the latest version of each major (or minor) version of a
     package.
 
     Args:
         package: The package name.
+        group: ``"major"`` to get the latest version of each major
+            version, ``"minor"`` for each ``major.minor`` version.
         lower: The lower version bound (inclusive).
             If ``None``, no lower limit is applied.
         upper: The upper version bound (exclusive).
@@ -86,121 +90,37 @@ def fetch_latest_major_versions(
         include_lower_bound: If ``True`` and ``lower`` is not ``None``,
             the first stable version at or above ``lower`` is included
             in the result. This ensures the lower bound itself is always
-            represented, even if it is not the latest patch for its
-            major release. If ``lower`` is ``None``, this argument has
-            no effect. Defaults to ``False``.
+            represented, even if it is not the latest patch of its
+            group. If ``lower`` is ``None``, this argument has no
+            effect.
 
     Returns:
-        A tuple containing the latest version for each major version,
-            sorted by major version number. If ``include_lower_bound`` is
-            ``True`` and ``lower`` is not ``None``, the first stable version
-            at or above ``lower`` is also included.
-
-    Example:
-        ```pycon
-        >>> from feu.version import fetch_latest_major_versions
-        >>> versions = fetch_latest_major_versions("requests", lower="2.0")  # doctest: +SKIP
-
-        ```
-    """
-    versions = fetch_versions(package, lower=lower, upper=upper)
-    result = list(latest_major_versions(versions))
-    if include_lower_bound and versions:
-        result = unique_versions([versions[0], *result])
-    return tuple(sort_versions(result))
-
-
-def fetch_latest_minor_versions(
-    package: str,
-    lower: str | None = None,
-    upper: str | None = None,
-    include_lower_bound: bool = False,
-) -> tuple[str, ...]:
-    r"""Get the latest version for each minor version for a given
-    package.
-
-    Args:
-        package: The package name.
-        lower: The lower version bound (inclusive).
-            If ``None``, no lower limit is applied.
-        upper: The upper version bound (exclusive).
-            If ``None``, no upper limit is applied.
-        include_lower_bound: If ``True`` and ``lower`` is not ``None``,
-            the first stable version at or above ``lower`` is included
-            in the result. This ensures the lower bound itself is always
-            represented, even if it is not the latest patch for its
-            minor release. If ``lower`` is ``None``, this argument has
-            no effect. Defaults to ``False``.
-
-    Returns:
-        A tuple containing the latest version for each minor version,
-            sorted by minor version number. If ``include_lower_bound`` is
-            ``True`` and ``lower`` is not ``None``, the first stable version
-            at or above ``lower`` is also included.
-
-    Example:
-        ```pycon
-        >>> from feu.version import fetch_latest_minor_versions
-        >>> versions = fetch_latest_minor_versions("requests", lower="2.28")  # doctest: +SKIP
-
-        ```
-    """
-    versions = fetch_versions(package, lower=lower, upper=upper)
-    result = list(latest_minor_versions(versions))
-    if include_lower_bound and versions:
-        result = unique_versions([versions[0], *result])
-    return tuple(sort_versions(result))
-
-
-def fetch_sampled_latest_minor_versions(
-    package: str,
-    lower: str | None = None,
-    upper: str | None = None,
-    n: int = 1,
-    include_lower_bound: bool = False,
-) -> tuple[str, ...]:
-    r"""Get a sampled subset of the latest minor versions for a given
-    package.
-
-    Fetches the latest version for each minor release, then returns every
-    ``n``-th version plus the most recent one, deduplicated and sorted.
-    This is useful for generating a representative but not exhaustive set
-    of versions to test against.
-
-    Args:
-        package: The package name.
-        lower: The lower version bound (inclusive).
-            If ``None``, no lower limit is applied.
-        upper: The upper version bound (exclusive).
-            If ``None``, no upper limit is applied.
-        n: The sampling stride. Every ``n``-th version is kept, along
-            with the most recent version. Defaults to ``1``, which
-            keeps all versions.
-        include_lower_bound: If ``True`` and ``lower`` is not ``None``,
-            the first stable version at or above ``lower`` is included
-            in the result alongside the sampled versions. Has no effect
-            if ``lower`` is ``None``. Defaults to ``False``.
-
-    Returns:
-        A sorted tuple of sampled version strings.
+        A tuple containing the latest version of each group, in
+            ascending order. If ``include_lower_bound`` is ``True`` and
+            ``lower`` is not ``None``, the first stable version at or
+            above ``lower`` is also included.
 
     Raises:
-        ValueError: If ``n`` is less than 1.
+        ValueError: If ``group`` is not ``"major"`` or ``"minor"``.
 
     Example:
         ```pycon
-        >>> from feu.version import fetch_sampled_latest_minor_versions
-        >>> versions = fetch_sampled_latest_minor_versions(
-        ...     "requests", lower="2.28", n=2
+        >>> from feu.version import fetch_latest_versions
+        >>> versions = fetch_latest_versions(
+        ...     "requests", group="minor", lower="2.28"
         ... )  # doctest: +SKIP
 
         ```
     """
-    versions = fetch_latest_minor_versions(package=package, lower=lower, upper=upper)
-    sampled = filter_every_n_versions(versions, n=n) + filter_last_n_versions(versions, n=1)
+    if group not in ("major", "minor"):
+        msg = f"group must be 'major' or 'minor' but received {group!r}"
+        raise ValueError(msg)
+    versions = fetch_versions(package, lower=lower, upper=upper)
+    latest = latest_major_versions if group == "major" else latest_minor_versions
+    result = list(latest(versions))
     if include_lower_bound and lower is not None and versions:
-        sampled = [*sampled, versions[0]]
-    return tuple(sort_versions(unique_versions(sampled)))
+        result = unique_versions([versions[0], *result])
+    return tuple(sort_versions(result))
 
 
 def fetch_latest_version(package: str) -> str:
@@ -255,92 +175,154 @@ def fetch_latest_stable_version(package: str) -> str:
     return latest_version(versions)
 
 
-def fetch_latest_major_versions_map(
+def _fetch_versions_map(
     packages: Sequence[PackageBounds],
-    include_lower_bound: bool = False,
+    group: Literal["major", "minor"],
+    *,
+    include_lower_bound: bool,
 ) -> dict[str, list[str]]:
-    """Fetch the latest major versions for a sequence of packages.
-
-    For each ``PackageBounds`` in ``packages``, calls
-    ``fetch_latest_major_versions`` with the package name and lower bound,
-    and collects the results into a dictionary.
-
-    If a package appears more than once in ``packages`` (e.g. because it
-    was found in multiple sections), the last entry wins.
+    r"""Fetch the latest major or minor versions of several packages.
 
     Args:
-        packages: A sequence of ``PackageBounds`` instances, typically
-            obtained from ``read_pyproject_dependencies`` or
-            ``read_pyproject_optional_dependencies``.
-        include_lower_bound: If ``True``, the first stable version at or
-            above each package's lower bound is included in its version
-            list. Has no effect for packages whose lower bound is
-            ``None``. Defaults to ``False``.
+        packages: The bounds of the packages. If a package appears
+            more than once, the last entry wins.
+        group: ``"major"`` or ``"minor"``.
+        include_lower_bound: See ``fetch_latest_versions``.
 
     Returns:
-        A dictionary mapping each package name to the list of latest major
-            version strings returned by ``fetch_latest_major_versions``.
-
-    Example:
-        ```pycon
-        >>> from feu.version import fetch_latest_major_versions_map, read_pyproject_dependencies
-        >>> bounds = read_pyproject_dependencies("pyproject.toml")  # doctest: +SKIP
-        >>> versions = fetch_latest_major_versions_map(bounds)  # doctest: +SKIP
-
-        ```
+        A dictionary mapping each package name to its versions.
     """
     return {
         bounds.name: list(
-            fetch_latest_major_versions(
-                bounds.name, lower=bounds.lower, include_lower_bound=include_lower_bound
+            fetch_latest_versions(
+                bounds.name,
+                group=group,
+                lower=bounds.lower,
+                include_lower_bound=include_lower_bound,
             )
         )
         for bounds in packages
     }
 
 
-def fetch_latest_minor_versions_map(
-    packages: Sequence[PackageBounds],
-    include_lower_bound: bool = False,
+def fetch_latest_major_versions_map(
+    packages: Sequence[PackageBounds], *, include_lower_bound: bool = False
 ) -> dict[str, list[str]]:
-    """Fetch the latest minor versions for a sequence of packages.
+    r"""Fetch the latest major versions for a sequence of packages.
 
-    For each ``PackageBounds`` in ``packages``, calls
-    ``fetch_latest_minor_versions`` with the package name and lower bound,
-    and collects the results into a dictionary.
-
-    If a package appears more than once in ``packages`` (e.g. because it
-    was found in multiple sections), the last entry wins.
+    This function is kept for the scripts that copy
+    ``dev/generate_versions.py``; use ``fetch_package_versions`` in new
+    code.
 
     Args:
         packages: A sequence of ``PackageBounds`` instances, typically
-            obtained from ``read_pyproject_dependencies`` or
-            ``read_pyproject_optional_dependencies``.
+            obtained from ``read_pyproject_bounds``. If a package
+            appears more than once in ``packages`` (e.g. because it
+            was found in multiple sections), the last entry wins.
         include_lower_bound: If ``True``, the first stable version at or
             above each package's lower bound is included in its version
             list. Has no effect for packages whose lower bound is
-            ``None``. Defaults to ``False``.
+            ``None``.
 
     Returns:
-        A dictionary mapping each package name to the list of latest minor
-            version strings returned by ``fetch_latest_minor_versions``.
+        A dictionary mapping each package name to the list of latest major
+            version strings returned by ``fetch_latest_versions``.
 
     Example:
         ```pycon
-        >>> from feu.version import fetch_latest_minor_versions_map, read_pyproject_dependencies
-        >>> bounds = read_pyproject_dependencies("pyproject.toml")  # doctest: +SKIP
-        >>> versions = fetch_latest_minor_versions_map(bounds)  # doctest: +SKIP
-        >>> versions_with_lower = fetch_latest_minor_versions_map(
+        >>> from feu.version import PackageBounds, fetch_latest_major_versions_map
+        >>> bounds = [PackageBounds("requests", "2.28", None, "project.dependencies")]
+        >>> versions = fetch_latest_major_versions_map(
         ...     bounds, include_lower_bound=True
         ... )  # doctest: +SKIP
 
         ```
     """
-    return {
-        bounds.name: list(
-            fetch_latest_minor_versions(
-                bounds.name, lower=bounds.lower, include_lower_bound=include_lower_bound
-            )
-        )
-        for bounds in packages
-    }
+    return _fetch_versions_map(packages, "major", include_lower_bound=include_lower_bound)
+
+
+def fetch_latest_minor_versions_map(
+    packages: Sequence[PackageBounds], *, include_lower_bound: bool = False
+) -> dict[str, list[str]]:
+    r"""Fetch the latest minor versions for a sequence of packages.
+
+    This function is kept for the scripts that copy
+    ``dev/generate_versions.py``; use ``fetch_package_versions`` in new
+    code.
+
+    Args:
+        packages: A sequence of ``PackageBounds`` instances, typically
+            obtained from ``read_pyproject_bounds``. If a package
+            appears more than once in ``packages`` (e.g. because it
+            was found in multiple sections), the last entry wins.
+        include_lower_bound: If ``True``, the first stable version at or
+            above each package's lower bound is included in its version
+            list. Has no effect for packages whose lower bound is
+            ``None``.
+
+    Returns:
+        A dictionary mapping each package name to the list of latest minor
+            version strings returned by ``fetch_latest_versions``.
+
+    Example:
+        ```pycon
+        >>> from feu.version import PackageBounds, fetch_latest_minor_versions_map
+        >>> bounds = [PackageBounds("requests", "2.28", None, "project.dependencies")]
+        >>> versions = fetch_latest_minor_versions_map(
+        ...     bounds, include_lower_bound=True
+        ... )  # doctest: +SKIP
+
+        ```
+    """
+    return _fetch_versions_map(packages, "minor", include_lower_bound=include_lower_bound)
+
+
+def fetch_package_versions(
+    pyproject: str | Path,
+    *,
+    major_only: Collection[str] = ("packaging",),
+    include_lower_bound: bool = True,
+) -> dict[str, list[str]]:
+    r"""Fetch the versions to test of the dependencies of a project.
+
+    The dependencies are read from ``[project.dependencies]`` and
+    ``[project.optional-dependencies.*]`` of the ``pyproject.toml``
+    file (not from the ``[dependency-groups.*]``). For each package,
+    the latest version of each minor version at or above the lower
+    bound is returned, or the latest version of each major version for
+    the packages of ``major_only``.
+
+    Args:
+        pyproject: Path to the ``pyproject.toml`` file.
+        major_only: The packages for which only the latest version of
+            each major version is returned. The names are compared in
+            their canonical form.
+        include_lower_bound: If ``True``, the first stable version at or
+            above the lower bound of each package is included.
+
+    Returns:
+        A dictionary mapping each canonical package name to its
+            versions, sorted by package name. If a package appears
+            more than once, the last entry wins.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        tomllib.TOMLDecodeError: If the file is not valid TOML.
+
+    Example:
+        ```pycon
+        >>> from feu.version import fetch_package_versions
+        >>> versions = fetch_package_versions("pyproject.toml")  # doctest: +SKIP
+
+        ```
+    """
+    majors = {canonicalize_name(name) for name in major_only}
+    bounds = [b for b in read_pyproject_bounds(pyproject) if b.section.startswith("project.")]
+    result = _fetch_versions_map(
+        [b for b in bounds if b.name in majors], "major", include_lower_bound=include_lower_bound
+    ) | _fetch_versions_map(
+        [b for b in bounds if b.name not in majors],
+        "minor",
+        include_lower_bound=include_lower_bound,
+    )
+    return dict(sorted(result.items()))
