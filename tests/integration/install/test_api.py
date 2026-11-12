@@ -14,7 +14,7 @@ from feu.install import (
 )
 from feu.testing import pip_available, uv_available
 from feu.utils.package import PackageSpec
-from feu.version import get_python_major_minor
+from feu.utils.platform import get_python_version
 
 
 @pytest.fixture(autouse=True)
@@ -32,7 +32,7 @@ def pkg_version(pkg_name: str) -> str:
     return find_closest_version(
         pkg_name=pkg_name,
         pkg_version="6.1",
-        target=Target(python_version=get_python_major_minor()),
+        target=Target(python_version=get_python_version()),
     )
 
 

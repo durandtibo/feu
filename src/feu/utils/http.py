@@ -9,10 +9,19 @@ from typing import TYPE_CHECKING, Any
 from feu.imports import check_requests
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     import requests
 
 
-def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]:
+def fetch_data(
+    url: str,
+    *,
+    timeout: float = 10.0,
+    headers: Mapping[str, str] | None = None,
+    params: Mapping[str, Any] | None = None,
+    accept: str | None = None,
+) -> dict[str, Any]:
     r"""Retrieve the JSON data for a given URL.
 
     This function performs an HTTP GET request and parses the response
@@ -26,7 +35,10 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
         url: The URL.
         timeout: The number of seconds to wait for the server to send
             data before giving up.
-        **kwargs: Optional arguments that ``requests.get`` takes.
+        headers: Optional HTTP headers to send.
+        params: Optional query parameters.
+        accept: Optional value of the ``Accept`` header. An ``Accept``
+            entry of ``headers`` takes precedence.
 
     Returns:
         The parsed JSON object returned.
@@ -43,7 +55,7 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
 
         ```
     """
-    resp = fetch_response(url=url, timeout=timeout, **kwargs)
+    resp = fetch_response(url=url, timeout=timeout, headers=headers, params=params, accept=accept)
     try:
         return resp.json()
     except ValueError as exc:
@@ -51,21 +63,32 @@ def fetch_data(url: str, timeout: float = 10.0, **kwargs: Any) -> dict[str, Any]
         raise RuntimeError(msg) from exc
 
 
-def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.Response:
+def fetch_response(
+    url: str,
+    *,
+    timeout: float = 10.0,
+    headers: Mapping[str, str] | None = None,
+    params: Mapping[str, Any] | None = None,
+    accept: str | None = None,
+) -> requests.Response:
     r"""Retrieve data from a given URL with automatic retry logic.
 
-    This function performs an HTTP GET request with a configured retry policy
-    for transient errors (429, 500, 502, 503, 504), with exponential
-    backoff and up to 5 retry attempts. The function
-    validates the HTTP response and raises detailed errors for failures.
+    This function performs an HTTP GET request with a configured retry
+    policy for transient errors (429, 500, 502, 503, 504), with
+    exponential backoff and up to 5 retry attempts on ``https://`` and
+    ``http://``. The request has a ``User-Agent: feu/<version>`` header.
+    The function validates the HTTP response and raises detailed errors
+    for failures. The session is closed before the function returns, so
+    streaming is not supported.
 
     Args:
         url: The URL to fetch.
         timeout: The number of seconds to wait for the server to send
             data before giving up. Defaults to 10.0.
-        **kwargs: Optional arguments that ``requests.get`` accepts.
-            The underlying session is closed before the function
-            returns, so streaming (``stream=True``) is not supported.
+        headers: Optional HTTP headers to send.
+        params: Optional query parameters.
+        accept: Optional value of the ``Accept`` header. An ``Accept``
+            entry of ``headers`` takes precedence.
 
     Returns:
         A ``requests.Response`` object containing the HTTP response.
@@ -88,6 +111,9 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
     from requests.adapters import HTTPAdapter  # noqa: PLC0415
     from urllib3.util.retry import Retry  # noqa: PLC0415
 
+    from feu import __version__  # noqa: PLC0415
+
+    request_headers = {**({"Accept": accept} if accept else {}), **(headers or {})}
     with requests.Session() as session:
         retry = Retry(
             total=5,
@@ -96,10 +122,15 @@ def fetch_response(url: str, timeout: float = 10.0, **kwargs: Any) -> requests.R
             allowed_methods=["GET"],
             raise_on_status=False,
         )
-        session.mount("https://", HTTPAdapter(max_retries=retry))
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        session.headers["User-Agent"] = f"feu/{__version__}"
 
         try:
-            resp = session.get(url=url, timeout=timeout, **kwargs)
+            resp = session.get(
+                url=url, timeout=timeout, headers=request_headers or None, params=params
+            )
             resp.raise_for_status()
         except requests.exceptions.Timeout as exc:
             msg = f"Request to {url} timed out after {timeout}s"

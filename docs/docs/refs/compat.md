@@ -82,3 +82,15 @@ Corrections can be registered on top of the built-in data:
 ## API reference
 
 ::: feu.compat
+
+::: feu.compat.discover
+
+::: feu.compat.display
+
+::: feu.compat.registry
+
+::: feu.compat.shipped
+
+::: feu.compat.target
+
+::: feu.compat.wheel_tags

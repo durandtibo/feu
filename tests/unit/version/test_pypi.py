@@ -284,7 +284,7 @@ def test_fetch_pypi_project(fetch_mock: Mock) -> None:
     fetch_mock.assert_called_once_with(
         url="https://pypi.org/simple/demo-pkg/",
         timeout=10,
-        headers={"Accept": "application/vnd.pypi.simple.v1+json"},
+        accept="application/vnd.pypi.simple.v1+json",
     )
 
 

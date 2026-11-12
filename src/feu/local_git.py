@@ -54,7 +54,7 @@ def get_tags() -> list[git.TagReference]:
         return sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
 
 
-def get_last_tag_name(raise_error: bool = True) -> str | None:
+def get_last_tag_name(*, raise_error: bool = True) -> str | None:
     r"""Get the name of the most recent tag in the current repository.
 
     The most recent tag is the tag pointing to the most recent commit,
@@ -92,7 +92,7 @@ def get_last_tag_name(raise_error: bool = True) -> str | None:
     return tags[-1].name
 
 
-def get_last_version_tag_name(raise_error: bool = True) -> str | None:
+def get_last_version_tag_name(*, raise_error: bool = True) -> str | None:
     r"""Get the name of the most recent version tag in the current
     repository.
 
@@ -134,6 +134,6 @@ def get_last_version_tag_name(raise_error: bool = True) -> str | None:
             return tag.name
 
     if raise_error:
-        msg = "No tag was found"
+        msg = "No version tag was found (a version tag is 'v' followed by a PEP 440 version)"
         raise RuntimeError(msg)
     return None

@@ -188,7 +188,7 @@ def _fetch_pypi_project(name: str) -> PypiProject:
     document = fetch_data(
         url=f"https://pypi.org/simple/{name}/",
         timeout=10,
-        headers={"Accept": _SIMPLE_API_ACCEPT},
+        accept=_SIMPLE_API_ACCEPT,
     )
     return _parse_project(name, document)
 

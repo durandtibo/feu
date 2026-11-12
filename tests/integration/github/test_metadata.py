@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import pytest
 
 from feu.github import fetch_github_metadata
@@ -19,7 +21,7 @@ def _reset_cache() -> None:
 @requests_available
 def test_fetch_github_metadata_feu() -> None:
     metadata = fetch_github_metadata(owner="durandtibo", repo="feu")
-    assert isinstance(metadata, dict)
+    assert isinstance(metadata, Mapping)
     assert metadata["name"] == "feu"
     assert metadata["owner"]["login"] == "durandtibo"
 
@@ -27,7 +29,7 @@ def test_fetch_github_metadata_feu() -> None:
 @requests_available
 def test_fetch_github_metadata_pytorch() -> None:
     metadata = fetch_github_metadata(owner="pytorch", repo="pytorch")
-    assert isinstance(metadata, dict)
+    assert isinstance(metadata, Mapping)
     assert metadata["name"] == "pytorch"
     assert metadata["owner"]["login"] == "pytorch"
 
