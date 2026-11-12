@@ -15,7 +15,7 @@ from feu import __version__
 from feu.cli import cli
 from feu.compat import Target, UnsupportedVersionError
 from feu.install import InstallerSpec
-from feu.testing import click_available
+from feu.testing import click_available, requests_available
 from feu.utils.package import PackageSpec
 
 if TYPE_CHECKING:
@@ -245,6 +245,7 @@ def test_find_closest_version_with_empty_pkg_version(runner: CliRunner) -> None:
 
 
 @click_available
+@requests_available
 def test_find_closest_version_with_wildcard_pkg_version(runner: CliRunner) -> None:
     result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "--pkg-version", "1.*"])
     assert result.output == "1.26.4\n"
@@ -257,6 +258,7 @@ def test_find_closest_version_unsupported_exits_with_1(runner: CliRunner) -> Non
 
 
 @click_available
+@requests_available
 def test_find_closest_version_unsupported_prints_the_message_not_none(runner: CliRunner) -> None:
     result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
     assert "None" not in result.output
@@ -365,12 +367,14 @@ def test_check_valid_version_without_pkg_version(runner: CliRunner) -> None:
 
 
 @click_available
+@requests_available
 def test_check_valid_version_wildcard(runner: CliRunner) -> None:
     result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "2.*"])
     assert result.exit_code == 0
 
 
 @click_available
+@requests_available
 def test_check_valid_version_unmatched_wildcard_exits_with_1(runner: CliRunner) -> None:
     result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "3.*"])
     assert result.exit_code == 1
