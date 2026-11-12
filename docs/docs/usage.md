@@ -250,11 +250,12 @@ architecture):
 ```python
 from feu.compat import discover_compat_targets, show_compat_targets
 
-# Discover the compatibility matrix for a package by inspecting its wheels on PyPI
-compat = discover_compat_targets("numpy")
+# Discover the compatibility matrix for a package by inspecting its wheels on PyPI.
+# The result has the considered `versions` and the `targets` ranges.
+discovery = discover_compat_targets("numpy")
 
 # Pretty-print the matrix as a table (requires the `rich` extra)
-show_compat_targets(compat, pkg_name="numpy")
+show_compat_targets(discovery, pkg_name="numpy")
 ```
 
 This is useful to keep the built-in registry up to date, or to inspect compatibility for packages

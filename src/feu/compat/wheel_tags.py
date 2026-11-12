@@ -1,64 +1,65 @@
-r"""Contain functions to parse PEP 427 wheel filenames into
-compatibility-relevant tags."""
+r"""Contain the parser of the tags of a wheel file name.
+
+The file name is parsed by ``packaging.utils.parse_wheel_filename``,
+which expands the compressed tag sets (e.g. ``macosx_10_9_x86_64.macosx_11_0_arm64``).
+Each ``(interpreter, abi, platform)`` is then mapped to a ``WheelTag``.
+
+The platforms that ``feu`` knows are ``linux``, ``macos`` and ``windows`` on
+``x86_64`` and ``arm64`` (the vocabulary of ``Target``). The other
+platforms (``musllinux``, ``win32``, ``i686``, ``armv7l``, ``ppc64le``,
+...) and the other interpreters (PyPy, GraalPy, ...) are **out of scope**:
+they give no tag.
+"""
 
 from __future__ import annotations
 
-__all__ = [
-    "ARCH_TABLE",
-    "OS_TABLE",
-    "WheelTags",
-    "parse_arch",
-    "parse_os",
-    "parse_pure_python_tag",
-    "parse_python_tag",
-    "parse_wheel_filename",
-]
+__all__ = ["WheelTag", "parse_wheel_filename"]
 
 import re
 from dataclasses import dataclass
 
-_PYTHON_TAG_PATTERN = re.compile(r"^cp3(\d+)$")
-_PURE_PYTHON_TAG_COMPONENT_PATTERN = re.compile(r"^py(\d)(\d*)$")
+from packaging.utils import InvalidWheelFilename, parse_wheel_filename as _parse_wheel_filename
 
-OS_TABLE: dict[str, str] = {
-    "manylinux": "linux",
-    "linux": "linux",
-    "macosx": "macos",
-    "win_amd64": "windows",
-    "win_arm64": "windows",
-    "win32": "windows",
-}
+_CPYTHON_PATTERN = re.compile(r"cp3(\d+)")
+_PURE_PYTHON_PATTERN = re.compile(r"py\d+")
+_FREE_THREADED_ABI_PATTERN = re.compile(r"cp3\d+t|abi3t")
+_ABI3_PATTERN = re.compile(r"abi3t?")
+_MACOS_PATTERN = re.compile(r"macosx_\d+_\d+_(x86_64|arm64|universal2)")
+_LINUX_PATTERN = re.compile(r"(?:many|)linux(?:_\d+_\d+|\d+)?_(x86_64|aarch64)")
 
-ARCH_TABLE: dict[str, str] = {
-    "x86_64": "x86_64",
-    "amd64": "x86_64",
-    "aarch64": "arm64",
-    "arm64": "arm64",
+_Platform = tuple[str | None, str | None]
+_FIXED_PLATFORMS: dict[str, tuple[_Platform, ...]] = {
+    "any": ((None, None),),
+    "win_amd64": (("windows", "x86_64"),),
+    "win_arm64": (("windows", "arm64"),),
 }
 
 
 @dataclass(frozen=True)
-class WheelTags:
-    r"""Compatibility-relevant tags extracted from a wheel filename.
+class WheelTag:
+    r"""Represent one ``(interpreter, abi, platform)`` tag of a wheel.
 
     Args:
-        python_version: The CPython version, e.g. ``"3.14"``, or
-            ``None`` for a pure-Python wheel compatible with any
-            Python version. For an ``abi3`` wheel, this is the
-            *minimum* CPython version it supports, since the stable
-            ABI makes it forward-compatible with later versions too.
-        free_threaded: ``True`` if the wheel targets a free-threaded
-            (no-GIL) build.
-        os: The operating system, e.g. ``"linux"``, ``"macos"``,
-            ``"windows"``, or ``None`` for a pure-Python wheel
-            compatible with any OS.
-        arch: The CPU architecture, e.g. ``"x86_64"``, ``"arm64"``, or
-            ``None`` for a pure-Python wheel compatible with any
-            architecture.
-        abi3: ``True`` if the wheel targets the CPython stable ABI
-            (an ``abi3`` ABI tag), meaning it is forward-compatible
-            with every CPython version from ``python_version`` onward,
-            not just that exact version.
+        python_version: The CPython version (e.g. ``"3.12"``) or the
+            minimum CPython version of a stable-ABI wheel. ``None``
+            for a pure-Python (``py3``) wheel.
+        free_threaded: ``True`` for a free-threaded build
+            (``cp313t`` and ``abi3t``).
+        os: The operating system (``"linux"``, ``"macos"`` or
+            ``"windows"``), or ``None`` for a wheel that runs on any
+            platform.
+        arch: The CPU architecture (``"x86_64"`` or ``"arm64"``), or
+            ``None`` for a wheel that runs on any platform.
+        abi3: ``True`` for a stable-ABI wheel (``abi3`` and ``abi3t``),
+            which runs on its Python version and the later ones.
+
+    Example:
+        ```pycon
+        >>> from feu.compat.wheel_tags import WheelTag
+        >>> WheelTag(python_version="3.12", free_threaded=False, os="linux", arch="x86_64")
+        WheelTag(python_version='3.12', free_threaded=False, os='linux', arch='x86_64', abi3=False)
+
+        ```
     """
 
     python_version: str | None
@@ -68,192 +69,103 @@ class WheelTags:
     abi3: bool = False
 
 
-def parse_python_tag(python_tag: str) -> str | None:
-    r"""Parse a wheel Python tag into a CPython version string.
+def _parse_platform(platform_tag: str) -> tuple[_Platform, ...]:
+    r"""Map a platform tag to ``(os, arch)`` pairs.
 
     Args:
-        python_tag: The wheel Python tag, e.g. ``"cp312"``.
+        platform_tag: The platform tag, e.g. ``"manylinux_2_17_x86_64"``.
 
     Returns:
-        The CPython version, e.g. ``"3.12"``, or ``None`` if the tag
-            doesn't match a CPython 3.x tag (e.g. ``"py3"``,
-            ``"pp310"``).
-
-    Example:
-        ```pycon
-        >>> from feu.compat.wheel_tags import parse_python_tag
-        >>> parse_python_tag("cp312")
-        '3.12'
-
-        ```
+        The ``(os, arch)`` pairs. A ``macosx_*_universal2`` wheel runs
+            on both architectures. The tuple is empty for a platform
+            that is out of scope. ``any`` gives ``(None, None)``.
     """
-    match = _PYTHON_TAG_PATTERN.match(python_tag)
-    if not match:
-        return None
-    digits = match.group(1)
-    return f"3.{digits}"
+    if platform_tag in _FIXED_PLATFORMS:
+        return _FIXED_PLATFORMS[platform_tag]
+    if match := _MACOS_PATTERN.fullmatch(platform_tag):
+        arch = match.group(1)
+        if arch == "universal2":
+            return (("macos", "x86_64"), ("macos", "arm64"))
+        return (("macos", arch),)
+    if match := _LINUX_PATTERN.fullmatch(platform_tag):
+        return (("linux", "arm64" if match.group(1) == "aarch64" else "x86_64"),)
+    return ()
 
 
-def parse_pure_python_tag(python_tag: str) -> list[str | None] | None:
-    r"""Parse a wheel Python tag into the pure-Python versions it
-    targets.
-
-    A bare major tag (e.g. ``"py3"``) carries no minor version, so it
-    is compatible with any minor version of that major and is
-    represented as ``None`` (a wildcard). A tag with an explicit minor
-    (e.g. ``"py36"``) targets that exact Python version only, like a
-    CPython tag. A compressed, dot-separated tag (e.g.
-    ``"py2.py3"`` or ``"py35.py36"``) yields one entry per component.
+def _parse_python(interpreter: str) -> tuple[bool, str | None]:
+    r"""Map an interpreter tag to a Python version.
 
     Args:
-        python_tag: The wheel Python tag, e.g. ``"py3"`` or
-            ``"py35.py36"``.
+        interpreter: The interpreter tag, e.g. ``"cp312"`` or ``"py3"``.
 
     Returns:
-        A list with one entry per dot-separated component (``None``
-            for a wildcard major-only component, or a version string
-            such as ``"3.6"`` for a major.minor component), or
-            ``None`` if any component doesn't match the ``py<digits>``
-            pattern.
-
-    Example:
-        ```pycon
-        >>> from feu.compat.wheel_tags import parse_pure_python_tag
-        >>> parse_pure_python_tag("py3")
-        [None]
-        >>> parse_pure_python_tag("py36")
-        ['3.6']
-
-        ```
+        A pair ``(in_scope, python_version)``. ``in_scope`` is
+            ``False`` for an interpreter other than CPython and
+            pure Python. The version is ``None`` for pure Python.
     """
-    versions: list[str | None] = []
-    for component in python_tag.split("."):
-        match = _PURE_PYTHON_TAG_COMPONENT_PATTERN.match(component)
-        if not match:
-            return None
-        major, minor = match.groups()
-        versions.append(f"{major}.{minor}" if minor else None)
-    return versions
+    if match := _CPYTHON_PATTERN.fullmatch(interpreter):
+        return True, f"3.{match.group(1)}"
+    if _PURE_PYTHON_PATTERN.fullmatch(interpreter):
+        return True, None
+    return False, None
 
 
-def parse_os(platform_tag: str) -> str | None:
-    r"""Parse the operating system from a wheel platform tag.
+def parse_wheel_filename(filename: str) -> tuple[WheelTag, ...]:
+    r"""Parse the tags of a wheel file name.
 
     Args:
-        platform_tag: The first dot-separated component of the wheel
-            platform tag, e.g. ``"manylinux_2_17_x86_64"``.
+        filename: The wheel file name, e.g.
+            ``"numpy-2.3.0-cp312-cp312-manylinux_2_17_x86_64.whl"``.
 
     Returns:
-        The operating system name, e.g. ``"linux"``, ``"macos"``,
-            ``"windows"``, or ``None`` if the tag doesn't match any
-            known prefix in ``OS_TABLE``.
-
-    Example:
-        ```pycon
-        >>> from feu.compat.wheel_tags import parse_os
-        >>> parse_os("manylinux_2_17_x86_64")
-        'linux'
-
-        ```
-    """
-    for key, os_name in OS_TABLE.items():
-        if platform_tag.startswith(key):
-            return os_name
-    return None
-
-
-def parse_arch(platform_tag: str) -> str | None:
-    r"""Parse the CPU architecture from a wheel platform tag.
-
-    Args:
-        platform_tag: The first dot-separated component of the wheel
-            platform tag, e.g. ``"manylinux_2_17_x86_64"``.
-
-    Returns:
-        The architecture name, e.g. ``"x86_64"``, ``"arm64"``, or
-            ``None`` if the tag doesn't contain any known substring in
-            ``ARCH_TABLE``.
-
-    Example:
-        ```pycon
-        >>> from feu.compat.wheel_tags import parse_arch
-        >>> parse_arch("manylinux_2_17_x86_64")
-        'x86_64'
-
-        ```
-    """
-    for key, arch_name in ARCH_TABLE.items():
-        if key in platform_tag:
-            return arch_name
-    return None
-
-
-def parse_wheel_filename(filename: str) -> list[WheelTags]:
-    r"""Parse a PEP 427 wheel filename into compatibility tags.
-
-    Args:
-        filename: The wheel filename, e.g.
-            ``"numpy-2.3.0-cp314-cp314t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"``.
-
-    Returns:
-        A list of ``WheelTags``, one per Python-tag component (more
-            than one only for a compressed pure-Python tag such as
-            ``"py2.py3"``), or an empty list if the filename doesn't
-            end in ``.whl``, targets a non-CPython/non-pure-Python
-            interpreter, or its platform tag isn't in the known
-            ``os``/``arch`` tables (and isn't the universal ``"any"``
-            platform). A bare major pure-Python component (e.g.
-            ``"py3"``) yields ``python_version=None`` (compatible with
-            any minor version), while a major.minor component (e.g.
-            ``"py36"``) yields an exact version like a CPython tag.
-            The universal ``"any"`` platform tag yields ``os=None``
-            and ``arch=None``, meaning "compatible with any".
+        The distinct tags of the wheel, sorted. A wheel with a
+            compressed tag set (``macosx_10_9_x86_64.macosx_11_0_arm64``)
+            or a ``universal2`` wheel gives one tag per platform. The
+            tuple is empty if ``filename`` is not a valid wheel file
+            name, or if every tag is out of scope (``musllinux``,
+            ``win32``, ``i686``, PyPy, ...).
 
     Example:
         ```pycon
         >>> from feu.compat.wheel_tags import parse_wheel_filename
-        >>> parse_wheel_filename("numpy-2.3.0-cp312-cp312-macosx_11_0_arm64.whl")
-        [WheelTags(python_version='3.12', free_threaded=False, os='macos', arch='arm64', abi3=False)]
+        >>> parse_wheel_filename("numpy-2.3.0-cp312-cp312-macosx_11_0_universal2.whl")
+        (WheelTag(python_version='3.12', free_threaded=False, os='macos', arch='arm64', abi3=False),
+         WheelTag(python_version='3.12', free_threaded=False, os='macos', arch='x86_64', abi3=False))
 
         ```
     """
-    if not filename.endswith(".whl"):
-        return []
-    stem = filename[: -len(".whl")]
-    parts = stem.split("-")
-    if len(parts) < 5:
-        return []
-    python_tag, abi_tag, platform_tag = parts[-3], parts[-2], parts[-1]
-
-    cpython_version = parse_python_tag(python_tag)
-    if cpython_version is not None:
-        python_versions: list[str | None] = [cpython_version]
-    else:
-        pure_python_versions = parse_pure_python_tag(python_tag)
-        if pure_python_versions is None:
-            return []
-        python_versions = pure_python_versions
-
-    first_platform_component = platform_tag.split(".")[0]
-    if first_platform_component == "any":
-        os_name = None
-        arch_name = None
-    else:
-        os_name = parse_os(first_platform_component)
-        arch_name = parse_arch(first_platform_component)
-        if os_name is None or arch_name is None:
-            return []
-
-    free_threaded = abi_tag.endswith("t")
-    abi3 = abi_tag == "abi3"
-
-    return [
-        WheelTags(
-            python_version=python_version,
-            free_threaded=free_threaded,
-            os=os_name,
-            arch=arch_name,
-            abi3=abi3,
+    try:
+        tags = _parse_wheel_filename(filename)[3]
+    except InvalidWheelFilename:
+        return ()
+    result: set[WheelTag] = set()
+    for tag in tags:
+        in_scope, python_version = _parse_python(tag.interpreter)
+        if not in_scope:
+            continue
+        free_threaded = _FREE_THREADED_ABI_PATTERN.fullmatch(tag.abi) is not None
+        abi3 = _ABI3_PATTERN.fullmatch(tag.abi) is not None
+        if abi3 and python_version is None:
+            continue
+        result.update(
+            WheelTag(
+                python_version=python_version,
+                free_threaded=free_threaded,
+                os=os,
+                arch=arch,
+                abi3=abi3,
+            )
+            for os, arch in _parse_platform(tag.platform)
         )
-        for python_version in python_versions
-    ]
+    return tuple(
+        sorted(
+            result,
+            key=lambda t: (
+                t.python_version or "",
+                t.free_threaded,
+                t.os or "",
+                t.arch or "",
+                t.abi3,
+            ),
+        )
+    )

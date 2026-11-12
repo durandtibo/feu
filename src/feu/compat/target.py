@@ -3,10 +3,20 @@ constraints."""
 
 from __future__ import annotations
 
-__all__ = ["VALID_ARCH", "VALID_OS", "Target", "resolve_target"]
+__all__ = [
+    "DEFAULT_TARGETS",
+    "PLATFORMS",
+    "PYTHON_VERSIONS",
+    "VALID_ARCH",
+    "VALID_OS",
+    "Target",
+    "resolve_target",
+]
 
 import re
 from dataclasses import dataclass
+
+from packaging.version import Version
 
 from feu.utils.platform import (
     get_current_arch,
@@ -130,3 +140,21 @@ def resolve_target(
         os=os or get_current_os(),
         arch=arch or get_current_arch(),
     )
+
+
+#: The Python versions of the shipped compatibility data.
+PYTHON_VERSIONS = ("3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15")
+
+#: The ``(os, arch)`` platforms of the shipped compatibility data.
+PLATFORMS: tuple[tuple[str, str], ...] = tuple(
+    (os, arch) for os in ("linux", "macos", "windows") for arch in ("x86_64", "arm64")
+)
+
+#: The targets of the shipped compatibility data: every Python version, with and
+#: without free-threading from Python 3.13, and every platform.
+DEFAULT_TARGETS: tuple[Target, ...] = tuple(
+    Target(python_version=python_version, free_threaded=free_threaded, os=os, arch=arch)
+    for python_version in PYTHON_VERSIONS
+    for free_threaded in ((False, True) if Version(python_version) >= Version("3.13") else (False,))
+    for os, arch in PLATFORMS
+)

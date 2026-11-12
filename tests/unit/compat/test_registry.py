@@ -3,7 +3,13 @@ from __future__ import annotations
 import pytest
 from packaging.version import InvalidVersion, Version
 
-from feu.compat.registry import CompatRegistry, UnsupportedVersionError, VersionRange, _parse
+from feu.compat.registry import (
+    CompatRegistry,
+    PackageData,
+    UnsupportedVersionError,
+    VersionRange,
+    _parse,
+)
 from feu.compat.target import Target
 
 T311 = Target(python_version="3.11")
@@ -1040,3 +1046,178 @@ def test_compat_registry_find_closest_version_regression_empty_does_not_raise_in
     numpy_registry: CompatRegistry,
 ) -> None:
     assert numpy_registry.find_closest_version("numpy", "", T311) == ""
+
+
+################################################
+#     Tests for the lazy loading of the data   #
+################################################
+
+
+class FakeLoader:
+    def __init__(self, data: dict[str, PackageData]) -> None:
+        self._data = data
+        self.loaded: list[str] = []
+
+    def packages(self) -> list[str]:
+        return sorted(self._data)
+
+    def load(self, name: str) -> PackageData:
+        self.loaded.append(name)
+        return self._data[name]
+
+
+NUMPY_DATA = PackageData(
+    versions=("1.0.0", "2.0.0"), targets={T311: [VersionRange("1.0.0", "1.9.9")]}
+)
+SCIPY_DATA = PackageData(versions=("0.1.0",), targets={T311: []})
+
+
+@pytest.fixture
+def loader() -> FakeLoader:
+    return FakeLoader({"numpy": NUMPY_DATA, "scipy": SCIPY_DATA})
+
+
+def test_compat_registry_loader_creation_loads_nothing(loader: FakeLoader) -> None:
+    CompatRegistry(loader=loader)
+    assert loader.loaded == []
+
+
+def test_compat_registry_loader_packages_loads_nothing(loader: FakeLoader) -> None:
+    CompatRegistry(loader=loader).packages()
+    assert loader.loaded == []
+
+
+def test_compat_registry_loader_packages(loader: FakeLoader) -> None:
+    registry = CompatRegistry({"my_package": {T311: []}}, loader=loader)
+    assert registry.packages() == ["my-package", "numpy", "scipy"]
+
+
+def test_compat_registry_packages_without_loader() -> None:
+    assert CompatRegistry({"B": {T311: []}, "a": {T311: []}}).packages() == ["a", "b"]
+
+
+def test_compat_registry_packages_empty() -> None:
+    assert CompatRegistry().packages() == []
+
+
+def test_compat_registry_loader_loads_on_first_lookup(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    assert registry.get_config("numpy", T311) == [VersionRange("1.0.0", "1.9.9")]
+    assert loader.loaded == ["numpy"]
+
+
+def test_compat_registry_loader_loads_only_the_looked_up_package(loader: FakeLoader) -> None:
+    CompatRegistry(loader=loader).get_config("numpy", T311)
+    assert "scipy" not in loader.loaded
+
+
+def test_compat_registry_loader_loads_a_package_once(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    registry.get_config("numpy", T311)
+    registry.is_valid_version("numpy", "1.0.0", T311)
+    registry.has_package("numpy")
+    assert loader.loaded == ["numpy"]
+
+
+def test_compat_registry_loader_canonical_name(loader: FakeLoader) -> None:
+    assert CompatRegistry(loader=loader).has_package("NumPy")
+
+
+def test_compat_registry_loader_unknown_package_loads_nothing(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    assert not registry.has_package("not-a-package")
+    assert loader.loaded == []
+
+
+def test_compat_registry_loader_unknown_package_is_looked_up_once(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    registry.has_package("not-a-package")
+    registry.has_package("not-a-package")
+    assert loader.loaded == []
+
+
+def test_compat_registry_loader_loads_the_versions(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    assert registry.get_compatible_versions("numpy", T311) == ["1.0.0"]
+
+
+def test_compat_registry_loader_find_closest_version(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    assert registry.find_closest_version("numpy", "5.0.0", T311) == "1.9.9"
+
+
+def test_compat_registry_loader_find_closest_version_request(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    assert registry.find_closest_version("numpy", "", T311) == "1.0.0"
+
+
+def test_compat_registry_loader_is_unsupported(loader: FakeLoader) -> None:
+    assert CompatRegistry(loader=loader).is_unsupported("scipy", T311)
+
+
+def test_compat_registry_loader_register_loads_first(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    with pytest.raises(RuntimeError, match="already registered for package numpy"):
+        registry.register("numpy", T311, ranges=[VersionRange("5.0.0", None)])
+    assert loader.loaded == ["numpy"]
+
+
+def test_compat_registry_loader_register_exist_ok_overwrites_the_loaded_entry(
+    loader: FakeLoader,
+) -> None:
+    registry = CompatRegistry(loader=loader)
+    registry.register("numpy", T311, ranges=[VersionRange("5.0.0", None)], exist_ok=True)
+    assert registry.get_config("numpy", T311) == [VersionRange("5.0.0", None)]
+
+
+def test_compat_registry_loader_register_another_target_keeps_the_loaded_entries(
+    loader: FakeLoader,
+) -> None:
+    registry = CompatRegistry(loader=loader)
+    registry.register("numpy", T310, ranges=[VersionRange("5.0.0", None)])
+    assert registry.get_config("numpy", T311) == [VersionRange("1.0.0", "1.9.9")]
+
+
+def test_compat_registry_loader_register_versions_loads_first(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    with pytest.raises(RuntimeError, match="Versions are already registered for package numpy"):
+        registry.register_versions("numpy", ["9.0.0"])
+
+
+def test_compat_registry_loader_state_loads_every_package(loader: FakeLoader) -> None:
+    registry = CompatRegistry(loader=loader)
+    assert registry.state
+    assert loader.loaded == ["numpy", "scipy"]
+
+
+def test_compat_registry_loader_state_whole_output(loader: FakeLoader) -> None:
+    assert CompatRegistry(loader=loader).state == {
+        "numpy": {T311: [VersionRange("1.0.0", "1.9.9")]},
+        "scipy": {T311: []},
+    }
+
+
+def test_compat_registry_loader_repr(loader: FakeLoader) -> None:
+    assert repr(CompatRegistry(loader=loader)) == "CompatRegistry(packages=2)"
+
+
+def test_compat_registry_loader_str(loader: FakeLoader) -> None:
+    assert str(CompatRegistry(loader=loader)) == "CompatRegistry(packages=2)"
+
+
+def test_compat_registry_loader_invalid_range_raises() -> None:
+    bad = FakeLoader({"numpy": PackageData((), {T311: [VersionRange("2.0", "1.0")]})})
+    with pytest.raises(ValueError, match="invalid version range"):
+        CompatRegistry(loader=bad).get_config("numpy", T311)
+
+
+def test_compat_registry_state_is_read_only() -> None:
+    registry = CompatRegistry({"numpy": {T311: []}})
+    with pytest.raises(TypeError, match="does not support item assignment"):
+        registry.state["scipy"] = {}  # ty: ignore[invalid-assignment]
+
+
+def test_compat_registry_state_packages_are_read_only() -> None:
+    registry = CompatRegistry({"numpy": {T311: []}})
+    with pytest.raises(TypeError, match="does not support item assignment"):
+        registry.state["numpy"][T310] = []  # ty: ignore[invalid-assignment]

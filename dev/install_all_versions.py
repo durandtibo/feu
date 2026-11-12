@@ -8,8 +8,7 @@ import argparse
 import logging
 from datetime import UTC, datetime, timedelta
 
-from feu.compat import Target
-from feu.compat.packages import get_package_names
+from feu.compat import Target, get_default_compat_registry
 from feu.install import InstallerSpec, install_all_versions
 from feu.utils.platform import (
     get_current_arch,
@@ -49,7 +48,7 @@ def main() -> None:
     )
     installer = InstallerSpec(name=args.installer, arguments=args.installer_arguments)
 
-    packages = get_package_names()
+    packages = get_default_compat_registry().packages()
     start_date = datetime.now(tz=UTC).date() - timedelta(days=365 * MAX_VERSION_AGE_YEARS)
 
     logger.info(

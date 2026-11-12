@@ -12,9 +12,9 @@ logger: logging.Logger = logging.getLogger(__name__)
 def main() -> None:
     r"""Define the main function."""
     pkg_name = "torch"
-    compat = discover_compat_targets(pkg_name)
-    logger.info(compat)
-    show_compat_targets(compat=compat, pkg_name=pkg_name)
+    discovery = discover_compat_targets(pkg_name)
+    logger.info(discovery)
+    show_compat_targets(compat=discovery, pkg_name=pkg_name)
 
 
 if __name__ == "__main__":

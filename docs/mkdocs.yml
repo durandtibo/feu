@@ -24,7 +24,6 @@ nav:
   - API Reference:
       - Main Functions: refs/root.md
       - Compat: refs/compat.md
-      - Discoverers: refs/discoverers.md
       - Git: refs/local_git.md
       - GitHub: refs/github.md
       - Imports: refs/imports.md
