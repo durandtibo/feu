@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 sources = ["src"]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["src"]
+only-include = ["src", "tests"]
 
 [tool.hatch.metadata.hooks.autoextras]
 
@@ -66,12 +66,14 @@ rich = ["rich>=14.0.0,<16.0"]
 
 [dependency-groups]
 dev = [
+  "codespell>=2.4,<3.0",
   "coverage[toml]>=7.16.2,<8.0",
   "docformatter>=1.7.8,<2.0",
-  "invoke-tasklib>=0.0.8,<1.0",
+  "invoke-tasklib>=0.1.0a0,<1.0",
   "invoke>=3.0,<4.0",
   "pre-commit>=4.6,<5.0",
   "pygments>=2.20,<3.0",
+  "pyright>=1.1.414,<2.0",
   "pytest-cov>=7.1,<8.0",
   "pytest-timeout>=2.4,<3.0",
   "pytest>=9.1,<10.0",
@@ -81,6 +83,7 @@ dev = [
 ]
 
 docs = [
+  "griffe-inherited-docstrings >=1.1,<2.0",
   "mike >=2.2,<3.0",
   "mkdocs-click >=0.9,<1.0",
   "mkdocs-material >=9.7,<10.0",
@@ -237,6 +240,14 @@ force-sort-within-sections = false
 combine-as-imports = true
 known-first-party = ["feu"]
 
+[tool.ruff.lint.flake8-import-conventions]
+[tool.ruff.lint.flake8-import-conventions.aliases]
+numpy = "np"
+pandas = "pd"
+polars = "pl"
+pyarrow = "pa"
+xarray = "xr"
+
 [tool.ty.analysis]
 # Optional dependencies are imported lazily and are not installed in the dev environment.
 allowed-unresolved-imports = [
@@ -251,5 +262,14 @@ allowed-unresolved-imports = [
   "xarray.**",
 ]
 
+[tool.pyright]
+include = ["src"]
+pythonVersion = "3.11"
+venvPath = "."
+venv = ".venv"
+
 [tool.ty.src]
-include = ["src", "tests", "dev"]
+include = ["src", "tests", "dev", "examples"]
+
+[tool.ty.environment]
+python-version = "3.11"
