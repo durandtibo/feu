@@ -40,7 +40,7 @@ versions that support it. It returns a `Discovery`: the considered versions
 and the ranges of each target.
 
 A package whose wheels do not carry the platform tags is described by data, not
-by a class: a *companion* package (`SameVersion("jaxlib")` for `jax`,
+by a class: a _companion_ package (`SameVersion("jaxlib")` for `jax`,
 `PinnedDependency("polars-runtime-32")` for `polars`,
 `PinnedDependency("pydantic-core")` for `pydantic`, see `COMPANIONS`) and the
 releases to ignore (`IGNORED_VERSIONS`, e.g. `duckdb` `0.0.0`). For such a

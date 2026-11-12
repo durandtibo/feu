@@ -3,8 +3,8 @@ r"""Contain the command line interface.
 The command line interface requires the ``click`` package, which can be
 installed with ``pip install 'feu[cli]'``. It provides the commands
 ``install``, ``find-closest-version``, ``check-valid-version`` and
-``package-versions``, which are run with ``feu <command>`` or
-``python -m feu <command>``.
+``package-versions``, which are run with ``feu <command>`` or ``python
+-m feu <command>``.
 
 The standard output holds only the answer of a command (it is used in
 ``$(...)``), the logs and the error messages go to the standard error,

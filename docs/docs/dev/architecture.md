@@ -9,14 +9,14 @@ imports nothing from `feu`. `tests/unit/test_layers.py` checks it.
 imports  ->  utils  ->  version  ->  compat  ->  install  ->  cli
 ```
 
-| Layer     | What it does                                                                                                                 | I/O                                                |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `imports` | Availability checks of the optional libraries (a port of `coola.utils.imports`), `MissingPackageError`, `lazy_exports`.      | none                                               |
-| `utils`   | `Registry[T]`, `run_command`, `fetch_data`/`fetch_response`, `PackageSpec`, the platform of the interpreter.                 | `command.py` (subprocess), `http.py` (network)     |
-| `version` | Version comparison and filtering, the version request, `pyproject` bounds, PyPI metadata (`fetch_pypi_project`).             | `pypi.py`, `package.py` (network)                  |
-| `compat`  | `Target`, the registry, the shipped data, the discovery from PyPI, the wheel tags.                                           | `discover.py` (network), `shipped.py` (read files) |
-| `install` | The installers, the dependency resolvers, `install_package` and friends.                                                     | `installer.py` (subprocess)                        |
-| `cli`     | The `click` commands; they only parse and print.                                                                             | none of its own                                    |
+| Layer     | What it does                                                                                                            | I/O                                                |
+| --------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `imports` | Availability checks of the optional libraries (a port of `coola.utils.imports`), `MissingPackageError`, `lazy_exports`. | none                                               |
+| `utils`   | `Registry[T]`, `run_command`, `fetch_data`/`fetch_response`, `PackageSpec`, the platform of the interpreter.            | `command.py` (subprocess), `http.py` (network)     |
+| `version` | Version comparison and filtering, the version request, `pyproject` bounds, PyPI metadata (`fetch_pypi_project`).        | `pypi.py`, `package.py` (network)                  |
+| `compat`  | `Target`, the registry, the shipped data, the discovery from PyPI, the wheel tags.                                      | `discover.py` (network), `shipped.py` (read files) |
+| `install` | The installers, the dependency resolvers, `install_package` and friends.                                                | `installer.py` (subprocess)                        |
+| `cli`     | The `click` commands; they only parse and print.                                                                        | none of its own                                    |
 
 `feu.github` and `feu.local_git` are outside the chain and only use the lower layers.
 
@@ -73,7 +73,6 @@ under a name:
 >>> from feu.install import Installer, get_default_installer_registry, register_installer
 >>> class PdmInstaller(Installer):
 ...     prefix = ("pdm", "add")
-...
 >>> register_installer("pdm", PdmInstaller)
 >>> get_default_installer_registry().find("pdm") is PdmInstaller
 True
@@ -99,7 +98,6 @@ request and should reason on the whole request (`pandas==2.*` straddles the thre
 >>> from feu.utils.package import PackageSpec
 >>> def my_resolver(package):
 ...     return [*default_resolver(package), Requirement("typing-extensions>=4")]
-...
 >>> register_resolver("my-package", my_resolver)
 >>> resolve(PackageSpec("My_Package", "1.0"))
 [<Requirement('My_Package==1.0')>, <Requirement('typing-extensions>=4')>]

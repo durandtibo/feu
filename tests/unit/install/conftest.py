@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
 @pytest.fixture(autouse=True)
 def _tools_available() -> Generator[None]:
-    r"""Make the unit tests independent of the tools of the host: ``pip``
-    and ``uv`` are reported as available, and the commands are patched
-    by the tests."""
+    r"""Make the unit tests independent of the tools of the host:
+    ``pip`` and ``uv`` are reported as available, and the commands are
+    patched by the tests."""
     with (
         patch("feu.install.installer.is_pip_available", return_value=True),
         patch("feu.install.installer.is_uv_available", return_value=True),

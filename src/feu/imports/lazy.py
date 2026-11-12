@@ -1,4 +1,5 @@
-r"""Implement a utility function to lazily import the names of a package."""
+r"""Implement a utility function to lazily import the names of a
+package."""
 
 from __future__ import annotations
 

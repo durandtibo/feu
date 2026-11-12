@@ -1,9 +1,9 @@
 r"""Root package of ``feu``.
 
 The public names are imported lazily (PEP 562): ``import feu`` does not
-import any submodule, so it does not import any optional library.
-``from feu import compare_version`` imports ``feu.version`` the first
-time it is used.
+import any submodule, so it does not import any optional library. ``from
+feu import compare_version`` imports ``feu.version`` the first time it
+is used.
 """
 
 from __future__ import annotations

@@ -188,7 +188,8 @@ def test_fetch_github_repos_headers(
 
 @requests_available
 def test_fetch_github_repos_pagination_link_parsing(sample_repos: list[dict[str, Any]]) -> None:
-    """Test that the next page is read from the Link header with multiple relations."""
+    """Test that the next page is read from the Link header with
+    multiple relations."""
     first_response = Mock()
     first_response.status_code = 200
     first_response.json.return_value = sample_repos[:1]

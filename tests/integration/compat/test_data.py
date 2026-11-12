@@ -66,7 +66,8 @@ def test_is_valid_version_numpy_python_314_request_true(request_: str | None) ->
 
 
 def test_is_valid_version_numpy_python_314_old_wildcard_false() -> None:
-    """Test that a wildcard without any compatible release is invalid."""
+    """Test that a wildcard without any compatible release is
+    invalid."""
     assert not is_valid_version("numpy", "1.24.*", PY314)
 
 
@@ -89,7 +90,8 @@ def test_find_closest_version_numpy_python_314_unmatched_wildcard_raises() -> No
 
 
 def test_get_compatible_versions_numpy_python_39_wildcard() -> None:
-    """Test the compatible versions of a wildcard on the shipped data."""
+    """Test the compatible versions of a wildcard on the shipped
+    data."""
     assert get_default_compat_registry().get_compatible_versions("numpy", PY39, "1.26.*") == [
         "1.26.0",
         "1.26.1",

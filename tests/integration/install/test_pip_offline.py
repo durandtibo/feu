@@ -62,7 +62,8 @@ def test_install_package_pip_offline_targets_the_current_interpreter(
 def test_install_package_uv_offline_targets_the_current_interpreter(
     wheel_dir: Path, caplog: pytest.LogCaptureFixture
 ) -> None:
-    """Test that uv installs with the interpreter that runs the tests."""
+    """Test that uv installs with the interpreter that runs the
+    tests."""
     with caplog.at_level(logging.INFO, logger="feu.utils.command"):
         install_package(
             installer=_offline_installer("uv", wheel_dir),

@@ -35,7 +35,6 @@ gives the `pip install` and `uv pip install` commands:
 ...     check_package("not_an_installed_package")
 ... except MissingPackageError as error:
 ...     print(error.name)
-...
 not_an_installed_package
 
 ```
@@ -56,7 +55,7 @@ False
 ```
 
 Wherever a function takes the version of a package to install or to validate, it accepts a version
-*request*: an exact version (`"2.4.0"`), a wildcard (`"2.4.*"`, `"2.*"`) or an empty string / `None`
+_request_: an exact version (`"2.4.0"`), a wildcard (`"2.4.*"`, `"2.*"`) or an empty string / `None`
 for the latest version. A wildcard is digits and dots followed by one trailing `.*`; anything else
 with a `*` raises `ValueError`:
 
@@ -283,7 +282,6 @@ provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `pol
 >>> for python_version in ("3.9", "3.10"):
 ...     target = Target(python_version, os="linux", arch="x86_64")
 ...     print(python_version, find_closest_version("numpy", "99.0.0", target))
-...
 3.9 2.0.2
 3.10 2.2.6
 

@@ -1,7 +1,7 @@
 r"""Contain the parser of a version request.
 
-A version argument of ``feu`` is a *request*, not a version. It has three
-forms: an exact version (``"2.4.0"``), a release-prefix wildcard
+A version argument of ``feu`` is a *request*, not a version. It has
+three forms: an exact version (``"2.4.0"``), a release-prefix wildcard
 (``"2.4.*"``, ``"2.*"``) and the latest version (``""`` or ``None``).
 """
 
@@ -103,8 +103,8 @@ class VersionRequest:
         return True
 
     def entirely_below(self, version: Version) -> bool:
-        r"""Indicate if every version that satisfies the request is
-        lower than a version.
+        r"""Indicate if every version that satisfies the request is lower
+        than a version.
 
         Args:
             version: The version to compare with.
