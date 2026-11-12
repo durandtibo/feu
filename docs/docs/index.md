@@ -84,20 +84,17 @@ package versions.
 
 ## Quick Example
 
-```python
-from feu import is_package_available, get_package_version
-from feu.compat import Target, find_closest_version
+```pycon
+>>> from feu import is_package_available
+>>> from feu.compat import Target, find_closest_version
+>>> is_package_available("packaging")
+True
+>>> target = Target(python_version="3.9", os="linux", arch="x86_64")
+>>> find_closest_version("numpy", "2.3.0", target)
+'2.0.2'
+>>> find_closest_version("numpy", "1.*", target)
+'1.26.4'
 
-# Check if a package is available
-if is_package_available("numpy"):
-    version = get_package_version("numpy")
-    print(f"NumPy {version} is installed!")
-
-# Find the closest valid version for your Python version
-version = find_closest_version(
-    pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
-)
-print(f"Closest valid version: {version}")
 ```
 
 ## Documentation
@@ -105,6 +102,9 @@ print(f"Closest valid version: {version}")
 - 🚀 [Get Started Guide](get_started.md)
 - 📖 [Usage Guide](usage.md)
 - 🖥️ [CLI Reference](cli.md)
+- 🧭 [Properties](properties.md): the rules `feu` follows
+- 🧱 [Architecture](dev/architecture.md): layers, how to add a package, an installer or a resolver
+- 🔀 [Migration to 0.9](migration.md)
 - 📚 [API Reference](refs/root.md)
 
 ## API stability

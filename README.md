@@ -60,7 +60,8 @@ packages and their versions across different Python environments.
 - ✅ **Check package availability**: Verify if packages and modules are installed
 - 🔄 **Version-aware installation**: Install packages with automatic version compatibility checks
 - 🎯 **Smart version resolution**: Find the closest valid package version for your target
-  environment (Python version, free-threadedness, OS, and CPU architecture)
+  environment (Python version, free-threadedness, OS, and CPU architecture). A version can be an
+  exact version (`2.4.0`), a wildcard (`2.4.*`) or empty (the latest)
 - 📋 **Package registry**: Built-in compatibility information for popular packages (numpy, pandas,
   polars, torch, pydantic, etc.), which can be extended with your own constraints
 - 🔍 **PyPI-backed discovery**: Discover version compatibility from the wheels published on PyPI,
@@ -69,36 +70,43 @@ packages and their versions across different Python environments.
   and read dependency bounds from `pyproject.toml`
 - 🌿 **Git and GitHub utilities**: Get the tags of a local repository, and fetch and sort
   repository metadata from the GitHub API
-- 🖥️ **CLI tools**: Command-line interface to install a package, find the closest valid version,
-  and check if a version is valid (`pip install 'feu[cli]'`)
+- 🖥️ **CLI tools**: Command-line interface (`feu`) to install a package, find the closest valid
+  version, check if a version is valid and list the versions to test (`pip install 'feu[cli]'`)
 - 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
 
 ### Quick Example
 
-```python
-from feu.imports import is_package_available
-from feu.compat import Target, find_closest_version
-from feu.version import get_package_version
+The examples are doctests: they are run by the test suite, so they cannot drift from the code.
 
-# Check if a package is available
-if is_package_available("numpy"):
-    version = get_package_version("numpy")
-    print(f"NumPy {version} is installed!")
+```pycon
+>>> from feu import is_package_available
+>>> from feu.compat import Target, find_closest_version
+>>> is_package_available("packaging")
+True
+>>> # The closest valid version for a target (Python 3.9 on Linux x86_64)
+>>> target = Target(python_version="3.9", os="linux", arch="x86_64")
+>>> find_closest_version("numpy", "2.3.0", target)
+'2.0.2'
+>>> # A version is a request: an exact version, a wildcard or "" for the latest
+>>> find_closest_version("numpy", "1.*", target)
+'1.26.4'
+>>> # A target without a platform means "any platform"
+>>> find_closest_version("numpy", "2.3.0", Target(python_version="3.9"))
+'2.0.2'
 
-# Find the closest valid version for your Python version
-version = find_closest_version(
-    pkg_name="numpy", pkg_version="2.0.2", target=Target(python_version="3.10")
-)
-print(f"Closest valid version: {version}")
 ```
 
-The same checks are available from the command line:
+The same checks are available from the command line (`pip install 'feu[cli]'`). The standard
+output holds only the answer and the exit status carries the result (`0` ok, `1` negative answer,
+`2` usage error):
 
 ```shell
-python -m feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
-python -m feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
-python -m feu install --pkg-name=numpy --pkg-version=2.0.2
+feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
+feu install --pkg-name=numpy --pkg-version=2.0.2
 ```
+
+`python -m feu ...` is equivalent.
 
 ### Why feu?
 
@@ -120,6 +128,9 @@ error-prone. `feu` solves this by:
 - 📚 [Full Documentation](https://durandtibo.github.io/feu/)
 - 🚀 [Get Started Guide](https://durandtibo.github.io/feu/get_started)
 - 📖 [Usage Examples](https://durandtibo.github.io/feu/usage)
+- 🧭 [Properties](https://durandtibo.github.io/feu/properties): the rules `feu` follows
+- 🧱 [Architecture](https://durandtibo.github.io/feu/dev/architecture): layers, how to add a package, an installer or a resolver
+- 🔀 [Migration to 0.9](https://durandtibo.github.io/feu/migration)
 - 🖥️ [CLI Reference](https://durandtibo.github.io/feu/cli)
 - 📚 [API Reference](https://durandtibo.github.io/feu/refs/root)
 
