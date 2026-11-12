@@ -6,13 +6,28 @@
 pip install 'feu[cli]'
 ```
 
+## Exit Status
+
+The standard output holds only the answer of a command, the logs and the error messages go to the
+standard error (`--verbose` logs the executed commands), and the exit status carries the result:
+
+- `0`: success, or a valid version;
+- `1`: a negative answer (no compatible version, or `check-valid-version` printed `False`);
+- `2`: a usage error (unknown option, missing option, invalid version request).
+
+`feu --version` prints the version. `feu` is a console script; `python -m feu` is equivalent.
+
 ## Available Commands
 
-The CLI provides three main commands:
+The CLI provides four commands:
 
 1. `install` - Install a package with version compatibility checks
 2. `find-closest-version` - Find the closest valid version for a package
 3. `check-valid-version` - Check if a package version is valid for a Python version
+4. `package-versions` - Write the versions to test of the dependencies of a project
+
+`install` installs into the interpreter that runs `feu` for the current target, so it has no target
+option.
 
 ## Install Command
 
@@ -21,7 +36,7 @@ Install a package with automatic version compatibility handling for your Python 
 ### Syntax
 
 ```shell
-python -m feu install [OPTIONS]
+feu install [OPTIONS]
 ```
 
 ### Options
@@ -37,19 +52,19 @@ python -m feu install [OPTIONS]
 Install NumPy version 2.0.2:
 
 ```shell
-python -m feu install --pkg-name=numpy --pkg-version=2.0.2
+feu install --pkg-name=numpy --pkg-version=2.0.2
 ```
 
 Install NumPy with specific extras:
 
 ```shell
-python -m feu install --pkg-name=numpy --pkg-version=2.0.2 --pkg-extras=dev,doc
+feu install --pkg-name=numpy --pkg-version=2.0.2 --pkg-extras=dev,doc
 ```
 
 Install with custom installer arguments:
 
 ```shell
-python -m feu install \
+feu install \
   --pkg-name=numpy \
   --pkg-version=2.0.2 \
   --installer-name=pip \
@@ -63,7 +78,7 @@ Find the closest valid version of a package for a specific target environment.
 ### Syntax
 
 ```shell
-python -m feu find-closest-version [OPTIONS]
+feu find-closest-version [OPTIONS]
 ```
 
 ### Options
@@ -72,19 +87,18 @@ python -m feu find-closest-version [OPTIONS]
 - `-v, --pkg-version TEXT` - Package version request to check: an exact version (`2.0.2`), a wildcard (`2.*`) or an empty string for the latest version (optional, default: latest)
 - `-p, --python-version TEXT` - Python version, e.g. "3.10", "3.11" (optional; defaults to the
   current Python version)
-- `-f, --free-threaded BOOLEAN` - Whether the target is a free-threaded build (optional; defaults
-  to the current interpreter's free-threaded status)
-- `-o, --os TEXT` - Target OS, e.g. "linux", "macos", "windows" (optional; defaults to the
-  current OS)
-- `-r, --arch TEXT` - Target CPU architecture, e.g. "x86_64", "arm64" (optional; defaults to the
-  current architecture)
+- `-f, --free-threaded / --no-free-threaded` - Whether the target is a free-threaded build
+  (optional; defaults to the current interpreter's free-threaded status)
+
+The platform (OS and CPU architecture) is always the current one: there is no `--os` or `--arch`
+option.
 
 ### Examples
 
 Find the closest valid NumPy version for Python 3.10:
 
 ```shell
-python -m feu find-closest-version \
+feu find-closest-version \
   --pkg-name=numpy \
   --pkg-version=2.0.2 \
   --python-version=3.10
@@ -99,7 +113,7 @@ Output:
 Check what version would be used for an older NumPy version on Python 3.11:
 
 ```shell
-python -m feu find-closest-version \
+feu find-closest-version \
   --pkg-name=numpy \
   --pkg-version=1.0.0 \
   --python-version=3.11
@@ -113,9 +127,10 @@ Output:
 
 This shows that NumPy 1.0.0 is too old for Python 3.11, so the minimum supported version (1.23.2) would be used instead.
 
-If none of the omitted options are provided, the command falls back to the properties of the
-Python interpreter running the CLI. If no valid version exists for the target, the command prints
-`None`.
+If the options are omitted, the command falls back to the properties of the Python interpreter
+running the CLI. The standard output holds only the version, so it can be used in `$(...)`. If no
+valid version exists for the target, the message is printed on the standard error, the standard
+output is empty and the exit status is `1`.
 
 ## Check Valid Version Command
 
@@ -124,7 +139,7 @@ Check if a specific package version is valid for a given target environment.
 ### Syntax
 
 ```shell
-python -m feu check-valid-version [OPTIONS]
+feu check-valid-version [OPTIONS]
 ```
 
 ### Options
@@ -133,19 +148,18 @@ python -m feu check-valid-version [OPTIONS]
 - `-v, --pkg-version TEXT` - Package version request to check: an exact version (`2.0.2`), a wildcard (`2.*`) or an empty string for the latest version (optional, default: latest)
 - `-p, --python-version TEXT` - Python version, e.g. "3.10", "3.11" (optional; defaults to the
   current Python version)
-- `-f, --free-threaded BOOLEAN` - Whether the target is a free-threaded build (optional; defaults
-  to the current interpreter's free-threaded status)
-- `-o, --os TEXT` - Target OS, e.g. "linux", "macos", "windows" (optional; defaults to the
-  current OS)
-- `-r, --arch TEXT` - Target CPU architecture, e.g. "x86_64", "arm64" (optional; defaults to the
-  current architecture)
+- `-f, --free-threaded / --no-free-threaded` - Whether the target is a free-threaded build
+  (optional; defaults to the current interpreter's free-threaded status)
+
+The platform (OS and CPU architecture) is always the current one: there is no `--os` or `--arch`
+option.
 
 ### Examples
 
 Check if NumPy 2.0.2 is valid for Python 3.10:
 
 ```shell
-python -m feu check-valid-version \
+feu check-valid-version \
   --pkg-name=numpy \
   --pkg-version=2.0.2 \
   --python-version=3.10
@@ -160,7 +174,7 @@ True
 Check if NumPy 1.0.0 is valid for Python 3.11:
 
 ```shell
-python -m feu check-valid-version \
+feu check-valid-version \
   --pkg-name=numpy \
   --pkg-version=1.0.0 \
   --python-version=3.11
@@ -180,22 +194,22 @@ Before installing a package, check if the version is compatible:
 
 ```shell
 # Check compatibility
-VALID=$(python -m feu check-valid-version \
+VALID=$(feu check-valid-version \
   --pkg-name=numpy \
   --pkg-version=2.0.2 \
   --python-version=3.10)
 
 if [ "$VALID" = "True" ]; then
   echo "Version is compatible, proceeding with installation..."
-  python -m feu install --pkg-name=numpy --pkg-version=2.0.2
+  feu install --pkg-name=numpy --pkg-version=2.0.2
 else
   echo "Version is not compatible, finding closest version..."
-  VERSION=$(python -m feu find-closest-version \
+  VERSION=$(feu find-closest-version \
     --pkg-name=numpy \
     --pkg-version=2.0.2 \
     --python-version=3.10)
   echo "Installing version $VERSION instead"
-  python -m feu install --pkg-name=numpy --pkg-version=$VERSION
+  feu install --pkg-name=numpy --pkg-version=$VERSION
 fi
 ```
 
@@ -219,13 +233,13 @@ for pkg in "${PACKAGES[@]}"; do
 
   echo "Processing $name $version..."
 
-  closest=$(python -m feu find-closest-version \
+  closest=$(feu find-closest-version \
     --pkg-name=$name \
     --pkg-version=$version \
     --python-version=$PYTHON_VERSION)
 
   echo "Installing $name $closest"
-  python -m feu install --pkg-name=$name --pkg-version=$closest
+  feu install --pkg-name=$name --pkg-version=$closest
 done
 ```
 
@@ -259,7 +273,7 @@ jobs:
 
       - name: Install numpy with version check
         run: |
-          python -m feu install \
+          feu install \
             --pkg-name=numpy \
             --pkg-version=2.0.2
 ```
@@ -275,3 +289,29 @@ jobs:
 4. **Script automation**: The CLI commands are designed to be easily integrated into shell scripts and CI/CD pipelines.
 
 5. **Version checking**: Always use `check-valid-version` before attempting installation in production environments to avoid runtime errors.
+
+## Package Versions Command
+
+Write the versions to test of the dependencies of a `pyproject.toml` (the latest version of each
+minor version at or above the lower bound, or of each major version for the packages of
+`--major-only`). It replaces the `dev/generate_versions.py` script that is copied in several
+repositories.
+
+### Syntax
+
+```shell
+feu package-versions [OPTIONS]
+```
+
+### Options
+
+- `--pyproject PATH` - The `pyproject.toml` file (default: `pyproject.toml`)
+- `--output PATH` - The JSON file to write (default: the standard output)
+- `--major-only TEXT` - A package for which only the major versions are kept; repeat the option
+  for several packages (default: `packaging`)
+
+### Example
+
+```shell
+feu package-versions --pyproject pyproject.toml --output dev/config/package_versions.json
+```
