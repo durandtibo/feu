@@ -1,6 +1,6 @@
 {
   "package": "matplotlib",
-  "generated": "2026-11-11",
+  "generated": "2026-11-13",
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": [["3.4.0", "3.9.4"]]},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["3.3.3", "3.9.4"]]},

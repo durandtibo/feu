@@ -1,6 +1,6 @@
 {
   "package": "pyarrow",
-  "generated": "2026-11-11",
+  "generated": "2026-11-13",
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": [["4.0.0", "21.0.0"]]},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["3.0.0", "21.0.0"]]},

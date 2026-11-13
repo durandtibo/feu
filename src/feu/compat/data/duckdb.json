@@ -1,6 +1,6 @@
 {
   "package": "duckdb",
-  "generated": "2026-11-11",
+  "generated": "2026-11-13",
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": [["0.8.1", "1.4.5"]]},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["0.2.3", "0.3.2"], ["0.3.4", "1.4.5"]]},
