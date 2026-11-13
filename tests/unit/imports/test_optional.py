@@ -34,7 +34,7 @@ def _reset() -> None:
 )
 def test_is_available_uses_module_available(is_available: object, module: str) -> None:
     with patch("feu.imports.optional.module_available", return_value=True) as available_mock:
-        assert is_available()  # ty: ignore[call-non-callable]
+        assert is_available()  # ty: ignore[not-callable]
         available_mock.assert_called_once_with(module)
 
 
@@ -44,7 +44,7 @@ def test_is_available_uses_module_available(is_available: object, module: str) -
 )
 def test_is_available_false_when_the_module_is_broken(is_available: object) -> None:
     with patch("feu.imports.optional.module_available", return_value=False):
-        assert not is_available()  # ty: ignore[call-non-callable]
+        assert not is_available()  # ty: ignore[not-callable]
 
 
 @pytest.mark.parametrize(
@@ -61,7 +61,7 @@ def test_check_without_package(check: object, name: str) -> None:
         patch("feu.imports.optional.module_available", return_value=False),
         pytest.raises(MissingPackageError, match=f"'{name}' package is required but not installed"),
     ):
-        check()  # ty: ignore[call-non-callable]
+        check()  # ty: ignore[not-callable]
 
 
 def test_check_git_gives_the_gitpython_install_command() -> None:
@@ -75,7 +75,7 @@ def test_check_git_gives_the_gitpython_install_command() -> None:
 @pytest.mark.parametrize("check", [check_click, check_git, check_requests, check_rich])
 def test_check_with_package(check: object) -> None:
     with patch("feu.imports.optional.module_available", return_value=True):
-        check()  # ty: ignore[call-non-callable]
+        check()  # ty: ignore[not-callable]
 
 
 def test_check_without_package_is_still_a_runtime_error() -> None:
