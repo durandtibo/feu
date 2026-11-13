@@ -25,10 +25,10 @@ The platform (OS and CPU architecture) is always the current one: there is no `-
 option.
 
 ::: mkdocs-click
-:module: feu.cli
-:command: cli
-:prog_name: feu
-:depth: 1
+    :module: feu.cli
+    :command: cli
+    :prog_name: feu
+    :depth: 1
 
 ## Examples
 
