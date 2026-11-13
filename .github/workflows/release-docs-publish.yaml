@@ -28,7 +28,6 @@ jobs:
       - name: Setup python environment
         uses: durandtibo/setup-venv-uv-action@a592cf6a2b2788f2e5846e4e29151f8895e1c643 # ratchet:durandtibo/setup-venv-uv-action@v0.3.0
         with:
-          python-version: "3.14"
           install-args: "--groups dev,docs"
 
       # Configure git and fetch gh-pages branch for mike
