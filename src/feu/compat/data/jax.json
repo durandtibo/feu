@@ -1,6 +1,6 @@
 {
   "package": "jax",
-  "generated": "2026-11-11",
+  "generated": "2026-11-13",
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": [["0.4.18", "0.4.30"]]},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["0.4.18", "0.4.30"]]},

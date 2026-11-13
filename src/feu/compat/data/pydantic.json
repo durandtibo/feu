@@ -1,6 +1,6 @@
 {
   "package": "pydantic",
-  "generated": "2026-11-11",
+  "generated": "2026-11-13",
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": [["2.0", "2.13.5"]]},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["1.7", "2.13.5"]]},

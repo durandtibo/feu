@@ -1,6 +1,6 @@
 {
   "package": "scipy",
-  "generated": "2026-11-11",
+  "generated": "2026-11-13",
   "targets": [
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "arm64", "ranges": [["1.5.4", "1.13.1"]]},
     {"python": "3.9", "free_threaded": false, "os": "linux", "arch": "x86_64", "ranges": [["1.5.4", "1.13.1"]]},
