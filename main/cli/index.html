@@ -12,7 +12,7 @@
         <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../refs/root/">
+        <link rel="next" href="../properties/">
       
       
         
@@ -302,6 +302,63 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../properties/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Properties
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../dev/architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../migration/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Migration to 0.9
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -548,10 +605,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#available-commands" class="md-nav__link">
+  <a href="#exit-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Available Commands
+        Exit Status
       
     </span>
   </a>
@@ -559,22 +616,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-command" class="md-nav__link">
+  <a href="#commands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install Command
+        Commands
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Install Command">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feu
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="feu">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#syntax" class="md-nav__link">
+  <a href="#check-valid-version" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Syntax
+        check-valid-version
       
     </span>
   </a>
@@ -582,10 +650,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
+  <a href="#find-closest-version" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Options
+        find-closest-version
       
     </span>
   </a>
@@ -593,6 +661,33 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        package-versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -602,167 +697,12 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
         <li class="md-nav__item">
-  <a href="#find-closest-version-command" class="md-nav__link">
+  <a href="#use-in-a-shell-script-or-a-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Find Closest Version Command
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Find Closest Version Command">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#syntax_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Syntax
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#options_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#check-valid-version-command" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Check Valid Version Command
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Check Valid Version Command">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#syntax_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Syntax
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#options_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#practical-workflows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Practical Workflows
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Practical Workflows">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#workflow-1-verify-before-install" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow 1: Verify Before Install
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#workflow-2-batch-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow 2: Batch Installation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#workflow-3-cicd-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow 3: CI/CD Integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tips-and-best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tips and Best Practices
+        Use in a shell script or a workflow
       
     </span>
   </a>
@@ -773,6 +713,87 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../properties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration to 0.9
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -797,10 +818,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -818,8 +839,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -872,34 +893,6 @@
     
   
     Compat
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../refs/discoverers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Discoverers
   
 
     
@@ -1197,10 +1190,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#available-commands" class="md-nav__link">
+  <a href="#exit-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Available Commands
+        Exit Status
       
     </span>
   </a>
@@ -1208,22 +1201,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-command" class="md-nav__link">
+  <a href="#commands" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install Command
+        Commands
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Install Command">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feu
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="feu">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#syntax" class="md-nav__link">
+  <a href="#check-valid-version" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Syntax
+        check-valid-version
       
     </span>
   </a>
@@ -1231,10 +1235,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
+  <a href="#find-closest-version" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Options
+        find-closest-version
       
     </span>
   </a>
@@ -1242,6 +1246,33 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#package-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        package-versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1251,167 +1282,12 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
         <li class="md-nav__item">
-  <a href="#find-closest-version-command" class="md-nav__link">
+  <a href="#use-in-a-shell-script-or-a-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Find Closest Version Command
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Find Closest Version Command">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#syntax_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Syntax
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#options_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#check-valid-version-command" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Check Valid Version Command
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Check Valid Version Command">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#syntax_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Syntax
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#options_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#practical-workflows" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Practical Workflows
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Practical Workflows">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#workflow-1-verify-before-install" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow 1: Verify Before Install
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#workflow-2-batch-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow 2: Batch Installation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#workflow-3-cicd-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workflow 3: CI/CD Integration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tips-and-best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tips and Best Practices
+        Use in a shell script or a workflow
       
     </span>
   </a>
@@ -1442,215 +1318,200 @@
 <p><code>feu</code> provides a command-line interface (CLI) for package management tasks. To use the CLI, you need to install the optional <code>cli</code> dependency:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'feu[cli]'</span>
 </code></pre></div>
-<h2 id="available-commands">Available Commands<a class="headerlink" href="#available-commands" title="Permanent link">&para;</a></h2>
-<p>The CLI provides three main commands:</p>
-<ol>
-<li><code>install</code> - Install a package with version compatibility checks</li>
-<li><code>find-closest-version</code> - Find the closest valid version for a package</li>
-<li><code>check-valid-version</code> - Check if a package version is valid for a Python version</li>
-</ol>
-<h2 id="install-command">Install Command<a class="headerlink" href="#install-command" title="Permanent link">&para;</a></h2>
-<p>Install a package with automatic version compatibility handling for your Python environment.</p>
-<h3 id="syntax">Syntax<a class="headerlink" href="#syntax" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
-</code></pre></div>
-<h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
+<h2 id="exit-status">Exit Status<a class="headerlink" href="#exit-status" title="Permanent link">&para;</a></h2>
+<p>The standard output holds only the answer of a command, the logs and the error messages go to the
+standard error (<code>--verbose</code> logs the executed commands), and the exit status carries the result:</p>
 <ul>
-<li><code>-n, --pkg-name TEXT</code> - Package name (required)</li>
-<li><code>-v, --pkg-version TEXT</code> - Package version request: an exact version (<code>2.0.2</code>), a wildcard (<code>2.*</code>) or an empty string for the latest version (optional, default: latest)</li>
-<li><code>-e, --pkg-extras TEXT</code> - Package extra dependencies (required, comma-separated; pass an empty string for none)</li>
-<li><code>-i, --installer-name TEXT</code> - Installer name (default: "pip")</li>
-<li><code>-a, --installer-args TEXT</code> - Installer arguments (default: "", i.e. none)</li>
+<li><code>0</code>: success, or a valid version;</li>
+<li><code>1</code>: a negative answer (no compatible version, or <code>check-valid-version</code> printed <code>False</code>);</li>
+<li><code>2</code>: a usage error (unknown option, missing option, invalid version request).</li>
 </ul>
-<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<p>Install NumPy version 2.0.2:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
+<p><code>feu --version</code> prints the version. <code>feu</code> is a console script; <code>python -m feu</code> is equivalent.</p>
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
+<p>The reference below is generated from the code (<code>mkdocs-click</code>), so it cannot drift. <code>install</code>
+installs into the interpreter that runs <code>feu</code> for the current target, so it has no target option.
+The platform (OS and CPU architecture) is always the current one: there is no <code>--os</code> or <code>--arch</code>
+option.</p>
+<!-- prettier-ignore -->
+<h2 id="feu">feu<a class="headerlink" href="#feu" title="Permanent link">&para;</a></h2>
+<p>Implement the main entrypoint, which groups the commands.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>feu [OPTIONS] COMMAND [ARGS]...
 </code></pre></div>
-<p>Install NumPy with specific extras:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--pkg-extras<span class="o">=</span>dev,doc
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  --version  Show the version and exit.
+  --verbose  Log the executed commands on the standard error.
+  --help     Show this message and exit.
 </code></pre></div>
-<p>Install with custom installer arguments:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--installer-name<span class="o">=</span>pip<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--installer-args<span class="o">=</span><span class="s2">"--upgrade --no-cache-dir"</span>
+<h3 id="check-valid-version">check-valid-version<a class="headerlink" href="#check-valid-version" title="Permanent link">&para;</a></h3>
+<p>Print if a package version is valid for a target.</p>
+<p><code>True</code> is printed and the exit status is <code>0</code> if the version is
+valid or if the package is not configured for the target. Otherwise
+<code>False</code> is printed and the exit status is <code>1</code>.</p>
+<p>Args:
+    pkg_name: The package name.
+    pkg_version: The package version request to check.
+    python_version: The python version. If not provided, the
+        current python version is used.
+    free_threaded: Whether the target is a free-threaded build.
+        If not provided, the current interpreter's free-threaded
+        status is used.</p>
+<p>Example:
+    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
+</code></pre></div></p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>feu check-valid-version [OPTIONS]
 </code></pre></div>
-<h2 id="find-closest-version-command">Find Closest Version Command<a class="headerlink" href="#find-closest-version-command" title="Permanent link">&para;</a></h2>
-<p>Find the closest valid version of a package for a specific target environment.</p>
-<h3 id="syntax_1">Syntax<a class="headerlink" href="#syntax_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  -n, --pkg-name TEXT             Package name  [required]
+  -v, --pkg-version TEXT          Package version request: an exact version
+                                  e.g. '2.0.2', a wildcard e.g. '2.*' or an
+                                  empty string for the latest version.
+                                  [default: ""]
+  -p, --python-version TEXT       Python version e.g. '3.12' or '3.14t'.
+                                  Default: the current Python version.
+  -f, --free-threaded / --no-free-threaded
+                                  Whether the target is a free-threaded build.
+                                  Default: the current interpreter.
+  --help                          Show this message and exit.
 </code></pre></div>
-<h3 id="options_1">Options<a class="headerlink" href="#options_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>-n, --pkg-name TEXT</code> - Package name (required)</li>
-<li><code>-v, --pkg-version TEXT</code> - Package version request to check: an exact version (<code>2.0.2</code>), a wildcard (<code>2.*</code>) or an empty string for the latest version (optional, default: latest)</li>
-<li><code>-p, --python-version TEXT</code> - Python version, e.g. "3.10", "3.11" (optional; defaults to the
-  current Python version)</li>
-<li><code>-f, --free-threaded BOOLEAN</code> - Whether the target is a free-threaded build (optional; defaults
-  to the current interpreter's free-threaded status)</li>
-<li><code>-o, --os TEXT</code> - Target OS, e.g. "linux", "macos", "windows" (optional; defaults to the
-  current OS)</li>
-<li><code>-r, --arch TEXT</code> - Target CPU architecture, e.g. "x86_64", "arm64" (optional; defaults to the
-  current architecture)</li>
-</ul>
-<h3 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h3>
-<p>Find the closest valid NumPy version for Python 3.10:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--python-version<span class="o">=</span><span class="m">3</span>.10
+<h3 id="find-closest-version">find-closest-version<a class="headerlink" href="#find-closest-version" title="Permanent link">&para;</a></h3>
+<p>Print the closest valid version of a package for a target.</p>
+<p>The standard output holds only the version to install. For a
+wildcard or an empty version request that lies in an open-ended
+range, the request itself is printed. If no version is compatible
+with the target, the message is printed on the standard error, the
+standard output is empty and the exit status is <code>1</code>.</p>
+<p>Args:
+    pkg_name: The package name.
+    pkg_version: The package version request to check.
+    python_version: The python version. If not provided, the
+        current python version is used.
+    free_threaded: Whether the target is a free-threaded build.
+        If not provided, the current interpreter's free-threaded
+        status is used.</p>
+<p>Example:
+    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
+</code></pre></div></p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>feu find-closest-version [OPTIONS]
 </code></pre></div>
-<p>Output:</p>
-<div class="highlight"><pre><span></span><code>2.0.2
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  -n, --pkg-name TEXT             Package name  [required]
+  -v, --pkg-version TEXT          Package version request: an exact version
+                                  e.g. '2.0.2', a wildcard e.g. '2.*' or an
+                                  empty string for the latest version.
+                                  [default: ""]
+  -p, --python-version TEXT       Python version e.g. '3.12' or '3.14t'.
+                                  Default: the current Python version.
+  -f, --free-threaded / --no-free-threaded
+                                  Whether the target is a free-threaded build.
+                                  Default: the current interpreter.
+  --help                          Show this message and exit.
 </code></pre></div>
-<p>Check what version would be used for an older NumPy version on Python 3.11:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-version<span class="o">=</span><span class="m">1</span>.0.0<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--python-version<span class="o">=</span><span class="m">3</span>.11
+<h3 id="install">install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h3>
+<p>Install a package and associated packages.</p>
+<p>The package is installed in the interpreter that runs <code>feu</code>, for
+the current target. The closest compatible version is installed if
+<code>pkg_version</code> is not compatible. The exit status is <code>1</code> if no
+version is compatible and <code>2</code> if an argument is invalid (e.g. a
+malformed wildcard).</p>
+<p>Args:
+    pkg_name: The package name e.g. <code>'pandas'</code>.
+    pkg_version: The version request of the package to install:
+        an exact version, a wildcard (e.g. <code>'2.*'</code>) or an empty
+        string for the latest version.
+    pkg_extras: Optional package extra dependencies, separated by
+        commas e.g. <code>'dev,doc'</code>. An empty string means no extra.
+    installer_name: The package installer name to use to install
+        the packages.
+    installer_args: Optional arguments to pass to the package
+        installer, as a single string e.g. <code>'--upgrade'</code>. It is
+        split once with <code>shlex.split</code>. The valid arguments
+        depend on the package installer.</p>
+<p>Example:
+    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>pip<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
+</code></pre></div></p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>feu install [OPTIONS]
 </code></pre></div>
-<p>Output:</p>
-<div class="highlight"><pre><span></span><code>1.23.2
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  -n, --pkg-name TEXT        Package name  [required]
+  -v, --pkg-version TEXT     Package version request: an exact version e.g.
+                             '2.0.2', a wildcard e.g. '2.*' or an empty string
+                             for the latest version.  [default: ""]
+  -e, --pkg-extras TEXT      Package extra dependencies, separated by commas
+                             e.g. 'dev,doc'.  [default: ""]
+  -i, --installer-name TEXT  The package installer.  [default: pip]
+  -a, --installer-args TEXT  Arguments to pass to the package installer, split
+                             once like a shell would.  [default: ""]
+  --help                     Show this message and exit.
 </code></pre></div>
-<p>This shows that NumPy 1.0.0 is too old for Python 3.11, so the minimum supported version (1.23.2) would be used instead.</p>
-<p>If none of the omitted options are provided, the command falls back to the properties of the
-Python interpreter running the CLI. If no valid version exists for the target, the command prints
-<code>None</code>.</p>
-<h2 id="check-valid-version-command">Check Valid Version Command<a class="headerlink" href="#check-valid-version-command" title="Permanent link">&para;</a></h2>
-<p>Check if a specific package version is valid for a given target environment.</p>
-<h3 id="syntax_2">Syntax<a class="headerlink" href="#syntax_2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<h3 id="package-versions">package-versions<a class="headerlink" href="#package-versions" title="Permanent link">&para;</a></h3>
+<p>Write the versions to test of the dependencies of a project.</p>
+<p>The dependencies are read from <code>[project.dependencies]</code> and
+<code>[project.optional-dependencies]</code>. The output is a JSON object
+that maps each package to the latest version of each minor (or
+major) version at or above its lower bound.</p>
+<p>Args:
+    pyproject: The <code>pyproject.toml</code> file.
+    output: The JSON file to write, or <code>None</code> for the standard
+        output.
+    major_only: The packages for which only the major versions
+        are kept.</p>
+<p>Example:
+    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>package-versions<span class="w"> </span>--pyproject<span class="w"> </span>pyproject.toml<span class="w"> </span>--output<span class="w"> </span>dev/config/package_versions.json
+</code></pre></div></p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>feu package-versions [OPTIONS]
 </code></pre></div>
-<h3 id="options_2">Options<a class="headerlink" href="#options_2" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>-n, --pkg-name TEXT</code> - Package name (required)</li>
-<li><code>-v, --pkg-version TEXT</code> - Package version request to check: an exact version (<code>2.0.2</code>), a wildcard (<code>2.*</code>) or an empty string for the latest version (optional, default: latest)</li>
-<li><code>-p, --python-version TEXT</code> - Python version, e.g. "3.10", "3.11" (optional; defaults to the
-  current Python version)</li>
-<li><code>-f, --free-threaded BOOLEAN</code> - Whether the target is a free-threaded build (optional; defaults
-  to the current interpreter's free-threaded status)</li>
-<li><code>-o, --os TEXT</code> - Target OS, e.g. "linux", "macos", "windows" (optional; defaults to the
-  current OS)</li>
-<li><code>-r, --arch TEXT</code> - Target CPU architecture, e.g. "x86_64", "arm64" (optional; defaults to the
-  current architecture)</li>
-</ul>
-<h3 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h3>
-<p>Check if NumPy 2.0.2 is valid for Python 3.10:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--python-version<span class="o">=</span><span class="m">3</span>.10
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  --pyproject FILE   The pyproject.toml file to read the dependencies from.
+                     [default: pyproject.toml]
+  --output FILE      The JSON file to write. Default: the standard output.
+  --major-only TEXT  A package for which only the latest version of each major
+                     version is kept. Repeat the option for several packages.
+                     [default: packaging]
+  --help             Show this message and exit.
 </code></pre></div>
-<p>Output:</p>
-<div class="highlight"><pre><span></span><code>True
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>Find the closest valid NumPy version for Python 3.10 and for an older NumPy on Python 3.11:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
+<span class="m">2</span>.0.2
+$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">1</span>.0.0<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.11
+<span class="m">1</span>.23.2
 </code></pre></div>
-<p>Check if NumPy 1.0.0 is valid for Python 3.11:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-version<span class="o">=</span><span class="m">1</span>.0.0<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--python-version<span class="o">=</span><span class="m">3</span>.11
+<p>A wildcard or an empty version request is resolved like a version. The request itself is printed
+when the latest compatible release is in an open-ended range, so that the installer picks the real
+latest release:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s1">'1.*'</span><span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.9
+<span class="m">1</span>.26.4
+$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s1">'1.24.*'</span><span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.14
+No<span class="w"> </span>version<span class="w"> </span>of<span class="w"> </span>package<span class="w"> </span>numpy<span class="w"> </span>matches<span class="w"> </span><span class="s1">'1.24.*'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>target<span class="w"> </span>Target<span class="o">(</span><span class="nv">python_version</span><span class="o">=</span><span class="s1">'3.14'</span>,<span class="w"> </span>...<span class="o">)</span>
+$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
+<span class="m">1</span>
 </code></pre></div>
-<p>Output:</p>
-<div class="highlight"><pre><span></span><code>False
+<p>Check if a version is valid. The exit status is <code>0</code> when the version is valid:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
+True
+$<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">1</span>.0.0<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.11
+False
 </code></pre></div>
-<h2 id="practical-workflows">Practical Workflows<a class="headerlink" href="#practical-workflows" title="Permanent link">&para;</a></h2>
-<h3 id="workflow-1-verify-before-install">Workflow 1: Verify Before Install<a class="headerlink" href="#workflow-1-verify-before-install" title="Permanent link">&para;</a></h3>
-<p>Before installing a package, check if the version is compatible:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check compatibility</span>
-<span class="nv">VALID</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--python-version<span class="o">=</span><span class="m">3</span>.10<span class="k">)</span>
-
-<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">"</span><span class="nv">$VALID</span><span class="s2">"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"True"</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Version is compatible, proceeding with installation..."</span>
-<span class="w">  </span>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
-<span class="k">else</span>
-<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Version is not compatible, finding closest version..."</span>
-<span class="w">  </span><span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--python-version<span class="o">=</span><span class="m">3</span>.10<span class="k">)</span>
-<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Installing version </span><span class="nv">$VERSION</span><span class="s2"> instead"</span>
-<span class="w">  </span>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="nv">$VERSION</span>
-<span class="k">fi</span>
+<p>Install a package, with extras and installer arguments:</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
+feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>pandas<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s1">'2.*'</span><span class="w"> </span>--pkg-extras<span class="o">=</span>performance
+feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>uv<span class="w"> </span>--installer-args<span class="o">=</span><span class="s1">'--upgrade'</span><span class="w"> </span>--pkg-name<span class="o">=</span>numpy
 </code></pre></div>
-<h3 id="workflow-2-batch-installation">Workflow 2: Batch Installation<a class="headerlink" href="#workflow-2-batch-installation" title="Permanent link">&para;</a></h3>
-<p>Install multiple packages with compatibility checks:</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/bin/bash</span>
-
-<span class="nv">PACKAGES</span><span class="o">=(</span>
-<span class="w">  </span><span class="s2">"numpy:2.0.2"</span>
-<span class="w">  </span><span class="s2">"pandas:2.0.0"</span>
-<span class="w">  </span><span class="s2">"scipy:1.10.0"</span>
-<span class="o">)</span>
-
-<span class="nv">PYTHON_VERSION</span><span class="o">=</span><span class="s2">"3.10"</span>
-
-<span class="k">for</span><span class="w"> </span>pkg<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">PACKAGES</span><span class="p">[@]</span><span class="si">}</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">':'</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>name<span class="w"> </span>version<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">"</span><span class="nv">$pkg</span><span class="s2">"</span>
-
-<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Processing </span><span class="nv">$name</span><span class="s2"> </span><span class="nv">$version</span><span class="s2">..."</span>
-
-<span class="w">  </span><span class="nv">closest</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--pkg-name<span class="o">=</span><span class="nv">$name</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--pkg-version<span class="o">=</span><span class="nv">$version</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--python-version<span class="o">=</span><span class="nv">$PYTHON_VERSION</span><span class="k">)</span>
-
-<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Installing </span><span class="nv">$name</span><span class="s2"> </span><span class="nv">$closest</span><span class="s2">"</span>
-<span class="w">  </span>python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span><span class="nv">$name</span><span class="w"> </span>--pkg-version<span class="o">=</span><span class="nv">$closest</span>
-<span class="k">done</span>
+<p>Write the versions to test of the dependencies of a project (it replaces the
+<code>dev/generate_versions.py</code> script that is copied in several repositories):</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>package-versions<span class="w"> </span>--pyproject<span class="w"> </span>pyproject.toml<span class="w"> </span>--output<span class="w"> </span>dev/config/package_versions.json
 </code></pre></div>
-<h3 id="workflow-3-cicd-integration">Workflow 3: CI/CD Integration<a class="headerlink" href="#workflow-3-cicd-integration" title="Permanent link">&para;</a></h3>
-<p>Use in continuous integration to ensure compatible versions:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># .github/workflows/install-deps.yml</span>
-<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install Dependencies</span>
-
-<span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">push</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pull_request</span><span class="p p-Indicator">]</span>
-
-<span class="nt">jobs</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">install</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
-<span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"3.10"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"3.11"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"3.12"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"3.13"</span><span class="p p-Indicator">]</span>
-
-<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
-<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v4</span>
-<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.python-version }}</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install feu</span>
-<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install 'feu[cli]'</span>
-
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install numpy with version check</span>
-<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">          </span><span class="no">python -m feu install \</span>
-<span class="w">            </span><span class="no">--pkg-name=numpy \</span>
-<span class="w">            </span><span class="no">--pkg-version=2.0.2</span>
+<h2 id="use-in-a-shell-script-or-a-workflow">Use in a shell script or a workflow<a class="headerlink" href="#use-in-a-shell-script-or-a-workflow" title="Permanent link">&para;</a></h2>
+<p>The standard output holds only the answer, so it can be captured. An unsupported request makes the
+step fail instead of installing <code>pkg==None</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="o">&amp;&amp;</span><span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s2">"</span><span class="nv">$VERSION</span><span class="s2">"</span>
 </code></pre></div>
-<h2 id="tips-and-best-practices">Tips and Best Practices<a class="headerlink" href="#tips-and-best-practices" title="Permanent link">&para;</a></h2>
-<ol>
-<li>
-<p><strong>Always specify Python version</strong>: When using <code>find-closest-version</code> or <code>check-valid-version</code>, make sure to specify the correct Python version you're targeting.</p>
-</li>
-<li>
-<p><strong>Use extras for optional dependencies</strong>: The <code>--pkg-extras</code> flag is required; pass an empty string (<code>--pkg-extras=""</code>) when there are none, or a comma-separated list to include optional features.</p>
-</li>
-<li>
-<p><strong>Combine with pip options</strong>: Use <code>--installer-args</code> to pass additional pip options like <code>--upgrade</code>, <code>--no-deps</code>, or <code>--no-cache-dir</code>.</p>
-</li>
-<li>
-<p><strong>Script automation</strong>: The CLI commands are designed to be easily integrated into shell scripts and CI/CD pipelines.</p>
-</li>
-<li>
-<p><strong>Version checking</strong>: Always use <code>check-valid-version</code> before attempting installation in production environments to avoid runtime errors.</p>
-</li>
-</ol>
 
 
 

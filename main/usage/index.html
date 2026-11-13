@@ -302,6 +302,63 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../properties/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Properties
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../dev/architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../migration/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Migration to 0.9
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -532,21 +589,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#version-comparison" class="md-nav__link">
+  <a href="#version-comparison-and-requests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Version Comparison
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-package-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Package Version
+        Version Comparison and Requests
       
     </span>
   </a>
@@ -562,22 +608,16 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Finding Compatible Versions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#version-requests" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#your-own-constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Version Requests
+        Your Own Constraints
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -590,13 +630,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installing Packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-resolvers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency resolvers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#managing-package-configurations" class="md-nav__link">
+  <a href="#discovering-compatibility-from-pypi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Managing Package Configurations
+        Discovering Compatibility from PyPI
       
     </span>
   </a>
@@ -608,28 +665,6 @@
     <span class="md-ellipsis">
       
         Working with Git Repositories
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-packages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported Packages
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#discovering-compatibility-from-pypi" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Discovering Compatibility from PyPI
       
     </span>
   </a>
@@ -671,10 +706,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#use-case-1-multi-python-version-project" class="md-nav__link">
+  <a href="#install-the-compatible-version-of-a-dependency-in-a-ci-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Case 1: Multi-Python Version Project
+        Install the compatible version of a dependency in a CI matrix
       
     </span>
   </a>
@@ -682,21 +717,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#use-case-2-safe-package-installation" class="md-nav__link">
+  <a href="#conditional-imports" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Case 2: Safe Package Installation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-case-3-conditional-imports" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Use Case 3: Conditional Imports
+        Conditional imports
       
     </span>
   </a>
@@ -749,6 +773,87 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../properties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration to 0.9
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -763,10 +868,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -784,8 +889,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -838,34 +943,6 @@
     
   
     Compat
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../refs/discoverers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Discoverers
   
 
     
@@ -1174,21 +1251,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#version-comparison" class="md-nav__link">
+  <a href="#version-comparison-and-requests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Version Comparison
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-package-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting Package Version
+        Version Comparison and Requests
       
     </span>
   </a>
@@ -1204,22 +1270,16 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Finding Compatible Versions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#version-requests" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#your-own-constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Version Requests
+        Your Own Constraints
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1232,13 +1292,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Installing Packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-resolvers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency resolvers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#managing-package-configurations" class="md-nav__link">
+  <a href="#discovering-compatibility-from-pypi" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Managing Package Configurations
+        Discovering Compatibility from PyPI
       
     </span>
   </a>
@@ -1250,28 +1327,6 @@
     <span class="md-ellipsis">
       
         Working with Git Repositories
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-packages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported Packages
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#discovering-compatibility-from-pypi" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Discovering Compatibility from PyPI
       
     </span>
   </a>
@@ -1313,10 +1368,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#use-case-1-multi-python-version-project" class="md-nav__link">
+  <a href="#install-the-compatible-version-of-a-dependency-in-a-ci-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Case 1: Multi-Python Version Project
+        Install the compatible version of a dependency in a CI matrix
       
     </span>
   </a>
@@ -1324,21 +1379,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#use-case-2-safe-package-installation" class="md-nav__link">
+  <a href="#conditional-imports" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Case 2: Safe Package Installation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-case-3-conditional-imports" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Use Case 3: Conditional Imports
+        Conditional imports
       
     </span>
   </a>
@@ -1371,283 +1415,228 @@
 
 
 <h1 id="usage-guide">Usage Guide<a class="headerlink" href="#usage-guide" title="Permanent link">&para;</a></h1>
-<p>This guide demonstrates the main features and use cases of <code>feu</code>.</p>
+<p>This guide shows the main features of <code>feu</code>. The examples are doctests: they are run by the test
+suite (<code>tests/unit/test_docs.py</code>), so they cannot drift from the code. The examples that need the
+network are marked as skipped. The rules the package follows are in <a href="../properties/">Properties</a>.</p>
 <h2 id="checking-package-availability">Checking Package Availability<a class="headerlink" href="#checking-package-availability" title="Permanent link">&para;</a></h2>
-<p>You can check if packages or modules are available in your environment:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span><span class="p">,</span> <span class="n">is_module_available</span>
-
-<span class="c1"># Check if a package is installed</span>
-<span class="k">if</span> <span class="n">is_package_available</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"NumPy is available!"</span><span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"NumPy is not installed"</span><span class="p">)</span>
-
-<span class="c1"># Check if a specific module is available</span>
-<span class="k">if</span> <span class="n">is_module_available</span><span class="p">(</span><span class="s2">"numpy.linalg"</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"NumPy linear algebra module is available!"</span><span class="p">)</span>
+<p><code>is_package_available</code> looks a package up without importing it, <code>is_module_available</code> imports the
+module. The checks are cached, so call <code>clear_availability_caches()</code> if you change <code>sys.path</code> or
+<code>sys.modules</code> yourself. <code>install_package</code> clears the caches after a successful installation.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_module_available</span><span class="p">,</span> <span class="n">is_package_available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_available</span><span class="p">(</span><span class="s2">"packaging"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_available</span><span class="p">(</span><span class="s2">"not_an_installed_package"</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_module_available</span><span class="p">(</span><span class="s2">"packaging.version"</span><span class="p">)</span>
+<span class="go">True</span>
 </code></pre></div>
-<h2 id="version-comparison">Version Comparison<a class="headerlink" href="#version-comparison" title="Permanent link">&para;</a></h2>
-<p>Compare the installed version of a package to a given version. <code>compare_version</code> takes the package
-name, a comparison operator and the version to compare with, and returns <code>False</code> if the package is
-not installed:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">compare_version</span>
-
-<span class="c1"># True if the installed version of numpy is at least 1.5.0</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">compare_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="s2">"1.5.0"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-
-<span class="c1"># True if the installed version of numpy is lower than 2.0.0</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">compare_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">operator</span><span class="o">.</span><span class="n">lt</span><span class="p">,</span> <span class="s2">"2.0.0"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<p>A module that is installed but broken (for example a missing shared library) is reported as not
+available by <code>is_module_available</code>, and a warning is logged.</p>
+<p>The optional libraries of <code>feu</code> (<code>click</code>, <code>gitpython</code>, <code>requests</code>, <code>rich</code>) are imported lazily:
+<code>import feu</code> imports none of them. A feature that needs one of them raises
+<code>feu.imports.MissingPackageError</code>, which is a <code>ModuleNotFoundError</code> and a <code>RuntimeError</code>. The message
+gives the <code>pip install</code> and <code>uv pip install</code> commands:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingPackageError</span><span class="p">,</span> <span class="n">check_package</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">check_package</span><span class="p">(</span><span class="s2">"not_an_installed_package"</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">MissingPackageError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="go">not_an_installed_package</span>
 </code></pre></div>
-<h2 id="getting-package-version">Getting Package Version<a class="headerlink" href="#getting-package-version" title="Permanent link">&para;</a></h2>
-<p>Retrieve the installed version of a package:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_package_version</span>
-
-<span class="c1"># Get the version of an installed package</span>
-<span class="n">version</span> <span class="o">=</span> <span class="n">get_package_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NumPy version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<h2 id="version-comparison-and-requests">Version Comparison and Requests<a class="headerlink" href="#version-comparison-and-requests" title="Permanent link">&para;</a></h2>
+<p><code>compare_version</code> compares the installed version of a package to a version. It returns <code>False</code> if
+the package is not installed:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">compare_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compare_version</span><span class="p">(</span><span class="s2">"packaging"</span><span class="p">,</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="s2">"20.0"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compare_version</span><span class="p">(</span><span class="s2">"not_an_installed_package"</span><span class="p">,</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="s2">"1.0"</span><span class="p">)</span>
+<span class="go">False</span>
 </code></pre></div>
-<h2 id="finding-compatible-versions">Finding Compatible Versions<a class="headerlink" href="#finding-compatible-versions" title="Permanent link">&para;</a></h2>
-<p>Find the closest valid package version for your Python version:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span><span class="p">,</span> <span class="n">is_valid_version</span>
-
-<span class="c1"># Check if a specific version is valid for your Python version</span>
-<span class="n">is_valid</span> <span class="o">=</span> <span class="n">is_valid_version</span><span class="p">(</span>
-    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">pkg_version</span><span class="o">=</span><span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.10"</span><span class="p">)</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NumPy 2.0.2 is valid for Python 3.10: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># Find the closest valid version</span>
-<span class="n">closest</span> <span class="o">=</span> <span class="n">find_closest_version</span><span class="p">(</span>
-    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span>
-    <span class="n">pkg_version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>  <span class="c1"># This is too old for Python 3.11</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">),</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Closest valid version: </span><span class="si">{</span><span class="n">closest</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># Will return "1.23.2"</span>
-</code></pre></div>
-<p>A target that leaves <code>os</code> and <code>arch</code> to <code>None</code> matches every platform: the answer is the union of
-the versions published for at least one platform. <code>install_package_closest_version</code> uses the full
-current target (Python version, free-threaded flag, OS and architecture) unless <code>target=</code> is given.
-Use <code>get_default_registry().has_package(name)</code> to detect an unknown package.</p>
-<p>A package that is not configured for the target accepts any version. If the package is configured
-but no version of it supports the target, <code>is_valid_version</code> returns <code>False</code> and
-<code>find_closest_version</code> raises <code>feu.compat.UnsupportedVersionError</code>.</p>
-<p><code>Target</code> also accepts the optional <code>free_threaded</code>, <code>os</code> and <code>arch</code> arguments. Use
-<code>resolve_target</code> to build a target from partial inputs, falling back to the current interpreter
-and platform:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_target</span>
-
-<span class="n">target</span> <span class="o">=</span> <span class="n">resolve_target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.14t"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="version-requests">Version Requests<a class="headerlink" href="#version-requests" title="Permanent link">&para;</a></h3>
 <p>Wherever a function takes the version of a package to install or to validate, it accepts a version
 <em>request</em>: an exact version (<code>"2.4.0"</code>), a wildcard (<code>"2.4.*"</code>, <code>"2.*"</code>) or an empty string / <code>None</code>
 for the latest version. A wildcard is digits and dots followed by one trailing <code>.*</code>; anything else
-with a <code>*</code> raises <code>ValueError</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span><span class="p">,</span> <span class="n">is_valid_version</span>
-
-<span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
-
-<span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># True: a 1.x release supports Python 3.9</span>
-<span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"3.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># False: there is no 3.x release</span>
-<span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># "1.26.4": the latest compatible 1.x release</span>
-<span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># "2.0.2": the latest release that supports Python 3.9</span>
+with a <code>*</code> raises <code>ValueError</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_version_request</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_version_request</span><span class="p">(</span><span class="s2">"2.4.*"</span><span class="p">)</span>
+<span class="go">VersionRequest(text='2.4.*', exact=None, prefix=(2, 4))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_version_request</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">is_latest</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_version_request</span><span class="p">(</span><span class="s2">"2.*.1"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">ValueError</span>: <span class="n">invalid version wildcard '2.*.1': a wildcard is digits and dots followed by one trailing '.*', e.g. '2.4.*'</span>
 </code></pre></div>
-<p>A request is resolved against the versions the registry knows. When the latest compatible release
-lies in an open-ended range (the newest release was compatible when the data was generated), the
-request itself is returned (<code>"2.*"</code> or <code>""</code>), so that the installer picks the real latest release.
-<code>install_package_closest_version</code> checks every request this way and raises
-<code>UnsupportedVersionError</code> before running any command if no compatible version matches. A package
-with no registered versions has no data: a wildcard or empty request is invalid for
-<code>is_valid_version</code> and is returned unchanged by <code>find_closest_version</code>. Use
-<code>registry.register_versions(name, versions)</code> to give a package its versions.</p>
+<h2 id="finding-compatible-versions">Finding Compatible Versions<a class="headerlink" href="#finding-compatible-versions" title="Permanent link">&para;</a></h2>
+<p>A <code>Target</code> is the environment a constraint applies to: the Python version, the free-threaded flag,
+the operating system and the CPU architecture. <code>os</code> and <code>arch</code> left to <code>None</code> mean "any platform"
+when a target is used for a lookup: the answer is then the union of the versions published for at
+least one platform. <code>resolve_target()</code> is the current environment (the platform is always the
+current one).</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span><span class="p">,</span> <span class="n">is_valid_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.3.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"99.0.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="go">'2.0.2'</span>
+</code></pre></div>
+<p>The shipped data holds the compatible ranges, not a list of releases. A wildcard (<code>1.*</code>) is matched
+against the releases that are <strong>downloaded from PyPI when it is resolved</strong>, so it never goes stale
+and no new <code>feu</code> release is needed when a package publishes a version. The exact version and the
+latest version (<code>""</code>) need no download: the latest version is the request itself when the last range
+is open-ended (the newest release was compatible when the data was generated), so that the installer
+picks the real latest release, and the highest upper bound otherwise. A wildcard resolves to the
+request itself in the same case. There is no offline fallback: resolving a wildcard without network
+access raises the error of the download.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="go">'1.26.4'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="go">'2.0.2'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.24.*"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.14"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">))</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">feu.compat.registry.UnsupportedVersionError</span>: <span class="n">No version of package numpy matches '1.24.*' for target Target(python_version='3.14', free_threaded=False, os='linux', arch='x86_64')</span>
+</code></pre></div>
+<p>A package without data accepts any version, which <code>has_package</code> lets you detect. If the package is
+configured but no version supports the target, <code>is_valid_version</code> returns <code>False</code> and
+<code>find_closest_version</code> raises <code>feu.compat.UnsupportedVersionError</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_default_compat_registry</span><span class="p">,</span> <span class="n">get_compatible_versions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">get_default_compat_registry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">has_package</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">),</span> <span class="n">registry</span><span class="o">.</span><span class="n">has_package</span><span class="p">(</span><span class="s2">"not-a-package"</span><span class="p">)</span>
+<span class="go">(True, False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_compatible_versions</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">"1.26.*"</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="go">['1.26.0', '1.26.1', '1.26.2', '1.26.3', '1.26.4']</span>
+</code></pre></div>
+<p>The built-in data is one JSON file per package in <code>feu/compat/data</code>. It is parsed the first time a
+package is looked up, and <code>registry.packages()</code> lists the packages without parsing any file.</p>
+<h2 id="your-own-constraints">Your Own Constraints<a class="headerlink" href="#your-own-constraints" title="Permanent link">&para;</a></h2>
+<p>Register a constraint and, if you do not want them downloaded, the versions you know in a registry
+instance (<code>CompatRegistry(version_source=...)</code> takes your own function to list the versions). Every function takes an
+optional <code>registry=</code>; <code>register_compat</code> adds to the default registry. A registration into a shipped
+package first loads it, so the conflict check sees the shipped entries (use <code>exist_ok=True</code> to
+overwrite).</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">VersionRange</span><span class="p">,</span> <span class="n">get_compatible_versions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.2.0"</span><span class="p">,</span> <span class="s2">"2.0.0"</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register_versions</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"1.2.0"</span><span class="p">,</span> <span class="s2">"1.5.0"</span><span class="p">,</span> <span class="s2">"2.0.0"</span><span class="p">,</span> <span class="s2">"3.0.0"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="s2">"3.0.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">)</span>
+<span class="go">'2.0.0'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_compatible_versions</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">)</span>
+<span class="go">['1.2.0', '1.5.0']</span>
+</code></pre></div>
 <h2 id="installing-packages">Installing Packages<a class="headerlink" href="#installing-packages" title="Permanent link">&para;</a></h2>
-<p>Install packages with automatic version selection:</p>
+<p><code>install_package</code> installs as written. <code>install_package_closest_version</code> first resolves the
+version request for the current target (or <code>target=</code>), and raises <code>UnsupportedVersionError</code> before
+running any command if no compatible version matches.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">install_package</span><span class="p">,</span> <span class="n">install_package_closest_version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">feu.utils.package</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageSpec</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.utils.installer</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span>
 
-<span class="c1"># Install a package with a specific version</span>
 <span class="n">install_package</span><span class="p">(</span>
     <span class="n">installer</span><span class="o">=</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"pip"</span><span class="p">),</span>
     <span class="n">package</span><span class="o">=</span><span class="n">PackageSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"2.0.2"</span><span class="p">),</span>
 <span class="p">)</span>
-
-<span class="c1"># Install the closest valid version for your Python environment. The compatibility is</span>
-<span class="c1"># checked against the current Python version only, and a wildcard version (e.g. "2.0.*")</span>
-<span class="c1"># is installed as specified.</span>
 <span class="n">install_package_closest_version</span><span class="p">(</span>
-    <span class="n">installer</span><span class="o">=</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"pip"</span><span class="p">),</span>
-    <span class="n">package</span><span class="o">=</span><span class="n">PackageSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"2.0.2"</span><span class="p">),</span>
+    <span class="n">installer</span><span class="o">=</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"uv"</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="s2">"--upgrade"</span><span class="p">),</span>
+    <span class="n">package</span><span class="o">=</span><span class="n">PackageSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"2.*"</span><span class="p">),</span>
 <span class="p">)</span>
 </code></pre></div>
-<h2 id="managing-package-configurations">Managing Package Configurations<a class="headerlink" href="#managing-package-configurations" title="Permanent link">&para;</a></h2>
-<p>Add custom package configurations to the default compatibility registry:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">get_default_registry</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionRange</span>
-
-<span class="n">registry</span> <span class="o">=</span> <span class="n">get_default_registry</span><span class="p">()</span>
-
-<span class="c1"># Add a custom package configuration</span>
-<span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
-    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"my_package"</span><span class="p">,</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">),</span>
-    <span class="n">ranges</span><span class="o">=</span><span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.2.0"</span><span class="p">,</span> <span class="s2">"2.0.0"</span><span class="p">)],</span>
-    <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="c1"># Get the configuration for a package</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="n">pkg_name</span><span class="o">=</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>  <span class="c1"># [VersionRange(min='1.2.0', max='2.0.0')]</span>
-
-<span class="c1"># Get version ranges as Version objects</span>
-<span class="n">ranges</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_version_ranges</span><span class="p">(</span><span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">min_version</span><span class="p">,</span> <span class="n">max_version</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Min: </span><span class="si">{</span><span class="n">min_version</span><span class="si">}</span><span class="s2">, Max: </span><span class="si">{</span><span class="n">max_version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<p>An installer builds one command, as an argument vector (never a shell string), and the packages are
+installed in the interpreter that runs <code>feu</code>: <code>pip</code> runs as <code>&lt;sys.executable&gt; -m pip install ...</code>
+and <code>uv</code> as <code>uv pip install --python &lt;sys.executable&gt; ...</code>. A <code>RuntimeError</code> is raised before any
+command if <code>pip</code> is not available in that interpreter (for example in an environment created by
+<code>uv venv</code>) or if <code>uv</code> is not on the <code>PATH</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">packaging.requirements</span><span class="w"> </span><span class="kn">import</span> <span class="n">Requirement</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span><span class="p">,</span> <span class="n">PipInstaller</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">command</span> <span class="o">=</span> <span class="n">PipInstaller</span><span class="p">(</span><span class="s2">"-U --pre"</span><span class="p">)</span><span class="o">.</span><span class="n">command</span><span class="p">([</span><span class="n">Requirement</span><span class="p">(</span><span class="s2">"numpy==2.0.2"</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">command</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="go">['-m', 'pip', 'install', '-U', '--pre', 'numpy==2.0.2']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">InstallerSpec</span><span class="p">(</span><span class="s2">"pip"</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="s2">"-U --pre"</span><span class="p">)</span><span class="o">.</span><span class="n">arguments</span>
+<span class="go">('-U', '--pre')</span>
 </code></pre></div>
-<h2 id="working-with-git-repositories">Working with Git Repositories<a class="headerlink" href="#working-with-git-repositories" title="Permanent link">&para;</a></h2>
-<p>If you have installed the <code>git</code> extra (<code>pip install 'feu[git]'</code>), you can work with git repositories:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.local_git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_last_tag_name</span><span class="p">,</span> <span class="n">get_last_version_tag_name</span><span class="p">,</span> <span class="n">get_tags</span>
-
-<span class="c1"># Get all tags, sorted by date/time</span>
-<span class="n">tags</span> <span class="o">=</span> <span class="n">get_tags</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Tags: </span><span class="si">{</span><span class="p">[</span><span class="n">tag</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tags</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># Get the name of the most recent tag</span>
-<span class="n">last_tag</span> <span class="o">=</span> <span class="n">get_last_tag_name</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Last tag: </span><span class="si">{</span><span class="n">last_tag</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># Get the name of the most recent version tag (e.g. "v1.2.3")</span>
-<span class="n">last_version_tag</span> <span class="o">=</span> <span class="n">get_last_version_tag_name</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Last version tag: </span><span class="si">{</span><span class="n">last_version_tag</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-<span class="c1"># By default, a RuntimeError is raised if no tag is found.</span>
-<span class="c1"># Use raise_error=False to return None instead.</span>
-<span class="n">last_tag</span> <span class="o">=</span> <span class="n">get_last_tag_name</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">last_version_tag</span> <span class="o">=</span> <span class="n">get_last_version_tag_name</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<p>The arguments of an installer are a string, split once with <code>shlex.split</code>, or a list of strings,
+which is used as is. <code>pipx</code> is not a built-in installer: it installs an application into an isolated
+environment, not into the current environment.</p>
+<h3 id="dependency-resolvers">Dependency resolvers<a class="headerlink" href="#dependency-resolvers" title="Permanent link">&para;</a></h3>
+<p>Some packages need an extra requirement: <code>pandas</code> before 2.2.2 needs <code>numpy&lt;2.0.0</code>. A resolver is a
+function from a <code>PackageSpec</code> to a list of <code>packaging.requirements.Requirement</code>. The resolver reasons
+on the whole version request:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install.resolver</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.utils.package</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageSpec</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve</span><span class="p">(</span><span class="n">PackageSpec</span><span class="p">(</span><span class="s2">"pandas"</span><span class="p">,</span> <span class="s2">"2.1.1"</span><span class="p">))</span>
+<span class="go">[&lt;Requirement('pandas==2.1.1')&gt;, &lt;Requirement('numpy&lt;2.0.0')&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve</span><span class="p">(</span><span class="n">PackageSpec</span><span class="p">(</span><span class="s2">"pandas"</span><span class="p">,</span> <span class="s2">"2.1.*"</span><span class="p">))</span>
+<span class="go">[&lt;Requirement('pandas==2.1.*')&gt;, &lt;Requirement('numpy&lt;2.0.0')&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve</span><span class="p">(</span><span class="n">PackageSpec</span><span class="p">(</span><span class="s2">"pandas"</span><span class="p">,</span> <span class="s2">"2.*"</span><span class="p">))</span>
+<span class="go">[&lt;Requirement('pandas==2.*')&gt;]</span>
 </code></pre></div>
-<h2 id="supported-packages">Supported Packages<a class="headerlink" href="#supported-packages" title="Permanent link">&para;</a></h2>
-<p><code>feu</code> includes built-in version compatibility information for common packages:</p>
-<ul>
-<li><strong>Scientific Computing</strong>: numpy, scipy, pandas, polars, xarray, duckdb</li>
-<li><strong>Machine Learning</strong>: torch, jax, scikit-learn</li>
-<li><strong>Data Handling</strong>: pyarrow, safetensors, xy</li>
-<li><strong>Visualization</strong>: matplotlib, bokeh</li>
-<li><strong>Web</strong>: requests, click</li>
-<li><strong>Validation</strong>: pydantic</li>
-</ul>
-<p>Each package has defined minimum and maximum versions for different Python versions (3.9, 3.10,
-3.11, 3.12, 3.13, 3.14, 3.15), and some packages also account for free-threaded builds, OS, and
-CPU architecture (see <a href="#discovering-compatibility-from-pypi">Discovering Compatibility from PyPI</a>
-below).</p>
+<p>Register your own installer or resolver in the default registries with <code>register_installer(name,
+installer_class)</code> and <code>register_resolver(package, resolver)</code>. See the
+<a href="../dev/architecture/">architecture</a> page.</p>
 <h2 id="discovering-compatibility-from-pypi">Discovering Compatibility from PyPI<a class="headerlink" href="#discovering-compatibility-from-pypi" title="Permanent link">&para;</a></h2>
-<p>In addition to the built-in registry, <code>feu</code> can query PyPI directly to discover which package
-versions are compatible with a given target (Python version, free-threadedness, OS, and
-architecture):</p>
+<p><code>feu</code> can query PyPI to discover which package versions are compatible with each target. The result
+is the data that <code>dev/generate_compat_data.py</code> writes to <code>feu/compat/data</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">discover_compat_targets</span><span class="p">,</span> <span class="n">show_compat_targets</span>
 
-<span class="c1"># Discover the compatibility matrix for a package by inspecting its wheels on PyPI</span>
-<span class="n">compat</span> <span class="o">=</span> <span class="n">discover_compat_targets</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">)</span>
+<span class="c1"># The considered versions and the ranges of each target, from the wheels on PyPI.</span>
+<span class="n">discovery</span> <span class="o">=</span> <span class="n">discover_compat_targets</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">)</span>
 
 <span class="c1"># Pretty-print the matrix as a table (requires the `rich` extra)</span>
-<span class="n">show_compat_targets</span><span class="p">(</span><span class="n">compat</span><span class="p">,</span> <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>
+<span class="n">show_compat_targets</span><span class="p">(</span><span class="n">discovery</span><span class="p">,</span> <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>
 </code></pre></div>
-<p>This is useful to keep the built-in registry up to date, or to inspect compatibility for packages
-that are not part of the registry.</p>
+<h2 id="working-with-git-repositories">Working with Git Repositories<a class="headerlink" href="#working-with-git-repositories" title="Permanent link">&para;</a></h2>
+<p>If you have installed the <code>git</code> extra (<code>pip install 'feu[git]'</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.local_git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_last_tag_name</span><span class="p">,</span> <span class="n">get_last_version_tag_name</span><span class="p">,</span> <span class="n">get_tags</span>
+
+<span class="n">tags</span> <span class="o">=</span> <span class="n">get_tags</span><span class="p">()</span>  <span class="c1"># sorted by commit date</span>
+<span class="n">last_tag</span> <span class="o">=</span> <span class="n">get_last_tag_name</span><span class="p">()</span>
+<span class="n">last_version_tag</span> <span class="o">=</span> <span class="n">get_last_version_tag_name</span><span class="p">()</span>  <span class="c1"># e.g. "v1.2.3"</span>
+
+<span class="c1"># By default, a RuntimeError is raised if no tag is found.</span>
+<span class="n">last_tag</span> <span class="o">=</span> <span class="n">get_last_tag_name</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># None instead</span>
+</code></pre></div>
 <h2 id="working-with-github">Working with GitHub<a class="headerlink" href="#working-with-github" title="Permanent link">&para;</a></h2>
-<p>If you have installed the <code>requests</code> extra (<code>pip install 'feu[requests]'</code>), you can query GitHub
-repository metadata:</p>
+<p>If you have installed the <code>requests</code> extra (<code>pip install 'feu[requests]'</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_github_metadata</span><span class="p">,</span> <span class="n">fetch_github_repos</span><span class="p">,</span> <span class="n">sort_repos_by_key</span>
 
-<span class="c1"># Fetch metadata for a single repository. Authentication headers are built automatically</span>
-<span class="c1"># from the `GITHUB_TOKEN` environment variable, if set, to increase the rate limit.</span>
-<span class="n">metadata</span> <span class="o">=</span> <span class="n">fetch_github_metadata</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="s2">"durandtibo"</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="s2">"feu"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
-
-<span class="c1"># Fetch all repositories of a user or organization</span>
-<span class="n">repos</span> <span class="o">=</span> <span class="n">fetch_github_repos</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="s2">"durandtibo"</span><span class="p">)</span>
-
-<span class="c1"># Sort repositories by a metadata key, e.g. "stargazers_count"</span>
-<span class="n">sorted_repos</span> <span class="o">=</span> <span class="n">sort_repos_by_key</span><span class="p">(</span><span class="n">repos</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"stargazers_count"</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># The `GITHUB_TOKEN` environment variable, if set, increases the rate limit.</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">fetch_github_metadata</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="s2">"durandtibo"</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="s2">"feu"</span><span class="p">)</span>  <span class="c1"># a read-only mapping</span>
+<span class="n">repos</span> <span class="o">=</span> <span class="n">fetch_github_repos</span><span class="p">(</span><span class="n">owner</span><span class="o">=</span><span class="s2">"durandtibo"</span><span class="p">)</span>  <span class="c1"># a tuple of read-only mappings</span>
+<span class="n">by_stars</span> <span class="o">=</span> <span class="n">sort_repos_by_key</span><span class="p">(</span><span class="n">repos</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">"stargazers_count"</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="testing-utilities">Testing Utilities<a class="headerlink" href="#testing-utilities" title="Permanent link">&para;</a></h2>
-<p><code>feu</code> provides testing utilities for checking package availability in tests:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.testing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">click_available</span><span class="p">,</span>
-    <span class="n">git_available</span><span class="p">,</span>
-    <span class="n">requests_available</span><span class="p">,</span>
-<span class="p">)</span>
+<p><code>feu.testing</code> provides <code>pytest</code> marks to skip a test when an optional dependency is (not) available:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">click_available</span><span class="p">,</span> <span class="n">requests_not_available</span>
 
 
-<span class="c1"># Use as pytest marks (skip the test if the dependency is unavailable)</span>
 <span class="nd">@click_available</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_click_feature</span><span class="p">():</span>
-    <span class="c1"># This test only runs if click is available</span>
-    <span class="k">pass</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cli_feature</span><span class="p">():</span> <span class="o">...</span>
 
 
-<span class="nd">@git_available</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_git_feature</span><span class="p">():</span>
-    <span class="c1"># This test only runs if gitpython is available</span>
-    <span class="k">pass</span>
-
-
-<span class="nd">@requests_available</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_http_feature</span><span class="p">():</span>
-    <span class="c1"># This test only runs if requests is available</span>
-    <span class="k">pass</span>
+<span class="nd">@requests_not_available</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_error_without_requests</span><span class="p">():</span> <span class="o">...</span>
 </code></pre></div>
 <p>Each mark has an <code>..._available</code> variant (skips the test if the dependency is <em>not</em> available) and
 an <code>..._not_available</code> variant (skips the test if the dependency <em>is</em> available). Marks are
-provided for <code>click</code>, <code>git</code>, <code>jax</code>, <code>matplotlib</code>, <code>numpy</code>, <code>pandas</code>, <code>pip</code>, <code>pipx</code>, <code>polars</code>,
-<code>pyarrow</code>, <code>requests</code>, <code>rich</code>, <code>scipy</code>, <code>sklearn</code>, <code>torch</code>, <code>urllib3</code>, <code>uv</code>, and <code>xarray</code>.</p>
+provided for <code>click</code>, <code>git</code>, <code>jax</code>, <code>matplotlib</code>, <code>numpy</code>, <code>pandas</code>, <code>pip</code>, <code>polars</code>, <code>pyarrow</code>,
+<code>requests</code>, <code>rich</code>, <code>scipy</code>, <code>sklearn</code>, <code>torch</code>, <code>uv</code>, and <code>xarray</code>.</p>
 <h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
-<h3 id="use-case-1-multi-python-version-project">Use Case 1: Multi-Python Version Project<a class="headerlink" href="#use-case-1-multi-python-version-project" title="Permanent link">&para;</a></h3>
-<p>If you're maintaining a project that supports multiple Python versions:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
-
-<span class="n">python_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">"</span>
-
-<span class="c1"># Find compatible numpy version</span>
-<span class="n">numpy_version</span> <span class="o">=</span> <span class="n">find_closest_version</span><span class="p">(</span>
-    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">pkg_version</span><span class="o">=</span><span class="s2">"2.0.0"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="n">python_version</span><span class="p">)</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Installing numpy </span><span class="si">{</span><span class="n">numpy_version</span><span class="si">}</span><span class="s2"> for Python </span><span class="si">{</span><span class="n">python_version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<h3 id="install-the-compatible-version-of-a-dependency-in-a-ci-matrix">Install the compatible version of a dependency in a CI matrix<a class="headerlink" href="#install-the-compatible-version-of-a-dependency-in-a-ci-matrix" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">python_version</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="s2">"3.10"</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">python_version</span><span class="p">,</span> <span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"99.0.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+<span class="go">3.9 2.0.2</span>
+<span class="go">3.10 2.2.6</span>
 </code></pre></div>
-<h3 id="use-case-2-safe-package-installation">Use Case 2: Safe Package Installation<a class="headerlink" href="#use-case-2-safe-package-installation" title="Permanent link">&para;</a></h3>
-<p>Before installing a package, check if the version is compatible:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">is_valid_version</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">install_package</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.utils.package</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageSpec</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.utils.installer</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span>
-
-<span class="n">python_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="si">}</span><span class="s2">"</span>
-<span class="n">desired_version</span> <span class="o">=</span> <span class="s2">"2.0.2"</span>
-
-<span class="k">if</span> <span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">desired_version</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="n">python_version</span><span class="p">)):</span>
-    <span class="n">install_package</span><span class="p">(</span>
-        <span class="n">installer</span><span class="o">=</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"pip"</span><span class="p">),</span>
-        <span class="n">package</span><span class="o">=</span><span class="n">PackageSpec</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">desired_version</span><span class="p">),</span>
-    <span class="p">)</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Version </span><span class="si">{</span><span class="n">desired_version</span><span class="si">}</span><span class="s2"> is not compatible with Python </span><span class="si">{</span><span class="n">python_version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="use-case-3-conditional-imports">Use Case 3: Conditional Imports<a class="headerlink" href="#use-case-3-conditional-imports" title="Permanent link">&para;</a></h3>
-<p>Use package availability checks for conditional imports:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span>
-
-<span class="k">if</span> <span class="n">is_package_available</span><span class="p">(</span><span class="s2">"torch"</span><span class="p">):</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-
-    <span class="n">USE_PYTORCH</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">USE_PYTORCH</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"PyTorch not available, using fallback implementation"</span><span class="p">)</span>
+<h3 id="conditional-imports">Conditional imports<a class="headerlink" href="#conditional-imports" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">USE_FAST_PATH</span> <span class="o">=</span> <span class="n">is_package_available</span><span class="p">(</span><span class="s2">"not_an_installed_package"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">USE_FAST_PATH</span>
+<span class="go">False</span>
 </code></pre></div>
 
 

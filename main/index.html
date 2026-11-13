@@ -300,6 +300,63 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="properties/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Properties
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="dev/architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="migration/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Migration to 0.9
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -625,6 +682,87 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="properties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dev/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration to 0.9
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -639,10 +777,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -660,8 +798,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -714,34 +852,6 @@
     
   
     Compat
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="refs/discoverers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Discoverers
   
 
     
@@ -1206,25 +1316,24 @@ package versions.</p>
   version constraints, plus PyPI-backed discovery for anything not in the registry</li>
 </ul>
 <h2 id="quick-example">Quick Example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span><span class="p">,</span> <span class="n">get_package_version</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
-
-<span class="c1"># Check if a package is available</span>
-<span class="k">if</span> <span class="n">is_package_available</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">):</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="n">get_package_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"NumPy </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> is installed!"</span><span class="p">)</span>
-
-<span class="c1"># Find the closest valid version for your Python version</span>
-<span class="n">version</span> <span class="o">=</span> <span class="n">find_closest_version</span><span class="p">(</span>
-    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">pkg_version</span><span class="o">=</span><span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.10"</span><span class="p">)</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Closest valid version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_available</span><span class="p">(</span><span class="s2">"packaging"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.3.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="go">'2.0.2'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="go">'1.26.4'</span>
 </code></pre></div>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <ul>
 <li>🚀 <a href="get_started/">Get Started Guide</a></li>
 <li>📖 <a href="usage/">Usage Guide</a></li>
 <li>🖥️ <a href="cli/">CLI Reference</a></li>
+<li>🧭 <a href="properties/">Properties</a>: the rules <code>feu</code> follows</li>
+<li>🧱 <a href="dev/architecture/">Architecture</a>: layers, how to add a package, an installer or a resolver</li>
+<li>🔀 <a href="migration/">Migration to 0.9</a></li>
 <li>📚 <a href="refs/root/">API Reference</a></li>
 </ul>
 <h2 id="api-stability">API stability<a class="headerlink" href="#api-stability" title="Permanent link">&para;</a></h2>

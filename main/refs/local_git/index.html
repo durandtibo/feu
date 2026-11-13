@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../discoverers/">
+        <link rel="prev" href="../compat/">
       
       
         <link rel="next" href="../github/">
@@ -299,6 +299,63 @@
   
   
   
+  
+    <li class="md-tabs__item">
+      <a href="../../properties/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Properties
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../dev/architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../migration/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Migration to 0.9
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
     
   
   
@@ -512,6 +569,87 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../properties/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration to 0.9
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -531,10 +669,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -552,8 +690,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -606,34 +744,6 @@
     
   
     Compat
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../discoverers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Discoverers
   
 
     
@@ -1137,7 +1247,9 @@ repository.</p>
 
 
 <a href="#feu.local_git.get_last_tag_name" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_last_tag_name</span><span class="p">(</span><span class="n">raise_error</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_last_tag_name</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">raise_error</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1219,8 +1331,17 @@ instead.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>if no tag was found and <code>raise_error=True</code>, or
-if the <code>gitpython</code> package is not installed.</p>
+                <p>if no tag was found and <code>raise_error=True</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if the <code>gitpython</code> package is not installed.</p>
               </div>
             </td>
           </tr>
@@ -1251,7 +1372,7 @@ if the <code>gitpython</code> package is not installed.</p>
 
 <a href="#feu.local_git.get_last_version_tag_name" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_last_version_tag_name</span><span class="p">(</span>
-    <span class="n">raise_error</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">raise_error</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -1337,8 +1458,18 @@ returned instead.</p>
             <td>
               <div class="doc-md-description">
                 <p>if no version tag was found and
-<code>raise_error=True</code>, or if the <code>gitpython</code> package is
-not installed.</p>
+<code>raise_error=True</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if the <code>gitpython</code> package is not
+installed.</p>
               </div>
             </td>
           </tr>
@@ -1368,7 +1499,7 @@ not installed.</p>
 
 
 <a href="#feu.local_git.get_tags" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tags</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.utils.fallback.git.git.TagReference">TagReference</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tags</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="git.TagReference">TagReference</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1391,7 +1522,7 @@ date of the commit they point to.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="list">list</span>[<span title="feu.utils.fallback.git.git.TagReference">TagReference</span>]</code>
+                  <code><span title="list">list</span>[<span title="git.TagReference">TagReference</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1415,7 +1546,7 @@ oldest to the most recent.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="RuntimeError">RuntimeError</span></code>
+                  <code>MissingPackageError</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1425,7 +1556,7 @@ oldest to the most recent.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="feu.utils.fallback.git.git.InvalidGitRepositoryError">InvalidGitRepositoryError</span></code>
+                  <code><span title="git.InvalidGitRepositoryError">InvalidGitRepositoryError</span></code>
             </td>
             <td>
               <div class="doc-md-description">
