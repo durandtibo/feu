@@ -29,12 +29,17 @@ from typing import TYPE_CHECKING
 from feu.imports.lazy import lazy_exports
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from typing import Any
+
     from feu.compat import Target, find_closest_version, is_valid_version, resolve_target
     from feu.imports import is_module_available, is_package_available
     from feu.install import InstallerSpec, install_package, install_package_closest_version
     from feu.utils.package import PackageSpec
     from feu.version import compare_version, get_package_version
 
+__getattr__: Callable[[str], Any]
+__dir__: Callable[[], list[str]]
 __getattr__, __dir__ = lazy_exports(
     __name__,
     {
