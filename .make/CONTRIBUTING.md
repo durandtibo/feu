@@ -21,7 +21,7 @@ Thanks for your interest in contributing to `shared-makefiles`!
 
 ## Testing
 
-CI ([`.github/workflows/ci-test.yml`](.github/workflows/ci-test.yml)) runs `make lint` and
+CI ([`.github/workflows/ci.yaml`](.github/workflows/ci.yaml)) runs `make lint` and
 `make format` (including on-demand tool installation) across an Ubuntu/macOS matrix. Make sure
 both pass locally first:
 

@@ -1,5 +1,11 @@
 # shared-makefiles
 
+[![CI](https://github.com/durandtibo/shared-makefiles/actions/workflows/ci.yaml/badge.svg)](https://github.com/durandtibo/shared-makefiles/actions/workflows/ci.yaml)
+[![Nightly](https://github.com/durandtibo/shared-makefiles/actions/workflows/nightly.yaml/badge.svg)](https://github.com/durandtibo/shared-makefiles/actions/workflows/nightly.yaml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/durandtibo/shared-makefiles/badge)](https://scorecard.dev/viewer/?uri=github.com/durandtibo/shared-makefiles)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/tag/durandtibo/shared-makefiles?label=release)](https://github.com/durandtibo/shared-makefiles/tags)
+
 Shared/reusable Makefiles for formatting and linting common file types across projects.
 
 Each file is self-contained, include-guarded, and configurable via variables — pull in only what
@@ -53,7 +59,7 @@ Then `include` the files you need from `.make/` in your project's `Makefile`, e.
 `include .make/yaml.mk`.
 
 To pull in upstream changes later, `include .make/self.mk` and run `make update-subtree` — see
-[`self.mk`](#self-mk) below. It fetches the latest commits and runs `git subtree pull`, so you
+[`self.mk`](#selfmk) below. It fetches the latest commits and runs `git subtree pull`, so you
 don't need to remember the raw `git subtree`/`git remote` invocations yourself.
 
 ## Available files
@@ -66,9 +72,12 @@ don't need to remember the raw `git subtree`/`git remote` invocations yourself.
 | `toml.mk`     | `format-toml`                               | `taplo`                    | Format TOML files                                                     |
 | `markdown.mk` | `format-markdown`, `lint-markdown`          | `prettier`, `markdownlint` | Format and lint Markdown files                                        |
 | `actions.mk`  | `lint-actions`                              | `actionlint`               | Lint GitHub Actions workflow files                                    |
+| `git.mk`      | `git-delete-branches`                       | `git`                      | Delete all local branches except `main`                               |
+| `github.mk`   | `gh-rerun-failed`                           | `gh`                       | Re-run failed/cancelled GitHub Actions runs                           |
 | `uv.mk`       | `install-invoke`, `update-uv`, `setup-venv` | `uv`                       | Manage Python virtual environments with `uv`                          |
 | `prettier.mk` | `install-prettier`                          | `prettier`                 | Shared `install-prettier` target, included by `yaml.mk`/`markdown.mk` |
 | `self.mk`     | `update-subtree`                            | `git`                      | Sync the `.make` shared-makefiles subtree                             |
+| `tools.mk`    | `check-tools`                               | —                          | Show which tools are installed and which are missing                  |
 | `help.mk`     | `help`                                      | —                          | List all documented (`## ...`) targets                                |
 
 ### `yaml.mk`
@@ -159,6 +168,39 @@ include actions.mk
 ACTIONS_LINT_PATH = .
 ```
 
+### `git.mk`
+
+`make git-delete-branches` runs `git branch -D` on every local branch except `GIT_MAIN_BRANCH`.
+Unmerged work is lost. The checked-out branch cannot be deleted by git, so it is skipped with a warning.
+
+Optional variables (set before `include`):
+
+| Variable          | Default | Description                          |
+| ----------------- | ------- | ------------------------------------ |
+| `GIT_MAIN_BRANCH` | `main`  | Branch kept by `git-delete-branches` |
+
+### `github.mk`
+
+Requires an authenticated GitHub CLI (`gh auth login`). `gh-rerun-failed` is the equivalent of "Re-run
+failed jobs" in the web UI, applied to the last runs that failed, were cancelled or timed out;
+successful and still-running runs are left alone.
+
+Optional variables (set before `include`, or on the command line):
+
+| Variable              | Default | Description                                              |
+| --------------------- | ------- | -------------------------------------------------------- |
+| `GITHUB_RERUN_LIMIT`  | `5`     | Number of most recent runs considered                    |
+| `GITHUB_RERUN_BRANCH` | empty   | Only consider runs of this branch (empty = all branches) |
+
+```makefile
+include github.mk
+```
+
+```bash
+make gh-rerun-failed                                   # last 5 runs, any branch
+make gh-rerun-failed GITHUB_RERUN_LIMIT=10 GITHUB_RERUN_BRANCH=main
+```
+
 ### `uv.mk`
 
 Optional variables (set before `include`):
@@ -173,8 +215,8 @@ include uv.mk
 PYTHON_VERSION = 3.12
 ```
 
-`install-invoke` installs `uv` on demand and then `invoke>=3.0` and `invoke-tasklib>=0.0.8` via `uv pip install` into the
-active virtual environment (create one first, e.g. with `uv venv`).
+`install-invoke` installs `uv` on demand and then `invoke>=3.0` and `invoke-tasklib>=0.0.8` via
+`uv pip install` into the active virtual environment (create one first, e.g. with `uv venv`).
 `update-uv` runs `uv self update`. `setup-venv` updates `uv`, creates a fresh `.venv`
 (`uv venv --python $(PYTHON_VERSION) --clear`), installs `invoke` into it, and runs
 `uv run inv env.create-venv` and `uv run inv env.install` — it assumes the project's
@@ -203,6 +245,17 @@ include self.mk
 $(SHARED_MAKEFILES_REMOTE_NAME) $(SHARED_MAKEFILES_BRANCH) --squash` to sync the subtree. It then
 removes the `.github/`, `testdata/` and `tests/` folders from within `$(SHARED_MAKEFILES_PREFIX)` (not
 needed in consuming projects) and commits the removal.
+
+### `tools.mk`
+
+`make check-tools` looks up each tool of `TOOLS` on the `PATH`, prints one line per tool (✅ with its
+path, or ❌ if missing) and exits with code 127 if any is missing.
+
+Optional variables (set before `include`):
+
+| Variable | Default                                                                                    | Description                    |
+| -------- | ------------------------------------------------------------------------------------------ | ------------------------------ |
+| `TOOLS`  | `actionlint bats checkmake gh markdownlint mbake prettier shellcheck shfmt taplo yamllint` | Space-separated tools to check |
 
 ### `help.mk`
 
@@ -234,11 +287,13 @@ of them and running `make help` lists them for free.
 
 ## Testing
 
-[`.github/workflows/ci-test.yml`](.github/workflows/ci-test.yml) exercises every file against the
-Unix OS matrix (Ubuntu and macOS runners) resolved dynamically via
-[`durandtibo/workflow-config-action`](https://github.com/durandtibo/workflow-config-action) on
-every push/PR to `main`, running both the lint and format targets (including on-demand tool
-installation) to make sure the rules stay portable across platforms.
+[`.github/workflows/ci.yaml`](.github/workflows/ci.yaml) exercises every module (one reusable
+`ci-<module>.yaml` workflow each) against the Unix OS matrix (Ubuntu and macOS runners) and, for
+`uv.mk`, the Python versions, resolved dynamically via
+[`durandtibo/workflow-config-action`](https://github.com/durandtibo/workflow-config-action) in
+[`lib-get-test-matrix.yaml`](.github/workflows/lib-get-test-matrix.yaml). It runs on every push/PR
+to `main`, nightly and on demand, running both the lint and format targets (including on-demand
+tool installation) to make sure the rules stay portable across platforms.
 
 ## License
 
