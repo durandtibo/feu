@@ -22,8 +22,9 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 # numpy 2.0.2 is the last release for Python 3.9 on every platform, so the answers do not depend
-# on the host.
-NUMPY_PY39 = ["--pkg-name", "numpy", "--python-version", "3.9"]
+# on the host. The target is a regular build: the default is the current interpreter, which is
+# free-threaded on the 3.14t CI jobs.
+NUMPY_PY39 = ["--pkg-name", "numpy", "--python-version", "3.9", "--no-free-threaded"]
 
 
 @pytest.fixture
