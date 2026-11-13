@@ -440,7 +440,7 @@ provides-extras = ["cli", "git", "requests", "rich"]
 [package.metadata.requires-dev]
 dev = [
     { name = "codespell", specifier = ">=2.4,<3.0" },
-    { name = "coverage", extras = ["toml"], specifier = ">=7.16.2,<8.0" },
+    { name = "coverage", extras = ["toml"], specifier = ">=7.17.0,<8.0" },
     { name = "docformatter", specifier = ">=1.7.8,<2.0" },
     { name = "invoke", specifier = ">=3.0,<4.0" },
     { name = "invoke-tasklib", specifier = ">=0.1.0a0,<1.0" },
@@ -460,7 +460,7 @@ docs = [
     { name = "mkdocs-click", specifier = ">=0.9,<1.0" },
     { name = "mkdocs-include-markdown-plugin", specifier = ">=7.3,<8.0" },
     { name = "mkdocs-material", specifier = ">=9.7,<10.0" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0,<2.0" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.8,<2.0" },
 ]
 
 [[package]]
