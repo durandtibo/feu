@@ -74,7 +74,10 @@ def _run(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-NUMPY_PY39 = ("--pkg-name=numpy", "--python-version=3.9")
+# Pin the build: without `--no-free-threaded`, the target follows the running
+# interpreter, so a free-threaded Python would ask for a free-threaded 3.9
+# build, which does not exist.
+NUMPY_PY39 = ("--pkg-name=numpy", "--python-version=3.9", "--no-free-threaded")
 
 
 @click_available
