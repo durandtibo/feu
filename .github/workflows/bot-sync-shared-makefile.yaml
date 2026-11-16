@@ -47,7 +47,10 @@ jobs:
         run: |
           set -euo pipefail
           before="$(git rev-parse HEAD)"
-          make update-subtree
+          # Run twice: the first call may update the `self-update` target itself,
+          # so the second call applies everything with the new version.
+          make self-update
+          make self-update
           after="$(git rev-parse HEAD)"
           if [ "$before" != "$after" ] && ! git diff --quiet "$before" "$after"; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
