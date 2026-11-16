@@ -16,10 +16,10 @@ permissions: {}
 
 jobs:
   verify-workflows:
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
     permissions:
       contents: read
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
 
     steps:
       - name: Checkout

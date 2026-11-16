@@ -20,10 +20,10 @@ permissions: {}
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
     permissions:
       contents: read
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
     strategy:
       max-parallel: 8
       fail-fast: false

@@ -21,23 +21,23 @@ jobs:
   # package names (e.g. the "requests" extra installs both "requests" and
   # "urllib3", "cli" installs "click", "git" installs "gitpython").
   get-versions:
-    uses: ./.github/workflows/lib-get-package-versions.yaml
     permissions:
       contents: read
+    uses: ./.github/workflows/lib-get-package-versions.yaml
 
   # One job per dependency (required and optional alike), driven by
   # get-versions instead of a hardcoded list, so a new dependency only needs
   # to be added to dev/config/package_versions.json (kept up to date by
   # bot-generate-package-versions.yaml).
   test-dep:
+    permissions:
+      contents: read
     needs: get-versions
     strategy:
       fail-fast: false
       matrix:
         package-name: ${{ fromJson(needs.get-versions.outputs.package_names) }}
     uses: ./.github/workflows/ci-test-code-dep.yaml
-    permissions:
-      contents: read
     with:
       package-name: ${{ matrix.package-name }}
       package-versions: ${{ toJson(fromJson(needs.get-versions.outputs.package_versions)[matrix.package-name]) }}

@@ -161,7 +161,8 @@ and keep it up to date when you add, rename or remove a workflow.
   - `security-`: dependency review of PRs and scorecard.
 - `ci.yaml` is the single entry point of the checks (pull request, push to `main`, nightly).
   It calls `lib-get-test-matrix.yaml` once and passes the matrix to the test workflows, so the
-  Python versions and OS are defined in one place (`dev/config/test_matrix.json`). To add a
+  Python versions and OS are defined in one place (the default config of
+  `durandtibo/workflow-config-action`, read by `lib-get-test-matrix.yaml`). To add a
   check, create a `ci-<name>.yaml` reusable workflow and add a job in `ci.yaml`. The job ids of
   `ci.yaml` and of the workflows it calls are used by the branch protection (for example
   `format / format`): keep them in sync when renaming either.

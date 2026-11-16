@@ -18,10 +18,10 @@ permissions: {}
 jobs:
   # Test with all dependencies across multiple Python versions and operating systems
   all:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
     permissions:
       contents: read
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10 # free-threaded and macOS cells are slow
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@a592cf6a2b2788f2e5846e4e29151f8895e1c643 # ratchet:durandtibo/setup-venv-uv-action@v0.3.0
+        uses: durandtibo/setup-venv-uv-action@4445098aa662d3d72aa0455918bc46a091b2a7f8 # ratchet:durandtibo/setup-venv-uv-action@v0.3.1
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -68,10 +68,10 @@ jobs:
 
   # Test with minimal dependencies to ensure optional dependencies are truly optional
   min:
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
     permissions:
       contents: read
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10 # free-threaded and macOS cells are slow
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -86,7 +86,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@a592cf6a2b2788f2e5846e4e29151f8895e1c643 # ratchet:durandtibo/setup-venv-uv-action@v0.3.0
+        uses: durandtibo/setup-venv-uv-action@4445098aa662d3d72aa0455918bc46a091b2a7f8 # ratchet:durandtibo/setup-venv-uv-action@v0.3.1
         with:
           python-version: ${{ matrix.python-version }}
           install-args: "--no-optional-deps"

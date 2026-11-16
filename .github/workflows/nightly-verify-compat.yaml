@@ -12,19 +12,20 @@ on:
 permissions: {}
 
 jobs:
-  # Load the shared python-version/OS matrix from workflow-config-action once,
-  # and pass it down to the job below.
+  # Load the shared python-version/OS matrix from the default config of
+  # durandtibo/workflow-config-action
+  # once, and pass it down to the job below.
   get-matrix:
-    uses: ./.github/workflows/lib-get-test-matrix.yaml
     permissions:
       contents: read
+    uses: ./.github/workflows/lib-get-test-matrix.yaml
 
   all:
+    permissions:
+      contents: read
     needs: get-matrix
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
-    permissions:
-      contents: read
     strategy:
       max-parallel: 8
       fail-fast: false
@@ -39,7 +40,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup python environment
-        uses: durandtibo/setup-venv-uv-action@a592cf6a2b2788f2e5846e4e29151f8895e1c643 # ratchet:durandtibo/setup-venv-uv-action@v0.3.0
+        uses: durandtibo/setup-venv-uv-action@4445098aa662d3d72aa0455918bc46a091b2a7f8 # ratchet:durandtibo/setup-venv-uv-action@v0.3.1
         with:
           python-version: ${{ matrix.python-version }}
 

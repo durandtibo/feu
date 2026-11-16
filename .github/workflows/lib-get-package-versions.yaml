@@ -31,10 +31,10 @@ permissions: {}
 
 jobs:
   get-versions:
-    runs-on: ubuntu-slim
-    timeout-minutes: 2
     permissions:
       contents: read
+    runs-on: ubuntu-slim
+    timeout-minutes: 2
     outputs:
       package_versions: ${{ steps.read-json.outputs.json-content }}
       package_names: ${{ steps.package-names.outputs.package_names }}
