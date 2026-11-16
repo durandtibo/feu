@@ -25,6 +25,10 @@
   branch each PR from the branch of the previous one (not from `main`) and open it with the
   previous branch as its base. Keep each PR small and reviewable on its own. Once a PR of the stack
   is merged, retarget the next PR to `main` and merge `origin/main` into it.
+- Write commit messages and PR titles as a short imperative sentence starting with a verb such as
+  `Add`, `Fix`, `Update`, `Remove` or `Improve`. Do not use conventional-commit prefixes like
+  `docs:` or `feat:` (the type prefix is only for branch names). The squash-merge appends the PR
+  number, so do not add one.
 - In the PR description, say what was changed, what was deliberately not changed, and any
   behaviour change (for example a changed output, or a breaking change of the signature).
 - When a PR conflicts with `main`, merge `origin/main` into the branch and resolve the conflicts
@@ -164,14 +168,20 @@ and keep it up to date when you add, rename or remove a workflow.
 - Put shared steps in a composite action when they sit inside one job, and in a `lib-*.yaml`
   reusable workflow when the output feeds a matrix or the logic is a whole job. Extend an
   existing one instead of copy-pasting steps.
-- Conventions: a header comment that says what the workflow does and when it runs; the minimum
-  `permissions` at the workflow level (`contents: read` or `{}`), widened only on the job that
-  needs more; `timeout-minutes` on every job; actions pinned to a commit SHA with a
+- Conventions: a header comment that says what the workflow does and when it runs;
+  `permissions: {}` at the workflow level and the minimum permissions per job (widened only on the
+  job that needs more); `timeout-minutes` on every job; actions pinned to a commit SHA with a
   `# ratchet:owner/repo@vX.Y.Z` comment (`bot-pin-action.yaml` maintains them, never hand-pin
   a SHA without that comment); `workflow_dispatch` so the workflow can be run manually.
 - `ci-verify-workflows.yaml` lints the workflows: check your changes with `actionlint` (run
   from `.github/workflows`) when available.
-- Set `permissions` on every job, including the jobs that call a reusable workflow.
+- Set `permissions` on every job, including the jobs that call a reusable workflow. Every workflow
+  has `permissions: {}` at the workflow level (it grants nothing), never a grant.
+
+## Releases
+
+- Releases are immutable exact version tags (`v0.8.4`, ...). Do not create or move floating tags
+  (`v0`, `latest`) and do not document them as an option.
 
 ## Reporting
 
