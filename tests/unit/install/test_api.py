@@ -171,39 +171,48 @@ def test_install_package_closest_version_latest_is_not_pinned(version: str | Non
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy"])
 
 
-@requests_available
 def test_install_package_closest_version_open_wildcard_is_installed_as_requested() -> None:
     with (
-        patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.14"))),
+        patch("feu.install.api.find_closest_version", Mock(return_value="2.*")) as find_mock,
         patch("feu.install.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
-            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="2.*")
+            installer=InstallerSpec("pip"),
+            package=PackageSpec(name="numpy", version="2.*"),
+            target=Target(python_version="3.14"),
+        )
+        find_mock.assert_called_once_with(
+            pkg_name="numpy", pkg_version="2.*", target=Target(python_version="3.14")
         )
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==2.*"])
 
 
-@requests_available
 def test_install_package_closest_version_closed_wildcard_is_resolved() -> None:
     with (
-        patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.9"))),
+        patch("feu.install.api.find_closest_version", Mock(return_value="1.26.4")),
         patch("feu.install.installer.run_command") as run_mock,
     ):
         install_package_closest_version(
-            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.*")
+            installer=InstallerSpec("pip"),
+            package=PackageSpec(name="numpy", version="1.*"),
+            target=Target(python_version="3.9"),
         )
         run_mock.assert_called_once_with([sys.executable, "-m", "pip", "install", "numpy==1.26.4"])
 
 
-@requests_available
 def test_install_package_closest_version_wildcard_without_match_raises_before_install() -> None:
     with (
-        patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.14"))),
+        patch(
+            "feu.install.api.find_closest_version",
+            Mock(side_effect=UnsupportedVersionError("no version matches '1.24.*'")),
+        ),
         patch("feu.install.installer.run_command") as run_mock,
         pytest.raises(UnsupportedVersionError, match=r"matches '1\.24\.\*'"),
     ):
         install_package_closest_version(
-            installer=InstallerSpec("pip"), package=PackageSpec(name="numpy", version="1.24.*")
+            installer=InstallerSpec("pip"),
+            package=PackageSpec(name="numpy", version="1.24.*"),
+            target=Target(python_version="3.14"),
         )
     run_mock.assert_not_called()
 
