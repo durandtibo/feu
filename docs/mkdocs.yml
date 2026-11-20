@@ -21,9 +21,8 @@ nav:
   - Get Started: get_started.md
   - Usage Guide: usage.md
   - CLI Reference: cli.md
-  - Properties: properties.md
+  - Design: design.md
   - Architecture: dev/architecture.md
-  - Migration to 0.9: migration.md
   - API Reference:
       - Main Functions: refs/root.md
       - Compat: refs/compat.md

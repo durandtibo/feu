@@ -124,9 +124,8 @@ True
 - 🚀 [Get Started Guide](get_started.md)
 - 📖 [Usage Guide](usage.md)
 - 🖥️ [CLI Reference](cli.md)
-- 🧭 [Properties](properties.md): the rules `feu` follows
+- 🧭 [Design](design.md): the properties of `feu`, the design choices and their trade-offs
 - 🧱 [Architecture](dev/architecture.md): layers, how to add a package, an installer or a resolver
-- 🔀 [Migration to 0.9](migration.md)
 - 📚 [API Reference](refs/root.md)
 
 ## API stability
