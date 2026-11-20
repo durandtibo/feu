@@ -39,12 +39,12 @@ The trigger of a reusable workflow is `workflow_call`: it runs when another work
 | `ci-build.yaml`                      | called by `ci.yaml`                         | Build the package and check that the built package installs.                                            |
 | `ci-cyclic-imports.yaml`             | called by `ci.yaml`, manual                 | Check that there is no circular import.                                                                 |
 | `ci-doctest.yaml`                    | called by `ci.yaml`, manual                 | Run the doctests (`inv test.doctest`) and check that the documentation builds.                          |
-| `ci-format.yaml`                     | called by `ci.yaml`, manual                 | Check the formatting and the linting of the Python and shell files.                                     |
+| `ci-format.yaml`                     | called by `ci.yaml`, manual                 | Check the formatting and the linting of the files (`make format`, `make lint`) and of the Python code.  |
 | `ci-pre-commit.yaml`                 | called by `ci.yaml`, manual                 | Run all the pre-commit hooks.                                                                           |
 | `ci-test.yaml`                       | called by `ci.yaml`                         | Unit and integration tests, with all the dependencies and with the required ones only.                  |
 | `ci-test-deps.yaml`                  | called by `ci.yaml`                         | One job per dependency (required and optional), to test it with its supported versions.                 |
 | `ci-test-code-dep.yaml`              | called by `ci-test-deps.yaml`               | Test the code with the supported versions of one dependency.                                            |
-| `ci-type-checking.yaml`              | called by `ci.yaml`, manual                 | Type check the package with `ty`.                                                                       |
+| `ci-type-checking.yaml`              | called by `ci.yaml`, manual                 | Type check the package with `ty` and `pyright`.                                                         |
 | `ci-verify-workflows.yaml`           | pull request or push changing the workflows | Lint the files of `.github/workflows`.                                                                  |
 | `lib-get-test-matrix.yaml`           | called by other workflows, manual           | Load the Python versions and the operating systems to test.                                             |
 | `lib-get-package-extras.yaml`        | called by other workflows, manual           | Read the names of the optional dependencies from `pyproject.toml`.                                      |
