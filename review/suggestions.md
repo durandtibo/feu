@@ -45,10 +45,11 @@ whether it would break the public API.
 **Where:** `src/feu/install/utils.py` (`install_package_closest_version`), `src/feu/__main__.py`
 (`install`), `src/feu/compat/registry.py` (`_matches`).
 
-**Problem.** `install_package_closest_version` builds `Target(python_version=get_python_major_minor())`,
-so `os` and `arch` are `None`. Every entry in `feu.compat.discovered` is registered with concrete
-`os` and `arch`. `CompatRegistry._matches` requires an entry's `os`/`arch` to be `None` or equal to
-the lookup's, so no entry matches. The package then counts as "unconfigured", which is permissive,
+**Problem.** `install_package_closest_version` builds
+`Target(python_version=get_python_major_minor())`, so `os` and `arch` are `None`. Every entry
+in `feu.compat.discovered` is registered with concrete `os` and `arch`.
+`CompatRegistry._matches` requires an entry's `os`/`arch` to be `None` or equal to the
+lookup's, so no entry matches. The package then counts as "unconfigured", which is permissive,
 and the requested version is returned unchanged.
 
 ```text
@@ -280,8 +281,8 @@ a shell. (`S603` is `noqa`'d.) The extras and version specifiers produced by `Pa
   `run_bash_command` is invisible from the CLI. Add `-v/--verbose`.
 - `python -m feu` without `click` gives the fallback no-op decorators and `check_click()` in the
   `__main__` block only. Importing `feu.__main__` without click silently defines undecorated
-  functions. That works for the tests, but a `console_scripts` entry point (`feu = feu.__main__:cli`)
-  with a clear error would be more usable than `python -m feu`.
+  functions. That works for the tests, but a `console_scripts` entry point
+  (`feu = feu.__main__:cli`) with a clear error would be more usable than `python -m feu`.
 - `docs/docs/cli.md` describes `check-valid-version` as "for a Python version", but it takes
   OS/arch/free-threaded too.
 
@@ -365,7 +366,8 @@ discoverers already `{...}`-copy defensively in places, but nothing enforces it.
 
 - **`feu/imports/{click,git,requests,rich,urllib3}.py`** are five 90-line copies that differ only
   in the package name and the pip name. Follow coola's layout instead:
-  - `package.py`: `package_available`, `module_available`, `check_package(package, *, install=None)`,
+  - `package.py`: `package_available`, `module_available`,
+    `check_package(package, *, install=None)`,
     `raise_package_missing_error(package, *, install=None)`, `availability_cache`,
     `clear_availability_caches`. The `install=` keyword replaces the second positional string
     (`raise_package_missing_error("git", "gitpython")`), which is easy to swap.
@@ -387,12 +389,12 @@ ImportError` works and the existing `except RuntimeError` code keeps working. It
     need aliases for one release.
 - **`feu/utils/fallback/*`** build fake `click`/`git`/`requests` modules so imports succeed.
   `typing.TYPE_CHECKING or is_x_available()` blocks are repeated in `local_git.py`,
-  `utils/http.py`, `__main__.py`, and `compat/matrix.py`. With coola's design, a function calls `check_requests()` and
-  then imports `requests` inside its body (the pattern `CLAUDE.md` already prescribes for
-  numpy/torch/...). That removes the fallback modules and the `# pragma: no cover` branches. The
-  HTTP code in `utils/http.py` and the git code in `local_git.py` can import at call time, and
-  `__main__.py` can build the click group lazily or raise `MissingPackageError` from a small
-  entry point.
+  `utils/http.py`, `__main__.py`, and `compat/matrix.py`. With coola's design, a function calls
+  `check_requests()` and then imports `requests` inside its body (the pattern `CLAUDE.md` already
+  prescribes for numpy/torch/...). That removes the fallback modules and the `# pragma: no cover`
+  branches. The HTTP code in `utils/http.py` and the git code in `local_git.py` can import at call
+  time, and `__main__.py` can build the click group lazily or raise `MissingPackageError` from a
+  small entry point.
 - **`install/pip/resolver.py`**: seven `Numpy2DependencyResolver` subclasses differ only by one
   constant (`min_version`). They can be one table `{"pandas": "2.2.2", "scipy": "1.13.0", ...}`
   plus the two special resolvers (jax, default). That removes about 250 lines. Also note
@@ -442,7 +444,7 @@ ImportError` works and the existing `except RuntimeError` code keeps working. It
 
 ## P15. Smaller items
 
-**API and behaviour**
+### API and behaviour
 
 - `local_git.get_last_tag_name` sorts tags by the _commit date of the tagged commit_, not by tag
   creation or version. Its docstring says "the tag pointing to the most recent commit", but a
@@ -499,7 +501,7 @@ ImportError` works and the existing `except RuntimeError` code keeps working. It
   `find_closest_version`, `is_valid_version`, and `InstallerSpec` and `PackageSpec` (needed to call
   `install_package`) are not, so the top-level API is not enough to use the top-level functions.
 
-**Documentation**
+### Documentation
 
 - README: the "Code style: black" badge is still there while the project uses `ruff format`.
 - `docs/docs/cli.md` repeats the option lists that `click --help` generates; consider
@@ -507,7 +509,7 @@ ImportError` works and the existing `except RuntimeError` code keeps working. It
 - The examples in `version/pyproject.py` use ` ```python ` blocks instead of `pycon`, so they are
   not run as doctests, unlike the rest of the package.
 
-**Tests and tooling**
+### Tests and tooling
 
 - `[tool.ruff.lint.per-file-ignores]` ignores `PLC0415` (import-outside-top-level) for tests with
   the comment "lazy imports are intentional in tests", while `CLAUDE.md` forbids local imports

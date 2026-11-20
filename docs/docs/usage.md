@@ -26,8 +26,8 @@ available by `is_module_available`, and a warning is logged.
 
 The optional libraries of `feu` (`click`, `gitpython`, `requests`, `rich`) are imported lazily:
 `import feu` imports none of them. A feature that needs one of them raises
-`feu.imports.MissingPackageError`, which is a `ModuleNotFoundError` and a `RuntimeError`. The message
-gives the `pip install` and `uv pip install` commands:
+`feu.imports.MissingPackageError`, which is a `ModuleNotFoundError` and a `RuntimeError`. The
+message gives the `pip install` and `uv pip install` commands:
 
 ```pycon
 >>> from feu.imports import MissingPackageError, check_package
@@ -133,10 +133,10 @@ package is looked up, and `registry.packages()` lists the packages without parsi
 ## Your Own Constraints
 
 Register a constraint and, if you do not want them downloaded, the versions you know in a registry
-instance (`CompatRegistry(version_source=...)` takes your own function to list the versions). Every function takes an
-optional `registry=`; `register_compat` adds to the default registry. A registration into a shipped
-package first loads it, so the conflict check sees the shipped entries (use `exist_ok=True` to
-overwrite).
+instance (`CompatRegistry(version_source=...)` takes your own function to list the versions). Every
+function takes an optional `registry=`; `register_compat` adds to the default registry. A
+registration into a shipped package first loads it, so the conflict check sees the shipped entries
+(use `exist_ok=True` to overwrite).
 
 ```pycon
 >>> from feu.compat import CompatRegistry, VersionRange, get_compatible_versions
@@ -196,8 +196,8 @@ environment, not into the current environment.
 ### Dependency resolvers
 
 Some packages need an extra requirement: `pandas` before 2.2.2 needs `numpy<2.0.0`. A resolver is a
-function from a `PackageSpec` to a list of `packaging.requirements.Requirement`. The resolver reasons
-on the whole version request:
+function from a `PackageSpec` to a list of `packaging.requirements.Requirement`. The resolver
+reasons on the whole version request:
 
 ```pycon
 >>> from feu.install.resolver import resolve

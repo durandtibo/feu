@@ -1,6 +1,7 @@
 # Command Line Interface
 
-`feu` provides a command-line interface (CLI) for package management tasks. To use the CLI, you need to install the optional `cli` dependency:
+`feu` provides a command-line interface (CLI) for package management tasks. To use the CLI, you need
+to install the optional `cli` dependency:
 
 ```shell
 pip install 'feu[cli]'
