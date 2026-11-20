@@ -6,11 +6,14 @@ Thank you for your interest in contributing to `feu`! We welcome contributions f
 
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
+
    ```bash
    git clone git@github.com:YOUR_USERNAME/feu.git
    cd feu
    ```
+
 3. **Set up the development environment**:
+
    ```bash
    make setup-venv
    ```
@@ -242,7 +245,7 @@ Use absolute imports and separate groups with blank lines.
 
 ## Project Structure
 
-```
+```text
 feu/
 ├── src/feu/              # Source code
 │   ├── __init__.py       # Main package exports
@@ -280,16 +283,19 @@ If you need help or have questions:
 
 - Open an issue on GitHub
 - Check existing issues and pull requests
-- Review the documentation at https://durandtibo.github.io/feu/
+- Review the documentation at <https://durandtibo.github.io/feu/>
 
 ## Code of Conduct
 
-Please note that this project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
+Please note that this project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating in this
+project, you agree to abide by its terms.
 
 ## License
 
-By contributing to `feu`, you agree that your contributions will be licensed under the BSD-3-Clause license.
+By contributing to `feu`, you agree that your contributions will be licensed under
+the BSD-3-Clause license.
 
 ## Acknowledgments
 
-Thank you for contributing to `feu`! Every contribution, no matter how small, is valuable and appreciated.
+Thank you for contributing to `feu`! Every contribution, no matter how small, is
+valuable and appreciated.

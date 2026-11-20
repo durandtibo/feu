@@ -5,30 +5,49 @@
         <img alt="CI" src="https://github.com/durandtibo/feu/actions/workflows/ci.yaml/badge.svg">
     </a>
     <a href="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml">
-        <img alt="Nightly Package Tests" src="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml/badge.svg">
+        <img
+            alt="Nightly Package Tests"
+            src="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml/badge.svg"
+        >
     </a>
     <a href="https://codecov.io/gh/durandtibo/feu">
         <img alt="Codecov" src="https://codecov.io/gh/durandtibo/feu/branch/main/graph/badge.svg">
     </a>
     <br/>
     <a href="https://durandtibo.github.io/feu/">
-        <img alt="Documentation" src="https://github.com/durandtibo/feu/actions/workflows/release-docs.yaml/badge.svg">
+        <img
+            alt="Documentation"
+            src="https://github.com/durandtibo/feu/actions/workflows/release-docs.yaml/badge.svg"
+        >
     </a>
     <a href="https://durandtibo.github.io/feu/dev/">
-        <img alt="Documentation" src="https://github.com/durandtibo/feu/actions/workflows/release-docs-dev.yaml/badge.svg">
+        <img
+            alt="Documentation"
+            src="https://github.com/durandtibo/feu/actions/workflows/release-docs-dev.yaml/badge.svg"
+        >
     </a>
     <br/>
     <a href="https://github.com/psf/black">
-        <img  alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
+        <img
+            alt="Code style: black"
+            src="https://img.shields.io/badge/code%20style-black-000000.svg"
+        >
     </a>
     <a href="https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings">
         <img  alt="Doc style: google" src="https://img.shields.io/badge/%20style-google-3666d6.svg">
     </a>
     <a href="https://github.com/astral-sh/ruff">
-        <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff" style="max-width:100%;">
+        <img
+            src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
+            alt="Ruff"
+            style="max-width:100%;"
+        >
     </a>
     <a href="https://github.com/guilatrova/tryceratops">
-        <img  alt="Doc style: google" src="https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black">
+        <img
+            alt="Doc style: google"
+            src="https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black"
+        >
     </a>
     <br/>
     <a href="https://pypi.org/project/feu/">
@@ -129,7 +148,8 @@ error-prone. `feu` solves this by:
 - 🚀 [Get Started Guide](https://durandtibo.github.io/feu/get_started)
 - 📖 [Usage Examples](https://durandtibo.github.io/feu/usage)
 - 🧭 [Properties](https://durandtibo.github.io/feu/properties): the rules `feu` follows
-- 🧱 [Architecture](https://durandtibo.github.io/feu/dev/architecture): layers, how to add a package, an installer or a resolver
+- 🧱 [Architecture](https://durandtibo.github.io/feu/dev/architecture): layers, how to add a package,
+  an installer or a resolver
 - 🔀 [Migration to 0.9](https://durandtibo.github.io/feu/migration)
 - 🖥️ [CLI Reference](https://durandtibo.github.io/feu/cli)
 - 📚 [API Reference](https://durandtibo.github.io/feu/refs/root)
@@ -143,8 +163,8 @@ error-prone. `feu` solves this by:
 
 ## Installation
 
-We highly recommend installing
-a [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
+We highly recommend installing a
+[virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
 `feu` can be installed from pip using the following command:
 
 ```shell

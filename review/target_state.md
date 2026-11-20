@@ -89,7 +89,7 @@ of `local_git`, `http` and the CLI as a goal (it is the guards that are wrong).
 
 ### 3.1 Layout
 
-```
+```text
 feu/
   __init__.py          lazy re-exports with lazy_exports (PEP 562): 12 names
   __main__.py          python -m feu  ->  feu.cli.main()  (check_click() first)
@@ -175,16 +175,16 @@ class MissingPackageError(ModuleNotFoundError, RuntimeError):
 ### 3.3 `feu.utils`
 
 - **`Registry[T]`** (about 50 lines): `register(key, value, *, exist_ok=False)`,
-  `register_many(mapping, *, exist_ok=False)`, `find(key)` (raises `KeyError` with the known keys),
-  `get(key, default)`, `__contains__`, `__len__`, `keys()`. The constructor takes the `kind` (for the
-  error message) and a `normalize` function (`canonicalize_name` for packages, `str.lower` for
-  installer names). It is the **only** implementation of "register and look up by name". The
-  installer registry and the resolver registry are instances of it; the discoverer registry
-  disappears (3.6); `CompatRegistry` keeps its own class because its key is a pair
-  (package, target).
+  `register_many(mapping, *, exist_ok=False)`, `find(key)` (raises `KeyError` with the known
+  keys), `get(key, default)`, `__contains__`, `__len__`, `keys()`. The constructor takes the
+  `kind` (for the error message) and a `normalize` function (`canonicalize_name` for packages,
+  `str.lower` for installer names). It is the **only** implementation of "register and look up
+  by name". The installer registry and the resolver registry are instances of it; the
+  discoverer registry disappears (3.6); `CompatRegistry` keeps its own class because its key is
+  a pair (package, target).
 - **`run_command(argv: Sequence[str]) -> None`**: logs `shlex.join(argv)`, runs
-  `subprocess.run(argv, check=True)`. No string form. `capture_output`, `cwd` and `env` are not added
-  until a caller needs them.
+  `subprocess.run(argv, check=True)`. No string form. `capture_output`, `cwd` and `env` are not
+  added until a caller needs them.
 - **`fetch_data(url, *, timeout=10.0, headers=None, params=None, accept=None)`** and
   `fetch_response(...)`: explicit keyword arguments instead of `**kwargs` (a `timeout` passed twice
   today raises a confusing `TypeError`), one `requests.Session` in a `with` block, the retry policy
@@ -192,11 +192,11 @@ class MissingPackageError(ModuleNotFoundError, RuntimeError):
   `urllib3.util.retry.Retry` are imported inside the function after `check_requests()`; no
   `is_urllib3_available` branch (requests depends on urllib3; the pin of the extra is kept).
 - **`PackageSpec(name, version="", extras=())`**, frozen, with `__str__`. `version` is a version
-  _request_ (3.9): `""` and `None` both mean "the latest" and print as `name` (no pin), `"2.*"` prints
-  `name==2.*`, `"2.4.0"` prints `name==2.4.0`. `PackageDependency`,
-  `extract_package_name`, `extract_package_extras` and `generate_extras_string` are deleted: a
-  resolver returns `packaging.requirements.Requirement` objects, and a string such as
-  `"pandas[performance]"` is parsed by `Requirement`. `is_wildcard_version` is replaced by the parser of 3.9.
+  _request_ (3.9): `""` and `None` both mean "the latest" and print as `name` (no pin), `"2.*"`
+  prints `name==2.*`, `"2.4.0"` prints `name==2.4.0`. `PackageDependency`, `extract_package_name`,
+  `extract_package_extras` and `generate_extras_string` are deleted: a resolver returns
+  `packaging.requirements.Requirement` objects, and a string such as `"pandas[performance]"` is
+  parsed by `Requirement`. `is_wildcard_version` is replaced by the parser of 3.9.
 - **`feu.utils.platform`** keeps `get_current_os`, `get_current_arch`, `get_python_version`,
   `is_free_threaded`; `get_python_major_minor` (in `version/runtime.py`) is deleted.
 
@@ -263,9 +263,9 @@ upper=None, include_lower_bound=False)` with `group` in `{"major", "minor"}`, wh
 ### 3.5 `feu.compat` (property 3, 4, 5, 7)
 
 **Target.** `Target(python_version, free_threaded=False, os=None, arch=None)` is unchanged (frozen,
-validated with `fullmatch`). `resolve_target(python_version=None, *, free_threaded=None)` is the only way to get the current
-environment: the Python version and the free-threaded flag can be chosen (a CI matrix checks other
-Python versions), the **platform is always the current one** (D6, below).
+validated with `fullmatch`). `resolve_target(python_version=None, *, free_threaded=None)` is the
+only way to get the current environment: the Python version and the free-threaded flag can be chosen
+(a CI matrix checks other Python versions), the **platform is always the current one** (D6, below).
 
 **Matching rule (fixes F1).** A lookup field set to `None` means "any". An entry matches a lookup
 when `python_version` and `free_threaded` are equal and each of `os`/`arch` is `None` in the entry,
@@ -457,21 +457,23 @@ class UvInstaller(Installer):
     prefix = ("uv", "pip", "install", "--python", sys.executable)
 ```
 
-- `PipxInstaller` is removed (D2: only `pip` and `uv` are supported). A user who wants it registers it.
-- **Normalisation, so that frozen does not mean stricter.** `InstallerSpec("pip", arguments="-U --pre")`
-  (a string, as the docstrings and the CLI use today) is split once with `shlex.split` in
-  `__post_init__`; a list or tuple becomes a tuple; any other type raises `TypeError`. Without this, a
-  `str` stored in a `tuple[str, ...]` field would silently iterate by character. The same rule applies
-  to `PackageSpec.extras` (a list becomes a tuple).
-- **The tool must exist.** `PipInstaller.install` calls `check_package("pip")` and `UvInstaller.install`
-  checks `shutil.which("uv")`, both raising `MissingPackageError` with the install command. This is
-  needed because `sys.executable -m pip` fails in an environment created by `uv venv` (no `pip`
-  inside, verified), where today `pip` on `PATH` would silently install into **another** environment.
+- `PipxInstaller` is removed (D2: only `pip` and `uv` are supported). A user who wants
+  it registers it.
+- **Normalisation, so that frozen does not mean stricter.**
+  `InstallerSpec("pip", arguments="-U --pre")` (a string, as the docstrings and the CLI use today)
+  is split once with `shlex.split` in `__post_init__`; a list or tuple becomes a tuple; any other
+  type raises `TypeError`. Without this, a `str` stored in a `tuple[str, ...]` field would silently
+  iterate by character. The same rule applies to `PackageSpec.extras` (a list becomes a tuple).
+- **The tool must exist.** `PipInstaller.install` calls `check_package("pip")` and
+  `UvInstaller.install` checks `shutil.which("uv")`, both raising `MissingPackageError` with the
+  install command. This is needed because `sys.executable -m pip` fails in an environment created
+  by `uv venv` (no `pip` inside, verified), where today `pip` on `PATH` would silently install
+  into **another** environment.
 - `install_package(installer, package, *, registry=None)` and
   `install_package_closest_version(installer, package, *, target=None, registry=None)`: `target`
-  defaults to `resolve_target()` (the full current target, fixing F1). `package.version` is a version
-  request (3.9): `None`, `""`, `"1.*"` and `"1.2.3"` are all checked against the registry and
-  resolved by `find_closest_version`; the exemption of wildcards and the `RuntimeError` for a
+  defaults to `resolve_target()` (the full current target, fixing F1). `package.version` is a
+  version request (3.9): `None`, `""`, `"1.*"` and `"1.2.3"` are all checked against the registry
+  and resolved by `find_closest_version`; the exemption of wildcards and the `RuntimeError` for a
   missing version are gone. A request with no compatible version raises `UnsupportedVersionError`.
   `install_package` (no check) installs the request as written.
 - **Resolvers.** A resolver is a function `(PackageSpec) -> list[Requirement]`. The default returns
@@ -490,14 +492,14 @@ class UvInstaller(Installer):
   }
   ```
 
-  plus `jax_resolver` (adds `jaxlib==v`, `numpy<2.0.0` below 0.4.26, `ml_dtypes<=0.2.0` for
-  0.4.9 to 0.4.11). The resolvers receive a version **request** and reason on the whole request: a
-  pin is added when the **entire** request lies on the old side of the threshold (`pandas==2.1.*` is
-  below `2.2.2`, so `numpy<2.0.0`; `pandas==2.*` straddles it, and pip's latest `2.x` is above it, so
-  no pin; `""` is the latest, so no pin; `jax==0.4.*` straddles `0.4.26`, no pin). `jaxlib` is
-  pinned to the same request (`jaxlib==0.4.25`, `jaxlib==0.4.*`), and not at all for `""`. Today both
-  resolvers raise `RuntimeError("Missing package version")` for no version and skip every pin for a
-  wildcard.
+  plus `jax_resolver` (adds `jaxlib==v`, `numpy<2.0.0` below 0.4.26, `ml_dtypes<=0.2.0` for 0.4.9
+  to 0.4.11). The resolvers receive a version **request** and reason on the whole request: a pin
+  is added when the **entire** request lies on the old side of the threshold (`pandas==2.1.*` is
+  below `2.2.2`, so `numpy<2.0.0`; `pandas==2.*` straddles it, and pip's latest `2.x` is above it,
+  so no pin; `""` is the latest, so no pin; `jax==0.4.*` straddles `0.4.26`, no pin). `jaxlib` is
+  pinned to the same request (`jaxlib==0.4.25`, `jaxlib==0.4.*`), and not at all for `""`. Today
+  both resolvers raise `RuntimeError("Missing package version")` for no version and skip every pin
+  for a wildcard.
 
 - Registries are `Registry[type[Installer]]` and `Registry[Resolver]`, created by
   `get_default_installer_registry()` and `get_default_resolver_registry()`, extended with
@@ -505,16 +507,16 @@ class UvInstaller(Installer):
   `register_resolver(package, resolver, *, exist_ok=False)`.
 - `install/utils.py` (four responsibilities) is split: `api.py` (the two install functions),
   `all_versions.py` (`get_installable_versions`, `install_all_versions`, `InstallResult`; the
-  `install_packages_all_versions` comprehension is left to its one caller, `dev/install_all_versions.py`),
-  availability (`is_pip_available` is `find_spec("pip")`, `is_uv_available` is `shutil.which("uv")`;
-  `get_available_installers` has no consumer and is deleted). `get_installable_versions` returns
-  PEP 440 order.
+  `install_packages_all_versions` comprehension is left to its one caller,
+  `dev/install_all_versions.py`), availability (`is_pip_available` is `find_spec("pip")`,
+  `is_uv_available` is `shutil.which("uv")`; `get_available_installers` has no consumer and is
+  deleted). `get_installable_versions` returns PEP 440 order.
 
 ### 3.7 `feu.cli` (property 11)
 
 `feu/cli.py` imports `click` at the top; `__main__.py` calls `check_click()` and then imports it, so
-there is no fallback module and no undecorated functions. `[project.scripts] feu = "feu.__main__:main"`
-is added; `python -m feu` keeps working.
+there is no fallback module and no undecorated functions.
+`[project.scripts] feu = "feu.__main__:main"` is added; `python -m feu` keeps working.
 
 | Command                  | Options                                                                                                                                                                                                                      | Output and exit status                                                                                                                               |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -526,19 +528,20 @@ is added; `python -m feu` keeps working.
 `--free-threaded` becomes a real flag (`--free-threaded` / `--no-free-threaded`): the current
 `--free-threaded true` no longer parses (the one consumer found does not use it).
 
-Global: `--version`, `--verbose` (configures logging to stderr; no short flag, `-v` is the
-package version). The short and long names of the options that stay are unchanged, because an
-external action uses them (section 5; it passes `--python-version` and never `--os`/`--arch`).
-`--os` and `--arch` are removed for now (D6); they come back with the platform work described in 3.5. `install` does **not** get target options: it installs into
-the interpreter that runs it, so any other target would contradict property 8; installing into
-another environment is a different feature (section 10).
+Global: `--version`, `--verbose` (configures logging to stderr; no short flag, `-v` is the package
+version). The short and long names of the options that stay are unchanged, because an external
+action uses them (section 5; it passes `--python-version` and never `--os`/`--arch`). `--os` and
+`--arch` are removed for now (D6); they come back with the platform work described in 3.5.
+`install` does **not** get target options: it installs into the interpreter that runs it, so any
+other target would contradict property 8; installing into another environment is a different
+feature (section 10).
 
 ### 3.8 Generating the package versions (the script that is copied ten times)
 
 `dev/generate_versions.py` is copied into at least ten repositories and imports
-`feu.utils.io.save_json`, `feu.utils.mapping.sort_by_keys` and five functions of `feu.version`.
-That is public API in everything but name. The target gives it one home, `fetch_package_versions`
-and `python -m feu package-versions --pyproject pyproject.toml --output dev/config/package_versions.json`,
+`feu.utils.io.save_json`, `feu.utils.mapping.sort_by_keys` and five functions of `feu.version`. That
+is public API in everything but name. The target gives it one home, `fetch_package_versions` and
+`python -m feu package-versions --pyproject pyproject.toml --output dev/config/package_versions.json`,
 so a downstream script becomes one CLI call in its workflow, and `save_json`, `sort_by_keys`, the
 `_map` functions and `partition_package_bounds` have no consumer left. They are kept until the
 downstream repositories are migrated and then deleted (section 7, step 11).
@@ -580,8 +583,8 @@ rejected at parse time instead of silently matching nothing; this is stricter th
 issue, D15).
 
 **Resolution (registry).** `get_compatible_versions(pkg_name, target, pkg_version="")` returns the
-known versions (the registered ones, else `version_source(name)`, i.e. PyPI) that lie in a valid range of the target **and**
-match the request, in PEP 440 order. From it:
+known versions (the registered ones, else `version_source(name)`, i.e. PyPI) that lie in a valid
+range of the target **and** match the request, in PEP 440 order. From it:
 
 | Request                                                                        | `is_valid_version`                                                                    | `find_closest_version` (the version to install)                                                                                                                      |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -745,14 +748,16 @@ the API rate limit before the query `import feu` finished; other owners were not
 
 Inside the repository: `dev/generate_discovered_compat.py` becomes `dev/generate_compat_data.py`,
 `dev/install_all_versions.py` and `debug/compat_targets.py` follow the renames,
-`tests/package_checks.py` gets the checks of section 8, and `.github/workflows/bot-update-discovered-compat.yaml`
-(read: it runs `python dev/generate_discovered_compat.py` with a 10-minute timeout, then pre-commit)
-runs the new generator instead (step 7). `nightly-verify-compat.yaml` (read) runs
+`tests/package_checks.py` gets the checks of section 8, and
+`.github/workflows/bot-update-discovered-compat.yaml` (read: it runs
+`python dev/generate_discovered_compat.py` with a 10-minute timeout, then pre-commit) runs the new
+generator instead (step 7). `nightly-verify-compat.yaml` (read) runs
 `python dev/install_all_versions.py --installer uv`: it **installs every compatible version of the
 shipped packages** to verify the data, so it is the real-world test of the uv installer of 3.6
-(`uv pip install --python <sys.executable>` was checked with `--dry-run`). `bot-generate-package-versions.yaml`
-runs `dev/generate_versions.py`, and `lib-get-package-versions.yaml` reads the keys of
-`dev/config/package_versions.json` as package names, which stay canonical.
+(`uv pip install --python <sys.executable>` was checked with `--dry-run`).
+`bot-generate-package-versions.yaml` runs `dev/generate_versions.py`, and
+`lib-get-package-versions.yaml` reads the keys of `dev/config/package_versions.json` as package
+names, which stay canonical.
 
 ## 6. Evidence
 
@@ -786,13 +791,14 @@ All on `main` `9e473b2`, Python 3.14.10, no code changed. **[verified]**
 | `uv pip install --dry-run --python <python of a venv made by uv>`; `python -m pip` in that venv                                              | works; `No module named pip` (a `uv venv` has no pip)                                                                                                                                                                                                                                        |
 | lines of `src/feu` by area (without the data)                                                                                                | `imports` 692, `utils` 827, `version` 1,517, `compat` 1,096, `compat/discoverers` 1,122, `install` 1,339, `github` 251, root files 589; data 3,546                                                                                                                                           |
 
-**Not read:** `coola.utils.imports` was read (`package.py`, `optional.py`, `lazy.py`, `__init__.py`); its tests were not. Issue #1032 was read; the two actions it names were not.
+**Not read:** `coola.utils.imports` was read (`package.py`, `optional.py`, `lazy.py`,
+`__init__.py`); its tests were not. Issue #1032 was read; the two actions it names were not.
 
 **Not run:** a real `pip`/`uv install` (needs the network and mutates the environment), the GitHub
 functions, the discovery against live PyPI, Windows. The design of 3.5 (one discovery algorithm that
 reproduces the four discoverers) was **not prototyped**: it is the claim of this document with the
-least evidence (together with the open-ended rule of 3.9, which no probe exercises), and step 7 therefore starts by a refactor whose gate is an **empty diff** of the
-generated data (section 8).
+least evidence (together with the open-ended rule of 3.9, which no probe exercises), and step 7
+therefore starts by a refactor whose gate is an **empty diff** of the generated data (section 8).
 
 ## 7. Changes to reach the target state
 
@@ -817,8 +823,9 @@ decision.
 | 11   | **Downstream and cleanup.** Migrate the ten `dev/generate_versions.py` and the action; then delete `utils/io.py`, `utils/mapping.py`, `bounds.get_package_bounds`. Declare `1.0.0` when the properties hold and the downstream repositories run on the new API.                                                                                                                                                                                                                                                                                                                                                                                           | F15         | yes                                                                     |
 
 Steps 1 and 2 need no other step; 2b needs 2 (the registry keys are canonical before the new methods
-are added). Steps 3 to 6 are independent of each other except that 4 uses the
-`Requirement` change of 3. Step 7 needs 2 (names), 2b (the `versions` list moves into the JSON) and 6 (the project fetch). Step 8 needs 1 and 3.
+are added). Steps 3 to 6 are independent of each other except that 4 uses the `Requirement` change
+of 3. Step 7 needs 2 (names), 2b (the `versions` list moves into the JSON) and 6 (the project
+fetch). Step 8 needs 1 and 3.
 
 ## 8. Tests and gates
 
@@ -835,13 +842,13 @@ tested.
     receives the clamped version (the unit test), and the offline integration test below receives
     the real command.
 - **Data contract** (unit, fast): every `data/*.json` parses; the file name is the canonical name;
-  every entry is a valid `Target`; the entries are exactly the grid `PYTHON_VERSIONS` x free-threaded
-  x platforms (60 per package today); every range has `min <= max` and parses; the entries are
-  sorted; `generated` is an ISO date. This replaces a test per generated module.
+  every entry is a valid `Target`; the entries are exactly the grid `PYTHON_VERSIONS` x
+  free-threaded x platforms (60 per package today); every range has `min <= max` and parses; the
+  entries are sorted; `generated` is an ISO date. This replaces a test per generated module.
 - **Registry** (`test_registry.py`): the table of 3.5 as parametrised tests (fully specified,
-  platform unspecified, equal specificity, an entry with `os=None` beaten by a concrete entry, explicit `[]`,
-  unknown package); `has_package`; canonical names; invalid range at `register`; the state is not
-  created on a failed `register`; `state` is read-only.
+  platform unspecified, equal specificity, an entry with `os=None` beaten by a concrete entry,
+  explicit `[]`, unknown package); `has_package`; canonical names; invalid range at `register`; the
+  state is not created on a failed `register`; `state` is read-only.
 - **Version requests (issue #1032)**, `tests/unit/version/test_request.py` and the registry tests,
   one behaviour per test, with the acceptance list of the issue:
   - the parser: `None`, `""` and `"  "` are latest; `"2.4.0"` and `"2.4.0rc1"` are exact; `"2.4.*"`
@@ -851,24 +858,25 @@ tested.
   - `matches`: `2.4`, `2.4.0` and `2.4.17` match `2.4.*`; `2.40`, `2.5` and `2.3.9` do not; the
     zero padding (`2` matches `2.*`); `entirely_below` for the three kinds;
   - `is_valid_version` on a hand-built registry **and** on the shipped data: `2.4.*`, `2.*`, `""`,
-    `None`, a wildcard with no match (`1.24.*` on Python 3.14), a wildcard on a package with no data,
-    on a package with ranges but no `versions`, on an entry registered with `[]`, and the exact
-    version (unchanged);
+    `None`, a wildcard with no match (`1.24.*` on Python 3.14), a wildcard on a package with no
+    data, on a package with ranges but no `versions`, on an entry registered with `[]`, and the
+    exact version (unchanged);
   - `find_closest_version`: an open-ended range returns the request (`"2.*"`, `""`); a closed range
     returns the concrete latest match (`1.*` on 3.9 gives the last `1.x` that supports 3.9); no
     match raises `UnsupportedVersionError` with a message that names the request and the target;
   - `get_compatible_versions` as a whole literal for one package and one target, ascending order,
     pre-releases absent, the input list not mutated;
   - `install_package_closest_version` with only `run_command` patched: `""` and `None` install the
-    package without a pin, `"2.*"` installs `==2.*` (open) or `==1.26.4` (closed), a wildcard with no
-    match raises before any command runs (the unit test), and the offline integration test below runs
-    the real command for `""`;
+    package without a pin, `"2.*"` installs `==2.*` (open) or `==1.26.4` (closed), a wildcard with
+    no match raises before any command runs (the unit test), and the offline integration test below
+    runs the real command for `""`;
   - the resolvers: `pandas==2.1.*` pins `numpy<2.0.0`, `pandas==2.*` and `""` do not,
     `jax==0.4.*` adds `jaxlib==0.4.*` and no `numpy` pin;
-  - the CLI: `--pkg-version=` (empty), no `--pkg-version`, `--pkg-version='1.*'`, and the exit codes;
+  - the CLI: `--pkg-version=` (empty), no `--pkg-version`, `--pkg-version='1.*'`, and
+    the exit codes;
   - the data contract: `versions` is sorted, unique, stable and PEP 440 valid, and every `min`/`max`
-    is in it. **Regression test** (fails on `main`): `is_valid_version("numpy", "2.4.*", t)` and `""`
-    no longer raise `InvalidVersion`.
+    is in it. **Regression test** (fails on `main`): `is_valid_version("numpy", "2.4.*", t)` and
+    `""` no longer raise `InvalidVersion`.
 - **Wheel tags**: one parametrised test over real file names: `manylinux` x86_64 and aarch64,
   `macosx_*_x86_64`, `macosx_*_arm64`, `universal2` (two tags), `cp39-abi3-macosx_10_9_universal2`,
   a compressed macOS tag (two tags), `cp313t`, `cp315-abi3t` (`abi3=True, free_threaded=True`),
@@ -878,9 +886,9 @@ tested.
   (`numpy`, `jax` + `jaxlib`, `polars` + `polars-runtime-32`, `pydantic` + `pydantic-core`,
   `duckdb`), stored in `tests/data/`, served by a patched `fetch_pypi_project`; the **whole** output
   of `discover_compat_targets` is asserted against a literal (the `CLAUDE.md` rule for composite
-  values). One network test in `tests/integration/` regenerates a small package and checks the shape.
-  **Gate of step 7(a):** `python dev/generate_compat_data.py` on the old and the new code gives
-  byte-identical files.
+  values). One network test in `tests/integration/` regenerates a small package and checks the
+  shape. **Gate of step 7(a):** `python dev/generate_compat_data.py` on the old and the new code
+  gives byte-identical files.
 - **Installers**: unit tests of `command()` as a whole list; `PipInstaller` starts with
   `sys.executable`; `InstallerSpec` arguments are not re-split. **Integration**
   (`tests/integration/install/test_pip_offline.py`): build a pure-Python wheel with `zipfile` in
@@ -890,12 +898,12 @@ tested.
 - **Resolvers**: the table as a whole against a literal; each of the seven packages below and at the
   minimum version; the jax cases (`0.4.25`, `0.4.26`, `0.4.9`, a wildcard); a spec with no version
   returns the package alone.
-- **Imports** (the tests of `coola.utils.imports` are ported with the code): `availability_cache` registers
-  the function and `clear_availability_caches` resets it; a patched `find_spec` is re-read after the
-  clear; `module_available` returns `False` and logs for a module that raises on import;
-  `package_available` returns `False` for `ImportError` and `ValueError`; `MissingPackageError`
-  is a `ModuleNotFoundError` with `.name` and a `RuntimeError`; `install_package` clears the caches
-  after a success and not after a failure; `lazy_exports` (`__getattr__`, `__dir__`, unknown name).
+- **Imports** (the tests of `coola.utils.imports` are ported with the code): `availability_cache`
+  registers the function and `clear_availability_caches` resets it; a patched `find_spec` is re-read
+  after the clear; `module_available` returns `False` and logs for a module that raises on import;
+  `package_available` returns `False` for `ImportError` and `ValueError`; `MissingPackageError` is a
+  `ModuleNotFoundError` with `.name` and a `RuntimeError`; `install_package` clears the caches after
+  a success and not after a failure; `lazy_exports` (`__getattr__`, `__dir__`, unknown name).
 - **Import weight** (`tests/integration/test_import_weight.py`, subprocess): after `import feu`,
   `import feu.compat` and `import feu.install`, none of `requests`, `urllib3`, `click`, `git`,
   `rich`, `pytest` is in `sys.modules`. It asserts a **set of modules**, not a duration (no flaky
@@ -909,9 +917,9 @@ tested.
   answer, stderr holds the message; a subprocess test of `python -m feu find-closest-version ...`
   with real data (the contract of the external action); `--version`; `package-versions` on a
   `pyproject.toml` in `tmp_path`.
-- **`tests/package_checks.py`** (run on the built wheel): add `find_closest_version("numpy", "99.0.0",
-Target("3.12", os="linux", arch="x86_64"))` and `get_default_compat_registry().packages()`
-  so that a wheel without the JSON files fails.
+- **`tests/package_checks.py`** (run on the built wheel): add
+  `find_closest_version("numpy", "99.0.0", Target("3.12", os="linux", arch="x86_64"))` and
+  `get_default_compat_registry().packages()` so that a wheel without the JSON files fails.
 - **Docs**: the examples of the user guide are doctests (`xdoctest` is already a dev dependency), so
   F6 cannot come back.
 - Coverage: 100 % of what changes (`--cov=feu --cov-report=term-missing`). Mind the existing
@@ -933,15 +941,15 @@ Decisions recorded so far (the text of each decision follows):
 | D12      | Not important for now: the next release is `0.9.0` (`pyproject.toml` is already at `0.9.0a0`)                                      |
 | D13-D16  | Follow the recommendation (D13 names, D14 `versions` list, D15 deviations from the issue, D16 no data)                             |
 
-**D1. What does `Target("3.12")` (platform unspecified) mean?** _Recommended: "any platform", answered
-by the union of the most specific entries._ It fixes F1 for the documented examples without
-changing them, it is consistent with "an unknown package is permissive", and it cannot turn a
-supported Python into "unsupported" because one platform lacks a wheel. Alternatives: raise
-`ValueError` for an under-specified lookup (loud, but every example of the guide must be rewritten
-and `Target(python_version=...)` becomes a trap); the intersection ("valid on every platform"),
-which is strict but returns `UnsupportedVersionError` for `torch` on 3.12 because of one missing
-platform. Whichever is chosen, `install_package_closest_version` and the CLI use the full current
-target.
+**D1. What does `Target("3.12")` (platform unspecified) mean?** _Recommended: "any platform",
+answered by the union of the most specific entries._ It fixes F1 for the documented examples
+without changing them, it is consistent with "an unknown package is permissive", and it cannot
+turn a supported Python into "unsupported" because one platform lacks a wheel. Alternatives:
+raise `ValueError` for an under-specified lookup (loud, but every example of the guide must be
+rewritten and `Target(python_version=...)` becomes a trap); the intersection ("valid on every
+platform"), which is strict but returns `UnsupportedVersionError` for `torch` on 3.12 because of
+one missing platform. Whichever is chosen, `install_package_closest_version` and the CLI use the
+full current target.
 
 Decision: follow recommendation
 
@@ -962,9 +970,10 @@ Decision: No, keep it for now.
 **D4. HTTP: keep `requests` as the optional dependency?** _Recommended: yes, imported lazily._ The
 alternative is the standard library (`urllib.request`): no extra, no fallback, fewer lines. The
 reason not to is TLS certificates: `requests` carries its own CA bundle, `urllib` uses the system
-store, and some macOS Python distributions are known to fail on `https://` until a certificate step is run (from experience, not tested here); a
-package that exists to manage environments should not fail there. If the maintainers accept that
-risk, `feu[requests]` can disappear and property 1 gets stronger.
+store, and some macOS Python distributions are known to fail on `https://` until a certificate
+step is run (from experience, not tested here); a package that exists to manage environments
+should not fail there. If the maintainers accept that risk, `feu[requests]` can disappear and
+property 1 gets stronger.
 
 Decision: follow recommendation
 
@@ -979,12 +988,15 @@ registered).
 Decision: follow recommendation
 
 **D6. Out-of-scope platforms.** _Recommended: `musllinux`, `win32`, `i686`, `armv7l`, `ppc64le`,
-`s390x` are explicitly out of scope and tested._ `Target.os == "linux"` means glibc (`get_current_os`
-returns `linux` on Alpine too). Ignoring musl is safe in practice (a release that only has musl
-wheels is rare) and keeps the vocabulary (`linux`/`macos`/`windows`, `x86_64`/`arm64`) closed. The
-alternative is to map `musllinux` to `linux`, which over-reports support for Alpine users.
+`s390x` are explicitly out of scope and tested._ `Target.os == "linux"` means glibc
+(`get_current_os` returns `linux` on Alpine too). Ignoring musl is safe in practice (a release that
+only has musl wheels is rare) and keeps the vocabulary (`linux`/`macos`/`windows`,
+`x86_64`/`arm64`) closed. The alternative is to map `musllinux` to `linux`, which over-reports
+support for Alpine users.
 
-Decision: For now, let's only support the current platform. We can explore later on how to support more platforms. Keep in mind that it should be possible to update the design to support more platforms in the future.
+Decision: For now, let's only support the current platform. We can explore later on how to support
+more platforms. Keep in mind that it should be possible to update the design to support more
+platforms in the future.
 
 **D7. `abi3t`.** _Recommended: parse it as a free-threaded stable-ABI tag._ It is a wheel tag for
 the free-threaded stable ABI; today it is read as an exact-version tag, which under-reports forward
@@ -1087,17 +1099,17 @@ Decision: Not important for now. Just consider it is `0.9.0`.
   extension of `VersionRequest`; it is left out because the issue asks for the three.
 - **Items of `review/suggestions.md` that this design does not take:** property-based tests with
   `hypothesis` (a new dev dependency; parametrised tests over real file names and literals are used
-  instead, section 8); the time-of-check/time-of-use race of `save_json(exist_ok=False)` (the function
-  is kept as is until the downstream scripts stop using it, 3.8); the `users/{owner}/repos` endpoint of
-  `fetch_github_repos`, which lists public repositories only (`feu.github` is kept unchanged in this
-  respect, D3); the import of `pytest` by `feu.testing` (documented, unchanged: the module exists for
-  test suites); a `Target.python_version` as a tuple of integers (the string is kept, because it is the
-  key of the shipped data and the public type).
+  instead, section 8); the time-of-check/time-of-use race of `save_json(exist_ok=False)` (the
+  function is kept as is until the downstream scripts stop using it, 3.8); the `users/{owner}/repos`
+  endpoint of `fetch_github_repos`, which lists public repositories only (`feu.github` is kept
+  unchanged in this respect, D3); the import of `pytest` by `feu.testing` (documented, unchanged:
+  the module exists for test suites); a `Target.python_version` as a tuple of integers (the string
+  is kept, because it is the key of the shipped data and the public type).
 - **Targets for another platform** through the CLI or `resolve_target`: D6, later, additive (3.5).
 - **Other index servers** (`--index-url`): `feu` talks to `pypi.org` only.
-- **The GitHub Actions workflows** (`.github/workflows/`), the `.make/` subtree and `docs/mkdocs.yml`
-  were not audited; only the files named in section 5 were looked at. `review/suggestions.md` made
-  the same exclusion.
+- **The GitHub Actions workflows** (`.github/workflows/`), the `.make/` subtree and
+  `docs/mkdocs.yml` were not audited; only the files named in section 5 were looked at.
+  `review/suggestions.md` made the same exclusion.
 - **Verification of the shipped values** against PyPI: F2 shows the generator was wrong for some
   wheels, so a spot check after step 7(b) is part of that step.
 
@@ -1113,7 +1125,8 @@ cover it; the fix is now in the design).
 
 ### 11.1 Public names
 
-Of the 188 names, 103 appear by name in the first version of the document. The other 85 are accounted for:
+Of the 188 names, 103 appear by name in the first version of the document. The other 85
+are accounted for:
 
 | Names                                                                                                                                  | Why they are not named                                                            |
 | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
@@ -1181,16 +1194,17 @@ Of the 188 names, 103 appear by name in the first version of the document. The o
    never counts the pure wheel when a companion exists. The rule is now "with a companion, a pure
    wheel never counts", and the prototype matches the current output for all 17 packages. One
    thing remains to decide in step 7(b), not before: counting that pure wheel through
-   `requires-python` (what the default path does) would be arguably more correct for `pydantic` 1.x
-   and would lower its minimum versions; step 7(a) reproduces the current behaviour first so that the
-   change is a visible diff.
-2. **Lazy data versus registration (13).** `usage.md` registers on a shipped package; with
-   per-package lazy loading that needs a rule. A package is loaded before it is registered into (3.5).
+   `requires-python` (what the default path does) would be arguably more correct for `pydantic`
+   1.x and would lower its minimum versions; step 7(a) reproduces the current behaviour first so
+   that the change is a visible diff.
+2. **Lazy data versus registration (13).** `usage.md` registers on a shipped package;
+   with per-package lazy loading that needs a rule. A package is loaded before it is
+   registered into (3.5).
 3. **Frozen specs would have rejected today's inputs (21, 34).** `InstallerSpec(arguments="-U")` and
-   `PackageSpec(extras=["a"])` are in the docstrings and the CLI; they are normalised, any other type
-   raises `TypeError` (3.6).
-4. **`python -m pip` is not always there (22).** Checked: a `uv venv` has no `pip`. The installers now
-   check their tool and raise `MissingPackageError` (3.6).
+   `PackageSpec(extras=["a"])` are in the docstrings and the CLI; they are normalised, any other
+   type raises `TypeError` (3.6).
+4. **`python -m pip` is not always there (22).** Checked: a `uv venv` has no `pip`. The installers
+   now check their tool and raise `MissingPackageError` (3.6).
 5. **The `urllib3` pin is part of the tested range (35).** Removing it from the extra would remove
    `urllib3` from `package_versions.json` and from the CI matrix. Kept (3.2).
 6. **`Discovery` changed a return type (18).** `show_compat_targets` and `debug/compat_targets.py`
@@ -1204,15 +1218,16 @@ Of the 188 names, 103 appear by name in the first version of the document. The o
 ### 11.4 What is still not verified
 
 - **D6 is applied literally: "only support the current platform".** The options that select another
-  platform are removed (`--os`, `--arch`, and the `os`/`arch` parameters of `resolve_target`), and the
-  design lists the four additive steps that bring more platforms back (3.5). The earlier reading of
-  the first revision (a closed vocabulary only) was weaker; the data format and the registry are the
-  same under both, so switching back is a change of the public options only.
+  platform are removed (`--os`, `--arch`, and the `os`/`arch` parameters of `resolve_target`), and
+  the design lists the four additive steps that bring more platforms back (3.5). The earlier reading
+  of the first revision (a closed vocabulary only) was weaker; the data format and the registry are
+  the same under both, so switching back is a change of the public options only.
 - The unified discovery was run against **today's PyPI data** with the **current** tag parser. The
-  effect of the new parser (universal2, compressed tags, `abi3t`) on the shipped numbers is the diff of
-  step 7(b); it is not computed here.
-- The Simple API client (`fetch_pypi_project`) and the `versions` list were not prototyped as code;
-  only their JSON shape and the request resolution on top of the current `releases`-based fetches were.
+  effect of the new parser (universal2, compressed tags, `abi3t`) on the shipped numbers is the diff
+  of step 7(b); it is not computed here.
+- The Simple API client (`fetch_pypi_project`) and the `versions` list were not prototyped as
+  code; only their JSON shape and the request resolution on top of the current
+  `releases`-based fetches were.
 - No real install was run (a `--dry-run` of `uv` only), no Windows, no test of the downstream
   repositories beyond reading the lines that import `feu`; the code search was not exhaustive
   (section 5).
