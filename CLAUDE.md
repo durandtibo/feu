@@ -50,6 +50,8 @@
   own tests, not as private functions imported across modules.
 - Raise `ValueError` or `TypeError` with an explicit message for invalid arguments, as the
   surrounding code does. `feu` has no validation module; do not introduce one.
+- Cache the availability checks of optional packages with `feu.imports.availability_cache`, not
+  `functools.cache`, so `clear_availability_caches` can reset them.
 - Keep new options keyword-only (`*`).
 - The only required dependency is `packaging`. Optional libraries (click, gitpython, requests,
   rich, numpy, torch, pandas, polars, ...) are imported lazily or guarded with the helpers of
