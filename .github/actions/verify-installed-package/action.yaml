@@ -9,6 +9,11 @@
 
 name: Verify installed package
 description: Show the dependency tree and run tests/package_checks.py against an installed package
+inputs:
+  extra:
+    description: Extra installed with the package (its library must be importable); empty for none
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -20,5 +25,7 @@ runs:
 
     - name: Run some checks
       shell: bash
+      env:
+        PACKAGE_EXTRA: ${{ inputs.extra }}
       run: |
-        python tests/package_checks.py
+        python tests/package_checks.py --extra "$PACKAGE_EXTRA"

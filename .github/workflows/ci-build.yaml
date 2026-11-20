@@ -52,11 +52,13 @@ jobs:
           dist-type: ${{ matrix.dist-type }}
       - name: Run package checks
         shell: bash
+        env:
+          PACKAGE_EXTRA: ${{ matrix.package-extra }}
         run: |2
 
           set -euo pipefail
           echo "🔍 Running package checks..."
-          python tests/package_checks.py
+          python tests/package_checks.py --extra "$PACKAGE_EXTRA"
 
           echo "✅ Package checks passed"
 
@@ -90,10 +92,13 @@ jobs:
           dist-type: ${{ matrix.dist-type }}
           verify-sdist-extra: false
       - name: Run package checks
+        env:
+          # The extras are not installed for the sdist (verify-sdist-extra: false)
+          PACKAGE_EXTRA: ${{ matrix.dist-type == 'wheel' && 'all' || '' }}
         run: |2
 
           set -euo pipefail
           echo "🔍 Running package checks..."
-          python tests/package_checks.py
+          python tests/package_checks.py --extra "$PACKAGE_EXTRA"
 
           echo "✅ Package checks passed"
