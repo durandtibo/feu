@@ -4,12 +4,14 @@
 
 - Use the virtual environment in `.venv`: `.venv/bin/python`, `.venv/bin/pytest`, `.venv/bin/ruff`.
   There is no `python` on the `PATH`.
-- Lint and format before committing: `.venv/bin/ruff check src tests` and `.venv/bin/ruff format src tests`.
-  Fix the issues raised by ruff. Ignoring an issue (`noqa`, a changed rule set) is not fixing it.
+- Lint and format before committing: `.venv/bin/ruff check src tests` and
+  `.venv/bin/ruff format src tests`. Fix the issues raised by ruff. Ignoring an issue (`noqa`, a
+  changed rule set) is not fixing it.
 - Type check with `.venv/bin/ty check`. Fix the issues raised by ty. Ignoring an issue
   (`type: ignore`, `ty: ignore`, a cast that hides the problem) is not fixing it.
-- Run the unit tests of the packages you changed (for example `.venv/bin/pytest tests/unit/utils -q`).
-  Some tests fail on `main`; check with `git stash` before blaming your change.
+- Run the unit tests of the packages you changed (for example
+  `.venv/bin/pytest tests/unit/utils -q`). Some tests fail on `main`; check with `git stash`
+  before blaming your change.
 
 ## Workflow
 
@@ -69,8 +71,8 @@
 
 ## Tests
 
-- Always write tests for the code in `src/`, including every private function. Unit tests must be fast and efficient; move big or
-  slow tests to `tests/integration/` if needed.
+- Always write tests for the code in `src/`, including every private function. Unit tests must be
+  fast and efficient; move big or slow tests to `tests/integration/` if needed.
 - Unit tests mirror the source tree (`tests/unit/<package>/test_<module>.py`). Tests that
   use the real network, git or installers go in `tests/integration/`, with a docstring starting
   with "Test that ...".
@@ -162,7 +164,7 @@ and keep it up to date when you add, rename or remove a workflow.
     actions, formatting, ...) with the `ci-bot` GitHub App token.
   - `release-`: publishing to PyPI and the documentation, triggered by version tags
     (`v*.*.*`) or manually; `release-pypi.yaml` runs `ci.yaml` before publishing.
-  - `security-`: dependency review of PRs and scorecard.
+  - `security-`: dependency review of PRs, scheduled dependency audit and scorecard.
 - `ci.yaml` is the single entry point of the checks (pull request, push to `main`, nightly).
   It calls `lib-get-test-matrix.yaml` once and passes the matrix to the test workflows, so the
   Python versions and OS are defined in one place (the default config of
