@@ -90,8 +90,8 @@ def test_install_package_closest_version_uv(pkg_name: str, pkg_version: str) -> 
 @pip_available
 @requests_available
 def test_install_package_closest_version_open_wildcard_is_installed_as_requested() -> None:
-    """Test that an open wildcard is resolved with the real PyPI data and
-    installed as requested."""
+    """Test that an open wildcard is resolved with the real PyPI data
+    and installed as requested."""
     with patch("feu.install.installer.run_command") as run_mock:
         install_package_closest_version(
             installer=InstallerSpec("pip"),
