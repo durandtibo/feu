@@ -1434,8 +1434,8 @@ module. The checks are cached, so call <code>clear_availability_caches()</code> 
 available by <code>is_module_available</code>, and a warning is logged.</p>
 <p>The optional libraries of <code>feu</code> (<code>click</code>, <code>gitpython</code>, <code>requests</code>, <code>rich</code>) are imported lazily:
 <code>import feu</code> imports none of them. A feature that needs one of them raises
-<code>feu.imports.MissingPackageError</code>, which is a <code>ModuleNotFoundError</code> and a <code>RuntimeError</code>. The message
-gives the <code>pip install</code> and <code>uv pip install</code> commands:</p>
+<code>feu.imports.MissingPackageError</code>, which is a <code>ModuleNotFoundError</code> and a <code>RuntimeError</code>. The
+message gives the <code>pip install</code> and <code>uv pip install</code> commands:</p>
 <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingPackageError</span><span class="p">,</span> <span class="n">check_package</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">check_package</span><span class="p">(</span><span class="s2">"not_an_installed_package"</span><span class="p">)</span>
@@ -1513,10 +1513,10 @@ configured but no version supports the target, <code>is_valid_version</code> ret
 package is looked up, and <code>registry.packages()</code> lists the packages without parsing any file.</p>
 <h2 id="your-own-constraints">Your Own Constraints<a class="headerlink" href="#your-own-constraints" title="Permanent link">&para;</a></h2>
 <p>Register a constraint and, if you do not want them downloaded, the versions you know in a registry
-instance (<code>CompatRegistry(version_source=...)</code> takes your own function to list the versions). Every function takes an
-optional <code>registry=</code>; <code>register_compat</code> adds to the default registry. A registration into a shipped
-package first loads it, so the conflict check sees the shipped entries (use <code>exist_ok=True</code> to
-overwrite).</p>
+instance (<code>CompatRegistry(version_source=...)</code> takes your own function to list the versions). Every
+function takes an optional <code>registry=</code>; <code>register_compat</code> adds to the default registry. A
+registration into a shipped package first loads it, so the conflict check sees the shipped entries
+(use <code>exist_ok=True</code> to overwrite).</p>
 <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">VersionRange</span><span class="p">,</span> <span class="n">get_compatible_versions</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">()</span>
@@ -1562,8 +1562,8 @@ which is used as is. <code>pipx</code> is not a built-in installer: it installs 
 environment, not into the current environment.</p>
 <h3 id="dependency-resolvers">Dependency resolvers<a class="headerlink" href="#dependency-resolvers" title="Permanent link">&para;</a></h3>
 <p>Some packages need an extra requirement: <code>pandas</code> before 2.2.2 needs <code>numpy&lt;2.0.0</code>. A resolver is a
-function from a <code>PackageSpec</code> to a list of <code>packaging.requirements.Requirement</code>. The resolver reasons
-on the whole version request:</p>
+function from a <code>PackageSpec</code> to a list of <code>packaging.requirements.Requirement</code>. The resolver
+reasons on the whole version request:</p>
 <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install.resolver</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.utils.package</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageSpec</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">resolve</span><span class="p">(</span><span class="n">PackageSpec</span><span class="p">(</span><span class="s2">"pandas"</span><span class="p">,</span> <span class="s2">"2.1.1"</span><span class="p">))</span>
