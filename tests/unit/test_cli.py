@@ -15,7 +15,7 @@ from feu import __version__
 from feu.cli import cli
 from feu.compat import Target, UnsupportedVersionError
 from feu.install import InstallerSpec
-from feu.testing import click_available, requests_available
+from feu.testing import click_available
 from feu.utils.package import PackageSpec
 
 if TYPE_CHECKING:
@@ -246,24 +246,42 @@ def test_find_closest_version_with_empty_pkg_version(runner: CliRunner) -> None:
 
 
 @click_available
-@requests_available
 def test_find_closest_version_with_wildcard_pkg_version(runner: CliRunner) -> None:
-    result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "--pkg-version", "1.*"])
+    with patch("feu.cli.find_closest_version_", Mock(return_value="1.26.4")):
+        result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "--pkg-version", "1.*"])
     assert result.output == "1.26.4\n"
 
 
 @click_available
+def test_find_closest_version_passes_the_wildcard_pkg_version(runner: CliRunner) -> None:
+    mock = Mock(return_value="1.26.4")
+    with patch("feu.cli.find_closest_version_", mock):
+        runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "--pkg-version", "1.*"])
+    assert mock.call_args.kwargs["pkg_version"] == "1.*"
+
+
+@click_available
 def test_find_closest_version_unsupported_exits_with_1(runner: CliRunner) -> None:
-    result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
+    mock = Mock(side_effect=UnsupportedVersionError("no version matches '3.*'"))
+    with patch("feu.cli.find_closest_version_", mock):
+        result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
     assert result.exit_code == 1
 
 
 @click_available
-@requests_available
-def test_find_closest_version_unsupported_prints_the_message_not_none(runner: CliRunner) -> None:
-    result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
+def test_find_closest_version_unsupported_does_not_print_none(runner: CliRunner) -> None:
+    mock = Mock(side_effect=UnsupportedVersionError("no version matches '3.*'"))
+    with patch("feu.cli.find_closest_version_", mock):
+        result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
     assert "None" not in result.output
-    assert "matches '3.*'" in result.output
+
+
+@click_available
+def test_find_closest_version_unsupported_prints_the_message(runner: CliRunner) -> None:
+    mock = Mock(side_effect=UnsupportedVersionError("no version matches '3.*'"))
+    with patch("feu.cli.find_closest_version_", mock):
+        result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
+    assert "no version matches '3.*'" in result.output
 
 
 @click_available
@@ -368,17 +386,31 @@ def test_check_valid_version_without_pkg_version(runner: CliRunner) -> None:
 
 
 @click_available
-@requests_available
 def test_check_valid_version_wildcard(runner: CliRunner) -> None:
-    result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "2.*"])
+    with patch("feu.cli.is_valid_version_", Mock(return_value=True)):
+        result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "2.*"])
     assert result.exit_code == 0
 
 
 @click_available
-@requests_available
+def test_check_valid_version_passes_the_wildcard_pkg_version(runner: CliRunner) -> None:
+    mock = Mock(return_value=True)
+    with patch("feu.cli.is_valid_version_", mock):
+        runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "2.*"])
+    assert mock.call_args.kwargs["pkg_version"] == "2.*"
+
+
+@click_available
 def test_check_valid_version_unmatched_wildcard_exits_with_1(runner: CliRunner) -> None:
-    result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "3.*"])
+    with patch("feu.cli.is_valid_version_", Mock(return_value=False)):
+        result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "3.*"])
     assert result.exit_code == 1
+
+
+@click_available
+def test_check_valid_version_unmatched_wildcard_prints_false(runner: CliRunner) -> None:
+    with patch("feu.cli.is_valid_version_", Mock(return_value=False)):
+        result = runner.invoke(cli, ["check-valid-version", *NUMPY_PY39, "-v", "3.*"])
     assert result.output == "False\n"
 
 
