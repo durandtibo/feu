@@ -27,8 +27,6 @@ function.
 | 14  | **Cross-platform, Python 3.11 and newer** | Linux, macOS and Windows behave the same: there is no `shlex` rule that depends on `os.name` and no `PATH` lookup of `pip`.                                                                                                                                               |
 | 15  | **A version is a request**                | Wherever a function takes the version of a package to install or to validate, it accepts an exact version (`2.4.0`), a wildcard (`2.4.*`) or an empty string / `None` (the latest). A request with no compatible version raises `UnsupportedVersionError`, never crashes. |
 
-
-
 The target is used entirely (property 4), and the answer for a target without a platform is the
 union over the platforms:
 
