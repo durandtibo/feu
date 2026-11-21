@@ -32,6 +32,19 @@ For example:
 pip install 'feu[cli,git]'
 ```
 
+## Checking the installation
+
+```pycon
+>>> import feu
+>>> from feu import is_package_available
+>>> is_package_available("packaging")
+True
+
+```
+
+The [Usage Guide](usage.md) shows the main features, and the [Design](design.md) page explains the
+properties of the library and the trade-offs of its design.
+
 ## Installing from source
 
 To install `feu` from source, you can follow the steps below. First, you will need to

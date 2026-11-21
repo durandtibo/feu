@@ -18,9 +18,8 @@ DOCUMENTS = [
     ROOT / "README.md",
     ROOT / "docs" / "docs" / "index.md",
     ROOT / "docs" / "docs" / "usage.md",
-    ROOT / "docs" / "docs" / "migration.md",
     ROOT / "docs" / "docs" / "dev" / "architecture.md",
-    ROOT / "docs" / "docs" / "properties.md",
+    ROOT / "docs" / "docs" / "design.md",
 ]
 
 

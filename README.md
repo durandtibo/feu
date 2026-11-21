@@ -147,10 +147,10 @@ error-prone. `feu` solves this by:
 - 📚 [Full Documentation](https://durandtibo.github.io/feu/)
 - 🚀 [Get Started Guide](https://durandtibo.github.io/feu/get_started)
 - 📖 [Usage Examples](https://durandtibo.github.io/feu/usage)
-- 🧭 [Properties](https://durandtibo.github.io/feu/properties): the rules `feu` follows
+- 🧭 [Design](https://durandtibo.github.io/feu/design): the properties of `feu`, the design choices
+  and their trade-offs
 - 🧱 [Architecture](https://durandtibo.github.io/feu/dev/architecture): layers, how to add a package,
   an installer or a resolver
-- 🔀 [Migration to 0.9](https://durandtibo.github.io/feu/migration)
 - 🖥️ [CLI Reference](https://durandtibo.github.io/feu/cli)
 - 📚 [API Reference](https://durandtibo.github.io/feu/refs/root)
 

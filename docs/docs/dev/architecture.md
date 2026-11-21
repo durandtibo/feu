@@ -107,6 +107,11 @@ request and should reason on the whole request (`pandas==2.*` straddles the thre
 For a package that needs `numpy<2.0.0` below a version, add the version to `NUMPY2_MIN_VERSION` in
 `feu/install/resolver.py` or use `numpy2_resolver(min_version)`.
 
+## Design choices
+
+The [Design](../design.md) page gives the properties that this architecture enforces and the trade-offs
+of the main choices.
+
 ## Tests
 
 Unit tests mirror the source tree and are fast: no network, no real installer. Every patched

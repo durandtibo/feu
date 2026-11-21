@@ -73,8 +73,8 @@ feu install --pkg-name=pandas --pkg-version='2.*' --pkg-extras=performance
 feu install --installer-name=uv --installer-args='--upgrade' --pkg-name=numpy
 ```
 
-Write the versions to test of the dependencies of a project (it replaces the
-`dev/generate_versions.py` script that is copied in several repositories):
+Write the versions to test of the dependencies of a project, from the bounds of its
+`pyproject.toml`:
 
 ```shell
 feu package-versions --pyproject pyproject.toml --output dev/config/package_versions.json
