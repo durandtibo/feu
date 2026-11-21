@@ -2,7 +2,8 @@
 
 This guide shows the main features of `feu`. The examples are doctests: they are run by the test
 suite (`tests/unit/test_docs.py`), so they cannot drift from the code. The examples that need the
-network are marked as skipped. The rules the package follows, and the design choices behind them, are in [Design](design.md).
+network are marked as skipped. The rules the package follows, and the design choices behind them,
+are in [Design](design.md).
 
 ## Checking Package Availability
 
