@@ -15,7 +15,7 @@ from feu.install import (
     install_package,
     install_package_closest_version,
 )
-from feu.testing import requests_available, requests_not_available
+from feu.testing import requests_not_available
 from feu.utils.package import PackageSpec
 from feu.utils.registry import Registry
 
@@ -119,10 +119,10 @@ def test_install_package_closest_version_pip_numpy_with_args() -> None:
         )
 
 
-@requests_available
 def test_install_package_closest_version_pip_wildcard() -> None:
     with (
         patch("feu.install.api.resolve_target", Mock(return_value=Target(python_version="3.12"))),
+        patch("feu.install.api.find_closest_version", Mock(return_value="2.12.*")),
         patch("feu.install.installer.run_command") as run_mock,
     ):
         install_package_closest_version(

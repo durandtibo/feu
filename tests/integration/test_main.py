@@ -89,6 +89,15 @@ def test_find_closest_version() -> None:
 
 
 @click_available
+@requests_available
+def test_find_closest_version_wildcard() -> None:
+    """Test that a wildcard is resolved to the latest compatible version
+    with the real PyPI data."""
+    out = _run("find-closest-version", *NUMPY_PY39, "--pkg-version=1.*")
+    assert (out.returncode, out.stdout) == (0, "1.26.4\n")
+
+
+@click_available
 def test_find_closest_version_default_target() -> None:
     out = _run("find-closest-version", "--pkg-name=coola", "--pkg-version=1.1.10")
     assert out.stdout.strip() != ""
@@ -134,6 +143,24 @@ def test_check_valid_version() -> None:
 @click_available
 def test_check_valid_version_not_valid() -> None:
     out = _run("check-valid-version", *NUMPY_PY39, "--pkg-version=2.3.0")
+    assert (out.returncode, out.stdout) == (1, "False\n")
+
+
+@click_available
+@requests_available
+def test_check_valid_version_wildcard() -> None:
+    """Test that a wildcard with a compatible version is valid with the
+    real PyPI data."""
+    out = _run("check-valid-version", *NUMPY_PY39, "--pkg-version=2.*")
+    assert (out.returncode, out.stdout) == (0, "True\n")
+
+
+@click_available
+@requests_available
+def test_check_valid_version_unmatched_wildcard() -> None:
+    """Test that a wildcard without a compatible version is not valid
+    with the real PyPI data."""
+    out = _run("check-valid-version", *NUMPY_PY39, "--pkg-version=3.*")
     assert (out.returncode, out.stdout) == (1, "False\n")
 
 
