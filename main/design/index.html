@@ -23,7 +23,7 @@
     
     
       
-        <title>Properties - feu</title>
+        <title>Design - feu</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#properties" class="md-skip">
+        <a href="#design" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Properties
+              Design
             
           </span>
         </div>
@@ -309,7 +309,7 @@
   
     
   
-  Properties
+  Design
 
       </a>
     </li>
@@ -329,25 +329,6 @@
     
   
   Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../migration/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Migration to 0.9
 
       </a>
     </li>
@@ -588,7 +569,7 @@
   <span class="md-ellipsis">
     
   
-    Properties
+    Design
   
 
     
@@ -606,7 +587,7 @@
   <span class="md-ellipsis">
     
   
-    Properties
+    Design
   
 
     
@@ -632,13 +613,173 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#a-few-of-them-as-examples" class="md-nav__link">
+  <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A few of them, as examples
+        Properties
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-choices-and-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design choices and trade-offs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design choices and trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-target-without-a-platform-means-any-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A target without a platform means "any platform"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#only-the-current-platform-is-a-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Only the current platform is a target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shipped-data-is-generated-json-one-file-per-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipped data is generated JSON, one file per package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wildcards-are-matched-against-pypi-at-call-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wildcards are matched against PyPI at call time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-request-with-no-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A request with no data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-is-data-not-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery is data, not classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installers-are-pip-and-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installers are pip and uv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-resolvers-are-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency resolvers are functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-uses-requests-imported-lazily" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP uses requests, imported lazily
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feulocal_git-and-feugithub-are-kept-in-the-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feu.local_git and feu.github are kept in the package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-cli-exit-status-carries-the-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The CLI exit status carries the answer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-checks-keep-the-is_-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability checks keep the is_* names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-versions-of-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python versions of the data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -683,33 +824,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration to 0.9
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -724,10 +838,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -745,8 +859,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1096,13 +1210,173 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#a-few-of-them-as-examples" class="md-nav__link">
+  <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A few of them, as examples
+        Properties
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-choices-and-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design choices and trade-offs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design choices and trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-target-without-a-platform-means-any-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A target without a platform means "any platform"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#only-the-current-platform-is-a-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Only the current platform is a target
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shipped-data-is-generated-json-one-file-per-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipped data is generated JSON, one file per package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wildcards-are-matched-against-pypi-at-call-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wildcards are matched against PyPI at call time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-request-with-no-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A request with no data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-is-data-not-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery is data, not classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installers-are-pip-and-uv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installers are pip and uv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-resolvers-are-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency resolvers are functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-uses-requests-imported-lazily" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP uses requests, imported lazily
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feulocal_git-and-feugithub-are-kept-in-the-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feu.local_git and feu.github are kept in the package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-cli-exit-status-carries-the-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The CLI exit status carries the answer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-checks-keep-the-is_-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability checks keep the is_* names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-versions-of-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python versions of the data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1126,9 +1400,13 @@
   
 
 
-<h1 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h1>
+<h1 id="design">Design<a class="headerlink" href="#design" title="Permanent link">&para;</a></h1>
+<p>This page describes how <code>feu</code> is designed: the properties you can rely on, the examples that
+show them, and the main design choices with their trade-offs. The trade-offs are there so you can
+judge whether the current design fits your use case.</p>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h2>
 <p>These are the rules <code>feu</code> follows. Each one is enforced in one place, not by the discipline of each
-function, and says how you can rely on it.</p>
+function.</p>
 <table>
 <thead>
 <tr>
@@ -1215,7 +1493,6 @@ function, and says how you can rely on it.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="a-few-of-them-as-examples">A few of them, as examples<a class="headerlink" href="#a-few-of-them-as-examples" title="Permanent link">&para;</a></h2>
 <p>The target is used entirely (property 4), and the answer for a target without a platform is the
 union over the platforms:</p>
 <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
@@ -1244,6 +1521,95 @@ union over the platforms:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">PipInstaller</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"pip"</span><span class="p">,</span> <span class="s2">"install"</span><span class="p">)</span>
 <span class="go">True</span>
 </code></pre></div>
+<h2 id="design-choices-and-trade-offs">Design choices and trade-offs<a class="headerlink" href="#design-choices-and-trade-offs" title="Permanent link">&para;</a></h2>
+<h3 id="a-target-without-a-platform-means-any-platform">A target without a platform means "any platform"<a class="headerlink" href="#a-target-without-a-platform-means-any-platform" title="Permanent link">&para;</a></h3>
+<p><code>Target("3.12")</code> leaves <code>os</code> and <code>arch</code> to <code>None</code>. In a lookup, <code>None</code> means "any platform", and the
+answer is the union of the ranges of the most specific matching entries. A package is therefore never
+reported as unsupported because one platform lacks a wheel.</p>
+<ul>
+<li><em>Alternative: raise <code>ValueError</code> for an under-specified target.</em> It is loud, but every call that
+  only cares about the Python version needs the platform too.</li>
+<li><em>Alternative: the intersection ("valid on every platform").</em> It is strict, but a package such as
+  <code>torch</code> becomes unsupported on a Python version because of a single missing platform.</li>
+<li><em>Consequence:</em> the answer of a lookup without a platform is optimistic. Code that acts on the
+  current environment (<code>install_package_closest_version</code>, the CLI <code>install</code> command) always uses the
+  full current target, so it never installs a version that the platform cannot run.</li>
+</ul>
+<h3 id="only-the-current-platform-is-a-target">Only the current platform is a target<a class="headerlink" href="#only-the-current-platform-is-a-target" title="Permanent link">&para;</a></h3>
+<p>The platform is not an option of <code>resolve_target</code> or of the CLI (no <code>--os</code>, no <code>--arch</code>): it is the
+platform of the interpreter. <code>Target.os</code> and <code>Target.arch</code> still exist, so the data and the lookups
+can be about another platform, and more platforms can be added without changing the model. The
+vocabulary is closed (<code>linux</code>, <code>macos</code>, <code>windows</code>; <code>x86_64</code>, <code>arm64</code>): <code>linux</code> means glibc, and the
+<code>musllinux</code>, <code>win32</code>, <code>i686</code>, <code>armv7l</code>, <code>ppc64le</code> and <code>s390x</code> wheels are out of scope. Mapping
+<code>musllinux</code> to <code>linux</code> would over-report the support of Alpine.</p>
+<h3 id="shipped-data-is-generated-json-one-file-per-package">Shipped data is generated JSON, one file per package<a class="headerlink" href="#shipped-data-is-generated-json-one-file-per-package" title="Permanent link">&para;</a></h3>
+<p>The built-in constraints are <code>feu/compat/data/&lt;package&gt;.json</code>, regenerated from the wheels on PyPI.
+The list of packages is the list of files, and a file is parsed the first time its package is looked
+up, so importing <code>feu</code> costs nothing.</p>
+<ul>
+<li><em>Benefit:</em> no hand-written constraint, a small diff for each regeneration, and a lazy load.</li>
+<li><em>Cost:</em> the data is as old as the installed release of <code>feu</code> (it holds a date), and the files are
+  flat (one entry per target), which is simple to read and diff but larger than grouped ranges.
+  Register your own constraints in a <code>CompatRegistry</code> to correct or extend it.</li>
+</ul>
+<h3 id="wildcards-are-matched-against-pypi-at-call-time">Wildcards are matched against PyPI at call time<a class="headerlink" href="#wildcards-are-matched-against-pypi-at-call-time" title="Permanent link">&para;</a></h3>
+<p>The data holds compatible <em>ranges</em>, not a list of releases. A wildcard (<code>1.*</code>) is matched against the
+versions downloaded from PyPI when it is resolved. Exact versions and the empty request need no
+download.</p>
+<ul>
+<li><em>Benefit:</em> a release published after the data was generated is found, and <code>"2.9.*"</code> is not valid
+  for a package that never had a <code>2.9</code>.</li>
+<li><em>Cost:</em> a network call (cached per process) for a wildcard, and no offline fallback: without
+  network access, the error of the download is raised. Pass your own <code>version_source</code> to a
+  <code>CompatRegistry</code> to avoid the network.</li>
+</ul>
+<h3 id="a-request-with-no-data">A request with no data<a class="headerlink" href="#a-request-with-no-data" title="Permanent link">&para;</a></h3>
+<p>An unknown package is permissive for an exact version: it can be installed, and <code>pip</code> fails loudly if
+the version does not exist. A wildcard or an empty request cannot be answered without data:
+<code>is_valid_version</code> is <code>False</code> and <code>find_closest_version</code> returns the request unchanged, so the caller
+decides. <code>registry.has_package(name)</code> tells "no data" from "no match".</p>
+<h3 id="discovery-is-data-not-classes">Discovery is data, not classes<a class="headerlink" href="#discovery-is-data-not-classes" title="Permanent link">&para;</a></h3>
+<p>The packages whose wheels do not carry the platform tags (<code>jax</code>, <code>polars</code>, <code>pydantic</code>, ...) are
+described by a table (<code>COMPANIONS</code>) and a list of ignored releases, and one algorithm handles every
+package. A new case is a table entry, or the <code>companion=</code> and <code>ignore_versions=</code> arguments.</p>
+<ul>
+<li><em>Cost:</em> you cannot plug a custom discoverer class. If you need a different algorithm, call the
+  building blocks (<code>parse_wheel_filename</code>, <code>is_compatible</code>) yourself.</li>
+</ul>
+<h3 id="installers-are-pip-and-uv">Installers are <code>pip</code> and <code>uv</code><a class="headerlink" href="#installers-are-pip-and-uv" title="Permanent link">&para;</a></h3>
+<p>An installer builds one argument vector and installs into the interpreter that runs <code>feu</code>, the one
+the compatibility check was made for. <code>pipx</code> is not built in: it creates an isolated application
+environment, which is not the environment that was checked. The installer registry stays open, so you
+can register another one (see the <a href="../dev/architecture/">architecture</a> page).</p>
+<h3 id="dependency-resolvers-are-functions">Dependency resolvers are functions<a class="headerlink" href="#dependency-resolvers-are-functions" title="Permanent link">&para;</a></h3>
+<p>A resolver maps a <code>PackageSpec</code> to a list of requirements (<code>pandas</code> before 2.2.2 adds <code>numpy&lt;2.0.0</code>).
+It reasons on the whole version request, so <code>pandas==2.*</code>, which straddles the threshold, gets no
+pin. A spec without a version asks <code>pip</code> for the latest release and gets no pin either.</p>
+<h3 id="http-uses-requests-imported-lazily">HTTP uses <code>requests</code>, imported lazily<a class="headerlink" href="#http-uses-requests-imported-lazily" title="Permanent link">&para;</a></h3>
+<p><code>feu[requests]</code> is optional and imported only when a PyPI or GitHub call is made.</p>
+<ul>
+<li><em>Alternative:</em> the standard library (<code>urllib.request</code>) would remove the extra. <code>requests</code> is kept
+  because it carries its own CA bundle, while <code>urllib</code> uses the system store, which fails on some
+  macOS Python distributions. A package that manages environments should not fail there.</li>
+</ul>
+<h3 id="feulocal_git-and-feugithub-are-kept-in-the-package"><code>feu.local_git</code> and <code>feu.github</code> are kept in the package<a class="headerlink" href="#feulocal_git-and-feugithub-are-kept-in-the-package" title="Permanent link">&para;</a></h3>
+<p>They are not about packages or versions, but they serve release tooling (the last version tag of a
+repository, the metadata of a GitHub repository). They live behind the <code>git</code> and <code>requests</code> extras,
+so they cost nothing when unused. If you only need package management, you never import them.</p>
+<h3 id="the-cli-exit-status-carries-the-answer">The CLI exit status carries the answer<a class="headerlink" href="#the-cli-exit-status-carries-the-answer" title="Permanent link">&para;</a></h3>
+<p><code>0</code> is a success, <code>1</code> is a negative answer (an unsupported request, an invalid version) and <code>2</code> is a
+usage error. <code>find-closest-version</code> prints only the version, so <code>$(...)</code> captures it and a failing
+request stops a script instead of installing <code>pkg==None</code>. <code>check-valid-version</code> prints <code>True</code> or
+<code>False</code> and uses the same status.</p>
+<h3 id="availability-checks-keep-the-is_-names">Availability checks keep the <code>is_*</code> names<a class="headerlink" href="#availability-checks-keep-the-is_-names" title="Permanent link">&para;</a></h3>
+<p><code>is_package_available</code> and <code>is_module_available</code> are the public names, as in the <code>feu.testing</code>
+marks. The checks are cached with <code>availability_cache</code> (the design of <code>coola.utils.imports</code>) so that
+one call, <code>clear_availability_caches()</code>, resets all of them.</p>
+<h3 id="python-versions-of-the-data">Python versions of the data<a class="headerlink" href="#python-versions-of-the-data" title="Permanent link">&para;</a></h3>
+<p>The shipped data covers the Python versions of one constant, <code>PYTHON_VERSIONS</code>, in
+<code>feu/compat/target.py</code>: from the oldest version that CI matrices still ask for to the newest release
+and the next pre-release. A test fails when the files and the constant disagree. A Python version
+outside the constant has no data, and the package is treated as unconfigured.</p>
 
 
 

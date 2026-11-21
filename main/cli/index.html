@@ -12,7 +12,7 @@
         <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../properties/">
+        <link rel="next" href="../design/">
       
       
         
@@ -303,13 +303,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../properties/" class="md-tabs__link">
+      <a href="../design/" class="md-tabs__link">
         
   
   
     
   
-  Properties
+  Design
 
       </a>
     </li>
@@ -329,25 +329,6 @@
     
   
   Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../migration/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Migration to 0.9
 
       </a>
     </li>
@@ -724,14 +705,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../properties/" class="md-nav__link">
+      <a href="../design/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Properties
+    Design
   
 
     
@@ -777,33 +758,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration to 0.9
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -818,10 +772,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -839,8 +793,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1503,8 +1457,8 @@ False
 feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>pandas<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s1">'2.*'</span><span class="w"> </span>--pkg-extras<span class="o">=</span>performance
 feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>uv<span class="w"> </span>--installer-args<span class="o">=</span><span class="s1">'--upgrade'</span><span class="w"> </span>--pkg-name<span class="o">=</span>numpy
 </code></pre></div>
-<p>Write the versions to test of the dependencies of a project (it replaces the
-<code>dev/generate_versions.py</code> script that is copied in several repositories):</p>
+<p>Write the versions to test of the dependencies of a project, from the bounds of its
+<code>pyproject.toml</code>:</p>
 <div class="highlight"><pre><span></span><code>feu<span class="w"> </span>package-versions<span class="w"> </span>--pyproject<span class="w"> </span>pyproject.toml<span class="w"> </span>--output<span class="w"> </span>dev/config/package_versions.json
 </code></pre></div>
 <h2 id="use-in-a-shell-script-or-a-workflow">Use in a shell script or a workflow<a class="headerlink" href="#use-in-a-shell-script-or-a-workflow" title="Permanent link">&para;</a></h2>

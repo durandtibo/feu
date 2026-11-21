@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../../properties/">
+        <link rel="prev" href="../../design/">
       
       
-        <link rel="next" href="../../migration/">
+        <link rel="next" href="../../refs/root/">
       
       
         
@@ -301,13 +301,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../properties/" class="md-tabs__link">
+      <a href="../../design/" class="md-tabs__link">
         
   
   
     
   
-  Properties
+  Design
 
       </a>
     </li>
@@ -329,25 +329,6 @@
     
   
   Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../../migration/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Migration to 0.9
 
       </a>
     </li>
@@ -572,14 +553,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../properties/" class="md-nav__link">
+      <a href="../../design/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Properties
+    Design
   
 
     
@@ -725,6 +706,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#design-choices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design choices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tests" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -749,33 +741,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration to 0.9
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -790,10 +755,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -811,8 +776,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1228,6 +1193,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#design-choices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design choices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tests" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1370,6 +1346,9 @@ request and should reason on the whole request (<code>pandas==2.*</code> straddl
 </code></pre></div>
 <p>For a package that needs <code>numpy&lt;2.0.0</code> below a version, add the version to <code>NUMPY2_MIN_VERSION</code> in
 <code>feu/install/resolver.py</code> or use <code>numpy2_resolver(min_version)</code>.</p>
+<h2 id="design-choices">Design choices<a class="headerlink" href="#design-choices" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../design/">Design</a> page gives the properties that this architecture enforces and the trade-offs
+of the main choices.</p>
 <h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
 <p>Unit tests mirror the source tree and are fast: no network, no real installer. Every patched
 behaviour has an integration test in <code>tests/integration/</code> that exercises the real thing, for

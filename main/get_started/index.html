@@ -303,13 +303,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../properties/" class="md-tabs__link">
+      <a href="../design/" class="md-tabs__link">
         
   
   
     
   
-  Properties
+  Design
 
       </a>
     </li>
@@ -329,25 +329,6 @@
     
   
   Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../migration/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Migration to 0.9
 
       </a>
     </li>
@@ -562,6 +543,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#checking-the-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installing-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -641,14 +633,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../properties/" class="md-nav__link">
+      <a href="../design/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Properties
+    Design
   
 
     
@@ -694,33 +686,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration to 0.9
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -735,10 +700,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -756,8 +721,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1118,6 +1083,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#checking-the-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking the installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installing-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1170,6 +1146,14 @@ It is possible to install all the optional dependencies by running the following
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'feu[cli,git]'</span>
 </code></pre></div>
+<h2 id="checking-the-installation">Checking the installation<a class="headerlink" href="#checking-the-installation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">feu</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_available</span><span class="p">(</span><span class="s2">"packaging"</span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+<p>The <a href="../usage/">Usage Guide</a> shows the main features, and the <a href="../design/">Design</a> page explains the
+properties of the library and the trade-offs of its design.</p>
 <h2 id="installing-from-source">Installing from source<a class="headerlink" href="#installing-from-source" title="Permanent link">&para;</a></h2>
 <p>To install <code>feu</code> from source, you can follow the steps below. First, you will need to
 install <a href="https://docs.astral.sh/uv/"><code>uv</code></a>. <code>uv</code> is a fast Python package installer and resolver

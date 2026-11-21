@@ -303,13 +303,13 @@
   
   
     <li class="md-tabs__item">
-      <a href="../properties/" class="md-tabs__link">
+      <a href="../design/" class="md-tabs__link">
         
   
   
     
   
-  Properties
+  Design
 
       </a>
     </li>
@@ -329,25 +329,6 @@
     
   
   Architecture
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../migration/" class="md-tabs__link">
-        
-  
-  
-    
-  
-  Migration to 0.9
 
       </a>
     </li>
@@ -774,14 +755,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../properties/" class="md-nav__link">
+      <a href="../design/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Properties
+    Design
   
 
     
@@ -827,33 +808,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../migration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Migration to 0.9
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
     
     
     
@@ -868,10 +822,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -889,8 +843,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1417,7 +1371,7 @@
 <h1 id="usage-guide">Usage Guide<a class="headerlink" href="#usage-guide" title="Permanent link">&para;</a></h1>
 <p>This guide shows the main features of <code>feu</code>. The examples are doctests: they are run by the test
 suite (<code>tests/unit/test_docs.py</code>), so they cannot drift from the code. The examples that need the
-network are marked as skipped. The rules the package follows are in <a href="../properties/">Properties</a>.</p>
+network are marked as skipped. The rules the package follows, and the design choices behind them, are in <a href="../design/">Design</a>.</p>
 <h2 id="checking-package-availability">Checking Package Availability<a class="headerlink" href="#checking-package-availability" title="Permanent link">&para;</a></h2>
 <p><code>is_package_available</code> looks a package up without importing it, <code>is_module_available</code> imports the
 module. The checks are cached, so call <code>clear_availability_caches()</code> if you change <code>sys.path</code> or
