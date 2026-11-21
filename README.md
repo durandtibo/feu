@@ -2,71 +2,34 @@
 
 <p align="center">
     <a href="https://github.com/durandtibo/feu/actions/workflows/ci.yaml">
-        <img alt="CI" src="https://github.com/durandtibo/feu/actions/workflows/ci.yaml/badge.svg">
-    </a>
+        <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/durandtibo/feu/ci.yaml?branch=main&label=CI&logo=github"></a>
     <a href="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml">
-        <img
-            alt="Nightly Package Tests"
-            src="https://github.com/durandtibo/feu/actions/workflows/nightly-package.yaml/badge.svg"
-        >
-    </a>
+        <img alt="Nightly Package Tests" src="https://img.shields.io/github/actions/workflow/status/durandtibo/feu/nightly-package.yaml?label=nightly&logo=github"></a>
     <a href="https://codecov.io/gh/durandtibo/feu">
-        <img alt="Codecov" src="https://codecov.io/gh/durandtibo/feu/branch/main/graph/badge.svg">
-    </a>
-    <br/>
+        <img alt="Codecov" src="https://img.shields.io/codecov/c/github/durandtibo/feu?logo=codecov"></a>
     <a href="https://durandtibo.github.io/feu/">
-        <img
-            alt="Documentation"
-            src="https://github.com/durandtibo/feu/actions/workflows/release-docs.yaml/badge.svg"
-        >
-    </a>
-    <a href="https://durandtibo.github.io/feu/dev/">
-        <img
-            alt="Documentation"
-            src="https://github.com/durandtibo/feu/actions/workflows/release-docs-dev.yaml/badge.svg"
-        >
-    </a>
-    <br/>
-    <a href="https://github.com/psf/black">
-        <img
-            alt="Code style: black"
-            src="https://img.shields.io/badge/code%20style-black-000000.svg"
-        >
-    </a>
-    <a href="https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings">
-        <img  alt="Doc style: google" src="https://img.shields.io/badge/%20style-google-3666d6.svg">
-    </a>
-    <a href="https://github.com/astral-sh/ruff">
-        <img
-            src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"
-            alt="Ruff"
-            style="max-width:100%;"
-        >
-    </a>
-    <a href="https://github.com/guilatrova/tryceratops">
-        <img
-            alt="Doc style: google"
-            src="https://img.shields.io/badge/try%2Fexcept%20style-tryceratops%20%F0%9F%A6%96%E2%9C%A8-black"
-        >
-    </a>
+        <img alt="Documentation (stable)" src="https://img.shields.io/badge/docs-stable-blue?logo=readthedocs&logoColor=white"></a>
     <br/>
     <a href="https://pypi.org/project/feu/">
-        <img alt="PYPI version" src="https://img.shields.io/pypi/v/feu">
-    </a>
+        <img alt="PyPI version" src="https://img.shields.io/pypi/v/feu?logo=pypi&logoColor=white"></a>
     <a href="https://pypi.org/project/feu/">
-        <img alt="Python" src="https://img.shields.io/pypi/pyversions/feu.svg">
-    </a>
+        <img alt="Python" src="https://img.shields.io/pypi/pyversions/feu?logo=python&logoColor=white"></a>
     <a href="https://opensource.org/licenses/BSD-3-Clause">
-        <img alt="BSD-3-Clause" src="https://img.shields.io/pypi/l/feu">
-    </a>
+        <img alt="BSD-3-Clause" src="https://img.shields.io/pypi/l/feu"></a>
+    <br/>
+    <a href="https://github.com/astral-sh/ruff">
+        <img alt="Ruff" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json"></a>
+    <a href="https://google.github.io/styleguide/pyguide.html#s3.8-comments-and-docstrings">
+        <img alt="Doc style: google" src="https://img.shields.io/badge/docstyle-google-3666d6"></a>
+    <a href="https://scorecard.dev/viewer/?uri=github.com/durandtibo/feu">
+        <img alt="OpenSSF Scorecard" src="https://img.shields.io/ossf-scorecard/github.com/durandtibo/feu?label=openssf%20scorecard"></a>
     <br/>
     <a href="https://pepy.tech/project/feu">
-        <img  alt="Downloads" src="https://static.pepy.tech/badge/feu">
-    </a>
+        <img alt="Downloads" src="https://img.shields.io/pepy/dt/feu"></a>
     <a href="https://pepy.tech/project/feu">
-        <img  alt="Monthly downloads" src="https://static.pepy.tech/badge/feu/month">
-    </a>
-    <br/>
+        <img alt="Monthly downloads" src="https://img.shields.io/pepy/dm/feu"></a>
+    <a href="https://github.com/durandtibo/feu/stargazers">
+        <img alt="GitHub stars" src="https://img.shields.io/github/stars/durandtibo/feu?logo=github"></a>
 </p>
 
 ## Overview
