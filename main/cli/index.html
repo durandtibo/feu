@@ -1350,49 +1350,63 @@ option.</p>
 </code></pre></div>
 <h3 id="benchmark-trend">benchmark-trend<a class="headerlink" href="#benchmark-trend" title="Permanent link">&para;</a></h3>
 <p>Print the trend of the pytest-benchmark results.</p>
-<p>The standard output holds the Markdown report (a table of the
+<p>The standard output holds only the Markdown report (a table of the
 trend of each benchmark and, if any, the regressions). The GitHub
-Actions <code>::warning::</code> annotations of the regressions go to the
-standard error. Nothing is printed on the standard output if there
-is no result in the window.</p>
+Actions <code>::warning::</code> annotations of the regressions and the
+messages go to the standard error, as UTF-8. If there is no result
+in the window, a message is printed on the standard error and the
+standard output is empty. The exit status is <code>0</code>, <code>1</code> if
+<code>fail_on_regression</code> is set and there is a regression, and <code>2</code>
+if an argument is invalid or a result file is invalid.</p>
 <p>Args:
     storage: The pytest-benchmark storage directory.
     kind: The kind of results: <code>'benchmark'</code> or <code>'import'</code>.
+    stat: The statistic of the times: <code>'min'</code>, <code>'mean'</code>,
+        <code>'median'</code> or <code>'max'</code>. The <code>import</code> kind ignores the
+        benchmarks that do not have it.
     unit: The unit of the times in the report (<code>'s'</code>, <code>'ms'</code>,
         <code>'us'</code> or <code>'ns'</code>), or <code>None</code> for the default unit of
         the kind.
-    stat: The statistic of the times e.g. <code>'median'</code>, <code>'mean'</code>
-        or <code>'min'</code>. The <code>import</code> kind ignores the benchmarks
-        that do not have it. The exit status is <code>2</code> if the
-        <code>benchmark</code> kind does not have it.
+    label: The label of a benchmark: <code>'name'</code> or <code>'fullname'</code>.
     days: The size of the window in days.
-    prune: If <code>True</code>, delete the results older than the window.
-    window: The maximum number of previous runs used to detect
-        the regressions.
+    baseline_runs: The maximum number of previous runs used to
+        detect the regressions.
     threshold: The slowdown in percent above which a benchmark is
-        a regression.</p>
+        a regression.
+    prune: If <code>True</code>, delete the results older than the window
+        after the report is made.
+    fail_on_regression: If <code>True</code>, exit with the status <code>1</code> if
+        there is a regression.</p>
 <p>Example:
-    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span>
+    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span><span class="w"> </span>--fail-on-regression
 </code></pre></div></p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu benchmark-trend [OPTIONS] STORAGE
 </code></pre></div>
 <p><strong>Options:</strong></p>
-<div class="highlight"><pre><span></span><code>  --kind [benchmark|import]  The kind of results: the median time of the
-                             benchmarks, or the import time.  [default:
-                             benchmark]
-  --unit [s|ms|us|ns]        The unit of the times in the report. Default:
-                             'us' for the benchmark kind and 'ms' for the
-                             import kind.
-  --stat TEXT                The statistic of the times e.g. 'median', 'mean'
-                             or 'min'.  [default: median]
-  --days INTEGER             Size of the window in days.  [default: 90]
-  --prune                    Delete the results older than the window.
-  --window INTEGER           Number of previous runs used to detect the
-                             regressions.  [default: 7]
-  --threshold FLOAT          Slowdown in percent above which a benchmark is a
-                             regression.  [default: 50.0]
-  --help                     Show this message and exit.
+<div class="highlight"><pre><span></span><code>  --kind [benchmark|import]      The kind of results: the times of the
+                                 benchmarks, or the import times.  [default:
+                                 benchmark]
+  --stat [min|mean|median|max]   The statistic of the times. The import kind
+                                 reads import_seconds_&lt;stat&gt; of extra_info.
+                                 [default: median]
+  --unit [s|ms|us|ns]            The unit of the times in the report. Default:
+                                 'us' for the benchmark kind and 'ms' for the
+                                 import kind.
+  --label [name|fullname]        The label of a benchmark: its name, or its
+                                 full name (use it if two benchmarks have the
+                                 same name).  [default: name]
+  --days INTEGER RANGE           Size of the window in days.  [default: 90;
+                                 x&gt;=1]
+  --baseline-runs INTEGER RANGE  Number of previous runs used to detect the
+                                 regressions.  [default: 7; x&gt;=1]
+  --threshold FLOAT RANGE        Slowdown in percent above which a benchmark
+                                 is a regression.  [default: 50.0; x&gt;0]
+  --prune                        Delete the results older than the window,
+                                 after the report.
+  --fail-on-regression           Exit with the status 1 if there is a
+                                 regression. Default: the status is 0.
+  --help                         Show this message and exit.
 </code></pre></div>
 <h3 id="check-valid-version">check-valid-version<a class="headerlink" href="#check-valid-version" title="Permanent link">&para;</a></h3>
 <p>Print if a package version is valid for a target.</p>
