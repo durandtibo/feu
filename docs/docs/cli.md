@@ -106,3 +106,10 @@ reads `import_seconds_<stat>` of the `extra_info`:
 ```shell
 feu benchmark-trend .benchmarks --stat mean
 ```
+
+Show the times in another unit with `--unit` (`s`, `ms`, `us` or `ns`). The default is `us` for the
+`benchmark` kind and `ms` for the `import` kind:
+
+```shell
+feu benchmark-trend .benchmarks --unit ms
+```
