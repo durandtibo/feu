@@ -9,21 +9,17 @@ import pytest
 from feu.benchmark import (
     BENCHMARK_KIND,
     IMPORT_KIND,
-    KINDS,
-    UNITS,
+    Run,
     TrendKind,
-    UnknownStatError,
     build_trend_report,
     find_regressions,
-    get_benchmark_label,
-    get_import_label,
-    load_runs,
     make_annotations,
     make_regression_report,
     make_table,
     sparkline,
     with_unit,
 )
+from feu.benchmark.trend import _make_trend_report
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -34,8 +30,8 @@ BENCH_B = {"name": "test_b_benchmark", "stats": {"median": 0.002}}
 IMPORT_A = {"name": "test_import", "param": "a", "extra_info": {"import_seconds_median": 0.001}}
 
 
-def make_runs(*values: dict) -> list[tuple[datetime, dict]]:
-    return [(DATE, times) for times in values]
+def make_runs(*values: dict) -> list[Run]:
+    return [Run(DATE, "", times) for times in values]
 
 
 def write_run(path: Path, date: datetime, benchmarks: list[dict]) -> None:
@@ -58,144 +54,13 @@ def build_report(
 def write_regression(path: Path, benchmark: dict = BENCH_A, slow: dict | None = None) -> None:
     now = datetime.now(tz=UTC)
     slow = slow or {**BENCH_A, "stats": {"median": 0.002}}
-    write_run(path / "1.json", now - timedelta(days=2), [benchmark])
-    write_run(path / "2.json", now - timedelta(days=1), [slow])
-
-
-#########################################
-#     Tests for the label functions     #
-#########################################
-
-
-@pytest.mark.parametrize(
-    ("name", "label"),
-    [
-        ("test_foo_benchmark", "foo"),
-        ("test_foo", "foo"),
-        ("foo_benchmark", "foo"),
-        ("foo", "foo"),
-        ("test_test_benchmark_benchmark", "test_benchmark"),
-        ("test__benchmark", ""),
-    ],
-)
-def test_get_benchmark_label(name: str, label: str) -> None:
-    assert get_benchmark_label({"name": name}) == label
-
-
-def test_get_benchmark_label_ignores_param() -> None:
-    assert get_benchmark_label({"name": "test_foo", "param": "x"}) == "foo"
-
-
-def test_get_benchmark_label_missing_name() -> None:
-    with pytest.raises(KeyError, match=r"name"):
-        get_benchmark_label({})
-
-
-def test_get_import_label_uses_param() -> None:
-    assert get_import_label({"name": "test_import[x]", "param": "x"}) == "x"
-
-
-def test_get_import_label_without_param_uses_name() -> None:
-    assert get_import_label({"name": "test_foo_benchmark"}) == "foo"
-
-
-def test_get_import_label_none_param_uses_name() -> None:
-    assert get_import_label({"name": "test_foo", "param": None}) == "foo"
-
-
-def test_get_import_label_empty_param_uses_name() -> None:
-    assert get_import_label({"name": "test_foo", "param": ""}) == "foo"
+    write_run(path / "0001_1.json", now - timedelta(days=2), [benchmark])
+    write_run(path / "0001_2.json", now - timedelta(days=1), [slow])
 
 
 ###############################
 #     Tests for TrendKind     #
 ###############################
-
-
-STATS = {"name": "test_a", "stats": {"median": 0.5, "mean": 2.0}}
-
-
-def test_benchmark_kind_get_time() -> None:
-    assert BENCHMARK_KIND.get_time(STATS, "median") == 0.5
-
-
-def test_benchmark_kind_get_time_other_stat() -> None:
-    assert BENCHMARK_KIND.get_time(STATS, "mean") == 2.0
-
-
-def test_benchmark_kind_get_time_unknown_stat() -> None:
-    with pytest.raises(UnknownStatError, match=r"'max' is not in the stats of 'test_a'"):
-        BENCHMARK_KIND.get_time(STATS, "max")
-
-
-def test_benchmark_kind_get_time_missing_stats() -> None:
-    with pytest.raises(KeyError, match=r"stats"):
-        BENCHMARK_KIND.get_time({"name": "test_a"}, "median")
-
-
-IMPORT_STATS = {"extra_info": {"import_seconds_median": 0.5, "import_seconds_min": 0.25}}
-
-
-def test_import_kind_get_time() -> None:
-    assert IMPORT_KIND.get_time(IMPORT_STATS, "median") == 0.5
-
-
-def test_import_kind_get_time_other_stat() -> None:
-    assert IMPORT_KIND.get_time(IMPORT_STATS, "min") == 0.25
-
-
-def test_import_kind_get_time_unknown_stat() -> None:
-    assert IMPORT_KIND.get_time(IMPORT_STATS, "max") is None
-
-
-def test_import_kind_get_time_without_extra_info() -> None:
-    assert IMPORT_KIND.get_time({"name": "test_a"}, "median") is None
-
-
-@pytest.mark.parametrize(
-    ("unit", "shown", "scale"),
-    [("s", "s", 1.0), ("ms", "ms", 1e3), ("us", "µs", 1e6), ("µs", "µs", 1e6), ("ns", "ns", 1e9)],
-)
-def test_with_unit(unit: str, shown: str, scale: float) -> None:
-    kind = with_unit(BENCHMARK_KIND, unit)
-    assert (kind.unit, kind.scale) == (shown, scale)
-
-
-def test_with_unit_keeps_the_other_fields() -> None:
-    assert with_unit(IMPORT_KIND, "s").get_time is IMPORT_KIND.get_time
-
-
-def test_with_unit_does_not_modify_the_kind() -> None:
-    with_unit(BENCHMARK_KIND, "s")
-    assert (BENCHMARK_KIND.unit, BENCHMARK_KIND.scale) == ("µs", 1e6)
-
-
-def test_with_unit_unknown_unit() -> None:
-    with pytest.raises(ValueError, match=r"Unknown unit 'min'"):
-        with_unit(BENCHMARK_KIND, "min")
-
-
-def test_with_unit_custom_unit_with_scale() -> None:
-    kind = with_unit(BENCHMARK_KIND, "min", scale=0.5)
-    assert (kind.unit, kind.scale) == ("min", 0.5)
-
-
-def test_with_unit_scale_overrides_the_scale_of_the_unit() -> None:
-    assert with_unit(BENCHMARK_KIND, "ms", scale=2.0).scale == 2.0
-
-
-@pytest.mark.parametrize("scale", [0.0, -1.0])
-def test_with_unit_scale_not_positive(scale: float) -> None:
-    with pytest.raises(ValueError, match=r"The scale must be positive"):
-        with_unit(BENCHMARK_KIND, "ms", scale=scale)
-
-
-def test_units() -> None:
-    assert UNITS == {"s": 1.0, "ms": 1e3, "us": 1e6, "µs": 1e6, "ns": 1e9}
-
-
-def test_kinds() -> None:
-    assert KINDS == {"benchmark": BENCHMARK_KIND, "import": IMPORT_KIND}
 
 
 def test_benchmark_kind_unit() -> None:
@@ -204,136 +69,6 @@ def test_benchmark_kind_unit() -> None:
 
 def test_import_kind_unit() -> None:
     assert (IMPORT_KIND.unit, IMPORT_KIND.scale) == ("ms", 1e3)
-
-
-###############################
-#     Tests for load_runs     #
-###############################
-
-
-def test_load_runs_empty_storage(tmp_path: Path) -> None:
-    assert load_runs(tmp_path, days=90) == []
-
-
-def test_load_runs_sorted_by_date(tmp_path: Path) -> None:
-    now = datetime.now(tz=UTC)
-    write_run(tmp_path / "a.json", now - timedelta(days=1), [BENCH_B])
-    write_run(tmp_path / "b.json", now - timedelta(days=2), [BENCH_A])
-    assert load_runs(tmp_path, days=90) == [
-        (now - timedelta(days=2), {"a": 0.001}),
-        (now - timedelta(days=1), {"b": 0.002}),
-    ]
-
-
-def test_load_runs_skips_old_runs(tmp_path: Path) -> None:
-    now = datetime.now(tz=UTC)
-    write_run(tmp_path / "old.json", now - timedelta(days=10), [BENCH_A])
-    write_run(tmp_path / "new.json", now - timedelta(days=1), [BENCH_B])
-    assert load_runs(tmp_path, days=5) == [(now - timedelta(days=1), {"b": 0.002})]
-
-
-def test_load_runs_keeps_old_files_without_prune(tmp_path: Path) -> None:
-    write_run(tmp_path / "old.json", datetime.now(tz=UTC) - timedelta(days=10), [BENCH_A])
-    load_runs(tmp_path, days=5)
-    assert (tmp_path / "old.json").exists()
-
-
-def test_load_runs_prune_deletes_old_files(tmp_path: Path) -> None:
-    write_run(tmp_path / "old.json", datetime.now(tz=UTC) - timedelta(days=10), [BENCH_A])
-    load_runs(tmp_path, days=5, prune=True)
-    assert not (tmp_path / "old.json").exists()
-
-
-def test_load_runs_prune_keeps_recent_files(tmp_path: Path) -> None:
-    write_run(tmp_path / "new.json", datetime.now(tz=UTC) - timedelta(days=1), [BENCH_A])
-    load_runs(tmp_path, days=5, prune=True)
-    assert (tmp_path / "new.json").exists()
-
-
-def test_load_runs_searches_subdirectories(tmp_path: Path) -> None:
-    sub = tmp_path / "sub"
-    sub.mkdir()
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    write_run(sub / "a.json", date, [BENCH_A])
-    assert load_runs(tmp_path, days=5) == [(date, {"a": 0.001})]
-
-
-def test_load_runs_ignores_non_json_files(tmp_path: Path) -> None:
-    tmp_path.joinpath("notes.txt").write_text("not json")
-    assert load_runs(tmp_path, days=5) == []
-
-
-def test_load_runs_invalid_json(tmp_path: Path) -> None:
-    tmp_path.joinpath("a.json").write_text("not json")
-    with pytest.raises(json.JSONDecodeError, match=r"Expecting value"):
-        load_runs(tmp_path, days=5)
-
-
-def test_load_runs_missing_datetime(tmp_path: Path) -> None:
-    tmp_path.joinpath("a.json").write_text('{"benchmarks": []}')
-    with pytest.raises(KeyError, match=r"datetime"):
-        load_runs(tmp_path, days=5)
-
-
-def test_load_runs_invalid_datetime(tmp_path: Path) -> None:
-    tmp_path.joinpath("a.json").write_text('{"datetime": "yesterday", "benchmarks": []}')
-    with pytest.raises(ValueError, match=r"Invalid isoformat string"):
-        load_runs(tmp_path, days=5)
-
-
-def test_load_runs_stat(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    bench = {"name": "test_a", "stats": {"median": 0.001, "mean": 0.003}}
-    write_run(tmp_path / "a.json", date, [bench])
-    assert load_runs(tmp_path, days=5, stat="mean") == [(date, {"a": 0.003})]
-
-
-def test_load_runs_unknown_stat(tmp_path: Path) -> None:
-    write_run(tmp_path / "a.json", datetime.now(tz=UTC) - timedelta(days=1), [BENCH_A])
-    with pytest.raises(UnknownStatError, match=r"'mean' is not in the stats of 'test_a_benchmark'"):
-        load_runs(tmp_path, days=5, stat="mean")
-
-
-def test_load_runs_import_kind_stat(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    bench = {"name": "t", "param": "a", "extra_info": {"import_seconds_min": 0.0005}}
-    write_run(tmp_path / "a.json", date, [bench])
-    assert load_runs(tmp_path, days=5, kind=IMPORT_KIND, stat="min") == [(date, {"a": 0.0005})]
-
-
-def test_load_runs_run_without_benchmarks(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    write_run(tmp_path / "a.json", date, [])
-    assert load_runs(tmp_path, days=5) == [(date, {})]
-
-
-def test_load_runs_several_benchmarks_in_one_run(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    write_run(tmp_path / "a.json", date, [BENCH_A, BENCH_B])
-    assert load_runs(tmp_path, days=5) == [(date, {"a": 0.001, "b": 0.002})]
-
-
-def test_load_runs_zero_days_skips_every_run(tmp_path: Path) -> None:
-    write_run(tmp_path / "a.json", datetime.now(tz=UTC) - timedelta(seconds=1), [BENCH_A])
-    assert load_runs(tmp_path, days=0) == []
-
-
-def test_load_runs_naive_datetime_is_utc(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC).replace(tzinfo=None) - timedelta(days=1)
-    write_run(tmp_path / "a.json", date, [BENCH_A])
-    assert load_runs(tmp_path, days=5) == [(date.replace(tzinfo=UTC), {"a": 0.001})]
-
-
-def test_load_runs_import_kind(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    write_run(tmp_path / "a.json", date, [IMPORT_A])
-    assert load_runs(tmp_path, days=5, kind=IMPORT_KIND) == [(date, {"a": 0.001})]
-
-
-def test_load_runs_import_kind_skips_benchmarks_without_import_time(tmp_path: Path) -> None:
-    date = datetime.now(tz=UTC) - timedelta(days=1)
-    write_run(tmp_path / "a.json", date, [IMPORT_A, {"name": "test_other"}])
-    assert load_runs(tmp_path, days=5, kind=IMPORT_KIND) == [(date, {"a": 0.001})]
 
 
 ###############################
@@ -608,9 +343,9 @@ def test_build_trend_report_no_results(tmp_path: Path) -> None:
 
 def test_build_trend_report_without_regression(tmp_path: Path) -> None:
     date = datetime.now(tz=UTC) - timedelta(days=1)
-    write_run(tmp_path / "a.json", date, [BENCH_A])
+    write_run(tmp_path / "0001_a.json", date, [BENCH_A])
     assert build_trend_report(tmp_path, days=5) == (
-        f"## Benchmarks over the last 5 days (1 runs)\n\n{make_table([(date, {'a': 0.001})])}\n",
+        f"## Benchmarks over the last 5 days (1 runs)\n\n{make_table([Run(date, '', {'a': 0.001})])}\n",
         [],
     )
 
@@ -657,24 +392,24 @@ def test_build_trend_report_with_regression_full_report(tmp_path: Path) -> None:
 def test_build_trend_report_window_one_compares_with_last_previous_run(tmp_path: Path) -> None:
     now = datetime.now(tz=UTC)
     slow = {**BENCH_A, "stats": {"median": 0.002}}
-    write_run(tmp_path / "0.json", now - timedelta(days=4), [BENCH_A])
-    write_run(tmp_path / "1.json", now - timedelta(days=3), [BENCH_A])
-    write_run(tmp_path / "2.json", now - timedelta(days=2), [slow])
-    write_run(tmp_path / "3.json", now - timedelta(days=1), [slow])
+    write_run(tmp_path / "0001_0.json", now - timedelta(days=4), [BENCH_A])
+    write_run(tmp_path / "0001_1.json", now - timedelta(days=3), [BENCH_A])
+    write_run(tmp_path / "0001_2.json", now - timedelta(days=2), [slow])
+    write_run(tmp_path / "0001_3.json", now - timedelta(days=1), [slow])
     _, annotations = build_report(tmp_path, window=1)
     assert annotations == []
 
 
 def test_build_trend_report_stat_in_title(tmp_path: Path) -> None:
     bench = {"name": "test_a", "stats": {"median": 0.001, "mean": 0.003}}
-    write_run(tmp_path / "a.json", datetime.now(tz=UTC) - timedelta(days=1), [bench])
+    write_run(tmp_path / "0001_a.json", datetime.now(tz=UTC) - timedelta(days=1), [bench])
     result = build_trend_report(tmp_path, stat="mean", days=5)
     assert result is not None
     assert result[0].startswith("## Benchmarks (mean) over the last 5 days (1 runs)\n")
 
 
 def test_build_trend_report_median_is_not_in_title(tmp_path: Path) -> None:
-    write_run(tmp_path / "a.json", datetime.now(tz=UTC) - timedelta(days=1), [BENCH_A])
+    write_run(tmp_path / "0001_a.json", datetime.now(tz=UTC) - timedelta(days=1), [BENCH_A])
     result = build_trend_report(tmp_path, stat="median", days=5)
     assert result is not None
     assert result[0].startswith("## Benchmarks over the last 5 days (1 runs)\n")
@@ -687,12 +422,65 @@ def test_build_trend_report_threshold_hides_regression(tmp_path: Path) -> None:
 
 
 def test_build_trend_report_import_kind_heading(tmp_path: Path) -> None:
-    write_run(tmp_path / "a.json", datetime.now(tz=UTC) - timedelta(days=1), [IMPORT_A])
+    write_run(tmp_path / "0001_a.json", datetime.now(tz=UTC) - timedelta(days=1), [IMPORT_A])
     report, _ = build_report(tmp_path, kind=IMPORT_KIND, days=5)
     assert report.startswith("## Import time over the last 5 days (1 runs)\n")
 
 
 def test_build_trend_report_prune_deletes_old_files(tmp_path: Path) -> None:
-    write_run(tmp_path / "old.json", datetime.now(tz=UTC) - timedelta(days=10), [BENCH_A])
+    write_run(tmp_path / "0001_old.json", datetime.now(tz=UTC) - timedelta(days=10), [BENCH_A])
     build_trend_report(tmp_path, days=5, prune=True)
-    assert not (tmp_path / "old.json").exists()
+    assert not (tmp_path / "0001_old.json").exists()
+
+
+#####################################
+#     Tests for _make_trend_report  #
+#####################################
+
+
+def test_make_trend_report_no_runs() -> None:
+    assert (
+        _make_trend_report([], kind=BENCHMARK_KIND, stat="median", days=5, window=7, threshold=50.0)
+        is None
+    )
+
+
+def test_make_trend_report_with_a_run() -> None:
+    runs = make_runs({"a": 0.001})
+    report = _make_trend_report(
+        runs, kind=BENCHMARK_KIND, stat="median", days=5, window=7, threshold=50.0
+    )
+    assert report == (f"## Benchmarks over the last 5 days (1 runs)\n\n{make_table(runs)}\n", [])
+
+
+def test_make_trend_report_shows_the_stat() -> None:
+    runs = make_runs({"a": 0.001})
+    report = _make_trend_report(
+        runs, kind=BENCHMARK_KIND, stat="min", days=5, window=7, threshold=50.0
+    )
+    assert report is not None
+    assert report[0].startswith("## Benchmarks (min) over the last 5 days")
+
+
+###########################################
+#     Tests for build_trend_report load   #
+###########################################
+
+
+def test_build_trend_report_prunes_when_every_run_is_old(tmp_path: Path) -> None:
+    write_run(tmp_path / "0001_old.json", datetime.now(tz=UTC) - timedelta(days=10), [BENCH_A])
+    assert build_trend_report(tmp_path, days=5, prune=True) is None
+    assert not (tmp_path / "0001_old.json").exists()
+
+
+def test_build_trend_report_failing_load_deletes_nothing(tmp_path: Path) -> None:
+    write_run(tmp_path / "0001_old.json", datetime.now(tz=UTC) - timedelta(days=10), [BENCH_A])
+    tmp_path.joinpath("0002_bad.json").write_text("not json")
+    with pytest.raises(ValueError, match=r"0002_bad.json: not a pytest-benchmark result"):
+        build_trend_report(tmp_path, days=5, prune=True)
+    assert (tmp_path / "0001_old.json").exists()
+
+
+def test_build_trend_report_unknown_stat(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match=r"Unknown stat 'nope'"):
+        build_trend_report(tmp_path, stat="nope")
