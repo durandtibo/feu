@@ -822,6 +822,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../refs/benchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../refs/compat/" class="md-nav__link">
         
   
@@ -1281,7 +1309,8 @@ imports nothing from <code>feu</code>. <code>tests/unit/test_layers.py</code> ch
 </tr>
 </tbody>
 </table>
-<p><code>feu.github</code> and <code>feu.local_git</code> are outside the chain and only use the lower layers.</p>
+<p><code>feu.benchmark</code>, <code>feu.github</code> and <code>feu.local_git</code> are outside the chain and only use the lower layers
+(<code>feu.benchmark</code> uses only the standard library).</p>
 <h2 id="data-flow">Data flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
 <ol>
 <li><code>dev/generate_compat_data.py</code> calls <code>discover_compat_targets(package)</code>. It fetches the project

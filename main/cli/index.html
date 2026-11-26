@@ -620,6 +620,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#benchmark-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        benchmark-trend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#check-valid-version" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -819,6 +830,34 @@
     
   
     Main Functions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refs/benchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark
   
 
     
@@ -1178,6 +1217,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#benchmark-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        benchmark-trend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#check-valid-version" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1297,6 +1347,40 @@ option.</p>
 <div class="highlight"><pre><span></span><code>  --version  Show the version and exit.
   --verbose  Log the executed commands on the standard error.
   --help     Show this message and exit.
+</code></pre></div>
+<h3 id="benchmark-trend">benchmark-trend<a class="headerlink" href="#benchmark-trend" title="Permanent link">&para;</a></h3>
+<p>Print the trend of the pytest-benchmark results.</p>
+<p>The standard output holds the Markdown report (a table of the
+trend of each benchmark and, if any, the regressions). The GitHub
+Actions <code>::warning::</code> annotations of the regressions go to the
+standard error. Nothing is printed on the standard output if there
+is no result in the window.</p>
+<p>Args:
+    storage: The pytest-benchmark storage directory.
+    kind: The kind of results: <code>'benchmark'</code> or <code>'import'</code>.
+    days: The size of the window in days.
+    prune: If <code>True</code>, delete the results older than the window.
+    window: The maximum number of previous runs used to detect
+        the regressions.
+    threshold: The slowdown in percent above which a benchmark is
+        a regression.</p>
+<p>Example:
+    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span>
+</code></pre></div></p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>feu benchmark-trend [OPTIONS] STORAGE
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<div class="highlight"><pre><span></span><code>  --kind [benchmark|import]  The kind of results: the median time of the
+                             benchmarks, or the import time.  [default:
+                             benchmark]
+  --days INTEGER             Size of the window in days.  [default: 90]
+  --prune                    Delete the results older than the window.
+  --window INTEGER           Number of previous runs used to detect the
+                             regressions.  [default: 7]
+  --threshold FLOAT          Slowdown in percent above which a benchmark is a
+                             regression.  [default: 50.0]
+  --help                     Show this message and exit.
 </code></pre></div>
 <h3 id="check-valid-version">check-valid-version<a class="headerlink" href="#check-valid-version" title="Permanent link">&para;</a></h3>
 <p>Print if a package version is valid for a target.</p>
@@ -1466,6 +1550,13 @@ feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span 
 step fail instead of installing <code>pkg==None</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10<span class="k">)</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span><span class="o">&amp;&amp;</span><span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s2">"</span><span class="nv">$VERSION</span><span class="s2">"</span>
+</code></pre></div>
+<p>Show the trend of the <code>pytest-benchmark</code> results saved in a directory over the last 90 days. The
+Markdown report goes to the standard output and the <code>::warning::</code> annotations of the benchmarks that
+are more than 50% slower than the median of the previous runs go to the standard error. Use
+<code>--kind import</code> for the import time results:</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span><span class="w"> </span>--prune
+feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--kind<span class="w"> </span>import<span class="w"> </span>--threshold<span class="w"> </span><span class="m">30</span>
 </code></pre></div>
 
 
