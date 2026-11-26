@@ -13,7 +13,7 @@ pytest.importorskip("click")
 from click.testing import CliRunner
 
 from feu import __version__
-from feu.cli import cli
+from feu.cli import _use_utf8_streams, cli
 from feu.compat import Target, UnsupportedVersionError
 from feu.install import InstallerSpec
 from feu.testing import click_available
@@ -540,7 +540,11 @@ def write_run(path: Path, median: float, *, days_ago: int) -> None:
 @click_available
 def test_benchmark_trend_no_results(runner: CliRunner, tmp_path: Path) -> None:
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
-    assert (result.exit_code, result.stdout, result.stderr) == (0, "", "No results.\n")
+    assert (result.exit_code, result.stdout, result.stderr) == (
+        0,
+        "",
+        f"No benchmark results (median) in the last 90 days in {tmp_path}.\n",
+    )
 
 
 @click_available
@@ -639,7 +643,7 @@ def test_benchmark_trend_scale_is_not_an_option(runner: CliRunner, tmp_path: Pat
 def test_benchmark_trend_unknown_stat_is_a_usage_error(runner: CliRunner, tmp_path: Path) -> None:
     write_run(tmp_path / "0001_1.json", 0.001, days_ago=1)
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--stat", "unknown"])
-    assert (result.exit_code, "Unknown stat 'unknown'" in result.stderr) == (2, True)
+    assert (result.exit_code, "'unknown' is not one of" in result.stderr) == (2, True)
 
 
 @click_available
@@ -687,3 +691,176 @@ def test_benchmark_trend_foreign_json_is_ignored(runner: CliRunner, tmp_path: Pa
     tmp_path.joinpath("config.json").write_text('{"x": 1}')
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
     assert result.exit_code == 0
+
+
+@click_available
+def test_benchmark_trend_no_results_message_names_the_kind_stat_and_window(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    args = ["benchmark-trend", str(tmp_path), "--kind", "import", "--stat", "min", "--days", "3"]
+    result = runner.invoke(cli, args)
+    assert result.stderr == f"No import results (min) in the last 3 days in {tmp_path}.\n"
+
+
+@click_available
+def test_benchmark_trend_fail_on_regression_exits_one(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "0001_1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "0001_2.json", 0.002, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--fail-on-regression"])
+    assert (result.exit_code, "Regressions" in result.stdout) == (1, True)
+
+
+@click_available
+def test_benchmark_trend_fail_on_regression_without_regression_exits_zero(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    write_run(tmp_path / "0001_1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "0001_2.json", 0.001, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--fail-on-regression"])
+    assert result.exit_code == 0
+
+
+@click_available
+def test_benchmark_trend_regression_exits_zero_by_default(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    write_run(tmp_path / "0001_1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "0001_2.json", 0.002, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert result.exit_code == 0
+
+
+@click_available
+def test_benchmark_trend_fail_on_regression_prunes_before_failing(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    write_run(tmp_path / "0001_old.json", 0.001, days_ago=10)
+    write_run(tmp_path / "0002_1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "0003_2.json", 0.002, days_ago=1)
+    args = ["benchmark-trend", str(tmp_path), "--days", "5", "--prune", "--fail-on-regression"]
+    result = runner.invoke(cli, args)
+    assert (result.exit_code, (tmp_path / "0001_old.json").exists()) == (1, False)
+
+
+@click_available
+def test_benchmark_trend_standard_output_has_only_the_report(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    write_run(tmp_path / "0001_1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "0001_2.json", 0.002, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert "::warning" not in result.stdout
+
+
+@click_available
+def test_benchmark_trend_baseline_runs(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "0001_1.json", 0.001, days_ago=3)
+    write_run(tmp_path / "0001_2.json", 0.004, days_ago=2)
+    write_run(tmp_path / "0001_3.json", 0.005, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--baseline-runs", "1"])
+    assert result.stderr == ""
+
+
+@click_available
+def test_benchmark_trend_window_is_not_an_option(runner: CliRunner, tmp_path: Path) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--window", "2"])
+    assert (result.exit_code, "No such option '--window'" in result.stderr) == (2, True)
+
+
+@click_available
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["--days", "0"],
+        ["--days", "-1"],
+        ["--baseline-runs", "0"],
+        ["--threshold", "0"],
+        ["--threshold", "-5"],
+    ],
+)
+def test_benchmark_trend_out_of_range_is_a_usage_error(
+    runner: CliRunner, tmp_path: Path, args: list[str]
+) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), *args])
+    assert (result.exit_code, result.stdout) == (2, "")
+
+
+@click_available
+def test_benchmark_trend_days_zero_message(runner: CliRunner, tmp_path: Path) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--days", "0"])
+    assert "0 is not in the range x>=1" in result.stderr
+
+
+@click_available
+def test_benchmark_trend_duplicate_label_is_a_usage_error(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    date = datetime.now(tz=UTC) - timedelta(days=1)
+    benchmarks = [
+        {"name": "test_a_benchmark", "fullname": f"t.py::{name}", "stats": {"median": 0.001}}
+        for name in ("A::test_a_benchmark", "B::test_a_benchmark")
+    ]
+    tmp_path.joinpath("0001_1.json").write_text(
+        json.dumps({"datetime": date.isoformat(), "benchmarks": benchmarks})
+    )
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert (result.exit_code, "use label='fullname'" in result.stderr) == (2, True)
+
+
+@click_available
+def test_benchmark_trend_fullname_label(runner: CliRunner, tmp_path: Path) -> None:
+    date = datetime.now(tz=UTC) - timedelta(days=1)
+    benchmarks = [
+        {"name": "test_a_benchmark", "fullname": f"t.py::{name}", "stats": {"median": 0.001}}
+        for name in ("A::test_a_benchmark", "B::test_a_benchmark")
+    ]
+    tmp_path.joinpath("0001_1.json").write_text(
+        json.dumps({"datetime": date.isoformat(), "benchmarks": benchmarks})
+    )
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--label", "fullname"])
+    assert "| t.py::A::test_a_benchmark |" in result.stdout
+
+
+@click_available
+def test_benchmark_trend_unknown_label_is_a_usage_error(runner: CliRunner, tmp_path: Path) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--label", "path"])
+    assert result.exit_code == 2
+
+
+@click_available
+def test_benchmark_trend_two_machines_have_two_sections(runner: CliRunner, tmp_path: Path) -> None:
+    (tmp_path / "linux").mkdir()
+    (tmp_path / "mac").mkdir()
+    write_run(tmp_path / "linux" / "0001_1.json", 0.001, days_ago=1)
+    write_run(tmp_path / "mac" / "0001_1.json", 0.001, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert [line for line in result.stdout.splitlines() if line.startswith("### ")] == [
+        "### linux",
+        "### mac",
+    ]
+
+
+@click_available
+def test_benchmark_trend_writes_utf8(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "0001_1.json", 0.001, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert "µs" in result.stdout
+
+
+@click_available
+@pytest.mark.parametrize("stream", ["stdout", "stderr"])
+def test_use_utf8_streams_reconfigures_the_stream(
+    stream: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = Mock()
+    monkeypatch.setattr(f"sys.{stream}", fake)
+    _use_utf8_streams()
+    fake.reconfigure.assert_called_once_with(encoding="utf-8")
+
+
+def test_use_utf8_streams_ignores_a_stream_without_reconfigure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("sys.stdout", object())
+    monkeypatch.setattr("sys.stderr", object())
+    _use_utf8_streams()

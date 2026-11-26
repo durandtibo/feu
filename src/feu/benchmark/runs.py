@@ -6,7 +6,7 @@ files. The other modules are pure functions of the values it returns.
 
 from __future__ import annotations
 
-__all__ = ["KINDS", "STATS", "Run", "load_runs", "prune_runs"]
+__all__ = ["KINDS", "LABELS", "STATS", "Run", "load_runs", "prune_runs"]
 
 import json
 import math
