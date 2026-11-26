@@ -18,7 +18,8 @@ imports  ->  utils  ->  version  ->  compat  ->  install  ->  cli
 | `install` | The installers, the dependency resolvers, `install_package` and friends.                                                | `installer.py` (subprocess)                        |
 | `cli`     | The `click` commands; they only parse and print.                                                                        | none of its own                                    |
 
-`feu.github` and `feu.local_git` are outside the chain and only use the lower layers.
+`feu.benchmark`, `feu.github` and `feu.local_git` are outside the chain and only use the lower layers
+(`feu.benchmark` uses only the standard library).
 
 ## Data flow
 

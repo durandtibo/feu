@@ -12,7 +12,14 @@ SRC = Path(feu.__file__).parent
 # The imports go one way: a layer imports only the layers on its left.
 LAYERS = ["imports", "utils", "version", "compat", "install", "cli"]
 # Packages that are not part of the chain; they only use the lower layers.
-OTHER_LAYERS = {"github": 2, "local_git": 2, "testing": 5, "__main__": 6, "__init__": 6}
+OTHER_LAYERS = {
+    "benchmark": 1,
+    "github": 2,
+    "local_git": 2,
+    "testing": 5,
+    "__main__": 6,
+    "__init__": 6,
+}
 
 
 def _layer(name: str) -> int | None:

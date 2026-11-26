@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
@@ -522,4 +523,85 @@ def test_package_versions_missing_pyproject_is_a_usage_error(
     runner: CliRunner, tmp_path: Path
 ) -> None:
     result = runner.invoke(cli, ["package-versions", "--pyproject", str(tmp_path / "missing.toml")])
+    assert result.exit_code == 2
+
+
+#####################################
+#     Tests for benchmark-trend     #
+#####################################
+
+
+def write_run(path: Path, median: float, *, days_ago: int) -> None:
+    date = datetime.now(tz=UTC) - timedelta(days=days_ago)
+    bench = {"name": "test_a_benchmark", "stats": {"median": median}}
+    path.write_text(json.dumps({"datetime": date.isoformat(), "benchmarks": [bench]}))
+
+
+@click_available
+def test_benchmark_trend_no_results(runner: CliRunner, tmp_path: Path) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert (result.exit_code, result.stdout, result.stderr) == (0, "", "No results.\n")
+
+
+@click_available
+def test_benchmark_trend_prints_the_report(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "1.json", 0.001, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--days", "5"])
+    assert result.stdout == (
+        "## Benchmarks over the last 5 days (1 runs)\n\n"
+        "| Benchmark | Latest (µs) | First (µs) | Change | Median (µs) | Min (µs) | Max (µs) "
+        "| Runs | Trend |\n"
+        "|---|---:|---:|---:|---:|---:|---:|---:|---|\n"
+        "| a | 1000.0 | 1000.0 | +0.0% | 1000.0 | 1000.0 | 1000.0 | 1 | `▁` |\n"
+    )
+
+
+@click_available
+def test_benchmark_trend_writes_annotations_to_stderr(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "2.json", 0.002, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path)])
+    assert result.stderr == (
+        "::warning title=Regression::a is 100.0% slower than the median of the previous runs "
+        "(2000.0 µs instead of 1000.0 µs)\n"
+    )
+
+
+@click_available
+def test_benchmark_trend_threshold(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "1.json", 0.001, days_ago=2)
+    write_run(tmp_path / "2.json", 0.002, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--threshold", "150"])
+    assert result.stderr == ""
+
+
+@click_available
+def test_benchmark_trend_prune(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "old.json", 0.001, days_ago=10)
+    runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--days", "5", "--prune"])
+    assert not (tmp_path / "old.json").exists()
+
+
+@click_available
+def test_benchmark_trend_import_kind(runner: CliRunner, tmp_path: Path) -> None:
+    date = datetime.now(tz=UTC) - timedelta(days=1)
+    bench = {"name": "test_import", "param": "a", "extra_info": {"import_seconds_median": 0.001}}
+    tmp_path.joinpath("1.json").write_text(
+        json.dumps({"datetime": date.isoformat(), "benchmarks": [bench]})
+    )
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--kind", "import"])
+    assert result.stdout.startswith("## Import time over the last 90 days (1 runs)\n")
+
+
+@click_available
+def test_benchmark_trend_unknown_kind_is_a_usage_error(runner: CliRunner, tmp_path: Path) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--kind", "unknown"])
+    assert result.exit_code == 2
+
+
+@click_available
+def test_benchmark_trend_missing_storage_is_a_usage_error(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path / "missing")])
     assert result.exit_code == 2
