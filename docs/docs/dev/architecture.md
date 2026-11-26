@@ -18,8 +18,24 @@ imports  ->  utils  ->  version  ->  compat  ->  install  ->  cli
 | `install` | The installers, the dependency resolvers, `install_package` and friends.                                                | `installer.py` (subprocess)                        |
 | `cli`     | The `click` commands; they only parse and print.                                                                        | none of its own                                    |
 
-`feu.benchmark`, `feu.github` and `feu.local_git` are outside the chain and only use the lower layers
-(`feu.benchmark` uses only the standard library).
+`feu.benchmark`, `feu.github`, `feu.local_git` and `feu.testing` are outside the chain and only use
+the lower layers (`feu.benchmark` uses only the standard library).
+
+| Package         | What it does                                                                                 | Extra      |
+| --------------- | -------------------------------------------------------------------------------------------- | ---------- |
+| `feu.github`    | The metadata of a repository and of the repositories of an owner, from the GitHub API.       | `requests` |
+| `feu.local_git` | The tags of the local git repository, and the last (version) tag.                            | `git`      |
+| `feu.testing`   | The `pytest` marks `<name>_available` and `<name>_not_available` for the optional libraries. | none       |
+| `feu.benchmark` | The trend of the `pytest-benchmark` results, see below.                                      | none       |
+
+## Public names and lazy imports
+
+`import feu` imports no submodule. The names of `feu.__all__` (`find_closest_version`,
+`install_package`, `is_package_available`, ...) are resolved on first use by the `__getattr__` that
+`feu.imports.lazy_exports` builds from a table `{name: module}`. This keeps `import feu` cheap and
+independent of the optional libraries, and `tests/integration/test_import_weight.py` checks that no optional library is imported. A
+module that needs an optional library calls `check_<package>()` (for example `check_requests()`)
+inside the function that uses it, never at import time.
 
 ## `feu.benchmark`
 
