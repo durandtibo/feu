@@ -1,0 +1,80 @@
+{
+    "machine_info": {
+        "node": "Thibauts-MacBook-Pro.local",
+        "processor": "arm",
+        "machine": "arm64",
+        "python_implementation": "CPython",
+        "python_version": "3.15.2",
+        "system": "Darwin"
+    },
+    "commit_info": {
+        "id": "0000000000000000000000000000000000000000",
+        "time": "2026-11-26T00:00:00+00:00",
+        "author_time": "2026-11-26T00:00:00+00:00",
+        "dirty": false,
+        "project": "feu",
+        "branch": "main"
+    },
+    "benchmarks": [
+        {
+            "group": null,
+            "name": "test_sort_benchmark[10]",
+            "fullname": "test_x_benchmark.py::test_sort_benchmark[10]",
+            "params": {
+                "n": 10
+            },
+            "param": "10",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "precision": null,
+                "confidence": null,
+                "warmup": false
+            },
+            "stats": {
+                "min": 1.4832941815257074e-07,
+                "max": 1.0670803021639585e-06,
+                "mean": 1.5441124752370315e-07,
+                "stddev": 1.2830894752958217e-08,
+                "rounds": 61069,
+                "median": 1.5291967429220676e-07,
+                "iterations": 100
+            }
+        },
+        {
+            "group": null,
+            "name": "test_sort_benchmark[20]",
+            "fullname": "test_x_benchmark.py::test_sort_benchmark[20]",
+            "params": {
+                "n": 20
+            },
+            "param": "20",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "precision": null,
+                "confidence": null,
+                "warmup": false
+            },
+            "stats": {
+                "min": 1.795799471437931e-07,
+                "max": 3.807124914601445e-05,
+                "mean": 1.9103214375260296e-07,
+                "stddev": 2.2266617490767853e-07,
+                "rounds": 49080,
+                "median": 1.8457998521625995e-07,
+                "iterations": 100
+            }
+        }
+    ],
+    "datetime": "2026-11-01T10:00:00.000000+00:00",
+    "version": "5.3.1"
+}

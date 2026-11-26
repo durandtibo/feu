@@ -36,6 +36,8 @@ __all__ = [
     "polars_not_available",
     "pyarrow_available",
     "pyarrow_not_available",
+    "pytest_benchmark_available",
+    "pytest_benchmark_not_available",
     "requests_available",
     "requests_not_available",
     "rich_available",
@@ -115,6 +117,11 @@ polars_available, polars_not_available = _skipif_marks(is_package_available("pol
 pyarrow_available: pytest.MarkDecorator
 pyarrow_not_available: pytest.MarkDecorator
 pyarrow_available, pyarrow_not_available = _skipif_marks(is_package_available("pyarrow"), "pyarrow")
+pytest_benchmark_available: pytest.MarkDecorator
+pytest_benchmark_not_available: pytest.MarkDecorator
+pytest_benchmark_available, pytest_benchmark_not_available = _skipif_marks(
+    is_package_available("pytest_benchmark"), "pytest-benchmark"
+)
 requests_available: pytest.MarkDecorator
 requests_not_available: pytest.MarkDecorator
 requests_available, requests_not_available = _skipif_marks(is_requests_available(), "requests")
