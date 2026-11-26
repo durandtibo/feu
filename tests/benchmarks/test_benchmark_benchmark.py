@@ -1,5 +1,5 @@
-r"""Benchmarks for ``feu.benchmark``, the package that reports the trend of
-the benchmarks.
+r"""Benchmarks for ``feu.benchmark``, the package that reports the trend
+of the benchmarks.
 
 The storage is a set of results written like ``pytest-benchmark`` does
 (``<storage>/<machine>/NNNN_<name>.json``), so that the load is measured
