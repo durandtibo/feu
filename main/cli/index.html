@@ -1359,10 +1359,8 @@ is no result in the window.</p>
     storage: The pytest-benchmark storage directory.
     kind: The kind of results: <code>'benchmark'</code> or <code>'import'</code>.
     unit: The unit of the times in the report (<code>'s'</code>, <code>'ms'</code>,
-        <code>'us'</code> or <code>'ns'</code>, or any name if <code>scale</code> is given),
-        or <code>None</code> for the default unit of the kind.
-    scale: The conversion from seconds to <code>unit</code>, or <code>None</code> for
-        the scale of <code>unit</code>. It requires <code>unit</code>.
+        <code>'us'</code> or <code>'ns'</code>), or <code>None</code> for the default unit of
+        the kind.
     stat: The statistic of the times e.g. <code>'median'</code>, <code>'mean'</code>
         or <code>'min'</code>. The <code>import</code> kind ignores the benchmarks
         that do not have it. The exit status is <code>2</code> if the
@@ -1383,13 +1381,9 @@ is no result in the window.</p>
 <div class="highlight"><pre><span></span><code>  --kind [benchmark|import]  The kind of results: the median time of the
                              benchmarks, or the import time.  [default:
                              benchmark]
-  --unit TEXT                The unit of the times in the report: ms, ns, s,
-                             us, µs, or any name with --scale. Default: 'us'
-                             for the benchmark kind and 'ms' for the import
-                             kind.
-  --scale FLOAT              The conversion from seconds to --unit e.g. 1000
-                             for 'ms'. Default: the scale of the unit. It
-                             requires --unit.
+  --unit [s|ms|us|ns]        The unit of the times in the report. Default:
+                             'us' for the benchmark kind and 'ms' for the
+                             import kind.
   --stat TEXT                The statistic of the times e.g. 'median', 'mean'
                              or 'min'.  [default: median]
   --days INTEGER             Size of the window in days.  [default: 90]
@@ -1583,9 +1577,6 @@ reads <code>import_seconds_&lt;stat&gt;</code> of the <code>extra_info</code>:</
 <p>Show the times in another unit with <code>--unit</code> (<code>s</code>, <code>ms</code>, <code>us</code> or <code>ns</code>). The default is <code>us</code> for the
 <code>benchmark</code> kind and <code>ms</code> for the <code>import</code> kind:</p>
 <div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--unit<span class="w"> </span>ms
-</code></pre></div>
-<p>For another unit, set its name with <code>--unit</code> and its conversion from seconds with <code>--scale</code>:</p>
-<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--unit<span class="w"> </span>min<span class="w"> </span>--scale<span class="w"> </span><span class="m">0</span>.0166667
 </code></pre></div>
 
 
