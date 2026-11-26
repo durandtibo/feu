@@ -99,3 +99,10 @@ are more than 50% slower than the median of the previous runs go to the standard
 feu benchmark-trend .benchmarks --days 90 --prune
 feu benchmark-trend .benchmarks --kind import --threshold 30
 ```
+
+Use another statistic of the times with `--stat` (for example `mean` or `min`). The `import` kind
+reads `import_seconds_<stat>` of the `extra_info`:
+
+```shell
+feu benchmark-trend .benchmarks --stat mean
+```

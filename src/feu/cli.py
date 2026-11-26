@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import click
 
 from feu import __version__
-from feu.benchmark import KINDS, build_trend_report
+from feu.benchmark import KINDS, UnknownStatError, build_trend_report
 from feu.compat import (
     UnsupportedVersionError,
     find_closest_version as find_closest_version_,
@@ -315,6 +315,13 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     help="The kind of results: the median time of the benchmarks, or the import time.",
 )
 @click.option(
+    "--stat",
+    "stat",
+    default="median",
+    show_default=True,
+    help="The statistic of the times e.g. 'median', 'mean' or 'min'.",
+)
+@click.option(
     "--days", "days", type=int, default=90, show_default=True, help="Size of the window in days."
 )
 @click.option("--prune", is_flag=True, help="Delete the results older than the window.")
@@ -335,7 +342,7 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     help="Slowdown in percent above which a benchmark is a regression.",
 )
 def benchmark_trend(
-    storage: Path, kind: str, days: int, *, prune: bool, window: int, threshold: float
+    storage: Path, kind: str, stat: str, days: int, *, prune: bool, window: int, threshold: float
 ) -> None:
     r"""Print the trend of the pytest-benchmark results.
 
@@ -348,6 +355,10 @@ def benchmark_trend(
     Args:
         storage: The pytest-benchmark storage directory.
         kind: The kind of results: ``'benchmark'`` or ``'import'``.
+        stat: The statistic of the times e.g. ``'median'``, ``'mean'``
+            or ``'min'``. The ``import`` kind ignores the benchmarks
+            that do not have it. The exit status is ``2`` if the
+            ``benchmark`` kind does not have it.
         days: The size of the window in days.
         prune: If ``True``, delete the results older than the window.
         window: The maximum number of previous runs used to detect
@@ -361,9 +372,18 @@ def benchmark_trend(
 
         ```
     """
-    result = build_trend_report(
-        storage, kind=KINDS[kind], days=days, prune=prune, window=window, threshold=threshold
-    )
+    try:
+        result = build_trend_report(
+            storage,
+            kind=KINDS[kind],
+            stat=stat,
+            days=days,
+            prune=prune,
+            window=window,
+            threshold=threshold,
+        )
+    except UnknownStatError as exc:
+        raise click.UsageError(exc.args[0]) from exc
     if result is None:
         click.echo("No results.", err=True)
         return
