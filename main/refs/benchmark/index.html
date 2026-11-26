@@ -758,6 +758,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#feu.benchmark.Regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#feu.benchmark.Run" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -944,6 +955,17 @@
   
     <nav class="md-nav" aria-label="trend">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.trend.Regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#feu.benchmark.trend.TrendKind" class="md-nav__link">
@@ -1369,6 +1391,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#feu.benchmark.Regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#feu.benchmark.Run" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1557,6 +1590,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#feu.benchmark.trend.Regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#feu.benchmark.trend.TrendKind" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1708,6 +1752,159 @@
 
 
 
+<h3 id="feu.benchmark.Regression" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">feu.benchmark.Regression</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#feu.benchmark.Regression" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Store a benchmark that is slower than its recent median.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>machine</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The machine of the runs, see <code>Run</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>label</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The label of the benchmark.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>latest</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The time in seconds of the latest run.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>baseline</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The median time in seconds of the previous runs.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>change</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The slowdown in percent.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Regression</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Regression</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"sort"</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span><span class="o">.</span><span class="n">change</span>
+<span class="go">100.0</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h3 id="feu.benchmark.Run" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">feu.benchmark.Run</span>
 
@@ -1787,6 +1984,29 @@ read-only.</p>
             </td>
             <td>
                 <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a time is not a finite number greater than zero.</p>
+              </div>
             </td>
           </tr>
       </tbody>
@@ -2005,7 +2225,7 @@ read-only.</p>
     <span class="n">stat</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></span><span class="p">,</span>
     <span class="n">days</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
     <span class="n">prune</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="n">baseline_runs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
@@ -2117,15 +2337,15 @@ load fails.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>window</code>
+                <code>baseline_runs</code>
             </td>
             <td>
                   <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The maximum number of previous runs used to detect the
-regressions.</p>
+                <p>The maximum number of previous runs used to
+detect the regressions.</p>
               </div>
             </td>
             <td>
@@ -2215,24 +2435,31 @@ invalid, see <code>load_runs</code>.</p>
 
 <a href="#feu.benchmark.find_regressions" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">find_regressions</span><span class="p">(</span>
-    <span class="n">runs</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
+    <span class="n">runs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
 
 
   
       dataclass
   " href="#feu.benchmark.runs.Run">Run</a></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="n">baseline_runs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Regression">Regression</span></span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Find the benchmarks slower than their recent median.</p>
 <p>The latest run is compared with the median of the previous runs
-(at most <code>window</code>), which is more stable than the comparison with
-one run because the runners are noisy.</p>
+(at most <code>baseline_runs</code>), which is more stable than the
+comparison with one run because the runners are noisy. The runs of
+different machines are never compared with each other: each
+machine has its own latest run and its own baseline.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2251,7 +2478,7 @@ one run because the runners are noisy.</p>
                 <code>runs</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
 
 
   
@@ -2269,14 +2496,15 @@ one run because the runners are noisy.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>window</code>
+                <code>baseline_runs</code>
             </td>
             <td>
                   <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The maximum number of previous runs used for the median.</p>
+                <p>The maximum number of previous runs used for
+the median. It must be at least 1.</p>
               </div>
             </td>
             <td>
@@ -2293,7 +2521,7 @@ one run because the runners are noisy.</p>
             <td>
               <div class="doc-md-description">
                 <p>The slowdown in percent above which a benchmark is
-a regression.</p>
+a regression. It must be greater than 0.</p>
               </div>
             </td>
             <td>
@@ -2315,19 +2543,58 @@ a regression.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="list">list</span>[<span title="feu.benchmark.trend.Regression">Regression</span>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The regressions sorted by decreasing change, each one as
-<code>(label, latest, median of the previous runs, change in
-percent)</code>. It is empty if there are fewer than two runs.</p>
+                <p>The regressions sorted by decreasing change, then by label and
+machine. It is empty if no machine has two runs.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>baseline_runs</code> is less than 1 or
+<code>threshold</code> is not greater than 0.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Run</span><span class="p">,</span> <span class="n">find_regressions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">}),</span> <span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort"</span><span class="p">:</span> <span class="mf">0.003</span><span class="p">})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_regressions</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>
+<span class="go">[Regression(machine='', label='sort', latest=0.003, baseline=0.001, change=200.0)]</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -2553,7 +2820,12 @@ of a run have the same label.</p>
 
 <a href="#feu.benchmark.make_annotations" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_annotations</span><span class="p">(</span>
-    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Regression">Regression</span></span><span class="p">],</span>
+    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
@@ -2585,7 +2857,12 @@ of a run have the same label.</p>
                 <code>regressions</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<span title="feu.benchmark.trend.Regression">Regression</span>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2657,7 +2934,12 @@ of a run have the same label.</p>
 
 <a href="#feu.benchmark.make_regression_report" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_regression_report</span><span class="p">(</span>
-    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Regression">Regression</span></span><span class="p">],</span>
+    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
@@ -2689,7 +2971,12 @@ of a run have the same label.</p>
                 <code>regressions</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<span title="feu.benchmark.trend.Regression">Regression</span>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3379,6 +3666,29 @@ read-only.</p>
     </table>
 
 
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a time is not a finite number greater than zero.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
 <details class="example" open>
   <summary>Example</summary>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
@@ -3808,6 +4118,159 @@ median, and make a Markdown table.</p>
 
 
 
+<h3 id="feu.benchmark.trend.Regression" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">feu.benchmark.trend.Regression</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#feu.benchmark.trend.Regression" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Store a benchmark that is slower than its recent median.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>machine</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The machine of the runs, see <code>Run</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>label</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The label of the benchmark.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>latest</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The time in seconds of the latest run.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>baseline</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The median time in seconds of the previous runs.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>change</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The slowdown in percent.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Regression</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Regression</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"sort"</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span><span class="o">.</span><span class="n">change</span>
+<span class="go">100.0</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h3 id="feu.benchmark.trend.TrendKind" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">feu.benchmark.trend.TrendKind</span>
 
@@ -3978,7 +4441,7 @@ median, and make a Markdown table.</p>
     <span class="n">stat</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></span><span class="p">,</span>
     <span class="n">days</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
     <span class="n">prune</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="n">baseline_runs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
@@ -4090,15 +4553,15 @@ load fails.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>window</code>
+                <code>baseline_runs</code>
             </td>
             <td>
                   <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The maximum number of previous runs used to detect the
-regressions.</p>
+                <p>The maximum number of previous runs used to
+detect the regressions.</p>
               </div>
             </td>
             <td>
@@ -4188,24 +4651,31 @@ invalid, see <code>load_runs</code>.</p>
 
 <a href="#feu.benchmark.trend.find_regressions" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">find_regressions</span><span class="p">(</span>
-    <span class="n">runs</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
+    <span class="n">runs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
 
 
   
       dataclass
   " href="#feu.benchmark.runs.Run">Run</a></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="n">baseline_runs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Regression">Regression</span></span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Find the benchmarks slower than their recent median.</p>
 <p>The latest run is compared with the median of the previous runs
-(at most <code>window</code>), which is more stable than the comparison with
-one run because the runners are noisy.</p>
+(at most <code>baseline_runs</code>), which is more stable than the
+comparison with one run because the runners are noisy. The runs of
+different machines are never compared with each other: each
+machine has its own latest run and its own baseline.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4224,7 +4694,7 @@ one run because the runners are noisy.</p>
                 <code>runs</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.runs.Run
 
 
   
@@ -4242,14 +4712,15 @@ one run because the runners are noisy.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>window</code>
+                <code>baseline_runs</code>
             </td>
             <td>
                   <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The maximum number of previous runs used for the median.</p>
+                <p>The maximum number of previous runs used for
+the median. It must be at least 1.</p>
               </div>
             </td>
             <td>
@@ -4266,7 +4737,7 @@ one run because the runners are noisy.</p>
             <td>
               <div class="doc-md-description">
                 <p>The slowdown in percent above which a benchmark is
-a regression.</p>
+a regression. It must be greater than 0.</p>
               </div>
             </td>
             <td>
@@ -4288,19 +4759,58 @@ a regression.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="list">list</span>[<span title="feu.benchmark.trend.Regression">Regression</span>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The regressions sorted by decreasing change, each one as
-<code>(label, latest, median of the previous runs, change in
-percent)</code>. It is empty if there are fewer than two runs.</p>
+                <p>The regressions sorted by decreasing change, then by label and
+machine. It is empty if no machine has two runs.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>baseline_runs</code> is less than 1 or
+<code>threshold</code> is not greater than 0.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Run</span><span class="p">,</span> <span class="n">find_regressions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">}),</span> <span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort"</span><span class="p">:</span> <span class="mf">0.003</span><span class="p">})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_regressions</span><span class="p">(</span><span class="n">runs</span><span class="p">)</span>
+<span class="go">[Regression(machine='', label='sort', latest=0.003, baseline=0.001, change=200.0)]</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -4315,7 +4825,12 @@ percent)</code>. It is empty if there are fewer than two runs.</p>
 
 <a href="#feu.benchmark.trend.make_annotations" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_annotations</span><span class="p">(</span>
-    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Regression">Regression</span></span><span class="p">],</span>
+    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
@@ -4347,7 +4862,12 @@ percent)</code>. It is empty if there are fewer than two runs.</p>
                 <code>regressions</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<span title="feu.benchmark.trend.Regression">Regression</span>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4419,7 +4939,12 @@ percent)</code>. It is empty if there are fewer than two runs.</p>
 
 <a href="#feu.benchmark.trend.make_regression_report" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_regression_report</span><span class="p">(</span>
-    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Regression">Regression</span></span><span class="p">],</span>
+    <span class="n">regressions</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
@@ -4451,7 +4976,12 @@ percent)</code>. It is empty if there are fewer than two runs.</p>
                 <code>regressions</code>
             </td>
             <td>
-                  <code><span title="list">list</span>[<span title="feu.benchmark.trend.Regression">Regression</span>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.benchmark.trend.Regression
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.Regression">Regression</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
