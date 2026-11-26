@@ -3000,12 +3000,17 @@ statistic that pytest-benchmark did not save.</p>
 
 
 <a href="#feu.benchmark.with_unit" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_unit</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_unit</span><span class="p">(</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
 
   
       dataclass
-  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
 
   
@@ -3059,12 +3064,30 @@ statistic that pytest-benchmark did not save.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The new unit, one of the keys of <code>UNITS</code>: <code>"s"</code>,
-<code>"ms"</code>, <code>"us"</code> (or <code>"µs"</code>) and <code>"ns"</code>.</p>
+                <p>The new unit. It is one of the keys of <code>UNITS</code>
+(<code>"s"</code>, <code>"ms"</code>, <code>"us"</code>, <code>"µs"</code> and <code>"ns"</code>) unless
+<code>scale</code> is given.</p>
               </div>
             </td>
             <td>
                 <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The conversion from seconds to <code>unit</code>. If <code>None</code>,
+the scale of <code>unit</code> in <code>UNITS</code> is used.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -3115,7 +3138,8 @@ shown as <code>"µs"</code>.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If the unit is unknown.</p>
+                <p>If the unit is not in <code>UNITS</code> and <code>scale</code> is
+not given, or if <code>scale</code> is not positive.</p>
               </div>
             </td>
           </tr>
@@ -3130,6 +3154,8 @@ shown as <code>"µs"</code>.</p>
 <span class="go">'ms'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span>
 <span class="go">1000.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">'min'</span>
 </code></pre></div>
 </details>
 
@@ -4468,12 +4494,17 @@ statistic that pytest-benchmark did not save.</p>
 
 
 <a href="#feu.benchmark.trend.with_unit" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_unit</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_unit</span><span class="p">(</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
 
   
       dataclass
-  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
 
 
   
@@ -4527,12 +4558,30 @@ statistic that pytest-benchmark did not save.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The new unit, one of the keys of <code>UNITS</code>: <code>"s"</code>,
-<code>"ms"</code>, <code>"us"</code> (or <code>"µs"</code>) and <code>"ns"</code>.</p>
+                <p>The new unit. It is one of the keys of <code>UNITS</code>
+(<code>"s"</code>, <code>"ms"</code>, <code>"us"</code>, <code>"µs"</code> and <code>"ns"</code>) unless
+<code>scale</code> is given.</p>
               </div>
             </td>
             <td>
                 <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The conversion from seconds to <code>unit</code>. If <code>None</code>,
+the scale of <code>unit</code> in <code>UNITS</code> is used.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -4583,7 +4632,8 @@ shown as <code>"µs"</code>.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>If the unit is unknown.</p>
+                <p>If the unit is not in <code>UNITS</code> and <code>scale</code> is
+not given, or if <code>scale</code> is not positive.</p>
               </div>
             </td>
           </tr>
@@ -4598,6 +4648,8 @@ shown as <code>"µs"</code>.</p>
 <span class="go">'ms'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span>
 <span class="go">1000.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">'min'</span>
 </code></pre></div>
 </details>
 
