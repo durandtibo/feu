@@ -54,7 +54,7 @@ The trigger of a reusable workflow is `workflow_call`: it runs when another work
 | `nightly-test-package-dep.yaml`      | called by `nightly-package.yaml`            | Test the installed PyPI package with the supported versions of one dependency.                          |
 | `nightly-test-package-extras.yaml`   | called by `nightly-package.yaml`            | Check that each extra of the PyPI package installs.                                                     |
 | `nightly-verify-compat.yaml`         | weekly (Wednesday), manual                  | Install every recorded compatible package version combination to catch drift in the compatibility data. |
-| `release-pypi.yaml`                  | version tag `v*.*.*`, manual                | Build and publish the package to PyPI.                                                                  |
+| `release-pypi.yaml`                  | version tag `v*.*.*`, manual                | Run `ci.yaml`, then build, sign, attest (SLSA, GitHub provenance) and publish the package to PyPI.      |
 | `release-docs.yaml`                  | version tag `v*.*.*`, manual                | Deploy the documentation of the stable version (with `mike`).                                           |
 | `release-docs-dev.yaml`              | push to `main`, manual                      | Deploy the documentation of the development version.                                                    |
 | `release-docs-publish.yaml`          | called by the two previous workflows        | Build and deploy the documentation (shared logic).                                                      |
