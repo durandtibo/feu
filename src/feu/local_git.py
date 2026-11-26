@@ -25,7 +25,8 @@ def get_tags() -> list[git.TagReference]:
 
     The repository is searched from the current working directory
     and its parent directories. The tags are sorted by the commit
-    date of the commit they point to.
+    date of the commit they point to. The repository is closed before
+    returning, so that no ``git`` helper process is left running.
 
     Returns:
         The list of git tags sorted by commit date/time, from the
@@ -35,9 +36,6 @@ def get_tags() -> list[git.TagReference]:
         MissingPackageError: if the ``gitpython`` package is not installed.
         git.InvalidGitRepositoryError: if the current directory is
             not in a git repository.
-
-    The repository is closed before returning, so that no ``git``
-    helper process is left running.
 
     Example:
         ```pycon

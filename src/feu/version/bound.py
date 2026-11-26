@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class PackageBounds:
     """Lower and upper version bounds for a package dependency.
 
-    Attributes:
+    Args:
         name: The canonical package name as declared in the dependency
             specifier.
         lower: The lower bound version string (from ``>=`` or ``>``

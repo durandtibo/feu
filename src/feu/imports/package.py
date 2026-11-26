@@ -98,8 +98,10 @@ class MissingPackageError(ModuleNotFoundError, RuntimeError):
     r"""Raised when an optional package is required but not installed.
 
     It is a ``ModuleNotFoundError`` (so ``except ImportError`` works as
-    expected). It also derives from ``RuntimeError``, which this error
-    used to be, so existing ``except RuntimeError`` code keeps working.
+    expected) and a ``RuntimeError`` (so ``except RuntimeError`` works
+    too). Its ``name`` attribute is the name of the missing package,
+    and its message gives the ``pip install`` and ``uv pip install``
+    commands.
 
     Example:
         ```pycon

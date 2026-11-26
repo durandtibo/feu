@@ -3,8 +3,8 @@ r"""Contain the command line interface.
 The command line interface requires the ``click`` package, which can be
 installed with ``pip install 'feu[cli]'``. It provides the commands
 ``install``, ``find-closest-version``, ``check-valid-version``,
-``package-versions`` and ``benchmark-trend``, which are run with ``feu <command>`` or ``python
--m feu <command>``.
+``package-versions`` and ``benchmark-trend``. They are run with
+``feu <command>`` or ``python -m feu <command>``.
 
 The standard output holds only the answer of a command (it is used in
 ``$(...)``), the logs and the error messages go to the standard error,
@@ -87,7 +87,12 @@ def target_options(function: F) -> F:
 @click.version_option(__version__, "--version", prog_name="feu")
 @click.option("--verbose", is_flag=True, help="Log the executed commands on the standard error.")
 def cli(*, verbose: bool) -> None:
-    r"""Implement the main entrypoint, which groups the commands."""
+    r"""Implement the main entrypoint, which groups the commands.
+
+    Args:
+        verbose: If ``True``, log the executed commands on the
+            standard error.
+    """
     if verbose:
         logging.basicConfig(level=logging.INFO, stream=sys.stderr, format="%(message)s")
 
@@ -220,9 +225,12 @@ def check_valid_version(
 ) -> None:
     r"""Print if a package version is valid for a target.
 
-    ``True`` is printed and the exit status is ``0`` if the version is
-    valid or if the package is not configured for the target. Otherwise
-    ``False`` is printed and the exit status is ``1``.
+    ``True`` is printed and the exit status is ``0`` if the version
+    request is valid. Otherwise ``False`` is printed and the exit
+    status is ``1``. An exact version of a package that has no data is
+    valid, whereas a wildcard or an empty request of such a package is
+    not (see ``feu.compat.is_valid_version``). The exit status is ``2``
+    if the version request is malformed.
 
     Args:
         pkg_name: The package name.

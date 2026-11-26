@@ -1,9 +1,45 @@
 r"""Root package of ``feu``.
 
+``feu`` is a lightweight library to manage Python packages and their
+versions across Python environments. The only required dependency is
+``packaging``. The optional libraries (``click``, ``gitpython``,
+``requests`` and ``rich``) are imported lazily, and a feature that
+needs one of them raises ``feu.imports.MissingPackageError`` if it is
+missing.
+
+The main functions and classes are available from this package:
+
+- ``is_package_available`` and ``is_module_available``: check if a
+  package or a module can be used.
+- ``get_package_version`` and ``compare_version``: read the installed
+  version of a package and compare it to a version.
+- ``Target`` and ``resolve_target``: the environment (Python version,
+  free-threaded flag, OS and CPU architecture) a compatibility answer
+  is about.
+- ``is_valid_version`` and ``find_closest_version``: check a version
+  request against a target, or find the closest valid version. A
+  version request is an exact version (``"2.4.0"``), a wildcard
+  (``"2.4.*"``) or ``""`` for the latest version.
+- ``install_package`` and ``install_package_closest_version``: install
+  a package, as written or at the closest valid version.
+  ``InstallerSpec`` and ``PackageSpec`` describe the installer and the
+  package.
+
 The public names are imported lazily (PEP 562): ``import feu`` does not
 import any submodule, so it does not import any optional library. ``from
 feu import compare_version`` imports ``feu.version`` the first time it
 is used.
+
+Example:
+    ```pycon
+    >>> from feu import is_package_available
+    >>> from feu.compat import Target, find_closest_version
+    >>> is_package_available("packaging")
+    True
+    >>> find_closest_version("numpy", "2.3.0", Target(python_version="3.9"))
+    '2.0.2'
+
+    ```
 """
 
 from __future__ import annotations

@@ -683,9 +683,9 @@ class CompatRegistry:
                 the ones of the version source (downloaded when the
                 method is called). The list is empty if the package
                 has no data, if no version is valid for the target, or
-                if nothing matches. A package
-                that has no configuration for the target accepts every
-                known version.
+                if nothing matches. A package that has no
+                configuration for the target accepts every known
+                version.
 
         Raises:
             ValueError: If ``pkg_version`` is not a valid version

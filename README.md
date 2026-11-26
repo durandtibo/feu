@@ -53,7 +53,10 @@ packages and their versions across different Python environments.
 - 🌿 **Git and GitHub utilities**: Get the tags of a local repository, and fetch and sort
   repository metadata from the GitHub API
 - 🖥️ **CLI tools**: Command-line interface (`feu`) to install a package, find the closest valid
-  version, check if a version is valid and list the versions to test (`pip install 'feu[cli]'`)
+  version, check if a version is valid, list the versions to test and follow the trend of
+  `pytest-benchmark` results (`pip install 'feu[cli]'`)
+- 🧩 **Extensible**: Register your own installers (`pip` and `uv` are built in), dependency
+  resolvers and compatibility constraints
 - 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
 
 ### Quick Example
@@ -88,7 +91,31 @@ feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.
 feu install --pkg-name=numpy --pkg-version=2.0.2
 ```
 
-`python -m feu ...` is equivalent.
+`python -m feu ...` is equivalent. The commands are `install`, `find-closest-version`,
+`check-valid-version`, `package-versions` and `benchmark-trend`.
+
+### Main API
+
+| Name                                                 | What it does                                                                 |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `is_package_available`, `is_module_available`        | Check if a package is installed, or a module can be imported (cached)        |
+| `get_package_version`, `compare_version`             | Read the installed version of a package, and compare it to a version         |
+| `Target`, `resolve_target`                           | The environment (Python version, free-threaded flag, OS, architecture)       |
+| `is_valid_version`, `find_closest_version`           | Validate a version request for a target, or find the closest valid version   |
+| `install_package`, `install_package_closest_version` | Install a package as written, or at the closest valid version for the target |
+| `PackageSpec`, `InstallerSpec`                       | Describe the package (name, version request, extras) and the installer       |
+
+All of them can be imported from `feu`. The other modules are `feu.compat` (registry, discovery from
+PyPI), `feu.install` (installers, dependency resolvers), `feu.version` (version utilities, PyPI and
+`pyproject.toml`), `feu.imports` (optional dependencies), `feu.testing` (`pytest` marks),
+`feu.benchmark`, `feu.github` and `feu.local_git`.
+
+### Version requests
+
+Wherever a function takes the version of a package to install or to validate, it accepts a
+_version request_: an exact version (`2.4.0`), a wildcard (`2.4.*`, `2.*`) or an empty string (the
+latest version). A wildcard is matched against the versions published on PyPI when it is resolved,
+so it needs network access and the `requests` extra.
 
 ### Why feu?
 
