@@ -147,10 +147,14 @@ def is_valid_version(
             default registry.
 
     Returns:
-        ``True`` if valid or unconfigured, ``False`` otherwise,
-            including when no package version is valid for the
-            target. A wildcard or empty request is valid if a known
-            compatible version satisfies it.
+        For an exact version: ``True`` if it is valid or if the
+            package is unconfigured, ``False`` otherwise, including
+            when no package version is valid for the target. For a
+            wildcard: ``True`` if a known compatible version satisfies
+            it. For the latest version: ``True`` if the registry has
+            data for the package and a version is valid for the
+            target. A package without data is therefore valid for an
+            exact version only.
 
     Raises:
         ValueError: If ``pkg_version`` is not a valid version request.

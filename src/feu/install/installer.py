@@ -39,12 +39,12 @@ def normalize_arguments(arguments: str | Sequence[str]) -> tuple[str, ...]:
     r"""Normalize the arguments of an installer to a tuple of strings.
 
     A string is split once with ``shlex.split`` (POSIX rules, on every
-    platform). A sequence of strings is converted to a tuple and is not
-    split again.
+    platform). A list or a tuple of strings is converted to a tuple and is
+    not split again.
 
     Args:
         arguments: The installer arguments, as one string e.g.
-            ``"-U --pre"`` or as a sequence of arguments.
+            ``"-U --pre"`` or as a list or a tuple of arguments.
 
     Returns:
         The arguments as a tuple of strings.

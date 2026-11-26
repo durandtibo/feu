@@ -12,7 +12,7 @@ _ARCH_NAMES = {"x86_64": "x86_64", "amd64": "x86_64", "aarch64": "arm64", "arm64
 
 
 def get_current_os() -> str | None:
-    r"""Return the current OS name using the registry's vocabulary.
+    r"""Return the current OS name using the vocabulary of ``Target``.
 
     The value returned by ``platform.system()`` is mapped to one of
     ``"linux"``, ``"macos"``, or ``"windows"``.
@@ -32,8 +32,8 @@ def get_current_os() -> str | None:
 
 
 def get_current_arch() -> str | None:
-    r"""Return the current CPU architecture using the registry's
-    vocabulary.
+    r"""Return the current CPU architecture using the vocabulary of
+    ``Target``.
 
     The value returned by ``platform.machine()`` is mapped to one of
     ``"x86_64"`` or ``"arm64"``.
