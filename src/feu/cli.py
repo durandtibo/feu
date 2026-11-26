@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import click
 
 from feu import __version__
-from feu.benchmark import TREND_KINDS, UNITS, build_trend_report, with_unit
+from feu.benchmark import KINDS, UNITS, load_runs, make_report, prune_runs
 from feu.compat import (
     UnsupportedVersionError,
     find_closest_version as find_closest_version_,
@@ -309,7 +309,7 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
 @click.option(
     "--kind",
     "kind",
-    type=click.Choice(sorted(TREND_KINDS)),
+    type=click.Choice(KINDS),
     default="benchmark",
     show_default=True,
     help="The kind of results: the median time of the benchmarks, or the import time.",
@@ -317,17 +317,10 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
 @click.option(
     "--unit",
     "unit",
+    type=click.Choice(list(UNITS)),
     default=None,
-    help=f"The unit of the times in the report: {', '.join(sorted(UNITS))}, or any name with "
-    "--scale. Default: 'us' for the benchmark kind and 'ms' for the import kind.",
-)
-@click.option(
-    "--scale",
-    "scale",
-    type=float,
-    default=None,
-    help="The conversion from seconds to --unit e.g. 1000 for 'ms'. Default: the scale of the "
-    "unit. It requires --unit.",
+    help="The unit of the times in the report. Default: 'us' for the benchmark kind and 'ms' "
+    "for the import kind.",
 )
 @click.option(
     "--stat",
@@ -361,7 +354,6 @@ def benchmark_trend(
     *,
     kind: str,
     unit: str | None,
-    scale: float | None,
     stat: str,
     days: int,
     prune: bool,
@@ -380,10 +372,8 @@ def benchmark_trend(
         storage: The pytest-benchmark storage directory.
         kind: The kind of results: ``'benchmark'`` or ``'import'``.
         unit: The unit of the times in the report (``'s'``, ``'ms'``,
-            ``'us'`` or ``'ns'``, or any name if ``scale`` is given),
-            or ``None`` for the default unit of the kind.
-        scale: The conversion from seconds to ``unit``, or ``None`` for
-            the scale of ``unit``. It requires ``unit``.
+            ``'us'`` or ``'ns'``), or ``None`` for the default unit of
+            the kind.
         stat: The statistic of the times e.g. ``'median'``, ``'mean'``
             or ``'min'``. The ``import`` kind ignores the benchmarks
             that do not have it. The exit status is ``2`` if the
@@ -401,31 +391,28 @@ def benchmark_trend(
 
         ```
     """
-    trend_kind = TREND_KINDS[kind]
-    if unit is None and scale is not None:
-        msg = "--scale requires --unit"
-        raise click.UsageError(msg)
-    if unit is not None:
-        try:
-            trend_kind = with_unit(trend_kind, unit, scale=scale)
-        except ValueError as exc:
-            raise click.UsageError(str(exc)) from exc
     try:
-        result = build_trend_report(
-            storage,
-            kind=trend_kind,
-            stat=stat,
-            days=days,
-            prune=prune,
-            baseline_runs=window,
-            threshold=threshold,
+        runs = load_runs(storage, days=days, kind=kind, stat=stat)
+        report = (
+            make_report(
+                runs,
+                kind=kind,
+                stat=stat,
+                unit=unit,
+                days=days,
+                baseline_runs=window,
+                threshold=threshold,
+            )
+            if runs
+            else None
         )
+        if prune:
+            prune_runs(storage, days=days)
     except ValueError as exc:
         raise click.UsageError(str(exc)) from exc
-    if result is None:
+    if report is None:
         click.echo("No results.", err=True)
         return
-    report, annotations = result
-    for annotation in annotations:
+    for annotation in report.annotations:
         click.echo(annotation, err=True)
-    click.echo(report, nl=False)
+    click.echo(report.markdown, nl=False)
