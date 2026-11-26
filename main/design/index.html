@@ -624,6 +624,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#benchmark-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark properties
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#design-choices-and-trade-offs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1249,6 +1260,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#benchmark-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark properties
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#design-choices-and-trade-offs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1548,6 +1570,88 @@ union over the platforms:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">PipInstaller</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">PipInstaller</span><span class="o">.</span><span class="n">prefix</span> <span class="o">==</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"pip"</span><span class="p">,</span> <span class="s2">"install"</span><span class="p">)</span>
 <span class="go">True</span>
+</code></pre></div>
+<h2 id="benchmark-properties">Benchmark properties<a class="headerlink" href="#benchmark-properties" title="Permanent link">&para;</a></h2>
+<p><code>feu.benchmark</code> (the <code>feu benchmark-trend</code> command) follows the properties above and adds the ones of
+this table. Each one is true by construction in one place, not by the discipline of each function.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Property</th>
+<th>What you can rely on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td><strong>Lightweight</strong></td>
+<td><code>feu.benchmark</code> uses only the standard library. Importing it imports no optional library, reads no file and does no network call. The command needs <code>click</code> like every command.</td>
+</tr>
+<tr>
+<td>B2</td>
+<td><strong>Read-only unless asked</strong></td>
+<td>Loading and reporting never change the storage. Files are deleted only by <code>prune_runs</code>, which the command calls only with <code>--prune</code>, and only after the report was built.</td>
+</tr>
+<tr>
+<td>B3</td>
+<td><strong>Strict input, loud failure</strong></td>
+<td>A file that looks like a <code>pytest-benchmark</code> result is validated. A malformed file, a time that is not a finite number greater than zero or an invalid argument raises <code>ValueError</code> that names the file or the argument. No result gives a message.</td>
+</tr>
+<tr>
+<td>B4</td>
+<td><strong>One stable label per benchmark</strong></td>
+<td>The label is a function of the entry, so it is the same in every run. Two entries of a run with the same label make the load fail instead of keeping one of them.</td>
+</tr>
+<tr>
+<td>B5</td>
+<td><strong>Comparable runs only</strong></td>
+<td>A run is compared only with runs of the same machine (the directory of <code>pytest-benchmark</code>), the same kind and the same statistic.</td>
+</tr>
+<tr>
+<td>B6</td>
+<td><strong>Honest numbers</strong></td>
+<td>A time has three significant digits in <code>s</code>, <code>ms</code>, <code>us</code> or <code>ns</code>. A change is never computed from a zero.</td>
+</tr>
+<tr>
+<td>B7</td>
+<td><strong>Deterministic output</strong></td>
+<td>The same storage gives the same bytes: rows are sorted by <code>(value, label)</code>, regressions by <code>(-change, label, machine)</code>, files by path and runs by <code>(date, machine)</code>.</td>
+</tr>
+<tr>
+<td>B8</td>
+<td><strong>Safe, portable output</strong></td>
+<td>A label cannot break a Markdown table or a GitHub workflow command (both are escaped). Files are read and the report is written as UTF-8 on every platform.</td>
+</tr>
+<tr>
+<td>B9</td>
+<td><strong>A thin command</strong></td>
+<td>The standard output holds only the Markdown report, annotations and messages go to the standard error, and the exit status carries the result: <code>0</code> ok, <code>1</code> a regression with <code>--fail-on-regression</code>, <code>2</code> a usage error.</td>
+</tr>
+<tr>
+<td>B10</td>
+<td><strong>Pure core, I/O at the edge</strong></td>
+<td>One module reads and deletes files. The analysis and the rendering are pure functions of values. The results are frozen dataclasses.</td>
+</tr>
+<tr>
+<td>B11</td>
+<td><strong>Strict, typed, documented</strong></td>
+<td>Options are keyword-only and every public function has a doctest. The format is tested against a result written by the real <code>pytest-benchmark</code>, not only against hand-written dictionaries.</td>
+</tr>
+</tbody>
+</table>
+<p>The label of a benchmark is the same for a parametrized and a plain test (B4), and a run is a value
+with a machine (B5):</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Run</span><span class="p">,</span> <span class="n">find_regressions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">"linux"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort[10]"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">"linux"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort[10]"</span><span class="p">:</span> <span class="mf">0.003</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">"mac"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort[10]"</span><span class="p">:</span> <span class="mf">0.010</span><span class="p">}),</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">item</span><span class="o">.</span><span class="n">machine</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">change</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">find_regressions</span><span class="p">(</span><span class="n">runs</span><span class="p">)]</span>
+<span class="go">[('linux', 'sort[10]', 200.0)]</span>
 </code></pre></div>
 <h2 id="design-choices-and-trade-offs">Design choices and trade-offs<a class="headerlink" href="#design-choices-and-trade-offs" title="Permanent link">&para;</a></h2>
 <h3 id="a-target-without-a-platform-means-any-platform">A target without a platform means "any platform"<a class="headerlink" href="#a-target-without-a-platform-means-any-platform" title="Permanent link">&para;</a></h3>

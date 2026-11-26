@@ -701,6 +701,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#benchmark-trend_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        benchmark-trend
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="benchmark-trend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-import-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The import kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-from-the-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes from the previous version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1298,6 +1359,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#benchmark-trend_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        benchmark-trend
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="benchmark-trend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-import-kind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The import kind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changes-from-the-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes from the previous version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1577,21 +1699,129 @@ step fail instead of installing <code>pkg==None</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10<span class="k">)</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span><span class="o">&amp;&amp;</span><span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s2">"</span><span class="nv">$VERSION</span><span class="s2">"</span>
 </code></pre></div>
-<p>Show the trend of the <code>pytest-benchmark</code> results saved in a directory over the last 90 days. The
-Markdown report goes to the standard output and the <code>::warning::</code> annotations of the benchmarks that
-are more than 50% slower than the median of the previous runs go to the standard error. Use
-<code>--kind import</code> for the import time results:</p>
-<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span><span class="w"> </span>--prune
-feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--kind<span class="w"> </span>import<span class="w"> </span>--threshold<span class="w"> </span><span class="m">30</span>
+<h2 id="benchmark-trend_1">benchmark-trend<a class="headerlink" href="#benchmark-trend_1" title="Permanent link">&para;</a></h2>
+<p>Show the trend of the <code>pytest-benchmark</code> results saved in a directory (for example by a scheduled
+workflow with <code>pytest --benchmark-save=run --benchmark-storage=.benchmarks</code>). The latest run is
+compared with the median of the previous runs, which is stable on noisy runners.</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks
+feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">30</span><span class="w"> </span>--baseline-runs<span class="w"> </span><span class="m">5</span><span class="w"> </span>--threshold<span class="w"> </span><span class="m">30</span><span class="w"> </span>--prune
+feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--kind<span class="w"> </span>import<span class="w"> </span>--stat<span class="w"> </span>min<span class="w"> </span>--unit<span class="w"> </span>ms
 </code></pre></div>
-<p>Use another statistic of the times with <code>--stat</code> (for example <code>mean</code> or <code>min</code>). The <code>import</code> kind
-reads <code>import_seconds_&lt;stat&gt;</code> of the <code>extra_info</code>:</p>
-<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--stat<span class="w"> </span>mean
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--kind</code></td>
+<td><code>benchmark</code></td>
+<td><code>benchmark</code> reads the times of the benchmarks, <code>import</code> reads the import times (see below).</td>
+</tr>
+<tr>
+<td><code>--stat</code></td>
+<td><code>median</code></td>
+<td>The statistic of the times: <code>min</code>, <code>mean</code>, <code>median</code> or <code>max</code>.</td>
+</tr>
+<tr>
+<td><code>--unit</code></td>
+<td>by kind</td>
+<td>The unit of the report: <code>s</code>, <code>ms</code>, <code>us</code> or <code>ns</code>. The default is <code>us</code> (<code>benchmark</code>) or <code>ms</code> (<code>import</code>).</td>
+</tr>
+<tr>
+<td><code>--label</code></td>
+<td><code>name</code></td>
+<td><code>name</code> is the name without the <code>test_</code> prefix and the <code>_benchmark</code> suffix (<code>test_sort_benchmark[10]</code> is <code>sort[10]</code>). <code>fullname</code> is the full name, for two benchmarks that have the same name.</td>
+</tr>
+<tr>
+<td><code>--days</code></td>
+<td><code>90</code></td>
+<td>The size of the window in days (at least 1).</td>
+</tr>
+<tr>
+<td><code>--baseline-runs</code></td>
+<td><code>7</code></td>
+<td>The number of previous runs of the baseline (at least 1).</td>
+</tr>
+<tr>
+<td><code>--threshold</code></td>
+<td><code>50</code></td>
+<td>The slowdown in percent above which a benchmark is a regression (greater than 0).</td>
+</tr>
+<tr>
+<td><code>--prune</code></td>
+<td>off</td>
+<td>Delete the results older than the window, after the report was made.</td>
+</tr>
+<tr>
+<td><code>--fail-on-regression</code></td>
+<td>off</td>
+<td>Exit with the status <code>1</code> if there is a regression.</td>
+</tr>
+</tbody>
+</table>
+<p>The standard output holds only the Markdown report. The <code>::warning::</code> annotations of the
+regressions and the messages go to the standard error. Both are written as UTF-8, so a redirect
+(<code>feu benchmark-trend .benchmarks &gt; report.md</code>) works under any locale. The report shows the times
+with three significant digits, and has one section per machine if the storage has the results of
+several machines.</p>
+<p>The exit status is <code>0</code>, <code>1</code> with <code>--fail-on-regression</code> and a regression, and <code>2</code> for a usage error
+or an invalid result file. If there is no result in the window, a message goes to the standard
+error, the standard output is empty and the status is <code>0</code>: the first run of a new workflow has no
+history.</p>
+<h3 id="what-is-read">What is read<a class="headerlink" href="#what-is-read" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Only the files named <code>NNNN_*.json</code>, the names that <code>pytest-benchmark</code> writes
+  (<code>&lt;storage&gt;/&lt;machine&gt;/0001_run.json</code>). Other JSON files are ignored.</li>
+<li>A file that has this name and is not a valid result (invalid JSON, a missing <code>datetime</code> or
+  <code>stats</code>, a time that is not a finite number greater than zero) is an error that names the file.
+  Nothing is skipped silently, because a trend computed on a different history without notice is
+  misleading, and nothing is deleted when the load fails.</li>
+<li>The runs of different machines (the directories of the storage) are never compared with each
+  other.</li>
+<li>Two benchmarks of a run with the same label are an error; use <code>--label fullname</code>.</li>
+</ul>
+<h3 id="the-import-kind">The <code>import</code> kind<a class="headerlink" href="#the-import-kind" title="Permanent link">&para;</a></h3>
+<p>The <code>import</code> kind reads the import times that a test records in <code>extra_info</code>, so a storage can hold
+both kinds. The key is <code>import_seconds_&lt;stat&gt;</code> (for example <code>import_seconds_median</code>), the value is
+in seconds, and the label is the parameter of the test. A producer is a test such as:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">"package"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"feu"</span><span class="p">,</span> <span class="s2">"feu.utils"</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_import</span><span class="p">(</span><span class="n">benchmark</span><span class="p">,</span> <span class="n">package</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">import_package</span><span class="p">():</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">"-c"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"import </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+    <span class="n">benchmark</span><span class="p">(</span><span class="n">import_package</span><span class="p">)</span>
+    <span class="n">benchmark</span><span class="o">.</span><span class="n">extra_info</span><span class="p">[</span><span class="s2">"import_seconds_median"</span><span class="p">]</span> <span class="o">=</span> <span class="n">benchmark</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"median"</span><span class="p">]</span>
 </code></pre></div>
-<p>Show the times in another unit with <code>--unit</code> (<code>s</code>, <code>ms</code>, <code>us</code> or <code>ns</code>). The default is <code>us</code> for the
-<code>benchmark</code> kind and <code>ms</code> for the <code>import</code> kind:</p>
-<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--unit<span class="w"> </span>ms
-</code></pre></div>
+<p>A test that has no <code>import_seconds_&lt;stat&gt;</code> is ignored by this kind.</p>
+<h3 id="python-api">Python API<a class="headerlink" href="#python-api" title="Permanent link">&para;</a></h3>
+<p>The command is a thin layer over <code>feu.benchmark</code>: <code>load_runs</code> reads and validates the files,
+<code>find_regressions</code> and <code>make_report</code> are pure functions of the runs, and <code>prune_runs</code> deletes the
+old files.</p>
+<h3 id="changes-from-the-previous-version">Changes from the previous version<a class="headerlink" href="#changes-from-the-previous-version" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>--window</code> is renamed <code>--baseline-runs</code>, and <code>--scale</code> is removed (use <code>--unit</code> with <code>s</code>, <code>ms</code>,
+  <code>us</code> or <code>ns</code>). A workflow that passes one of them fails with a usage error that names the option.</li>
+<li>The label of a parametrized benchmark is <code>sort[10]</code>, not <code>sort_benchmark[10]</code>.</li>
+<li>A malformed result file, a duplicate label, an unknown <code>--stat</code>, <code>--days 0</code>, and a time that is not
+  greater than zero fail instead of giving an empty or a wrong report.</li>
+<li>Foreign JSON files are ignored, and the runs of different machines are no longer merged.</li>
+<li>The times have three significant digits, and the title shows the statistic and <code>1 run</code>.</li>
+<li>The Python API changed: <code>Run</code> and <code>Regression</code> are dataclasses, <code>build_trend_report</code> is replaced
+  by <code>load_runs</code> and <code>make_report</code>, and <code>TrendKind</code>, <code>with_unit</code> and <code>UnknownStatError</code> are removed.</li>
+</ul>
 
 
 

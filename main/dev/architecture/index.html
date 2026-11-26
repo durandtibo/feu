@@ -651,6 +651,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#feubenchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feu.benchmark
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1166,6 +1177,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#feubenchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        feu.benchmark
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1311,6 +1333,37 @@ imports nothing from <code>feu</code>. <code>tests/unit/test_layers.py</code> ch
 </table>
 <p><code>feu.benchmark</code>, <code>feu.github</code> and <code>feu.local_git</code> are outside the chain and only use the lower layers
 (<code>feu.benchmark</code> uses only the standard library).</p>
+<h2 id="feubenchmark"><code>feu.benchmark</code><a class="headerlink" href="#feubenchmark" title="Permanent link">&para;</a></h2>
+<p><code>feu.benchmark</code> has one module per role, so that the I/O is visible in the file list: one loader that
+validates, one pure analysis, one pure renderer, and a thin command (<code>feu benchmark-trend</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>What it does</th>
+<th>I/O</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>runs.py</code></td>
+<td><code>Run</code>, <code>KINDS</code>, <code>STATS</code>, <code>LABELS</code>, <code>load_runs</code>, <code>prune_runs</code>: read, validate and delete the result files.</td>
+<td>reads and deletes the result files</td>
+</tr>
+<tr>
+<td><code>trend.py</code></td>
+<td><code>Regression</code>, <code>find_regressions</code>: the latest run against the median of the previous runs, by machine.</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>report.py</code></td>
+<td><code>TrendReport</code>, <code>UNITS</code>, <code>make_report</code>: the Markdown report and the <code>::warning::</code> annotations of the runs.</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>The results are frozen dataclasses with named fields. <code>cli.py</code> calls <code>load_runs</code>, <code>make_report</code>, then
+<code>prune_runs</code> (only with <code>--prune</code>, after the report was built, so a failing load deletes nothing).</p>
 <h2 id="data-flow">Data flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
 <ol>
 <li><code>dev/generate_compat_data.py</code> calls <code>discover_compat_targets(package)</code>. It fetches the project
