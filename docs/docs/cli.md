@@ -113,3 +113,9 @@ Show the times in another unit with `--unit` (`s`, `ms`, `us` or `ns`). The defa
 ```shell
 feu benchmark-trend .benchmarks --unit ms
 ```
+
+For another unit, set its name with `--unit` and its conversion from seconds with `--scale`:
+
+```shell
+feu benchmark-trend .benchmarks --unit min --scale 0.0166667
+```

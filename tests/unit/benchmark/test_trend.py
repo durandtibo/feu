@@ -175,6 +175,21 @@ def test_with_unit_unknown_unit() -> None:
         with_unit(BENCHMARK_KIND, "min")
 
 
+def test_with_unit_custom_unit_with_scale() -> None:
+    kind = with_unit(BENCHMARK_KIND, "min", scale=0.5)
+    assert (kind.unit, kind.scale) == ("min", 0.5)
+
+
+def test_with_unit_scale_overrides_the_scale_of_the_unit() -> None:
+    assert with_unit(BENCHMARK_KIND, "ms", scale=2.0).scale == 2.0
+
+
+@pytest.mark.parametrize("scale", [0.0, -1.0])
+def test_with_unit_scale_not_positive(scale: float) -> None:
+    with pytest.raises(ValueError, match=r"The scale must be positive"):
+        with_unit(BENCHMARK_KIND, "ms", scale=scale)
+
+
 def test_units() -> None:
     assert UNITS == {"s": 1.0, "ms": 1e3, "us": 1e6, "µs": 1e6, "ns": 1e9}
 

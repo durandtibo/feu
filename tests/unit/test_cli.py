@@ -626,7 +626,43 @@ def test_benchmark_trend_unit_in_the_annotations(runner: CliRunner, tmp_path: Pa
 @click_available
 def test_benchmark_trend_unknown_unit_is_a_usage_error(runner: CliRunner, tmp_path: Path) -> None:
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--unit", "min"])
-    assert result.exit_code == 2
+    assert (result.exit_code, "Unknown unit 'min'" in result.stderr) == (2, True)
+
+
+@click_available
+def test_benchmark_trend_custom_unit_and_scale(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "1.json", 0.001, days_ago=1)
+    result = runner.invoke(
+        cli, ["benchmark-trend", str(tmp_path), "--unit", "ks", "--scale", "0.001"]
+    )
+    assert result.stdout.splitlines()[-1] == (
+        "| a | 0.0 | 0.0 | +0.0% | 0.0 | 0.0 | 0.0 | 1 | `▁` |"
+    )
+
+
+@click_available
+def test_benchmark_trend_custom_unit_and_scale_in_the_header(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    write_run(tmp_path / "1.json", 0.001, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--unit", "ks", "--scale", "1"])
+    assert "| Benchmark | Latest (ks) |" in result.stdout
+
+
+@click_available
+def test_benchmark_trend_scale_without_unit_is_a_usage_error(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--scale", "2"])
+    assert (result.exit_code, "--scale requires --unit" in result.stderr) == (2, True)
+
+
+@click_available
+def test_benchmark_trend_scale_not_positive_is_a_usage_error(
+    runner: CliRunner, tmp_path: Path
+) -> None:
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--unit", "ms", "--scale", "-1"])
+    assert (result.exit_code, "must be positive" in result.stderr) == (2, True)
 
 
 @click_available

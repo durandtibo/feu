@@ -165,20 +165,24 @@ KINDS: dict[str, TrendKind] = {kind.name: kind for kind in (BENCHMARK_KIND, IMPO
 UNITS: dict[str, float] = {"s": 1.0, "ms": 1e3, "us": 1e6, "µs": 1e6, "ns": 1e9}
 
 
-def with_unit(kind: TrendKind, unit: str) -> TrendKind:
+def with_unit(kind: TrendKind, unit: str, *, scale: float | None = None) -> TrendKind:
     r"""Change the unit of the times shown in the reports of a kind.
 
     Args:
         kind: The kind of benchmark results.
-        unit: The new unit, one of the keys of ``UNITS``: ``"s"``,
-            ``"ms"``, ``"us"`` (or ``"µs"``) and ``"ns"``.
+        unit: The new unit. It is one of the keys of ``UNITS``
+            (``"s"``, ``"ms"``, ``"us"``, ``"µs"`` and ``"ns"``) unless
+            ``scale`` is given.
+        scale: The conversion from seconds to ``unit``. If ``None``,
+            the scale of ``unit`` in ``UNITS`` is used.
 
     Returns:
         A copy of the kind with the unit and its scale. ``"us"`` is
             shown as ``"µs"``.
 
     Raises:
-        ValueError: If the unit is unknown.
+        ValueError: If the unit is not in ``UNITS`` and ``scale`` is
+            not given, or if ``scale`` is not positive.
 
     Example:
         ```pycon
@@ -187,13 +191,20 @@ def with_unit(kind: TrendKind, unit: str) -> TrendKind:
         'ms'
         >>> with_unit(BENCHMARK_KIND, "ms").scale
         1000.0
+        >>> with_unit(BENCHMARK_KIND, "min", scale=1 / 60).unit
+        'min'
 
         ```
     """
-    if unit not in UNITS:
-        msg = f"Unknown unit {unit!r}. The valid units are {sorted(UNITS)}"
+    if scale is None:
+        if unit not in UNITS:
+            msg = f"Unknown unit {unit!r}. The valid units are {sorted(UNITS)}, or set the scale"
+            raise ValueError(msg)
+        scale = UNITS[unit]
+    elif scale <= 0:
+        msg = f"The scale must be positive, but got {scale}"
         raise ValueError(msg)
-    return replace(kind, unit="µs" if unit == "us" else unit, scale=UNITS[unit])
+    return replace(kind, unit="µs" if unit == "us" else unit, scale=scale)
 
 
 def load_runs(
