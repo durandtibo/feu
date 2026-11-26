@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import click
 
 from feu import __version__
-from feu.benchmark import KINDS, UNITS, load_runs, make_report, prune_runs
+from feu.benchmark import KINDS, LABELS, STATS, UNITS, load_runs, make_report, prune_runs
 from feu.compat import (
     UnsupportedVersionError,
     find_closest_version as find_closest_version_,
@@ -304,6 +304,20 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
         Path(output).write_text(text + "\n", encoding="utf-8")
 
 
+def _use_utf8_streams() -> None:
+    r"""Write the standard output and error as UTF-8.
+
+    The report is Markdown with non-ASCII characters (``µ`` and the
+    sparkline), so it must not depend on the locale of the terminal.
+    A stream that cannot be reconfigured (e.g. a replaced stream) is
+    left as it is.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8")
+
+
 @cli.command(name="benchmark-trend")
 @click.argument("storage", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.option(
@@ -312,7 +326,15 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     type=click.Choice(KINDS),
     default="benchmark",
     show_default=True,
-    help="The kind of results: the median time of the benchmarks, or the import time.",
+    help="The kind of results: the times of the benchmarks, or the import times.",
+)
+@click.option(
+    "--stat",
+    "stat",
+    type=click.Choice(STATS),
+    default="median",
+    show_default=True,
+    help="The statistic of the times. The import kind reads import_seconds_<stat> of extra_info.",
 )
 @click.option(
     "--unit",
@@ -323,20 +345,26 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     "for the import kind.",
 )
 @click.option(
-    "--stat",
-    "stat",
-    default="median",
+    "--label",
+    "label",
+    type=click.Choice(LABELS),
+    default="name",
     show_default=True,
-    help="The statistic of the times e.g. 'median', 'mean' or 'min'.",
+    help="The label of a benchmark: its name, or its full name (use it if two benchmarks "
+    "have the same name).",
 )
 @click.option(
-    "--days", "days", type=int, default=90, show_default=True, help="Size of the window in days."
+    "--days",
+    "days",
+    type=click.IntRange(min=1),
+    default=90,
+    show_default=True,
+    help="Size of the window in days.",
 )
-@click.option("--prune", is_flag=True, help="Delete the results older than the window.")
 @click.option(
-    "--window",
-    "window",
-    type=int,
+    "--baseline-runs",
+    "baseline_runs",
+    type=click.IntRange(min=1),
     default=7,
     show_default=True,
     help="Number of previous runs used to detect the regressions.",
@@ -344,55 +372,72 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
 @click.option(
     "--threshold",
     "threshold",
-    type=float,
+    type=click.FloatRange(min=0, min_open=True),
     default=50.0,
     show_default=True,
     help="Slowdown in percent above which a benchmark is a regression.",
+)
+@click.option(
+    "--prune", is_flag=True, help="Delete the results older than the window, after the report."
+)
+@click.option(
+    "--fail-on-regression",
+    is_flag=True,
+    help="Exit with the status 1 if there is a regression. Default: the status is 0.",
 )
 def benchmark_trend(
     storage: Path,
     *,
     kind: str,
-    unit: str | None,
     stat: str,
+    unit: str | None,
+    label: str,
     days: int,
-    prune: bool,
-    window: int,
+    baseline_runs: int,
     threshold: float,
+    prune: bool,
+    fail_on_regression: bool,
 ) -> None:
     r"""Print the trend of the pytest-benchmark results.
 
-    The standard output holds the Markdown report (a table of the
+    The standard output holds only the Markdown report (a table of the
     trend of each benchmark and, if any, the regressions). The GitHub
-    Actions ``::warning::`` annotations of the regressions go to the
-    standard error. Nothing is printed on the standard output if there
-    is no result in the window.
+    Actions ``::warning::`` annotations of the regressions and the
+    messages go to the standard error, as UTF-8. If there is no result
+    in the window, a message is printed on the standard error and the
+    standard output is empty. The exit status is ``0``, ``1`` if
+    ``fail_on_regression`` is set and there is a regression, and ``2``
+    if an argument is invalid or a result file is invalid.
 
     Args:
         storage: The pytest-benchmark storage directory.
         kind: The kind of results: ``'benchmark'`` or ``'import'``.
+        stat: The statistic of the times: ``'min'``, ``'mean'``,
+            ``'median'`` or ``'max'``. The ``import`` kind ignores the
+            benchmarks that do not have it.
         unit: The unit of the times in the report (``'s'``, ``'ms'``,
             ``'us'`` or ``'ns'``), or ``None`` for the default unit of
             the kind.
-        stat: The statistic of the times e.g. ``'median'``, ``'mean'``
-            or ``'min'``. The ``import`` kind ignores the benchmarks
-            that do not have it. The exit status is ``2`` if the
-            ``benchmark`` kind does not have it.
+        label: The label of a benchmark: ``'name'`` or ``'fullname'``.
         days: The size of the window in days.
-        prune: If ``True``, delete the results older than the window.
-        window: The maximum number of previous runs used to detect
-            the regressions.
+        baseline_runs: The maximum number of previous runs used to
+            detect the regressions.
         threshold: The slowdown in percent above which a benchmark is
             a regression.
+        prune: If ``True``, delete the results older than the window
+            after the report is made.
+        fail_on_regression: If ``True``, exit with the status ``1`` if
+            there is a regression.
 
     Example:
         ```console
-        $ feu benchmark-trend .benchmarks --days 90
+        $ feu benchmark-trend .benchmarks --days 90 --fail-on-regression
 
         ```
     """
+    _use_utf8_streams()
     try:
-        runs = load_runs(storage, days=days, kind=kind, stat=stat)
+        runs = load_runs(storage, days=days, kind=kind, stat=stat, label=label)
         report = (
             make_report(
                 runs,
@@ -400,7 +445,7 @@ def benchmark_trend(
                 stat=stat,
                 unit=unit,
                 days=days,
-                baseline_runs=window,
+                baseline_runs=baseline_runs,
                 threshold=threshold,
             )
             if runs
@@ -411,8 +456,10 @@ def benchmark_trend(
     except ValueError as exc:
         raise click.UsageError(str(exc)) from exc
     if report is None:
-        click.echo("No results.", err=True)
+        click.echo(f"No {kind} results ({stat}) in the last {days} days in {storage}.", err=True)
         return
     for annotation in report.annotations:
         click.echo(annotation, err=True)
     click.echo(report.markdown, nl=False)
+    if fail_on_regression and report.regressions:
+        sys.exit(1)
