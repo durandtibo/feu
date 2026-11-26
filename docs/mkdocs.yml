@@ -25,6 +25,7 @@ nav:
   - Architecture: dev/architecture.md
   - API Reference:
       - Main Functions: refs/root.md
+      - Benchmark: refs/benchmark.md
       - Compat: refs/compat.md
       - Git: refs/local_git.md
       - GitHub: refs/github.md

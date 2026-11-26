@@ -2,8 +2,8 @@ r"""Contain the command line interface.
 
 The command line interface requires the ``click`` package, which can be
 installed with ``pip install 'feu[cli]'``. It provides the commands
-``install``, ``find-closest-version``, ``check-valid-version`` and
-``package-versions``, which are run with ``feu <command>`` or ``python
+``install``, ``find-closest-version``, ``check-valid-version``,
+``package-versions`` and ``benchmark-trend``, which are run with ``feu <command>`` or ``python
 -m feu <command>``.
 
 The standard output holds only the answer of a command (it is used in
@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import click
 
 from feu import __version__
+from feu.benchmark import KINDS, build_trend_report
 from feu.compat import (
     UnsupportedVersionError,
     find_closest_version as find_closest_version_,
@@ -301,3 +302,72 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
         click.echo(text)
     else:
         Path(output).write_text(text + "\n", encoding="utf-8")
+
+
+@cli.command(name="benchmark-trend")
+@click.argument("storage", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option(
+    "--kind",
+    "kind",
+    type=click.Choice(sorted(KINDS)),
+    default="benchmark",
+    show_default=True,
+    help="The kind of results: the median time of the benchmarks, or the import time.",
+)
+@click.option(
+    "--days", "days", type=int, default=90, show_default=True, help="Size of the window in days."
+)
+@click.option("--prune", is_flag=True, help="Delete the results older than the window.")
+@click.option(
+    "--window",
+    "window",
+    type=int,
+    default=7,
+    show_default=True,
+    help="Number of previous runs used to detect the regressions.",
+)
+@click.option(
+    "--threshold",
+    "threshold",
+    type=float,
+    default=50.0,
+    show_default=True,
+    help="Slowdown in percent above which a benchmark is a regression.",
+)
+def benchmark_trend(
+    storage: Path, kind: str, days: int, *, prune: bool, window: int, threshold: float
+) -> None:
+    r"""Print the trend of the pytest-benchmark results.
+
+    The standard output holds the Markdown report (a table of the
+    trend of each benchmark and, if any, the regressions). The GitHub
+    Actions ``::warning::`` annotations of the regressions go to the
+    standard error. Nothing is printed on the standard output if there
+    is no result in the window.
+
+    Args:
+        storage: The pytest-benchmark storage directory.
+        kind: The kind of results: ``'benchmark'`` or ``'import'``.
+        days: The size of the window in days.
+        prune: If ``True``, delete the results older than the window.
+        window: The maximum number of previous runs used to detect
+            the regressions.
+        threshold: The slowdown in percent above which a benchmark is
+            a regression.
+
+    Example:
+        ```console
+        $ feu benchmark-trend .benchmarks --days 90
+
+        ```
+    """
+    result = build_trend_report(
+        storage, kind=KINDS[kind], days=days, prune=prune, window=window, threshold=threshold
+    )
+    if result is None:
+        click.echo("No results.", err=True)
+        return
+    report, annotations = result
+    for annotation in annotations:
+        click.echo(annotation, err=True)
+    click.echo(report, nl=False)

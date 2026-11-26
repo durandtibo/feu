@@ -89,3 +89,13 @@ step fail instead of installing `pkg==None`:
 VERSION=$(feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10) \
   && feu install --pkg-name=numpy --pkg-version="$VERSION"
 ```
+
+Show the trend of the `pytest-benchmark` results saved in a directory over the last 90 days. The
+Markdown report goes to the standard output and the `::warning::` annotations of the benchmarks that
+are more than 50% slower than the median of the previous runs go to the standard error. Use
+`--kind import` for the import time results:
+
+```shell
+feu benchmark-trend .benchmarks --days 90 --prune
+feu benchmark-trend .benchmarks --kind import --threshold 30
+```
