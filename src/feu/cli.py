@@ -317,10 +317,17 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
 @click.option(
     "--unit",
     "unit",
-    type=click.Choice(sorted(UNITS)),
     default=None,
-    help="The unit of the times in the report. Default: 'us' for the benchmark kind and "
-    "'ms' for the import kind.",
+    help=f"The unit of the times in the report: {', '.join(sorted(UNITS))}, or any name with "
+    "--scale. Default: 'us' for the benchmark kind and 'ms' for the import kind.",
+)
+@click.option(
+    "--scale",
+    "scale",
+    type=float,
+    default=None,
+    help="The conversion from seconds to --unit e.g. 1000 for 'ms'. Default: the scale of the "
+    "unit. It requires --unit.",
 )
 @click.option(
     "--stat",
@@ -351,11 +358,12 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
 )
 def benchmark_trend(
     storage: Path,
+    *,
     kind: str,
     unit: str | None,
+    scale: float | None,
     stat: str,
     days: int,
-    *,
     prune: bool,
     window: int,
     threshold: float,
@@ -372,8 +380,10 @@ def benchmark_trend(
         storage: The pytest-benchmark storage directory.
         kind: The kind of results: ``'benchmark'`` or ``'import'``.
         unit: The unit of the times in the report (``'s'``, ``'ms'``,
-            ``'us'`` or ``'ns'``), or ``None`` for the default unit of
-            the kind.
+            ``'us'`` or ``'ns'``, or any name if ``scale`` is given),
+            or ``None`` for the default unit of the kind.
+        scale: The conversion from seconds to ``unit``, or ``None`` for
+            the scale of ``unit``. It requires ``unit``.
         stat: The statistic of the times e.g. ``'median'``, ``'mean'``
             or ``'min'``. The ``import`` kind ignores the benchmarks
             that do not have it. The exit status is ``2`` if the
@@ -391,7 +401,15 @@ def benchmark_trend(
 
         ```
     """
-    trend_kind = KINDS[kind] if unit is None else with_unit(KINDS[kind], unit)
+    trend_kind = KINDS[kind]
+    if unit is None and scale is not None:
+        msg = "--scale requires --unit"
+        raise click.UsageError(msg)
+    if unit is not None:
+        try:
+            trend_kind = with_unit(trend_kind, unit, scale=scale)
+        except ValueError as exc:
+            raise click.UsageError(str(exc)) from exc
     try:
         result = build_trend_report(
             storage,
