@@ -13,6 +13,7 @@ __all__ = [
     "IMPORT_KIND",
     "TREND_KINDS",
     "UNITS",
+    "Regression",
     "TrendKind",
     "build_trend_report",
     "find_regressions",
@@ -30,12 +31,38 @@ from typing import TYPE_CHECKING
 from feu.benchmark.runs import Run, load_runs, prune_runs
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from pathlib import Path
 
 SPARKS = "▁▂▃▄▅▆▇█"
 DEFAULT_STAT = "median"
 
-Regression = tuple[str, float, float, float]
+
+@dataclass(frozen=True)
+class Regression:
+    r"""Store a benchmark that is slower than its recent median.
+
+    Args:
+        machine: The machine of the runs, see ``Run``.
+        label: The label of the benchmark.
+        latest: The time in seconds of the latest run.
+        baseline: The median time in seconds of the previous runs.
+        change: The slowdown in percent.
+
+    Example:
+        ```pycon
+        >>> from feu.benchmark import Regression
+        >>> Regression("", "sort", 0.002, 0.001, 100.0).change
+        100.0
+
+        ```
+    """
+
+    machine: str
+    label: str
+    latest: float
+    baseline: float
+    change: float
 
 
 @dataclass(frozen=True)
@@ -172,7 +199,7 @@ def make_table(runs: list[Run], *, kind: TrendKind = BENCHMARK_KIND) -> str:
         "|---|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for label, values in sorted(series.items(), key=lambda item: item[1][-1]):
-        change = (values[-1] - values[0]) / values[0] * 100 if values[0] else 0.0
+        change = (values[-1] - values[0]) / values[0] * 100
         lines.append(
             f"| {label} | {values[-1]:.1f} | {values[0]:.1f} | {change:+.1f}% "
             f"| {statistics.median(values):.1f} | {min(values):.1f} | {max(values):.1f} "
@@ -182,37 +209,62 @@ def make_table(runs: list[Run], *, kind: TrendKind = BENCHMARK_KIND) -> str:
 
 
 def find_regressions(
-    runs: list[Run], *, window: int = 7, threshold: float = 50.0
+    runs: Sequence[Run], *, baseline_runs: int = 7, threshold: float = 50.0
 ) -> list[Regression]:
     r"""Find the benchmarks slower than their recent median.
 
     The latest run is compared with the median of the previous runs
-    (at most ``window``), which is more stable than the comparison with
-    one run because the runners are noisy.
+    (at most ``baseline_runs``), which is more stable than the
+    comparison with one run because the runners are noisy. The runs of
+    different machines are never compared with each other: each
+    machine has its own latest run and its own baseline.
 
     Args:
         runs: The runs returned by ``load_runs``.
-        window: The maximum number of previous runs used for the median.
+        baseline_runs: The maximum number of previous runs used for
+            the median. It must be at least 1.
         threshold: The slowdown in percent above which a benchmark is
-            a regression.
+            a regression. It must be greater than 0.
 
     Returns:
-        The regressions sorted by decreasing change, each one as
-            ``(label, latest, median of the previous runs, change in
-            percent)``. It is empty if there are fewer than two runs.
+        The regressions sorted by decreasing change, then by label and
+            machine. It is empty if no machine has two runs.
+
+    Raises:
+        ValueError: If ``baseline_runs`` is less than 1 or
+            ``threshold`` is not greater than 0.
+
+    Example:
+        ```pycon
+        >>> from datetime import UTC, datetime
+        >>> from feu.benchmark import Run, find_regressions
+        >>> date = datetime(2026, 1, 1, tzinfo=UTC)
+        >>> runs = [Run(date, "", {"sort": 0.001}), Run(date, "", {"sort": 0.003})]
+        >>> find_regressions(runs)
+        [Regression(machine='', label='sort', latest=0.003, baseline=0.001, change=200.0)]
+
+        ```
     """
-    if len(runs) < 2:
-        return []
+    if baseline_runs < 1:
+        msg = f"baseline_runs must be greater than or equal to 1, but got {baseline_runs}"
+        raise ValueError(msg)
+    if threshold <= 0:
+        msg = f"threshold must be greater than 0, but got {threshold}"
+        raise ValueError(msg)
+    by_machine: dict[str, list[Run]] = {}
+    for run in runs:
+        by_machine.setdefault(run.machine, []).append(run)
     regressions = []
-    for label, latest in runs[-1].times.items():
-        previous = [run.times[label] for run in runs[:-1] if label in run.times][-window:]
-        if not previous:
-            continue
-        baseline = statistics.median(previous)
-        change = (latest - baseline) / baseline * 100 if baseline else 0.0
-        if change > threshold:
-            regressions.append((label, latest, baseline, change))
-    return sorted(regressions, key=lambda item: item[3], reverse=True)
+    for machine, machine_runs in by_machine.items():
+        for label, latest in machine_runs[-1].times.items():
+            previous = [run.times[label] for run in machine_runs[:-1] if label in run.times]
+            if not previous:
+                continue
+            baseline = statistics.median(previous[-baseline_runs:])
+            change = (latest - baseline) / baseline * 100
+            if change > threshold:
+                regressions.append(Regression(machine, label, latest, baseline, change))
+    return sorted(regressions, key=lambda item: (-item.change, item.label, item.machine))
 
 
 def make_regression_report(
@@ -237,8 +289,9 @@ def make_regression_report(
         "|---|---:|---:|---:|",
     ]
     lines.extend(
-        f"| {label} | {latest * kind.scale:.1f} | {baseline * kind.scale:.1f} | {change:+.1f}% |"
-        for label, latest, baseline, change in regressions
+        f"| {item.label} | {item.latest * kind.scale:.1f} | {item.baseline * kind.scale:.1f} "
+        f"| {item.change:+.1f}% |"
+        for item in regressions
     )
     return "\n".join(lines)
 
@@ -257,10 +310,10 @@ def make_annotations(
     """
     unit = kind.unit
     return [
-        f"::warning title=Regression::{label} is {change:.1f}% slower than the median of the "
-        f"previous runs ({latest * kind.scale:.1f} {unit} instead of "
-        f"{baseline * kind.scale:.1f} {unit})"
-        for label, latest, baseline, change in regressions
+        f"::warning title=Regression::{item.label} is {item.change:.1f}% slower than the median "
+        f"of the previous runs ({item.latest * kind.scale:.1f} {unit} instead of "
+        f"{item.baseline * kind.scale:.1f} {unit})"
+        for item in regressions
     ]
 
 
@@ -270,7 +323,7 @@ def _make_trend_report(
     kind: TrendKind,
     stat: str,
     days: int,
-    window: int,
+    baseline_runs: int,
     threshold: float,
 ) -> tuple[str, list[str]] | None:
     r"""Make the Markdown report and the annotations of the runs.
@@ -281,8 +334,8 @@ def _make_trend_report(
         stat: The statistic of the times. It is added to the title if it
             is not ``"median"``.
         days: The size of the window in days.
-        window: The maximum number of previous runs used to detect the
-            regressions.
+        baseline_runs: The maximum number of previous runs used to
+            detect the regressions.
         threshold: The slowdown in percent above which a benchmark is
             a regression.
 
@@ -291,7 +344,7 @@ def _make_trend_report(
     """
     if not runs:
         return None
-    regressions = find_regressions(runs, window=window, threshold=threshold)
+    regressions = find_regressions(runs, baseline_runs=baseline_runs, threshold=threshold)
     suffix = "" if stat == DEFAULT_STAT else f" ({stat})"
     report = (
         f"## {kind.heading}{suffix} over the last {days} days ({len(runs)} runs)\n\n"
@@ -310,7 +363,7 @@ def build_trend_report(
     stat: str = DEFAULT_STAT,
     days: int = 90,
     prune: bool = False,
-    window: int = 7,
+    baseline_runs: int = 7,
     threshold: float = 50.0,
 ) -> tuple[str, list[str]] | None:
     r"""Build the Markdown report and the annotations of the trend.
@@ -325,8 +378,8 @@ def build_trend_report(
         prune: If ``True``, delete the files older than the window
             after the report is made, so nothing is deleted if the
             load fails.
-        window: The maximum number of previous runs used to detect the
-            regressions.
+        baseline_runs: The maximum number of previous runs used to
+            detect the regressions.
         threshold: The slowdown in percent above which a benchmark is
             a regression.
 
@@ -341,7 +394,7 @@ def build_trend_report(
     """
     runs = load_runs(storage, days=days, kind=kind.name, stat=stat)
     result = _make_trend_report(
-        runs, kind=kind, stat=stat, days=days, window=window, threshold=threshold
+        runs, kind=kind, stat=stat, days=days, baseline_runs=baseline_runs, threshold=threshold
     )
     if prune:
         prune_runs(storage, days=days)

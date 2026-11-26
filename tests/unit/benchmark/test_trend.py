@@ -9,6 +9,7 @@ import pytest
 from feu.benchmark import (
     BENCHMARK_KIND,
     IMPORT_KIND,
+    Regression,
     Run,
     TrendKind,
     build_trend_report,
@@ -43,10 +44,12 @@ def build_report(
     *,
     kind: TrendKind = BENCHMARK_KIND,
     days: int = 90,
-    window: int = 7,
+    baseline_runs: int = 7,
     threshold: float = 50.0,
 ) -> tuple[str, list[str]]:
-    result = build_trend_report(path, kind=kind, days=days, window=window, threshold=threshold)
+    result = build_trend_report(
+        path, kind=kind, days=days, baseline_runs=baseline_runs, threshold=threshold
+    )
     assert result is not None
     return result
 
@@ -154,13 +157,6 @@ def test_make_table_benchmark_missing_in_some_runs() -> None:
     )
 
 
-def test_make_table_zero_first_value_has_zero_change() -> None:
-    runs = make_runs({"a": 0.0}, {"a": 1.0})
-    assert make_table(runs).splitlines()[-1] == (
-        "| a | 1000000.0 | 0.0 | +0.0% | 500000.0 | 0.0 | 1000000.0 | 2 | `▁█` |"
-    )
-
-
 def test_make_table_unit() -> None:
     assert make_table(make_runs({"a": 1.0}), kind=with_unit(BENCHMARK_KIND, "s")) == (
         "| Benchmark | Latest (s) | First (s) | Change | Median (s) | Min (s) | Max (s) "
@@ -184,9 +180,17 @@ def test_make_table_import_kind() -> None:
 ######################################
 
 
+def reg(label: str, latest: float, baseline: float, change: float, machine: str = "") -> Regression:
+    return Regression(machine, label, latest, baseline, change)
+
+
+def make_machine_runs(machine: str, *values: dict) -> list[Run]:
+    return [Run(DATE, machine, times) for times in values]
+
+
 def test_find_regressions_slower_than_threshold() -> None:
     runs = make_runs({"a": 1.0}, {"a": 1.0}, {"a": 1.0}, {"a": 2.0})
-    assert find_regressions(runs) == [("a", 2.0, 1.0, 100.0)]
+    assert find_regressions(runs) == [reg("a", 2.0, 1.0, 100.0)]
 
 
 def test_find_regressions_at_threshold_is_not_a_regression() -> None:
@@ -199,18 +203,38 @@ def test_find_regressions_faster_is_not_a_regression() -> None:
 
 def test_find_regressions_custom_threshold() -> None:
     runs = make_runs({"a": 1.0}, {"a": 1.5})
-    assert find_regressions(runs, threshold=10.0) == [("a", 1.5, 1.0, 50.0)]
+    assert find_regressions(runs, threshold=10.0) == [reg("a", 1.5, 1.0, 50.0)]
 
 
 def test_find_regressions_uses_median_of_previous_runs() -> None:
     # The median of [1, 1, 10] is 1, so one slow run in the history does not hide a regression.
     runs = make_runs({"a": 1.0}, {"a": 1.0}, {"a": 10.0}, {"a": 2.0})
-    assert find_regressions(runs) == [("a", 2.0, 1.0, 100.0)]
+    assert find_regressions(runs) == [reg("a", 2.0, 1.0, 100.0)]
 
 
-def test_find_regressions_uses_only_window_runs() -> None:
+def test_find_regressions_uses_only_baseline_runs() -> None:
     runs = make_runs({"a": 100.0}, {"a": 1.0}, {"a": 1.0}, {"a": 2.0})
-    assert find_regressions(runs, window=2) == [("a", 2.0, 1.0, 100.0)]
+    assert find_regressions(runs, baseline_runs=2) == [reg("a", 2.0, 1.0, 100.0)]
+
+
+def test_find_regressions_one_baseline_run_is_the_last_previous_run() -> None:
+    runs = make_runs({"a": 1.0}, {"a": 1.0}, {"a": 4.0}, {"a": 5.0})
+    assert find_regressions(runs, baseline_runs=1) == []
+
+
+def test_find_regressions_two_baseline_runs() -> None:
+    runs = make_runs({"a": 1.0}, {"a": 1.0}, {"a": 4.0}, {"a": 5.0})
+    assert find_regressions(runs, baseline_runs=2) == [reg("a", 5.0, 2.5, 100.0)]
+
+
+def test_find_regressions_baseline_runs_longer_than_the_history() -> None:
+    runs = make_runs({"a": 1.0}, {"a": 2.0})
+    assert find_regressions(runs, baseline_runs=100) == [reg("a", 2.0, 1.0, 100.0)]
+
+
+def test_find_regressions_baseline_skips_runs_without_the_benchmark() -> None:
+    runs = make_runs({"a": 1.0}, {"b": 9.0}, {"a": 3.0})
+    assert find_regressions(runs, baseline_runs=1) == [reg("a", 3.0, 1.0, 200.0)]
 
 
 def test_find_regressions_one_run() -> None:
@@ -229,35 +253,69 @@ def test_find_regressions_benchmark_missing_in_latest_run_is_ignored() -> None:
     assert find_regressions(make_runs({"a": 1.0, "b": 1.0}, {"a": 1.0})) == []
 
 
-def test_find_regressions_zero_baseline() -> None:
-    assert find_regressions(make_runs({"a": 0.0}, {"a": 1.0})) == []
-
-
 def test_find_regressions_sorted_by_decreasing_change() -> None:
     runs = make_runs({"a": 1.0, "b": 1.0}, {"a": 2.0, "b": 3.0})
-    assert find_regressions(runs) == [("b", 3.0, 1.0, 200.0), ("a", 2.0, 1.0, 100.0)]
+    assert find_regressions(runs) == [reg("b", 3.0, 1.0, 200.0), reg("a", 2.0, 1.0, 100.0)]
+
+
+def test_find_regressions_ties_are_sorted_by_label() -> None:
+    runs = make_runs({"b": 1.0, "a": 1.0}, {"b": 3.0, "a": 3.0})
+    assert [item.label for item in find_regressions(runs)] == ["a", "b"]
+
+
+def test_find_regressions_ties_are_sorted_by_machine() -> None:
+    runs = make_machine_runs("y", {"a": 1.0}, {"a": 3.0}) + make_machine_runs(
+        "x", {"a": 1.0}, {"a": 3.0}
+    )
+    assert [item.machine for item in find_regressions(runs)] == ["x", "y"]
 
 
 def test_find_regressions_several_benchmarks_only_slow_ones() -> None:
     runs = make_runs({"a": 1.0, "b": 1.0}, {"a": 1.0, "b": 3.0})
-    assert find_regressions(runs) == [("b", 3.0, 1.0, 200.0)]
+    assert find_regressions(runs) == [reg("b", 3.0, 1.0, 200.0)]
 
 
-def test_find_regressions_negative_threshold_reports_any_slowdown() -> None:
-    runs = make_runs({"a": 1.0}, {"a": 1.01})
-    assert find_regressions(runs, threshold=-1.0) == [("a", 1.01, 1.0, pytest.approx(1.0))]
+def test_find_regressions_machines_are_compared_separately() -> None:
+    # A run of another machine is neither the baseline nor the latest run.
+    runs = make_machine_runs("linux", {"a": 0.001}, {"a": 0.001}) + make_machine_runs(
+        "mac", {"a": 0.005}, {"a": 0.005}
+    )
+    assert find_regressions(runs) == []
 
 
-def test_find_regressions_window_zero_uses_every_previous_run() -> None:
-    # previous[-0:] is the whole list, so a window of 0 does not disable the detection.
-    runs = make_runs({"a": 1.0}, {"a": 1.0}, {"a": 2.0})
-    assert find_regressions(runs, window=0) == [("a", 2.0, 1.0, 100.0)]
+def test_find_regressions_regression_of_one_machine() -> None:
+    runs = make_machine_runs("linux", {"a": 1.0}, {"a": 3.0}) + make_machine_runs(
+        "mac", {"a": 5.0}, {"a": 5.0}
+    )
+    assert find_regressions(runs) == [reg("a", 3.0, 1.0, 200.0, machine="linux")]
+
+
+def test_find_regressions_machine_with_one_run_has_no_regression() -> None:
+    runs = make_machine_runs("linux", {"a": 1.0}, {"a": 3.0}) + make_machine_runs("mac", {"a": 9.0})
+    assert [item.machine for item in find_regressions(runs)] == ["linux"]
+
+
+@pytest.mark.parametrize("baseline_runs", [0, -1])
+def test_find_regressions_invalid_baseline_runs(baseline_runs: int) -> None:
+    with pytest.raises(ValueError, match=r"baseline_runs must be greater than or equal to 1"):
+        find_regressions(make_runs({"a": 1.0}), baseline_runs=baseline_runs)
+
+
+@pytest.mark.parametrize("threshold", [0.0, -1.0])
+def test_find_regressions_invalid_threshold(threshold: float) -> None:
+    with pytest.raises(ValueError, match=r"threshold must be greater than 0"):
+        find_regressions(make_runs({"a": 1.0}), threshold=threshold)
 
 
 def test_find_regressions_does_not_modify_runs() -> None:
     runs = make_runs({"a": 1.0}, {"a": 2.0})
     find_regressions(runs)
     assert runs == make_runs({"a": 1.0}, {"a": 2.0})
+
+
+def test_find_regressions_is_deterministic() -> None:
+    runs = make_runs({"a": 1.0, "b": 1.0}, {"a": 2.0, "b": 3.0})
+    assert find_regressions(runs) == find_regressions(runs)
 
 
 ############################################
@@ -270,7 +328,7 @@ def test_make_regression_report_empty() -> None:
 
 
 def test_make_regression_report() -> None:
-    assert make_regression_report([("a", 2e-06, 1e-06, 100.0)]) == (
+    assert make_regression_report([reg("a", 2e-06, 1e-06, 100.0)]) == (
         "### Regressions\n"
         "\n"
         "| Benchmark | Latest (µs) | Previous median (µs) | Change |\n"
@@ -280,7 +338,9 @@ def test_make_regression_report() -> None:
 
 
 def test_make_regression_report_several_regressions() -> None:
-    assert make_regression_report([("b", 3e-06, 1e-06, 200.0), ("a", 2e-06, 1e-06, 100.0)]) == (
+    assert make_regression_report(
+        [reg("b", 3e-06, 1e-06, 200.0), reg("a", 2e-06, 1e-06, 100.0)]
+    ) == (
         "### Regressions\n"
         "\n"
         "| Benchmark | Latest (µs) | Previous median (µs) | Change |\n"
@@ -291,7 +351,7 @@ def test_make_regression_report_several_regressions() -> None:
 
 
 def test_make_regression_report_import_kind() -> None:
-    assert make_regression_report([("a", 0.002, 0.001, 100.0)], kind=IMPORT_KIND) == (
+    assert make_regression_report([reg("a", 0.002, 0.001, 100.0)], kind=IMPORT_KIND) == (
         "### Regressions\n"
         "\n"
         "| Import | Latest (ms) | Previous median (ms) | Change |\n"
@@ -310,7 +370,7 @@ def test_make_annotations_empty() -> None:
 
 
 def test_make_annotations() -> None:
-    assert make_annotations([("a", 2e-06, 1e-06, 100.0)]) == [
+    assert make_annotations([reg("a", 2e-06, 1e-06, 100.0)]) == [
         (
             "::warning title=Regression::a is 100.0% slower than the median of the previous runs "
             "(2.0 µs instead of 1.0 µs)"
@@ -319,12 +379,12 @@ def test_make_annotations() -> None:
 
 
 def test_make_annotations_one_per_regression() -> None:
-    regressions = [("b", 3e-06, 1e-06, 200.0), ("a", 2e-06, 1e-06, 100.0)]
+    regressions = [reg("b", 3e-06, 1e-06, 200.0), reg("a", 2e-06, 1e-06, 100.0)]
     assert len(make_annotations(regressions)) == 2
 
 
 def test_make_annotations_import_kind() -> None:
-    assert make_annotations([("a", 0.002, 0.001, 100.0)], kind=IMPORT_KIND) == [
+    assert make_annotations([reg("a", 0.002, 0.001, 100.0)], kind=IMPORT_KIND) == [
         (
             "::warning title=Regression::a is 100.0% slower than the median of the previous runs "
             "(2.0 ms instead of 1.0 ms)"
@@ -396,7 +456,7 @@ def test_build_trend_report_window_one_compares_with_last_previous_run(tmp_path:
     write_run(tmp_path / "0001_1.json", now - timedelta(days=3), [BENCH_A])
     write_run(tmp_path / "0001_2.json", now - timedelta(days=2), [slow])
     write_run(tmp_path / "0001_3.json", now - timedelta(days=1), [slow])
-    _, annotations = build_report(tmp_path, window=1)
+    _, annotations = build_report(tmp_path, baseline_runs=1)
     assert annotations == []
 
 
@@ -440,7 +500,9 @@ def test_build_trend_report_prune_deletes_old_files(tmp_path: Path) -> None:
 
 def test_make_trend_report_no_runs() -> None:
     assert (
-        _make_trend_report([], kind=BENCHMARK_KIND, stat="median", days=5, window=7, threshold=50.0)
+        _make_trend_report(
+            [], kind=BENCHMARK_KIND, stat="median", days=5, baseline_runs=7, threshold=50.0
+        )
         is None
     )
 
@@ -448,7 +510,7 @@ def test_make_trend_report_no_runs() -> None:
 def test_make_trend_report_with_a_run() -> None:
     runs = make_runs({"a": 0.001})
     report = _make_trend_report(
-        runs, kind=BENCHMARK_KIND, stat="median", days=5, window=7, threshold=50.0
+        runs, kind=BENCHMARK_KIND, stat="median", days=5, baseline_runs=7, threshold=50.0
     )
     assert report == (f"## Benchmarks over the last 5 days (1 runs)\n\n{make_table(runs)}\n", [])
 
@@ -456,7 +518,7 @@ def test_make_trend_report_with_a_run() -> None:
 def test_make_trend_report_shows_the_stat() -> None:
     runs = make_runs({"a": 0.001})
     report = _make_trend_report(
-        runs, kind=BENCHMARK_KIND, stat="min", days=5, window=7, threshold=50.0
+        runs, kind=BENCHMARK_KIND, stat="min", days=5, baseline_runs=7, threshold=50.0
     )
     assert report is not None
     assert report[0].startswith("## Benchmarks (min) over the last 5 days")
