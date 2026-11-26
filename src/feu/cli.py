@@ -364,7 +364,6 @@ def benchmark_trend(
     scale: float | None,
     stat: str,
     days: int,
-    *,
     prune: bool,
     window: int,
     threshold: float,
