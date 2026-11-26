@@ -6,6 +6,7 @@ __all__ = [
     "BENCHMARK_KIND",
     "IMPORT_KIND",
     "KINDS",
+    "UNITS",
     "TrendKind",
     "UnknownStatError",
     "build_trend_report",
@@ -17,12 +18,14 @@ __all__ = [
     "make_regression_report",
     "make_table",
     "sparkline",
+    "with_unit",
 ]
 
 from feu.benchmark.trend import (
     BENCHMARK_KIND,
     IMPORT_KIND,
     KINDS,
+    UNITS,
     TrendKind,
     UnknownStatError,
     build_trend_report,
@@ -34,4 +37,5 @@ from feu.benchmark.trend import (
     make_regression_report,
     make_table,
     sparkline,
+    with_unit,
 )

@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import click
 
 from feu import __version__
-from feu.benchmark import KINDS, UnknownStatError, build_trend_report
+from feu.benchmark import KINDS, UNITS, UnknownStatError, build_trend_report, with_unit
 from feu.compat import (
     UnsupportedVersionError,
     find_closest_version as find_closest_version_,
@@ -315,6 +315,14 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     help="The kind of results: the median time of the benchmarks, or the import time.",
 )
 @click.option(
+    "--unit",
+    "unit",
+    type=click.Choice(sorted(UNITS)),
+    default=None,
+    help="The unit of the times in the report. Default: 'us' for the benchmark kind and "
+    "'ms' for the import kind.",
+)
+@click.option(
     "--stat",
     "stat",
     default="median",
@@ -342,7 +350,15 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     help="Slowdown in percent above which a benchmark is a regression.",
 )
 def benchmark_trend(
-    storage: Path, kind: str, stat: str, days: int, *, prune: bool, window: int, threshold: float
+    storage: Path,
+    kind: str,
+    unit: str | None,
+    stat: str,
+    days: int,
+    *,
+    prune: bool,
+    window: int,
+    threshold: float,
 ) -> None:
     r"""Print the trend of the pytest-benchmark results.
 
@@ -355,6 +371,9 @@ def benchmark_trend(
     Args:
         storage: The pytest-benchmark storage directory.
         kind: The kind of results: ``'benchmark'`` or ``'import'``.
+        unit: The unit of the times in the report (``'s'``, ``'ms'``,
+            ``'us'`` or ``'ns'``), or ``None`` for the default unit of
+            the kind.
         stat: The statistic of the times e.g. ``'median'``, ``'mean'``
             or ``'min'``. The ``import`` kind ignores the benchmarks
             that do not have it. The exit status is ``2`` if the
@@ -372,10 +391,11 @@ def benchmark_trend(
 
         ```
     """
+    trend_kind = KINDS[kind] if unit is None else with_unit(KINDS[kind], unit)
     try:
         result = build_trend_report(
             storage,
-            kind=KINDS[kind],
+            kind=trend_kind,
             stat=stat,
             days=days,
             prune=prune,

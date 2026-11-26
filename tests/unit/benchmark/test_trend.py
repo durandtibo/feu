@@ -10,6 +10,7 @@ from feu.benchmark import (
     BENCHMARK_KIND,
     IMPORT_KIND,
     KINDS,
+    UNITS,
     TrendKind,
     UnknownStatError,
     build_trend_report,
@@ -21,6 +22,7 @@ from feu.benchmark import (
     make_regression_report,
     make_table,
     sparkline,
+    with_unit,
 )
 
 if TYPE_CHECKING:
@@ -148,6 +150,33 @@ def test_import_kind_get_time_unknown_stat() -> None:
 
 def test_import_kind_get_time_without_extra_info() -> None:
     assert IMPORT_KIND.get_time({"name": "test_a"}, "median") is None
+
+
+@pytest.mark.parametrize(
+    ("unit", "shown", "scale"),
+    [("s", "s", 1.0), ("ms", "ms", 1e3), ("us", "µs", 1e6), ("µs", "µs", 1e6), ("ns", "ns", 1e9)],
+)
+def test_with_unit(unit: str, shown: str, scale: float) -> None:
+    kind = with_unit(BENCHMARK_KIND, unit)
+    assert (kind.unit, kind.scale) == (shown, scale)
+
+
+def test_with_unit_keeps_the_other_fields() -> None:
+    assert with_unit(IMPORT_KIND, "s").get_time is IMPORT_KIND.get_time
+
+
+def test_with_unit_does_not_modify_the_kind() -> None:
+    with_unit(BENCHMARK_KIND, "s")
+    assert (BENCHMARK_KIND.unit, BENCHMARK_KIND.scale) == ("µs", 1e6)
+
+
+def test_with_unit_unknown_unit() -> None:
+    with pytest.raises(ValueError, match=r"Unknown unit 'min'"):
+        with_unit(BENCHMARK_KIND, "min")
+
+
+def test_units() -> None:
+    assert UNITS == {"s": 1.0, "ms": 1e3, "us": 1e6, "µs": 1e6, "ns": 1e9}
 
 
 def test_kinds() -> None:
@@ -379,6 +408,15 @@ def test_make_table_zero_first_value_has_zero_change() -> None:
     runs = make_runs({"a": 0.0}, {"a": 1.0})
     assert make_table(runs).splitlines()[-1] == (
         "| a | 1000000.0 | 0.0 | +0.0% | 500000.0 | 0.0 | 1000000.0 | 2 | `▁█` |"
+    )
+
+
+def test_make_table_unit() -> None:
+    assert make_table(make_runs({"a": 1.0}), kind=with_unit(BENCHMARK_KIND, "s")) == (
+        "| Benchmark | Latest (s) | First (s) | Change | Median (s) | Min (s) | Max (s) "
+        "| Runs | Trend |\n"
+        "|---|---:|---:|---:|---:|---:|---:|---:|---|\n"
+        "| a | 1.0 | 1.0 | +0.0% | 1.0 | 1.0 | 1.0 | 1 | `▁` |"
     )
 
 

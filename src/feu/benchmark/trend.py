@@ -12,6 +12,7 @@ __all__ = [
     "BENCHMARK_KIND",
     "IMPORT_KIND",
     "KINDS",
+    "UNITS",
     "TrendKind",
     "UnknownStatError",
     "build_trend_report",
@@ -23,11 +24,12 @@ __all__ = [
     "make_regression_report",
     "make_table",
     "sparkline",
+    "with_unit",
 ]
 
 import json
 import statistics
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
@@ -159,6 +161,39 @@ IMPORT_KIND = TrendKind(
     get_time=_get_import_stat,
 )
 KINDS: dict[str, TrendKind] = {kind.name: kind for kind in (BENCHMARK_KIND, IMPORT_KIND)}
+# The conversion from seconds to each time unit.
+UNITS: dict[str, float] = {"s": 1.0, "ms": 1e3, "us": 1e6, "µs": 1e6, "ns": 1e9}
+
+
+def with_unit(kind: TrendKind, unit: str) -> TrendKind:
+    r"""Change the unit of the times shown in the reports of a kind.
+
+    Args:
+        kind: The kind of benchmark results.
+        unit: The new unit, one of the keys of ``UNITS``: ``"s"``,
+            ``"ms"``, ``"us"`` (or ``"µs"``) and ``"ns"``.
+
+    Returns:
+        A copy of the kind with the unit and its scale. ``"us"`` is
+            shown as ``"µs"``.
+
+    Raises:
+        ValueError: If the unit is unknown.
+
+    Example:
+        ```pycon
+        >>> from feu.benchmark import BENCHMARK_KIND, with_unit
+        >>> with_unit(BENCHMARK_KIND, "ms").unit
+        'ms'
+        >>> with_unit(BENCHMARK_KIND, "ms").scale
+        1000.0
+
+        ```
+    """
+    if unit not in UNITS:
+        msg = f"Unknown unit {unit!r}. The valid units are {sorted(UNITS)}"
+        raise ValueError(msg)
+    return replace(kind, unit="µs" if unit == "us" else unit, scale=UNITS[unit])
 
 
 def load_runs(
