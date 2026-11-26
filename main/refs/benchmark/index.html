@@ -769,6 +769,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#feu.benchmark.UnknownStatError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnknownStatError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#feu.benchmark.build_trend_report" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -889,6 +900,17 @@
     <span class="md-ellipsis">
       
         TrendKind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.trend.UnknownStatError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnknownStatError
       
     </span>
   </a>
@@ -1341,6 +1363,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#feu.benchmark.UnknownStatError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnknownStatError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#feu.benchmark.build_trend_report" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1461,6 +1494,17 @@
     <span class="md-ellipsis">
       
         TrendKind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.trend.UnknownStatError" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnknownStatError
       
     </span>
   </a>
@@ -1761,13 +1805,14 @@ entry.</p>
                 <code>get_time</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="dict">dict</span>], <span title="float">float</span> | None]</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="dict">dict</span>, <span title="str">str</span>], <span title="float">float</span> | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The function that returns the time in seconds of a
-benchmark entry, or <code>None</code> if the entry has no time
-(the entry is then ignored).</p>
+benchmark entry for a statistic (e.g. <code>"median"</code>), or
+<code>None</code> if the entry has no time (the entry is then
+ignored).</p>
               </div>
             </td>
             <td>
@@ -1814,6 +1859,37 @@ benchmark entry, or <code>None</code> if the entry has no time
 
 </div>
 
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="feu.benchmark.UnknownStatError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">feu.benchmark.UnknownStatError</span>
+
+
+<a href="#feu.benchmark.UnknownStatError" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="KeyError">KeyError</span></code></p>
+
+
+
+        <p>Raise when a statistic is not in the results of a benchmark.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1832,6 +1908,7 @@ benchmark entry, or <code>None</code> if the entry has no time
   
       dataclass
   " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.BENCHMARK_KIND">BENCHMARK_KIND</span></span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></span><span class="p">,</span>
     <span class="n">days</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
     <span class="n">prune</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
@@ -1890,6 +1967,24 @@ benchmark entry, or <code>None</code> if the entry has no time
             </td>
             <td>
                   <code><span title="feu.benchmark.trend.BENCHMARK_KIND">BENCHMARK_KIND</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stat</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The statistic of the times, see <code>load_runs</code>. It is
+added to the title of the report if it is not
+<code>"median"</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2295,6 +2390,7 @@ returned by <code>get_benchmark_label</code>.</p>
   
       dataclass
   " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.BENCHMARK_KIND">BENCHMARK_KIND</span></span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></span><span class="p">,</span>
     <span class="n">prune</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Run">Run</span></span><span class="p">]</span>
 </code></pre></div>
@@ -2370,6 +2466,26 @@ returned by <code>get_benchmark_label</code>.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>stat</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The statistic of the times, e.g. <code>"median"</code>, <code>"mean"</code>
+or <code>"min"</code>. The <code>benchmark</code> kind reads it from the
+<code>stats</code> of pytest-benchmark; the <code>import</code> kind reads
+<code>import_seconds_&lt;stat&gt;</code> of the <code>extra_info</code>, and
+ignores the benchmarks that do not have it.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>prune</code>
             </td>
             <td>
@@ -2405,6 +2521,30 @@ returned by <code>get_benchmark_label</code>.</p>
               <div class="doc-md-description">
                 <p>The runs sorted by date, each one as <code>(date, {label: time in
 seconds})</code>. A date without time zone is read as UTC.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.benchmark.trend.UnknownStatError" href="#feu.benchmark.trend.UnknownStatError">UnknownStatError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the <code>benchmark</code> kind is used with a
+statistic that pytest-benchmark did not save.</p>
               </div>
             </td>
           </tr>
@@ -2988,13 +3128,14 @@ entry.</p>
                 <code>get_time</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="dict">dict</span>], <span title="float">float</span> | None]</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="dict">dict</span>, <span title="str">str</span>], <span title="float">float</span> | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The function that returns the time in seconds of a
-benchmark entry, or <code>None</code> if the entry has no time
-(the entry is then ignored).</p>
+benchmark entry for a statistic (e.g. <code>"median"</code>), or
+<code>None</code> if the entry has no time (the entry is then
+ignored).</p>
               </div>
             </td>
             <td>
@@ -3041,6 +3182,37 @@ benchmark entry, or <code>None</code> if the entry has no time
 
 </div>
 
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="feu.benchmark.trend.UnknownStatError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">feu.benchmark.trend.UnknownStatError</span>
+
+
+<a href="#feu.benchmark.trend.UnknownStatError" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="KeyError">KeyError</span></code></p>
+
+
+
+        <p>Raise when a statistic is not in the results of a benchmark.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3059,6 +3231,7 @@ benchmark entry, or <code>None</code> if the entry has no time
   
       dataclass
   " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.BENCHMARK_KIND">BENCHMARK_KIND</span></span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></span><span class="p">,</span>
     <span class="n">days</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
     <span class="n">prune</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
@@ -3117,6 +3290,24 @@ benchmark entry, or <code>None</code> if the entry has no time
             </td>
             <td>
                   <code><span title="feu.benchmark.trend.BENCHMARK_KIND">BENCHMARK_KIND</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stat</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The statistic of the times, see <code>load_runs</code>. It is
+added to the title of the report if it is not
+<code>"median"</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -3522,6 +3713,7 @@ returned by <code>get_benchmark_label</code>.</p>
   
       dataclass
   " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.BENCHMARK_KIND">BENCHMARK_KIND</span></span><span class="p">,</span>
+    <span class="n">stat</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="n"><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></span><span class="p">,</span>
     <span class="n">prune</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="feu.benchmark.trend.Run">Run</span></span><span class="p">]</span>
 </code></pre></div>
@@ -3597,6 +3789,26 @@ returned by <code>get_benchmark_label</code>.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>stat</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The statistic of the times, e.g. <code>"median"</code>, <code>"mean"</code>
+or <code>"min"</code>. The <code>benchmark</code> kind reads it from the
+<code>stats</code> of pytest-benchmark; the <code>import</code> kind reads
+<code>import_seconds_&lt;stat&gt;</code> of the <code>extra_info</code>, and
+ignores the benchmarks that do not have it.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="feu.benchmark.trend.DEFAULT_STAT">DEFAULT_STAT</span></code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>prune</code>
             </td>
             <td>
@@ -3632,6 +3844,30 @@ returned by <code>get_benchmark_label</code>.</p>
               <div class="doc-md-description">
                 <p>The runs sorted by date, each one as <code>(date, {label: time in
 seconds})</code>. A date without time zone is read as UTC.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.benchmark.trend.UnknownStatError" href="#feu.benchmark.trend.UnknownStatError">UnknownStatError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the <code>benchmark</code> kind is used with a
+statistic that pytest-benchmark did not save.</p>
               </div>
             </td>
           </tr>

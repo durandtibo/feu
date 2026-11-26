@@ -1358,6 +1358,10 @@ is no result in the window.</p>
 <p>Args:
     storage: The pytest-benchmark storage directory.
     kind: The kind of results: <code>'benchmark'</code> or <code>'import'</code>.
+    stat: The statistic of the times e.g. <code>'median'</code>, <code>'mean'</code>
+        or <code>'min'</code>. The <code>import</code> kind ignores the benchmarks
+        that do not have it. The exit status is <code>2</code> if the
+        <code>benchmark</code> kind does not have it.
     days: The size of the window in days.
     prune: If <code>True</code>, delete the results older than the window.
     window: The maximum number of previous runs used to detect
@@ -1374,6 +1378,8 @@ is no result in the window.</p>
 <div class="highlight"><pre><span></span><code>  --kind [benchmark|import]  The kind of results: the median time of the
                              benchmarks, or the import time.  [default:
                              benchmark]
+  --stat TEXT                The statistic of the times e.g. 'median', 'mean'
+                             or 'min'.  [default: median]
   --days INTEGER             Size of the window in days.  [default: 90]
   --prune                    Delete the results older than the window.
   --window INTEGER           Number of previous runs used to detect the
@@ -1557,6 +1563,10 @@ are more than 50% slower than the median of the previous runs go to the standard
 <code>--kind import</code> for the import time results:</p>
 <div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span><span class="w"> </span>--prune
 feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--kind<span class="w"> </span>import<span class="w"> </span>--threshold<span class="w"> </span><span class="m">30</span>
+</code></pre></div>
+<p>Use another statistic of the times with <code>--stat</code> (for example <code>mean</code> or <code>min</code>). The <code>import</code> kind
+reads <code>import_seconds_&lt;stat&gt;</code> of the <code>extra_info</code>:</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--stat<span class="w"> </span>mean
 </code></pre></div>
 
 
