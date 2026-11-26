@@ -38,8 +38,8 @@ def fetch_github_repos(owner: str) -> tuple[Mapping[str, Any], ...]:
             API, as read-only mappings.
 
     Raises:
-        RuntimeError: If a request fails or if ``requests`` is not
-            installed.
+        RuntimeError: If a request fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon

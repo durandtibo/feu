@@ -37,8 +37,8 @@ def fetch_github_metadata(owner: str, repo: str) -> Mapping[str, Any]:
             read-only mapping.
 
     Raises:
-        RuntimeError: If the request fails or if ``requests`` is not
-            installed.
+        RuntimeError: If the request fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
