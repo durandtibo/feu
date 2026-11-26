@@ -44,6 +44,9 @@ class Run:
             times are finite and greater than zero. The mapping is
             read-only.
 
+    Raises:
+        ValueError: If a time is not a finite number greater than zero.
+
     Example:
         ```pycon
         >>> from datetime import UTC, datetime
@@ -60,7 +63,29 @@ class Run:
     times: Mapping[str, float]
 
     def __post_init__(self) -> None:
+        for label, seconds in self.times.items():
+            if not _is_valid_time(seconds):
+                msg = f"the time {seconds!r} of {label!r} is not a finite number > 0"
+                raise ValueError(msg)
         object.__setattr__(self, "times", MappingProxyType(dict(self.times)))
+
+
+def _is_valid_time(value: object) -> bool:
+    r"""Indicate if a value is a valid time.
+
+    Args:
+        value: The value to check.
+
+    Returns:
+        ``True`` if the value is a finite number greater than zero
+            (a boolean is not a number here), otherwise ``False``.
+    """
+    return (
+        isinstance(value, int | float)
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+        and value > 0
+    )
 
 
 def _check_days(days: int) -> None:
@@ -182,12 +207,7 @@ def _get_time(benchmark: dict[str, Any], kind: str, stat: str) -> float | None:
             return None
     else:
         seconds = benchmark["stats"][stat]
-    if (
-        isinstance(seconds, bool)
-        or not isinstance(seconds, int | float)
-        or not math.isfinite(seconds)
-        or seconds <= 0
-    ):
+    if not _is_valid_time(seconds):
         msg = f"the time {seconds!r} of {benchmark['name']!r} is not a finite number > 0"
         raise ValueError(msg)
     return float(seconds)

@@ -108,6 +108,12 @@ def test_run_is_frozen() -> None:
         set_attribute(run, "machine", "x")
 
 
+@pytest.mark.parametrize("value", [0, 0.0, -1.0, float("nan"), float("inf"), True, "1.0", None])
+def test_run_invalid_time(value: Any) -> None:
+    with pytest.raises(ValueError, match=r"the time .* of 'a' is not a finite number > 0"):
+        Run(ago(1), "", {"a": value})
+
+
 def test_run_equal() -> None:
     assert Run(NOW, "m", {"a": 0.001}) == Run(NOW, "m", {"a": 0.001})
 

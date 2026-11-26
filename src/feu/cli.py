@@ -417,7 +417,7 @@ def benchmark_trend(
             stat=stat,
             days=days,
             prune=prune,
-            window=window,
+            baseline_runs=window,
             threshold=threshold,
         )
     except ValueError as exc:
