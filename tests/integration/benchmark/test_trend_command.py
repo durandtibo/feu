@@ -62,8 +62,8 @@ def test_benchmark_trend_annotations_are_on_the_standard_error() -> None:
 
 @click_available
 def test_benchmark_trend_no_result_has_an_empty_standard_output(tmp_path: Path) -> None:
-    """Test that ``feu benchmark-trend`` has an empty standard output and
-    a message on the standard error when there is no result."""
+    """Test that ``feu benchmark-trend`` has an empty standard output
+    and a message on the standard error when there is no result."""
     result = run_command(storage=tmp_path)
     assert (result.returncode, result.stdout, b"No benchmark results" in result.stderr) == (
         0,

@@ -1,8 +1,8 @@
 r"""Contain functions to make the report of the trend of the benchmarks.
 
-The functions are pure: they take the runs returned by ``load_runs``
-and return a Markdown report and the GitHub Actions annotations. They
-do not read or write any file.
+The functions are pure: they take the runs returned by ``load_runs`` and
+return a Markdown report and the GitHub Actions annotations. They do not
+read or write any file.
 """
 
 from __future__ import annotations

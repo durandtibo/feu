@@ -308,9 +308,9 @@ def _use_utf8_streams() -> None:
     r"""Write the standard output and error as UTF-8.
 
     The report is Markdown with non-ASCII characters (``µ`` and the
-    sparkline), so it must not depend on the locale of the terminal.
-    A stream that cannot be reconfigured (e.g. a replaced stream) is
-    left as it is.
+    sparkline), so it must not depend on the locale of the terminal. A
+    stream that cannot be reconfigured (e.g. a replaced stream) is left
+    as it is.
     """
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
