@@ -594,6 +594,26 @@ def test_benchmark_trend_import_kind(runner: CliRunner, tmp_path: Path) -> None:
 
 
 @click_available
+def test_benchmark_trend_stat(runner: CliRunner, tmp_path: Path) -> None:
+    date = datetime.now(tz=UTC) - timedelta(days=1)
+    bench = {"name": "test_a_benchmark", "stats": {"median": 0.001, "mean": 0.003}}
+    tmp_path.joinpath("1.json").write_text(
+        json.dumps({"datetime": date.isoformat(), "benchmarks": [bench]})
+    )
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--stat", "mean"])
+    assert result.stdout.splitlines()[-1] == (
+        "| a | 3000.0 | 3000.0 | +0.0% | 3000.0 | 3000.0 | 3000.0 | 1 | `▁` |"
+    )
+
+
+@click_available
+def test_benchmark_trend_unknown_stat_is_a_usage_error(runner: CliRunner, tmp_path: Path) -> None:
+    write_run(tmp_path / "1.json", 0.001, days_ago=1)
+    result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--stat", "unknown"])
+    assert (result.exit_code, "'unknown' is not in the stats" in result.stderr) == (2, True)
+
+
+@click_available
 def test_benchmark_trend_unknown_kind_is_a_usage_error(runner: CliRunner, tmp_path: Path) -> None:
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--kind", "unknown"])
     assert result.exit_code == 2

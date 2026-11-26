@@ -13,6 +13,7 @@ __all__ = [
     "IMPORT_KIND",
     "KINDS",
     "TrendKind",
+    "UnknownStatError",
     "build_trend_report",
     "find_regressions",
     "get_benchmark_label",
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 SPARKS = "▁▂▃▄▅▆▇█"
+DEFAULT_STAT = "median"
 
 Run = tuple[datetime, dict[str, float]]
 Regression = tuple[str, float, float, float]
@@ -85,12 +87,22 @@ def get_import_label(benchmark: dict) -> str:
     return benchmark.get("param") or get_benchmark_label(benchmark)
 
 
-def _get_median(benchmark: dict) -> float | None:
-    return benchmark["stats"]["median"]
+class UnknownStatError(KeyError):
+    r"""Raise when a statistic is not in the results of a benchmark."""
 
 
-def _get_import_median(benchmark: dict) -> float | None:
-    return benchmark.get("extra_info", {}).get("import_seconds_median")
+def _get_stat(benchmark: dict, stat: str) -> float | None:
+    stats = benchmark["stats"]
+    if stat not in stats:
+        msg = (
+            f"The statistic {stat!r} is not in the stats of {benchmark['name']!r}: {sorted(stats)}"
+        )
+        raise UnknownStatError(msg)
+    return stats[stat]
+
+
+def _get_import_stat(benchmark: dict, stat: str) -> float | None:
+    return benchmark.get("extra_info", {}).get(f"import_seconds_{stat}")
 
 
 @dataclass(frozen=True)
@@ -106,8 +118,9 @@ class TrendKind:
         get_label: The function that returns the label of a benchmark
             entry.
         get_time: The function that returns the time in seconds of a
-            benchmark entry, or ``None`` if the entry has no time
-            (the entry is then ignored).
+            benchmark entry for a statistic (e.g. ``"median"``), or
+            ``None`` if the entry has no time (the entry is then
+            ignored).
 
     Example:
         ```pycon
@@ -124,7 +137,7 @@ class TrendKind:
     column: str
     heading: str
     get_label: Callable[[dict], str]
-    get_time: Callable[[dict], float | None]
+    get_time: Callable[[dict, str], float | None]
 
 
 BENCHMARK_KIND = TrendKind(
@@ -134,7 +147,7 @@ BENCHMARK_KIND = TrendKind(
     column="Benchmark",
     heading="Benchmarks",
     get_label=get_benchmark_label,
-    get_time=_get_median,
+    get_time=_get_stat,
 )
 IMPORT_KIND = TrendKind(
     name="import",
@@ -143,13 +156,18 @@ IMPORT_KIND = TrendKind(
     column="Import",
     heading="Import time",
     get_label=get_import_label,
-    get_time=_get_import_median,
+    get_time=_get_import_stat,
 )
 KINDS: dict[str, TrendKind] = {kind.name: kind for kind in (BENCHMARK_KIND, IMPORT_KIND)}
 
 
 def load_runs(
-    storage: Path, days: int, *, kind: TrendKind = BENCHMARK_KIND, prune: bool = False
+    storage: Path,
+    days: int,
+    *,
+    kind: TrendKind = BENCHMARK_KIND,
+    stat: str = DEFAULT_STAT,
+    prune: bool = False,
 ) -> list[Run]:
     r"""Load the results of the runs in the window.
 
@@ -157,11 +175,20 @@ def load_runs(
         storage: The pytest-benchmark storage directory.
         days: The size of the window in days.
         kind: The kind of benchmark results.
+        stat: The statistic of the times, e.g. ``"median"``, ``"mean"``
+            or ``"min"``. The ``benchmark`` kind reads it from the
+            ``stats`` of pytest-benchmark; the ``import`` kind reads
+            ``import_seconds_<stat>`` of the ``extra_info``, and
+            ignores the benchmarks that do not have it.
         prune: If ``True``, delete the files older than the window.
 
     Returns:
         The runs sorted by date, each one as ``(date, {label: time in
             seconds})``. A date without time zone is read as UTC.
+
+    Raises:
+        UnknownStatError: If the ``benchmark`` kind is used with a
+            statistic that pytest-benchmark did not save.
     """
     limit = datetime.now(tz=UTC) - timedelta(days=days)
     runs = []
@@ -176,7 +203,7 @@ def load_runs(
             continue
         times = {}
         for benchmark in data["benchmarks"]:
-            seconds = kind.get_time(benchmark)
+            seconds = kind.get_time(benchmark, stat)
             if seconds is not None:
                 times[kind.get_label(benchmark)] = seconds
         runs.append((date, times))
@@ -325,6 +352,7 @@ def build_trend_report(
     storage: Path,
     *,
     kind: TrendKind = BENCHMARK_KIND,
+    stat: str = DEFAULT_STAT,
     days: int = 90,
     prune: bool = False,
     window: int = 7,
@@ -335,6 +363,9 @@ def build_trend_report(
     Args:
         storage: The pytest-benchmark storage directory.
         kind: The kind of benchmark results.
+        stat: The statistic of the times, see ``load_runs``. It is
+            added to the title of the report if it is not
+            ``"median"``.
         days: The size of the window in days.
         prune: If ``True``, delete the files older than the window.
         window: The maximum number of previous runs used to detect the
@@ -347,12 +378,13 @@ def build_trend_report(
             window. The report is a Markdown text with the table and,
             if there are regressions, the regression section.
     """
-    runs = load_runs(storage, days, kind=kind, prune=prune)
+    runs = load_runs(storage, days, kind=kind, stat=stat, prune=prune)
     if not runs:
         return None
     regressions = find_regressions(runs, window=window, threshold=threshold)
+    suffix = "" if stat == DEFAULT_STAT else f" ({stat})"
     report = (
-        f"## {kind.heading} over the last {days} days ({len(runs)} runs)\n\n"
+        f"## {kind.heading}{suffix} over the last {days} days ({len(runs)} runs)\n\n"
         f"{make_table(runs, kind=kind)}\n"
     )
     section = make_regression_report(regressions, kind=kind)
