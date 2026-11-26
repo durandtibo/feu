@@ -878,6 +878,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.with_unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        with_unit
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1010,6 +1021,17 @@
     <span class="md-ellipsis">
       
         sparkline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.trend.with_unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        with_unit
       
     </span>
   </a>
@@ -1472,6 +1494,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.with_unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        with_unit
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1604,6 +1637,17 @@
     <span class="md-ellipsis">
       
         sparkline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.benchmark.trend.with_unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        with_unit
       
     </span>
   </a>
@@ -2948,6 +2992,151 @@ statistic that pytest-benchmark did not save.</p>
 
 </div>
 
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.benchmark.with_unit" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.benchmark.with_unit</span>
+
+
+<a href="#feu.benchmark.with_unit" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_unit</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Change the unit of the times shown in the reports of a kind.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>kind</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The kind of benchmark results.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>unit</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The new unit, one of the keys of <code>UNITS</code>: <code>"s"</code>,
+<code>"ms"</code>, <code>"us"</code> (or <code>"µs"</code>) and <code>"ns"</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A copy of the kind with the unit and its scale. <code>"us"</code> is
+shown as <code>"µs"</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the unit is unknown.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="n">with_unit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">'ms'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span>
+<span class="go">1000.0</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
 
 
   </div>
@@ -4264,6 +4453,151 @@ statistic that pytest-benchmark did not save.</p>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">sparkline</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sparkline</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
 <span class="go">'▁▅█'</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.benchmark.trend.with_unit" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.benchmark.trend.with_unit</span>
+
+
+<a href="#feu.benchmark.trend.with_unit" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_unit</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Change the unit of the times shown in the reports of a kind.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>kind</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The kind of benchmark results.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>unit</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The new unit, one of the keys of <code>UNITS</code>: <code>"s"</code>,
+<code>"ms"</code>, <code>"us"</code> (or <code>"µs"</code>) and <code>"ns"</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.benchmark.trend.TrendKind
+
+
+  
+      dataclass
+  " href="#feu.benchmark.trend.TrendKind">TrendKind</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A copy of the kind with the unit and its scale. <code>"us"</code> is
+shown as <code>"µs"</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the unit is unknown.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="n">with_unit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span><span class="o">.</span><span class="n">unit</span>
+<span class="go">'ms'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">with_unit</span><span class="p">(</span><span class="n">BENCHMARK_KIND</span><span class="p">,</span> <span class="s2">"ms"</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span>
+<span class="go">1000.0</span>
 </code></pre></div>
 </details>
 
