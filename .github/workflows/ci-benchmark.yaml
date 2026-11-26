@@ -1,0 +1,91 @@
+# Benchmark workflow.
+# Runs the performance benchmark suite (tests/benchmarks/) to follow the speed of the code and the
+# import time of the package. Not part of the blocking PR checks: runs nightly on its own schedule
+# instead of on every PR/push, and can also be triggered manually.
+# The results of each run are saved in an artifact, so the next run can compare with them and
+# `feu benchmark-trend` can show the trend over the past 90 days.
+
+name: Benchmark
+on:
+  schedule:
+    - cron: "10 9 * * *" # Run nightly at 9:10 AM UTC, alongside CI's nightly run
+  workflow_dispatch: # to trigger manually
+
+permissions: {}
+
+jobs:
+  benchmark:
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The speed of the functions: the times of the benchmarks.
+          - name: benchmark
+            kind: benchmark
+            pytest-args: tests/benchmarks/ --ignore=tests/benchmarks/test_import_benchmark.py
+          # The import time: measured inside a fresh interpreter, saved in the extra_info.
+          - name: import
+            kind: import
+            pytest-args: tests/benchmarks/test_import_benchmark.py
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v7
+
+      - name: Setup python environment
+        uses: durandtibo/setup-venv-uv-action@4445098aa662d3d72aa0455918bc46a091b2a7f8 # ratchet:durandtibo/setup-venv-uv-action@v0.3.1
+
+      - name: Download the results of the previous run
+        continue-on-error: true # there is no previous run the first time
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT: ${{ matrix.name }}-results
+        run: |
+          # Use the latest artifact whatever the status of its run: a run that failed after
+          # saving the results still has results that belong to the history.
+          run_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=${ARTIFACT}&per_page=1" \
+            --jq '.artifacts[] | select(.expired == false) | .workflow_run.id')
+          gh run download "$run_id" --name "${ARTIFACT}" --dir .benchmarks
+
+      - name: Run benchmarks
+        # Save the results and show the comparison with the previous run. A slower benchmark does
+        # not fail the job (the runners are noisy): only an error that prevents saving the results
+        # does. The GitHub runners do not always have the same CPU, so pytest-benchmark warns that
+        # the machine info is different from the saved one. The repository turns warnings into
+        # errors, which crashed pytest before it compared and saved the results, so this warning
+        # is ignored.
+        env:
+          PYTEST_ARGS: ${{ matrix.pytest-args }}
+        run: |
+          compare=()
+          if [ -n "$(find .benchmarks -name '*.json' 2>/dev/null)" ]; then
+            compare=(--benchmark-compare)
+          fi
+          read -ra targets <<< "${PYTEST_ARGS}" # the tests to run, from the matrix entry
+          python -m pytest "${targets[@]}" --benchmark-only \
+            --benchmark-storage=.benchmarks --benchmark-save=nightly \
+            -W "ignore::pytest_benchmark.logger.PytestBenchmarkWarning" "${compare[@]}"
+
+      - name: Show the trend over the past 3 months
+        # The artifact keeps the results of all the previous runs: show their trend and delete
+        # the results older than 90 days so the artifact does not grow forever.
+        if: always()
+        env:
+          KIND: ${{ matrix.kind }}
+        run: |
+          mkdir -p .benchmarks
+          feu benchmark-trend .benchmarks --kind "${KIND}" --days 90 --prune | tee trend.md
+          cat trend.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # ratchet:actions/upload-artifact@v7.0.2
+        with:
+          name: ${{ matrix.name }}-results
+          path: .benchmarks
+          include-hidden-files: true
+          if-no-files-found: warn

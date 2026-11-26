@@ -26,7 +26,8 @@ load-bearing for branch protection (see the comment at the top of `ci.yaml`)
 
 `ci-verify-workflows.yaml` is deliberately _not_ called from `ci.yaml`: it lints
 `.github/workflows/*` itself, so it triggers on workflow-file changes rather than
-every PR/push.
+every PR/push. `ci-benchmark.yaml` is not called from it either: it has its own nightly
+schedule, because the benchmarks are slow and noisy and must not block a pull request.
 
 ## Catalogue of the workflows
 
@@ -37,6 +38,7 @@ The trigger of a reusable workflow is `workflow_call`: it runs when another work
 | ------------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `ci.yaml`                            | pull request, push to `main`, nightly       | Entry point: calls the `ci-*` checks below.                                                             |
 | `ci-build.yaml`                      | called by `ci.yaml`                         | Build the package and check that the built package installs.                                            |
+| `ci-benchmark.yaml`                   | nightly (9:10 UTC), manual                  | Run the benchmarks (`tests/benchmarks/`), compare with the previous run and show the 90-day trend.      |
 | `ci-cyclic-imports.yaml`             | called by `ci.yaml`, manual                 | Check that there is no circular import.                                                                 |
 | `ci-doctest.yaml`                    | called by `ci.yaml`, manual                 | Run the doctests (`inv test.doctest`) and check that the documentation builds.                          |
 | `ci-format.yaml`                     | called by `ci.yaml`, manual                 | Check the formatting and the linting of the files (`make format`, `make lint`) and of the Python code.  |
