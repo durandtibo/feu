@@ -90,26 +90,94 @@ VERSION=$(feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python
   && feu install --pkg-name=numpy --pkg-version="$VERSION"
 ```
 
-Show the trend of the `pytest-benchmark` results saved in a directory over the last 90 days. The
-Markdown report goes to the standard output and the `::warning::` annotations of the benchmarks that
-are more than 50% slower than the median of the previous runs go to the standard error. Use
-`--kind import` for the import time results:
+## benchmark-trend
+
+Show the trend of the `pytest-benchmark` results saved in a directory (for example by a scheduled
+workflow with `pytest --benchmark-save=run --benchmark-storage=.benchmarks`). The latest run is
+compared with the median of the previous runs, which is stable on noisy runners.
 
 ```shell
-feu benchmark-trend .benchmarks --days 90 --prune
-feu benchmark-trend .benchmarks --kind import --threshold 30
+feu benchmark-trend .benchmarks
+feu benchmark-trend .benchmarks --days 30 --baseline-runs 5 --threshold 30 --prune
+feu benchmark-trend .benchmarks --kind import --stat min --unit ms
 ```
 
-Use another statistic of the times with `--stat` (for example `mean` or `min`). The `import` kind
-reads `import_seconds_<stat>` of the `extra_info`:
+| Option                 | Default     | Meaning                                                                                                                                                                                       |
+| ---------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--kind`               | `benchmark` | `benchmark` reads the times of the benchmarks, `import` reads the import times (see below).                                                                                                   |
+| `--stat`               | `median`    | The statistic of the times: `min`, `mean`, `median` or `max`.                                                                                                                                 |
+| `--unit`               | by kind     | The unit of the report: `s`, `ms`, `us` or `ns`. The default is `us` (`benchmark`) or `ms` (`import`).                                                                                        |
+| `--label`              | `name`      | `name` is the name without the `test_` prefix and the `_benchmark` suffix (`test_sort_benchmark[10]` is `sort[10]`). `fullname` is the full name, for two benchmarks that have the same name. |
+| `--days`               | `90`        | The size of the window in days (at least 1).                                                                                                                                                  |
+| `--baseline-runs`      | `7`         | The number of previous runs of the baseline (at least 1).                                                                                                                                     |
+| `--threshold`          | `50`        | The slowdown in percent above which a benchmark is a regression (greater than 0).                                                                                                             |
+| `--prune`              | off         | Delete the results older than the window, after the report was made.                                                                                                                          |
+| `--fail-on-regression` | off         | Exit with the status `1` if there is a regression.                                                                                                                                            |
 
-```shell
-feu benchmark-trend .benchmarks --stat mean
+The standard output holds only the Markdown report. The `::warning::` annotations of the
+regressions and the messages go to the standard error. Both are written as UTF-8, so a redirect
+(`feu benchmark-trend .benchmarks > report.md`) works under any locale. The report shows the times
+with three significant digits, and has one section per machine if the storage has the results of
+several machines.
+
+The exit status is `0`, `1` with `--fail-on-regression` and a regression, and `2` for a usage error
+or an invalid result file. If there is no result in the window, a message goes to the standard
+error, the standard output is empty and the status is `0`: the first run of a new workflow has no
+history.
+
+### What is read
+
+- Only the files named `NNNN_*.json`, the names that `pytest-benchmark` writes
+  (`<storage>/<machine>/0001_run.json`). Other JSON files are ignored.
+- A file that has this name and is not a valid result (invalid JSON, a missing `datetime` or
+  `stats`, a time that is not a finite number greater than zero) is an error that names the file.
+  Nothing is skipped silently, because a trend computed on a different history without notice is
+  misleading, and nothing is deleted when the load fails.
+- The runs of different machines (the directories of the storage) are never compared with each
+  other.
+- Two benchmarks of a run with the same label are an error; use `--label fullname`.
+
+### The `import` kind
+
+The `import` kind reads the import times that a test records in `extra_info`, so a storage can hold
+both kinds. The key is `import_seconds_<stat>` (for example `import_seconds_median`), the value is
+in seconds, and the label is the parameter of the test. A producer is a test such as:
+
+```python
+import subprocess
+import sys
+import time
+
+import pytest
+
+
+@pytest.mark.parametrize("package", ["feu", "feu.utils"])
+def test_import(benchmark, package):
+    def import_package():
+        start = time.perf_counter()
+        subprocess.run([sys.executable, "-c", f"import {package}"], check=True)
+        return time.perf_counter() - start
+
+    benchmark(import_package)
+    benchmark.extra_info["import_seconds_median"] = benchmark.stats["median"]
 ```
 
-Show the times in another unit with `--unit` (`s`, `ms`, `us` or `ns`). The default is `us` for the
-`benchmark` kind and `ms` for the `import` kind:
+A test that has no `import_seconds_<stat>` is ignored by this kind.
 
-```shell
-feu benchmark-trend .benchmarks --unit ms
-```
+### Python API
+
+The command is a thin layer over `feu.benchmark`: `load_runs` reads and validates the files,
+`find_regressions` and `make_report` are pure functions of the runs, and `prune_runs` deletes the
+old files.
+
+### Changes from the previous version
+
+- `--window` is renamed `--baseline-runs`, and `--scale` is removed (use `--unit` with `s`, `ms`,
+  `us` or `ns`). A workflow that passes one of them fails with a usage error that names the option.
+- The label of a parametrized benchmark is `sort[10]`, not `sort_benchmark[10]`.
+- A malformed result file, a duplicate label, an unknown `--stat`, `--days 0`, and a time that is not
+  greater than zero fail instead of giving an empty or a wrong report.
+- Foreign JSON files are ignored, and the runs of different machines are no longer merged.
+- The times have three significant digits, and the title shows the statistic and `1 run`.
+- The Python API changed: `Run` and `Regression` are dataclasses, `build_trend_report` is replaced
+  by `load_runs` and `make_report`, and `TrendKind`, `with_unit` and `UnknownStatError` are removed.

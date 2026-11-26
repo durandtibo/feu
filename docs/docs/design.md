@@ -75,6 +75,42 @@ True
 
 ```
 
+## Benchmark properties
+
+`feu.benchmark` (the `feu benchmark-trend` command) follows the properties above and adds the ones of
+this table. Each one is true by construction in one place, not by the discipline of each function.
+
+| #   | Property                           | What you can rely on                                                                                                                                                                                                                               |
+| --- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1  | **Lightweight**                    | `feu.benchmark` uses only the standard library. Importing it imports no optional library, reads no file and does no network call. The command needs `click` like every command.                                                                    |
+| B2  | **Read-only unless asked**         | Loading and reporting never change the storage. Files are deleted only by `prune_runs`, which the command calls only with `--prune`, and only after the report was built.                                                                          |
+| B3  | **Strict input, loud failure**     | A file that looks like a `pytest-benchmark` result is validated. A malformed file, a time that is not a finite number greater than zero or an invalid argument raises `ValueError` that names the file or the argument. No result gives a message. |
+| B4  | **One stable label per benchmark** | The label is a function of the entry, so it is the same in every run. Two entries of a run with the same label make the load fail instead of keeping one of them.                                                                                  |
+| B5  | **Comparable runs only**           | A run is compared only with runs of the same machine (the directory of `pytest-benchmark`), the same kind and the same statistic.                                                                                                                  |
+| B6  | **Honest numbers**                 | A time has three significant digits in `s`, `ms`, `us` or `ns`. A change is never computed from a zero.                                                                                                                                            |
+| B7  | **Deterministic output**           | The same storage gives the same bytes: rows are sorted by `(value, label)`, regressions by `(-change, label, machine)`, files by path and runs by `(date, machine)`.                                                                               |
+| B8  | **Safe, portable output**          | A label cannot break a Markdown table or a GitHub workflow command (both are escaped). Files are read and the report is written as UTF-8 on every platform.                                                                                        |
+| B9  | **A thin command**                 | The standard output holds only the Markdown report, annotations and messages go to the standard error, and the exit status carries the result: `0` ok, `1` a regression with `--fail-on-regression`, `2` a usage error.                            |
+| B10 | **Pure core, I/O at the edge**     | One module reads and deletes files. The analysis and the rendering are pure functions of values. The results are frozen dataclasses.                                                                                                               |
+| B11 | **Strict, typed, documented**      | Options are keyword-only and every public function has a doctest. The format is tested against a result written by the real `pytest-benchmark`, not only against hand-written dictionaries.                                                        |
+
+The label of a benchmark is the same for a parametrized and a plain test (B4), and a run is a value
+with a machine (B5):
+
+```pycon
+>>> from datetime import UTC, datetime
+>>> from feu.benchmark import Run, find_regressions
+>>> date = datetime(2026, 1, 1, tzinfo=UTC)
+>>> runs = [
+...     Run(date, "linux", {"sort[10]": 0.001}),
+...     Run(date, "linux", {"sort[10]": 0.003}),
+...     Run(date, "mac", {"sort[10]": 0.010}),
+... ]
+>>> [(item.machine, item.label, item.change) for item in find_regressions(runs)]
+[('linux', 'sort[10]', 200.0)]
+
+```
+
 ## Design choices and trade-offs
 
 ### A target without a platform means "any platform"

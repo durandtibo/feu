@@ -21,6 +21,20 @@ imports  ->  utils  ->  version  ->  compat  ->  install  ->  cli
 `feu.benchmark`, `feu.github` and `feu.local_git` are outside the chain and only use the lower layers
 (`feu.benchmark` uses only the standard library).
 
+## `feu.benchmark`
+
+`feu.benchmark` has one module per role, so that the I/O is visible in the file list: one loader that
+validates, one pure analysis, one pure renderer, and a thin command (`feu benchmark-trend`).
+
+| Module      | What it does                                                                                              | I/O                                |
+| ----------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `runs.py`   | `Run`, `KINDS`, `STATS`, `LABELS`, `load_runs`, `prune_runs`: read, validate and delete the result files. | reads and deletes the result files |
+| `trend.py`  | `Regression`, `find_regressions`: the latest run against the median of the previous runs, by machine.     | none                               |
+| `report.py` | `TrendReport`, `UNITS`, `make_report`: the Markdown report and the `::warning::` annotations of the runs. | none                               |
+
+The results are frozen dataclasses with named fields. `cli.py` calls `load_runs`, `make_report`, then
+`prune_runs` (only with `--prune`, after the report was built, so a failing load deletes nothing).
+
 ## Data flow
 
 1. `dev/generate_compat_data.py` calls `discover_compat_targets(package)`. It fetches the project
