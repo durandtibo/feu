@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import click
 
 from feu import __version__
-from feu.benchmark import KINDS, UNITS, UnknownStatError, build_trend_report, with_unit
+from feu.benchmark import TREND_KINDS, UNITS, build_trend_report, with_unit
 from feu.compat import (
     UnsupportedVersionError,
     find_closest_version as find_closest_version_,
@@ -309,7 +309,7 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
 @click.option(
     "--kind",
     "kind",
-    type=click.Choice(sorted(KINDS)),
+    type=click.Choice(sorted(TREND_KINDS)),
     default="benchmark",
     show_default=True,
     help="The kind of results: the median time of the benchmarks, or the import time.",
@@ -401,7 +401,7 @@ def benchmark_trend(
 
         ```
     """
-    trend_kind = KINDS[kind]
+    trend_kind = TREND_KINDS[kind]
     if unit is None and scale is not None:
         msg = "--scale requires --unit"
         raise click.UsageError(msg)
@@ -420,8 +420,8 @@ def benchmark_trend(
             window=window,
             threshold=threshold,
         )
-    except UnknownStatError as exc:
-        raise click.UsageError(exc.args[0]) from exc
+    except ValueError as exc:
+        raise click.UsageError(str(exc)) from exc
     if result is None:
         click.echo("No results.", err=True)
         return

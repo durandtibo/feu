@@ -11,15 +11,11 @@ from __future__ import annotations
 __all__ = [
     "BENCHMARK_KIND",
     "IMPORT_KIND",
-    "KINDS",
+    "TREND_KINDS",
     "UNITS",
     "TrendKind",
-    "UnknownStatError",
     "build_trend_report",
     "find_regressions",
-    "get_benchmark_label",
-    "get_import_label",
-    "load_runs",
     "make_annotations",
     "make_regression_report",
     "make_table",
@@ -27,84 +23,19 @@ __all__ = [
     "with_unit",
 ]
 
-import json
 import statistics
 from dataclasses import dataclass, replace
-from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
+from feu.benchmark.runs import Run, load_runs, prune_runs
+
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from pathlib import Path
 
 SPARKS = "▁▂▃▄▅▆▇█"
 DEFAULT_STAT = "median"
 
-Run = tuple[datetime, dict[str, float]]
 Regression = tuple[str, float, float, float]
-
-
-def get_benchmark_label(benchmark: dict) -> str:
-    r"""Get the label of a benchmark.
-
-    Args:
-        benchmark: A benchmark entry of a pytest-benchmark JSON file.
-
-    Returns:
-        The name of the benchmark without the ``test_`` prefix and the
-            ``_benchmark`` suffix.
-
-    Example:
-        ```pycon
-        >>> from feu.benchmark import get_benchmark_label
-        >>> get_benchmark_label({"name": "test_sort_benchmark"})
-        'sort'
-
-        ```
-    """
-    return benchmark["name"].removeprefix("test_").removesuffix("_benchmark")
-
-
-def get_import_label(benchmark: dict) -> str:
-    r"""Get the label of an import time benchmark.
-
-    Args:
-        benchmark: A benchmark entry of a pytest-benchmark JSON file.
-
-    Returns:
-        The parameter of the benchmark (for example the name of the
-            imported subpackage) if it has one, otherwise the label
-            returned by ``get_benchmark_label``.
-
-    Example:
-        ```pycon
-        >>> from feu.benchmark import get_import_label
-        >>> get_import_label({"name": "test_import[utils]", "param": "utils"})
-        'utils'
-        >>> get_import_label({"name": "test_import_benchmark"})
-        'import'
-
-        ```
-    """
-    return benchmark.get("param") or get_benchmark_label(benchmark)
-
-
-class UnknownStatError(KeyError):
-    r"""Raise when a statistic is not in the results of a benchmark."""
-
-
-def _get_stat(benchmark: dict, stat: str) -> float | None:
-    stats = benchmark["stats"]
-    if stat not in stats:
-        msg = (
-            f"The statistic {stat!r} is not in the stats of {benchmark['name']!r}: {sorted(stats)}"
-        )
-        raise UnknownStatError(msg)
-    return stats[stat]
-
-
-def _get_import_stat(benchmark: dict, stat: str) -> float | None:
-    return benchmark.get("extra_info", {}).get(f"import_seconds_{stat}")
 
 
 @dataclass(frozen=True)
@@ -117,12 +48,6 @@ class TrendKind:
         scale: The conversion from seconds to ``unit``.
         column: The title of the first column of the table.
         heading: The subject of the title of the report.
-        get_label: The function that returns the label of a benchmark
-            entry.
-        get_time: The function that returns the time in seconds of a
-            benchmark entry for a statistic (e.g. ``"median"``), or
-            ``None`` if the entry has no time (the entry is then
-            ignored).
 
     Example:
         ```pycon
@@ -138,8 +63,6 @@ class TrendKind:
     scale: float
     column: str
     heading: str
-    get_label: Callable[[dict], str]
-    get_time: Callable[[dict, str], float | None]
 
 
 BENCHMARK_KIND = TrendKind(
@@ -148,8 +71,6 @@ BENCHMARK_KIND = TrendKind(
     scale=1e6,
     column="Benchmark",
     heading="Benchmarks",
-    get_label=get_benchmark_label,
-    get_time=_get_stat,
 )
 IMPORT_KIND = TrendKind(
     name="import",
@@ -157,10 +78,8 @@ IMPORT_KIND = TrendKind(
     scale=1e3,
     column="Import",
     heading="Import time",
-    get_label=get_import_label,
-    get_time=_get_import_stat,
 )
-KINDS: dict[str, TrendKind] = {kind.name: kind for kind in (BENCHMARK_KIND, IMPORT_KIND)}
+TREND_KINDS: dict[str, TrendKind] = {kind.name: kind for kind in (BENCHMARK_KIND, IMPORT_KIND)}
 # The conversion from seconds to each time unit.
 UNITS: dict[str, float] = {"s": 1.0, "ms": 1e3, "us": 1e6, "µs": 1e6, "ns": 1e9}
 
@@ -207,55 +126,6 @@ def with_unit(kind: TrendKind, unit: str, *, scale: float | None = None) -> Tren
     return replace(kind, unit="µs" if unit == "us" else unit, scale=scale)
 
 
-def load_runs(
-    storage: Path,
-    days: int,
-    *,
-    kind: TrendKind = BENCHMARK_KIND,
-    stat: str = DEFAULT_STAT,
-    prune: bool = False,
-) -> list[Run]:
-    r"""Load the results of the runs in the window.
-
-    Args:
-        storage: The pytest-benchmark storage directory.
-        days: The size of the window in days.
-        kind: The kind of benchmark results.
-        stat: The statistic of the times, e.g. ``"median"``, ``"mean"``
-            or ``"min"``. The ``benchmark`` kind reads it from the
-            ``stats`` of pytest-benchmark; the ``import`` kind reads
-            ``import_seconds_<stat>`` of the ``extra_info``, and
-            ignores the benchmarks that do not have it.
-        prune: If ``True``, delete the files older than the window.
-
-    Returns:
-        The runs sorted by date, each one as ``(date, {label: time in
-            seconds})``. A date without time zone is read as UTC.
-
-    Raises:
-        UnknownStatError: If the ``benchmark`` kind is used with a
-            statistic that pytest-benchmark did not save.
-    """
-    limit = datetime.now(tz=UTC) - timedelta(days=days)
-    runs = []
-    for path in sorted(storage.rglob("*.json")):
-        data = json.loads(path.read_text())
-        date = datetime.fromisoformat(data["datetime"])
-        if date.tzinfo is None:
-            date = date.replace(tzinfo=UTC)
-        if date < limit:
-            if prune:
-                path.unlink()
-            continue
-        times = {}
-        for benchmark in data["benchmarks"]:
-            seconds = kind.get_time(benchmark, stat)
-            if seconds is not None:
-                times[kind.get_label(benchmark)] = seconds
-        runs.append((date, times))
-    return sorted(runs, key=lambda run: run[0])
-
-
 def sparkline(values: list[float]) -> str:
     r"""Draw the values with block characters.
 
@@ -290,8 +160,8 @@ def make_table(runs: list[Run], *, kind: TrendKind = BENCHMARK_KIND) -> str:
         A Markdown table sorted by latest time.
     """
     series: dict[str, list[float]] = {}
-    for _, times in runs:
-        for label, seconds in times.items():
+    for run in runs:
+        for label, seconds in run.times.items():
             series.setdefault(label, []).append(seconds * kind.scale)
     unit = kind.unit
     lines = [
@@ -334,8 +204,8 @@ def find_regressions(
     if len(runs) < 2:
         return []
     regressions = []
-    for label, latest in runs[-1][1].items():
-        previous = [times[label] for _, times in runs[:-1] if label in times][-window:]
+    for label, latest in runs[-1].times.items():
+        previous = [run.times[label] for run in runs[:-1] if label in run.times][-window:]
         if not previous:
             continue
         baseline = statistics.median(previous)
@@ -394,6 +264,45 @@ def make_annotations(
     ]
 
 
+def _make_trend_report(
+    runs: list[Run],
+    *,
+    kind: TrendKind,
+    stat: str,
+    days: int,
+    window: int,
+    threshold: float,
+) -> tuple[str, list[str]] | None:
+    r"""Make the Markdown report and the annotations of the runs.
+
+    Args:
+        runs: The runs returned by ``load_runs``.
+        kind: The kind of benchmark results.
+        stat: The statistic of the times. It is added to the title if it
+            is not ``"median"``.
+        days: The size of the window in days.
+        window: The maximum number of previous runs used to detect the
+            regressions.
+        threshold: The slowdown in percent above which a benchmark is
+            a regression.
+
+    Returns:
+        ``(report, annotations)``, or ``None`` if there is no run.
+    """
+    if not runs:
+        return None
+    regressions = find_regressions(runs, window=window, threshold=threshold)
+    suffix = "" if stat == DEFAULT_STAT else f" ({stat})"
+    report = (
+        f"## {kind.heading}{suffix} over the last {days} days ({len(runs)} runs)\n\n"
+        f"{make_table(runs, kind=kind)}\n"
+    )
+    section = make_regression_report(regressions, kind=kind)
+    if section:
+        report += f"\n{section}\n"
+    return report, make_annotations(regressions, kind=kind)
+
+
 def build_trend_report(
     storage: Path,
     *,
@@ -413,7 +322,9 @@ def build_trend_report(
             added to the title of the report if it is not
             ``"median"``.
         days: The size of the window in days.
-        prune: If ``True``, delete the files older than the window.
+        prune: If ``True``, delete the files older than the window
+            after the report is made, so nothing is deleted if the
+            load fails.
         window: The maximum number of previous runs used to detect the
             regressions.
         threshold: The slowdown in percent above which a benchmark is
@@ -423,17 +334,15 @@ def build_trend_report(
         ``(report, annotations)``, or ``None`` if there is no run in the
             window. The report is a Markdown text with the table and,
             if there are regressions, the regression section.
+
+    Raises:
+        ValueError: If an argument is invalid or a result file is
+            invalid, see ``load_runs``.
     """
-    runs = load_runs(storage, days, kind=kind, stat=stat, prune=prune)
-    if not runs:
-        return None
-    regressions = find_regressions(runs, window=window, threshold=threshold)
-    suffix = "" if stat == DEFAULT_STAT else f" ({stat})"
-    report = (
-        f"## {kind.heading}{suffix} over the last {days} days ({len(runs)} runs)\n\n"
-        f"{make_table(runs, kind=kind)}\n"
+    runs = load_runs(storage, days=days, kind=kind.name, stat=stat)
+    result = _make_trend_report(
+        runs, kind=kind, stat=stat, days=days, window=window, threshold=threshold
     )
-    section = make_regression_report(regressions, kind=kind)
-    if section:
-        report += f"\n{section}\n"
-    return report, make_annotations(regressions, kind=kind)
+    if prune:
+        prune_runs(storage, days=days)
+    return result
