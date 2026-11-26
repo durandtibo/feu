@@ -19,7 +19,7 @@ function.
 | 6   | **Extensible by registration**            | A package constraint, an installer or a dependency resolver is added by registering one value in a registry instance. No subclassing is needed to add data, and no registry is process-global class state.                                                                |
 | 7   | **Standards compliant**                   | Package names are canonicalised once (PEP 503), versions are `packaging` versions (PEP 440), requirements are `packaging` requirements (PEP 508) and wheel names are parsed by `packaging`.                                                                               |
 | 8   | **No shell, no string-built command**     | An external command is an argument vector. `pip` runs as `sys.executable -m pip`, so it installs into the interpreter that runs `feu`. The command is logged before it runs.                                                                                              |
-| 9   | **Fresh and immutable**                   | Availability checks are cached and `clear_availability_caches()` resets them (`install_package` calls it after a success). The PyPI and GitHub values that are cached are immutable, so no caller can corrupt a cache.                                                    |
+| 9   | **Fresh and immutable**                   | The checks of packages, modules and optional libraries are cached and `clear_availability_caches()` resets them (`install_package` calls it after a success). The PyPI and GitHub values that are cached are immutable, so no caller can corrupt a cache.                                                    |
 | 10  | **Deterministic order**                   | Versions are ordered by PEP 440, never as strings. A mapping that is returned or written is sorted. The generated data has a date and no timestamp.                                                                                                                       |
 | 11  | **A thin CLI**                            | The CLI is the same API behind `click`. Standard output holds only the answer (it is used in `$(...)`), logs go to standard error, the exit status carries the result (`0` ok, `1` negative answer, `2` usage error).                                                     |
 | 12  | **Strict, typed, documented**             | Options are keyword-only. Invalid input raises `ValueError` or `TypeError` with an explicit message. Every public function has a doctest, and the examples of this guide are doctests too.                                                                                |
@@ -212,8 +212,10 @@ request stops a script instead of installing `pkg==None`. `check-valid-version` 
 ### Availability checks keep the `is_*` names
 
 `is_package_available` and `is_module_available` are the public names, as in the `feu.testing`
-marks. The checks are cached with `availability_cache` (the design of `coola.utils.imports`) so that
-one call, `clear_availability_caches()`, resets all of them.
+marks. The checks of packages, modules and optional libraries are cached with `availability_cache`
+(the design of `coola.utils.imports`), so that one call, `clear_availability_caches()`, resets all
+of them. The checks of the installer tools (`is_pip_available`, `is_uv_available`) are cached
+separately and are not reset by it.
 
 ### Python versions of the data
 

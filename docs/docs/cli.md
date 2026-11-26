@@ -74,10 +74,15 @@ feu install --installer-name=uv --installer-args='--upgrade' --pkg-name=numpy
 ```
 
 Write the versions to test of the dependencies of a project, from the bounds of its
-`pyproject.toml`:
+`pyproject.toml`. For each dependency of `[project.dependencies]` and
+`[project.optional-dependencies]`, the output holds the latest version of each minor version at or
+above the lower bound (of each major version for the packages given with `--major-only`, which
+defaults to `packaging`). The result is a JSON object, written to the standard output unless
+`--output` is given. It needs network access:
 
 ```shell
 feu package-versions --pyproject pyproject.toml --output dev/config/package_versions.json
+feu package-versions --major-only packaging --major-only click
 ```
 
 ## Use in a shell script or a workflow
@@ -168,16 +173,5 @@ A test that has no `import_seconds_<stat>` is ignored by this kind.
 
 The command is a thin layer over `feu.benchmark`: `load_runs` reads and validates the files,
 `find_regressions` and `make_report` are pure functions of the runs, and `prune_runs` deletes the
-old files.
-
-### Changes from the previous version
-
-- `--window` is renamed `--baseline-runs`, and `--scale` is removed (use `--unit` with `s`, `ms`,
-  `us` or `ns`). A workflow that passes one of them fails with a usage error that names the option.
-- The label of a parametrized benchmark is `sort[10]`, not `sort_benchmark[10]`.
-- A malformed result file, a duplicate label, an unknown `--stat`, `--days 0`, and a time that is not
-  greater than zero fail instead of giving an empty or a wrong report.
-- Foreign JSON files are ignored, and the runs of different machines are no longer merged.
-- The times have three significant digits, and the title shows the statistic and `1 run`.
-- The Python API changed: `Run` and `Regression` are dataclasses, `build_trend_report` is replaced
-  by `load_runs` and `make_report`, and `TrendKind`, `with_unit` and `UnknownStatError` are removed.
+old files. See [Benchmark trend](usage.md#benchmark-trend) for an example and the
+[API reference](refs/benchmark.md) for the signatures.

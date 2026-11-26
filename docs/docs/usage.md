@@ -231,6 +231,73 @@ discovery = discover_compat_targets("numpy")
 show_compat_targets(discovery, pkg_name="numpy")
 ```
 
+## Installing Every Compatible Version
+
+`get_installable_versions` lists the stable releases of a package on PyPI that are valid for a
+target, and `install_all_versions` installs them one after the other, for example to test a library
+against all the versions of a dependency. A failure to install one version is logged and does not
+stop the others. The result lists the versions that were installed and the ones that failed.
+
+```python
+from feu.compat import Target
+from feu.install import InstallerSpec, get_installable_versions, install_all_versions
+
+target = Target(python_version="3.12", os="linux", arch="x86_64")
+versions = get_installable_versions("numpy", target, start_date="2024-01-01")
+result = install_all_versions(InstallerSpec("pip"), "pandas[performance]", target)
+print(result.installed, result.failed)
+```
+
+## Version Utilities
+
+`feu.version` has the helpers that sort, filter and select versions. They use PEP 440 order, never
+the order of the strings:
+
+```pycon
+>>> from feu.version import filter_stable_versions, latest_minor_versions, sort_versions
+>>> versions = ["1.10.0", "1.9.0", "1.9.1", "2.0.0rc1"]
+>>> sort_versions(filter_stable_versions(versions))
+['1.9.0', '1.9.1', '1.10.0']
+>>> latest_minor_versions(filter_stable_versions(versions))
+['1.9.1', '1.10.0']
+
+```
+
+The functions that read PyPI (`fetch_pypi_versions`, `fetch_versions`, `fetch_latest_version`, ...)
+use the Simple API, need the `requests` extra and cache the metadata of a project for the life of the
+process. `read_pyproject_bounds` reads the lower and upper bounds of the dependencies of a
+`pyproject.toml`, and `fetch_package_versions` combines both to give the versions to test of a
+project (the `package-versions` command):
+
+```python
+from feu.version import fetch_latest_stable_version, fetch_package_versions, read_pyproject_bounds
+
+bounds = read_pyproject_bounds("pyproject.toml", package="numpy")  # one entry per section
+latest = fetch_latest_stable_version("numpy")
+to_test = fetch_package_versions("pyproject.toml")  # {"numpy": ["1.26.4", "2.0.2", ...], ...}
+```
+
+## Benchmark Trend
+
+`feu.benchmark` follows the trend of the `pytest-benchmark` results (the `feu benchmark-trend`
+command, see the [CLI reference](cli.md#benchmark-trend)). A `Run` is the times of the benchmarks of
+one run on one machine. `find_regressions` compares the latest run of each machine with the median
+of its previous runs, and `make_report` renders the Markdown report and the GitHub Actions
+annotations. Both are pure functions of the runs; `load_runs` reads them from a storage directory.
+
+```pycon
+>>> from datetime import UTC, datetime
+>>> from feu.benchmark import Run, make_report
+>>> date = datetime(2026, 1, 1, tzinfo=UTC)
+>>> runs = [Run(date, "", {"sort": 0.001}), Run(date, "", {"sort": 0.003})]
+>>> report = make_report(runs, threshold=100)
+>>> [(item.label, item.change) for item in report.regressions]
+[('sort', 200.0)]
+>>> report.annotations
+('::warning title=Regression::sort is 200.0%25 slower than the median of the previous runs (3000 µs instead of 1000 µs)',)
+
+```
+
 ## Working with Git Repositories
 
 If you have installed the `git` extra (`pip install 'feu[git]'`):
@@ -278,7 +345,7 @@ def test_error_without_requests(): ...
 Each mark has an `..._available` variant (skips the test if the dependency is _not_ available) and
 an `..._not_available` variant (skips the test if the dependency _is_ available). Marks are
 provided for `click`, `git`, `jax`, `matplotlib`, `numpy`, `pandas`, `pip`, `polars`, `pyarrow`,
-`requests`, `rich`, `scipy`, `sklearn`, `torch`, `uv`, and `xarray`.
+`pytest_benchmark`, `requests`, `rich`, `scipy`, `sklearn`, `torch`, `uv`, and `xarray`.
 
 ## Common Use Cases
 

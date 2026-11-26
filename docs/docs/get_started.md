@@ -21,10 +21,14 @@ pip install 'feu[all]'
 
 It is also possible to install specific optional dependencies:
 
-- `feu[cli]` - Install CLI support (click)
-- `feu[git]` - Install git support (gitpython)
-- `feu[requests]` - Install HTTP request support (requests, urllib3)
-- `feu[rich]` - Install rich console/formatting support (rich)
+- `feu[cli]` - Install CLI support (click): the `feu` command
+- `feu[git]` - Install git support (gitpython): `feu.local_git`
+- `feu[requests]` - Install HTTP request support (requests, urllib3): the calls to PyPI and
+  GitHub, which a wildcard version request (`2.*`) needs
+- `feu[rich]` - Install rich console/formatting support (rich): `show_compat_targets`
+
+`feu` requires Python 3.11 or newer. Without an extra, the feature that needs it raises a
+`MissingPackageError` that gives the `pip install` command.
 
 For example:
 
