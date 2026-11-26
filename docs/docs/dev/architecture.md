@@ -33,9 +33,9 @@ the lower layers (`feu.benchmark` uses only the standard library).
 `import feu` imports no submodule. The names of `feu.__all__` (`find_closest_version`,
 `install_package`, `is_package_available`, ...) are resolved on first use by the `__getattr__` that
 `feu.imports.lazy_exports` builds from a table `{name: module}`. This keeps `import feu` cheap and
-independent of the optional libraries, and `tests/integration/test_import_weight.py` checks that no optional library is imported. A
-module that needs an optional library calls `check_<package>()` (for example `check_requests()`)
-inside the function that uses it, never at import time.
+independent of the optional libraries, and `tests/integration/test_import_weight.py` checks that no
+optional library is imported. A module that needs an optional library calls `check_<package>()` (for
+example `check_requests()`) inside the function that uses it, never at import time.
 
 ## `feu.benchmark`
 
