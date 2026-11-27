@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 class VersionRange(NamedTuple):
     r"""Represent one contiguous range of valid package versions.
 
-    Args:
+    Attributes:
         min: The minimum valid package version, or ``None`` for no
             minimum.
         max: The maximum valid package version, or ``None`` for no
@@ -47,7 +47,7 @@ class VersionRange(NamedTuple):
 class PackageData(NamedTuple):
     r"""Represent the compatibility data of one package.
 
-    Args:
+    Attributes:
         targets: The ranges of each target.
     """
 

@@ -61,6 +61,8 @@ plugins:
           options:
             allow_inspection: true
             docstring_style: google
+            docstring_options:
+              returns_multiple_items: false
             separate_signature: true
             show_bases: true
             show_object_full_path: true
