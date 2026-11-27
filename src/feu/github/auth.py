@@ -20,6 +20,8 @@ def build_github_headers() -> dict[str, str]:
         ```pycon
         >>> from feu.github import build_github_headers
         >>> headers = build_github_headers()
+        >>> headers["Accept"]
+        'application/vnd.github+json'
 
         ```
     """

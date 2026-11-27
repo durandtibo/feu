@@ -1,7 +1,9 @@
 r"""Contain git utility functions to inspect the tags of the current
 repository.
 
-These functions require the ``gitpython`` package.
+These functions require the ``gitpython`` package, which can be
+installed with ``pip install 'feu[git]'``. The repository is searched
+from the current working directory and its parent directories.
 """
 
 from __future__ import annotations
@@ -41,7 +43,8 @@ def get_tags() -> list[git.TagReference]:
         ```pycon
         >>> from feu.local_git import get_tags
         >>> tags = get_tags()
-        >>> tags
+        >>> isinstance(tags, list)
+        True
 
         ```
     """
@@ -70,14 +73,15 @@ def get_last_tag_name(*, raise_error: bool = True) -> str | None:
     Raises:
         RuntimeError: if no tag was found and ``raise_error=True``.
         MissingPackageError: if the ``gitpython`` package is not installed.
+        git.InvalidGitRepositoryError: if the current directory is
+            not in a git repository.
 
     Example:
         ```pycon
         >>> from feu.local_git import get_last_tag_name
-        >>> tag = get_last_tag_name()
-        >>> tag
         >>> tag = get_last_tag_name(raise_error=False)
-        >>> tag
+        >>> tag is None or isinstance(tag, str)
+        True
 
         ```
     """
@@ -112,14 +116,15 @@ def get_last_version_tag_name(*, raise_error: bool = True) -> str | None:
             ``raise_error=True``.
         MissingPackageError: if the ``gitpython`` package is not
             installed.
+        git.InvalidGitRepositoryError: if the current directory is
+            not in a git repository.
 
     Example:
         ```pycon
         >>> from feu.local_git import get_last_version_tag_name
-        >>> tag = get_last_version_tag_name()
-        >>> tag
         >>> tag = get_last_version_tag_name(raise_error=False)
-        >>> tag
+        >>> tag is None or tag.startswith("v")
+        True
 
         ```
     """

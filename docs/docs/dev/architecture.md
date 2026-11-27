@@ -9,14 +9,14 @@ imports nothing from `feu`. `tests/unit/test_layers.py` checks it.
 imports  ->  utils  ->  version  ->  compat  ->  install  ->  cli
 ```
 
-| Layer     | What it does                                                                                                            | I/O                                                |
-| --------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `imports` | Availability checks of the optional libraries (a port of `coola.utils.imports`), `MissingPackageError`, `lazy_exports`. | none                                               |
-| `utils`   | `Registry[T]`, `run_command`, `fetch_data`/`fetch_response`, `PackageSpec`, the platform of the interpreter.            | `command.py` (subprocess), `http.py` (network)     |
-| `version` | Version comparison and filtering, the version request, `pyproject` bounds, PyPI metadata (`fetch_pypi_project`).        | `pypi.py`, `package.py` (network)                  |
-| `compat`  | `Target`, the registry, the shipped data, the discovery from PyPI, the wheel tags.                                      | `discover.py` (network), `shipped.py` (read files) |
-| `install` | The installers, the dependency resolvers, `install_package` and friends.                                                | `installer.py` (subprocess)                        |
-| `cli`     | The `click` commands; they only parse and print.                                                                        | none of its own                                    |
+| Layer     | What it does                                                                                                                            | I/O                                                |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `imports` | Availability checks of the optional libraries (a port of `coola.utils.imports`), `MissingPackageError`, `lazy_exports`.                 | none                                               |
+| `utils`   | `Registry[T]`, `run_command`, `fetch_data`/`fetch_response`, `PackageSpec`, the platform of the interpreter, JSON files, mappings.      | `command.py` (subprocess), `http.py` (network)     |
+| `version` | The installed version, version comparison and filtering, the version request, `pyproject` bounds, PyPI metadata (`fetch_pypi_project`). | `pypi.py`, `package.py` (network)                  |
+| `compat`  | `Target`, the registry, the shipped data, the discovery from PyPI, the wheel tags.                                                      | `discover.py` (network), `shipped.py` (read files) |
+| `install` | The installers, the dependency resolvers, `install_package` and friends.                                                                | `installer.py` (subprocess)                        |
+| `cli`     | The `click` commands; they only parse and print.                                                                                        | none of its own                                    |
 
 `feu.benchmark`, `feu.github`, `feu.local_git` and `feu.testing` are outside the chain and only use
 the lower layers (`feu.benchmark` uses only the standard library).
@@ -30,7 +30,7 @@ the lower layers (`feu.benchmark` uses only the standard library).
 
 ## Public names and lazy imports
 
-`import feu` imports no submodule. The names of `feu.__all__` (`find_closest_version`,
+`import feu` imports only `feu.imports`. The names of `feu.__all__` (`find_closest_version`,
 `install_package`, `is_package_available`, ...) are resolved on first use by the `__getattr__` that
 `feu.imports.lazy_exports` builds from a table `{name: module}`. This keeps `import feu` cheap and
 independent of the optional libraries, and `tests/integration/test_import_weight.py` checks that no

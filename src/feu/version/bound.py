@@ -26,13 +26,23 @@ class PackageBounds:
         name: The canonical package name as declared in the dependency
             specifier.
         lower: The lower bound version string (from ``>=`` or ``>``
-            specifiers), or ``None`` if no lower bound is declared.
+            specifiers), or ``None`` if no lower bound is declared. The
+            operator is not kept.
         upper: The upper bound version string (from ``<`` or ``<=``
-            specifiers), or ``None`` if no upper bound is declared.
+            specifiers), or ``None`` if no upper bound is declared. The
+            operator is not kept.
         section: The ``pyproject.toml`` section where the dependency
             was found (e.g. ``'project.dependencies'``,
             ``'project.optional-dependencies.dev'``,
             ``'dependency-groups.dev'``).
+
+    Example:
+        ```pycon
+        >>> from feu.version import PackageBounds
+        >>> PackageBounds(name="numpy", lower="1.21", upper=None, section="project.dependencies")
+        PackageBounds(name='numpy', lower='1.21', upper=None, section='project.dependencies')
+
+        ```
     """
 
     name: str

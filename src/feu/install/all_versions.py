@@ -36,6 +36,14 @@ class InstallResult(NamedTuple):
     Attributes:
         installed: The versions that were installed successfully.
         failed: The versions for which the installation failed.
+
+    Example:
+        ```pycon
+        >>> from feu.install import InstallResult
+        >>> InstallResult(installed=["2.0.2"], failed=[])
+        InstallResult(installed=['2.0.2'], failed=[])
+
+        ```
     """
 
     installed: list[str]
@@ -46,6 +54,9 @@ def get_installable_versions(
     pkg_name: str, target: Target, *, start_date: date | str | None = None
 ) -> list[str]:
     r"""Get the stable package versions compatible with a target.
+
+    The releases are read from PyPI (the yanked ones are excluded) and
+    checked with the default compatibility registry.
 
     Args:
         pkg_name: The package name to inspect (e.g., ``"numpy"``).
@@ -58,6 +69,12 @@ def get_installable_versions(
     Returns:
         The stable versions of the package that are valid for the
             given target, in PEP 440 order (ascending).
+
+    Raises:
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
+        ValueError: If ``start_date`` is a string that is not an ISO
+            8601 date.
 
     Example:
         ```pycon
@@ -93,7 +110,9 @@ def install_all_versions(
     target, one after the other.
 
     A failure to install one version does not stop the installation of
-    the remaining versions. The failure is logged.
+    the remaining versions. The failure is logged. Only the name and the
+    extras of ``package`` are used: its version specifier, if any, is
+    ignored.
 
     Args:
         installer: The installer specification.
@@ -112,6 +131,10 @@ def install_all_versions(
     Raises:
         packaging.requirements.InvalidRequirement: If ``package`` is
             not a valid requirement.
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
+        ValueError: If ``start_date`` is a string that is not an ISO
+            8601 date.
 
     Example:
         ```pycon

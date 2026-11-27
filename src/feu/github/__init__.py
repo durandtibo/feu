@@ -1,4 +1,10 @@
-r"""Contain GitHub utility functions."""
+r"""Contain GitHub utility functions.
+
+The functions read the metadata of repositories from the GitHub REST API
+(they need the ``feu[requests]`` extra), sort it and summarize it. The
+``GITHUB_TOKEN`` environment variable, if set, authenticates the
+requests.
+"""
 
 from __future__ import annotations
 

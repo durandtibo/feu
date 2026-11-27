@@ -41,7 +41,7 @@ def fetch_data(
             entry of ``headers`` takes precedence.
 
     Returns:
-        The parsed JSON object returned.
+        The parsed JSON payload, usually a dictionary.
 
     Raises:
         RuntimeError: If the request times out, if a network or HTTP error occurs,

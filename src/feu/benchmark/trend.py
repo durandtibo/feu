@@ -56,7 +56,9 @@ def find_regressions(
     machine has its own latest run and its own baseline.
 
     Args:
-        runs: The runs returned by ``load_runs``.
+        runs: The runs returned by ``load_runs``. They must be in
+            chronological order: the last run of a machine is its
+            latest run.
         baseline_runs: The maximum number of previous runs used for
             the median. It must be at least 1.
         threshold: The slowdown in percent above which a benchmark is

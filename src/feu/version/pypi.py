@@ -52,6 +52,15 @@ class PypiFile:
             (e.g. ``">=3.9"``), or ``None``.
         yanked: ``True`` if the file is yanked.
         uploaded: The upload time (UTC), or ``None`` if unknown.
+
+    Example:
+        ```pycon
+        >>> from feu.version import PypiFile
+        >>> file = PypiFile("numpy-2.0.2.tar.gz", ">=3.9", yanked=False, uploaded=None)
+        >>> file.requires_python
+        '>=3.9'
+
+        ```
     """
 
     filename: str
@@ -282,6 +291,12 @@ def fetch_pypi_versions(
             its files, so a version without any file is dropped when a
             date bound is given.
 
+    Raises:
+        RuntimeError: If the request fails.
+        MissingPackageError: If ``requests`` is not installed.
+        ValueError: If ``start_date`` or ``end_date`` is a string that
+            is not an ISO 8601 date.
+
     Example:
         ```pycon
         >>> from feu.version import fetch_pypi_versions
@@ -322,6 +337,10 @@ def fetch_pypi_requires_python(package: str) -> Mapping[str, str | None]:
             ``None`` if the release has no files or no file declares
             one. The first file that declares a specifier is used.
 
+    Raises:
+        RuntimeError: If the request fails.
+        MissingPackageError: If ``requests`` is not installed.
+
     Example:
         ```pycon
         >>> from feu.version import fetch_pypi_requires_python
@@ -347,6 +366,10 @@ def fetch_pypi_wheel_filenames(package: str) -> Mapping[str, tuple[str, ...]]:
         A read-only mapping from each release version string to a
             tuple of its wheel file names (an empty tuple if the
             release has no wheel).
+
+    Raises:
+        RuntimeError: If the request fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -386,6 +409,10 @@ def fetch_pypi_pinned_dependency_version(package: str, version: str, dependency:
         The exact pinned version of ``dependency`` required by
             ``package==version``, or ``None`` if the release has no
             such exact pin.
+
+    Raises:
+        RuntimeError: If the request fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon

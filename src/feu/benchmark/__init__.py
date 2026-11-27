@@ -1,4 +1,12 @@
-r"""Contain functions to follow the trend of the benchmarks."""
+r"""Contain functions to follow the trend of the benchmarks.
+
+``load_runs`` reads the results saved by ``pytest-benchmark`` as ``Run``
+values, ``find_regressions`` compares the latest run of each machine
+with the median of its previous runs, ``make_report`` renders a Markdown
+report with GitHub Actions annotations, and ``prune_runs`` deletes the
+old results. This package only uses the standard library. The ``feu
+benchmark-trend`` command is built on these functions.
+"""
 
 from __future__ import annotations
 

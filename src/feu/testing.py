@@ -3,7 +3,13 @@ availability of optional dependencies.
 
 For each dependency, ``<name>_available`` skips the test if the
 dependency is not available, and ``<name>_not_available`` skips the
-test if the dependency is available.
+test if the dependency is available. The marks are provided for
+``click``, ``git``, ``jax``, ``matplotlib``, ``numpy``, ``pandas``,
+``pip``, ``polars``, ``pyarrow``, ``pytest_benchmark``, ``requests``,
+``rich``, ``scipy``, ``sklearn``, ``torch``, ``uv`` and ``xarray``. The
+availability is checked once, when this module is imported.
+
+This module needs ``pytest``, which is not a dependency of ``feu``.
 
 Example:
     ```pycon

@@ -24,9 +24,11 @@ def install_package(
 ) -> None:
     r"""Install a package with the specified installer.
 
-    The package is installed as specified, without any version
-    compatibility check. Use ``install_package_closest_version`` to
-    install the closest compatible version. The cached availability
+    The package version is installed as specified, without any version
+    compatibility check. The dependency resolver of the package can add
+    requirements, e.g. ``numpy<2.0.0`` for an old ``pandas`` (see
+    ``feu.install.resolver``). Use ``install_package_closest_version``
+    to install the closest compatible version. The cached availability
     checks (``feu.imports.clear_availability_caches``) are cleared after
     a successful installation.
 
@@ -39,6 +41,8 @@ def install_package(
     Raises:
         RuntimeError: If no installer is registered for the installer
             name, or if the tool of the installer is not available.
+        ValueError: If the package specification is not a valid
+            requirement (e.g. a malformed version).
         subprocess.CalledProcessError: If the installation command
             fails.
 
@@ -96,7 +100,11 @@ def install_package_closest_version(
 
     Raises:
         RuntimeError: If no installer is registered for the installer
-            name, or if the tool of the installer is not available.
+            name, if the tool of the installer is not available, or if
+            the versions needed to match a wildcard cannot be
+            downloaded.
+        MissingPackageError: If a wildcard needs a download and
+            ``requests`` is not installed.
         UnsupportedVersionError: If no version of the package is
             valid for the target, or if no known version satisfies a
             wildcard request.

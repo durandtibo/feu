@@ -6,8 +6,8 @@ The following versions of `feu` are currently being supported with security upda
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.5.x   | :white_check_mark: |
-| < 0.5   | :x:                |
+| 0.9.x   | :white_check_mark: |
+| < 0.9   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -67,7 +67,8 @@ When using `feu`, we recommend following these best practices:
 
 - **Version validation**: Ensures you're using tested and compatible package versions
 - **Minimal dependencies**: Core functionality requires only the `packaging` library
-- **No network access required**: Core features work offline (network features are optional)
+- **No network access required**: Core features work offline. Wildcard version requests, discovery
+  and the PyPI and GitHub functions need the network
 
 ## Disclosure Policy
 

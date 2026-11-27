@@ -55,6 +55,10 @@ packages and their versions across different Python environments.
 - 🖥️ **CLI tools**: Command-line interface (`feu`) to install a package, find the closest valid
   version, check if a version is valid, list the versions to test and follow the trend of
   `pytest-benchmark` results (`pip install 'feu[cli]'`)
+- 📈 **Benchmark trend**: Compare the latest `pytest-benchmark` run with the median of the
+  previous ones, as a Markdown report with GitHub Actions warnings (`feu.benchmark`)
+- 🧪 **Testing marks**: `pytest` marks to skip tests when an optional library is (not) available
+  (`feu.testing`)
 - 🧩 **Extensible**: Register your own installers (`pip` and `uv` are built in), dependency
   resolvers and compatibility constraints
 - 🪶 **Lightweight**: Minimal dependencies (only `packaging` required for core functionality)
@@ -62,6 +66,7 @@ packages and their versions across different Python environments.
 ### Quick Example
 
 The examples are doctests: they are run by the test suite, so they cannot drift from the code.
+The examples that need the network are marked as skipped.
 
 ```pycon
 >>> from feu import is_package_available
@@ -73,7 +78,7 @@ True
 >>> find_closest_version("numpy", "2.3.0", target)
 '2.0.2'
 >>> # A version is a request: an exact version, a wildcard or "" for the latest
->>> find_closest_version("numpy", "1.*", target)
+>>> find_closest_version("numpy", "1.*", target)  # doctest: +SKIP
 '1.26.4'
 >>> # A target without a platform means "any platform"
 >>> find_closest_version("numpy", "2.3.0", Target(python_version="3.9"))
@@ -105,10 +110,19 @@ feu install --pkg-name=numpy --pkg-version=2.0.2
 | `install_package`, `install_package_closest_version` | Install a package as written, or at the closest valid version for the target |
 | `PackageSpec`, `InstallerSpec`                       | Describe the package (name, version request, extras) and the installer       |
 
-All of them can be imported from `feu`. The other modules are `feu.compat` (registry, discovery from
-PyPI), `feu.install` (installers, dependency resolvers), `feu.version` (version utilities, PyPI and
-`pyproject.toml`), `feu.imports` (optional dependencies), `feu.testing` (`pytest` marks),
-`feu.benchmark`, `feu.github` and `feu.local_git`.
+All of them can be imported from `feu`. The other modules are:
+
+| Module          | What it does                                                              | Extra                 |
+| --------------- | ------------------------------------------------------------------------- | --------------------- |
+| `feu.compat`    | Compatibility registry, shipped data, discovery from PyPI                 | `requests` (PyPI)     |
+| `feu.install`   | Installers, dependency resolvers, installation of every version           | `requests` (PyPI)     |
+| `feu.version`   | Compare, filter and sort versions, PyPI metadata, `pyproject.toml` bounds | `requests` (PyPI)     |
+| `feu.imports`   | Optional dependencies: availability checks and `MissingPackageError`      |                       |
+| `feu.utils`     | Shared helpers: `PackageSpec`, `Registry`, JSON files, HTTP, commands     | `requests` (HTTP)     |
+| `feu.benchmark` | Trend and regressions of `pytest-benchmark` results                       |                       |
+| `feu.github`    | Metadata of GitHub repositories                                           | `requests`            |
+| `feu.local_git` | Tags of the local git repository                                          | `git`                 |
+| `feu.testing`   | `pytest` marks for the optional libraries                                 | none (needs `pytest`) |
 
 ### Version requests
 
@@ -153,7 +167,7 @@ error-prone. `feu` solves this by:
 
 ## Installation
 
-We highly recommend installing a
+`feu` requires Python 3.11 or newer. We highly recommend installing it in a
 [virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
 `feu` can be installed from pip using the following command:
 
@@ -165,7 +179,7 @@ To make the package as slim as possible, only the minimal packages required to u
 installed. To include all the dependencies, you can use the following command:
 
 ```shell
-pip install feu[all]
+pip install 'feu[all]'
 ```
 
 Please check the [get started page](https://durandtibo.github.io/feu/get_started) to see how to
@@ -176,6 +190,7 @@ is the corresponding `feu` versions and supported dependencies.
 | `feu`   | `packaging`    | `python`       | `click`<sup>*</sup> | `gitpython`<sup>*</sup> | `requests`<sup>*</sup> | `rich`<sup>*</sup> |
 | ------- | -------------- | -------------- | ------------------- | ----------------------- | ---------------------- | ------------------ |
 | `main`  | `>=22.0,<27.0` | `>=3.11`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
+| `0.9.0` | `>=22.0,<27.0` | `>=3.11`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
 | `0.8.4` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
 | `0.8.3` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |
 | `0.8.2` | `>=21.0,<27.0` | `>=3.10`       | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          | `>=14.0.0,<16.0`   |

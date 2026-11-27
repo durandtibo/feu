@@ -20,7 +20,7 @@ from feu.version.bound import PackageBounds
 
 
 def read_pyproject_bounds(path: str | Path, *, package: str | None = None) -> list[PackageBounds]:
-    """Read a ``pyproject.toml`` file and return the version bounds of
+    r"""Read a ``pyproject.toml`` file and return the version bounds of
     its dependencies.
 
     The file is parsed once. The following standard sections are read,
@@ -48,12 +48,30 @@ def read_pyproject_bounds(path: str | Path, *, package: str | None = None) -> li
     Raises:
         FileNotFoundError: If the file does not exist.
         tomllib.TOMLDecodeError: If the file is not valid TOML.
+        packaging.requirements.InvalidRequirement: If a dependency is
+            not a valid requirement.
 
     Example:
-        ```python
-        bounds = read_pyproject_bounds("pyproject.toml", package="numpy")
-        for b in bounds:
-            print(b.section, b.lower, b.upper)
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.version import read_pyproject_bounds
+        >>> content = [
+        ...     '[project]',
+        ...     'dependencies = ["numpy>=1.21,<3.0"]',
+        ...     '[project.optional-dependencies]',
+        ...     'cli = ["click>=8.1"]',
+        ...     '[dependency-groups]',
+        ...     'dev = ["NumPy>=2.0"]',
+        ... ]
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = Path(tmpdir).joinpath("pyproject.toml")
+        ...     _ = path.write_text("\n".join(content))
+        ...     bounds = read_pyproject_bounds(path, package="numpy")
+        ...
+        >>> [(b.section, b.lower, b.upper) for b in bounds]
+        [('project.dependencies', '1.21', '3.0'), ('dependency-groups.dev', '2.0', None)]
+
         ```
     """
     path = Path(path)
@@ -81,7 +99,7 @@ def read_pyproject_bounds(path: str | Path, *, package: str | None = None) -> li
 
 
 def read_pyproject_dependencies(path: str | Path) -> list[PackageBounds]:
-    """Read a ``pyproject.toml`` file and return the bounds for all
+    r"""Read a ``pyproject.toml`` file and return the bounds for all
     packages defined in ``[project.dependencies]``.
 
     This function is kept for the scripts that copy
@@ -99,19 +117,35 @@ def read_pyproject_dependencies(path: str | Path) -> list[PackageBounds]:
     Raises:
         FileNotFoundError: If the file does not exist.
         tomllib.TOMLDecodeError: If the file is not valid TOML.
+        packaging.requirements.InvalidRequirement: If a dependency is
+            not a valid requirement.
 
     Example:
-        ```python
-        bounds = read_pyproject_dependencies("pyproject.toml")
-        for b in bounds:
-            print(b.name, b.lower, b.upper)
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.version import read_pyproject_dependencies
+        >>> content = [
+        ...     '[project]',
+        ...     'dependencies = ["numpy>=1.21,<3.0"]',
+        ...     '[project.optional-dependencies]',
+        ...     'cli = ["click>=8.1"]',
+        ... ]
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = Path(tmpdir).joinpath("pyproject.toml")
+        ...     _ = path.write_text("\n".join(content))
+        ...     bounds = read_pyproject_dependencies(path)
+        ...
+        >>> [(b.name, b.lower, b.upper) for b in bounds]
+        [('numpy', '1.21', '3.0')]
+
         ```
     """
     return [b for b in read_pyproject_bounds(path) if b.section == "project.dependencies"]
 
 
 def read_pyproject_optional_dependencies(path: str | Path) -> list[PackageBounds]:
-    """Read a ``pyproject.toml`` file and return the bounds for all
+    r"""Read a ``pyproject.toml`` file and return the bounds for all
     packages defined in ``[project.optional-dependencies]``.
 
     All groups under ``[project.optional-dependencies]`` are included. The
@@ -133,12 +167,28 @@ def read_pyproject_optional_dependencies(path: str | Path) -> list[PackageBounds
     Raises:
         FileNotFoundError: If the file does not exist.
         tomllib.TOMLDecodeError: If the file is not valid TOML.
+        packaging.requirements.InvalidRequirement: If a dependency is
+            not a valid requirement.
 
     Example:
-        ```python
-        bounds = read_pyproject_optional_dependencies("pyproject.toml")
-        for b in bounds:
-            print(b.name, b.section, b.lower, b.upper)
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.version import read_pyproject_optional_dependencies
+        >>> content = [
+        ...     '[project]',
+        ...     'dependencies = ["numpy>=1.21,<3.0"]',
+        ...     '[project.optional-dependencies]',
+        ...     'cli = ["click>=8.1"]',
+        ... ]
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = Path(tmpdir).joinpath("pyproject.toml")
+        ...     _ = path.write_text("\n".join(content))
+        ...     bounds = read_pyproject_optional_dependencies(path)
+        ...
+        >>> [(b.name, b.section) for b in bounds]
+        [('click', 'project.optional-dependencies.cli')]
+
         ```
     """
     return [
@@ -149,7 +199,7 @@ def read_pyproject_optional_dependencies(path: str | Path) -> list[PackageBounds
 
 
 def read_pyproject_package_bounds(path: str | Path, package: str) -> list[PackageBounds]:
-    """Read a ``pyproject.toml`` file and return the version bounds for
+    r"""Read a ``pyproject.toml`` file and return the version bounds for
     a package.
 
     This is ``read_pyproject_bounds(path, package=package)``, kept for
@@ -167,19 +217,35 @@ def read_pyproject_package_bounds(path: str | Path, package: str) -> list[Packag
     Raises:
         FileNotFoundError: If the file does not exist.
         tomllib.TOMLDecodeError: If the file is not valid TOML.
+        packaging.requirements.InvalidRequirement: If a dependency is
+            not a valid requirement.
 
     Example:
-        ```python
-        bounds = read_pyproject_package_bounds("pyproject.toml", "numpy")
-        for b in bounds:
-            print(b.section, b.lower, b.upper)
+        ```pycon
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from feu.version import read_pyproject_package_bounds
+        >>> content = [
+        ...     '[project]',
+        ...     'dependencies = ["numpy>=1.21,<3.0"]',
+        ...     '[project.optional-dependencies]',
+        ...     'cli = ["click>=8.1"]',
+        ... ]
+        >>> with tempfile.TemporaryDirectory() as tmpdir:
+        ...     path = Path(tmpdir).joinpath("pyproject.toml")
+        ...     _ = path.write_text("\n".join(content))
+        ...     bounds = read_pyproject_package_bounds(path, "click")
+        ...
+        >>> [(b.section, b.lower, b.upper) for b in bounds]
+        [('project.optional-dependencies.cli', '8.1', None)]
+
         ```
     """
     return read_pyproject_bounds(path, package=package)
 
 
 def _parse_bounds_from_spec(spec: str, section: str) -> PackageBounds:
-    """Parse a PEP 508 dependency specifier and return its bounds.
+    r"""Parse a PEP 508 dependency specifier and return its bounds.
 
     Only the first lower (``>=``, ``>``) and the first upper (``<``,
     ``<=``) bound of the specifier are kept; other operators are

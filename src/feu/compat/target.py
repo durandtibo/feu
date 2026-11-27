@@ -106,11 +106,14 @@ def resolve_target(
             the current interpreter's free-threaded status.
 
     Returns:
-        The resolved target, with the current OS and architecture.
+        The resolved target, with the current OS and architecture. The
+            OS or the architecture is ``None`` if it is not one of the
+            supported values.
 
     Raises:
         ValueError: if ``python_version`` ends with ``t`` and
-            ``free_threaded=False`` is specified.
+            ``free_threaded=False`` is specified, or if
+            ``python_version`` is not a ``"major.minor"`` string.
 
     Example:
         ```pycon

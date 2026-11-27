@@ -114,8 +114,10 @@ feu.compat.registry.UnsupportedVersionError: No version of package numpy matches
 
 ```
 
-A package without data accepts any version, which `has_package` lets you detect. If the package is
-configured but no version supports the target, `is_valid_version` returns `False` and
+A package without data accepts any exact version, which `has_package` lets you detect. A wildcard or
+an empty request cannot be answered without data: `is_valid_version` returns `False` and
+`find_closest_version` returns the request unchanged. If the package is configured but no version
+supports the target, `is_valid_version` returns `False` and
 `find_closest_version` raises `feu.compat.UnsupportedVersionError`.
 
 ```pycon
@@ -154,9 +156,11 @@ registration into a shipped package first loads it, so the conflict check sees t
 
 ## Installing Packages
 
-`install_package` installs as written. `install_package_closest_version` first resolves the
-version request for the current target (or `target=`), and raises `UnsupportedVersionError` before
-running any command if no compatible version matches.
+`install_package` installs the version as written, without any compatibility check.
+`install_package_closest_version` first resolves the version request for the current target (or
+`target=`), and raises `UnsupportedVersionError` before running any command if no compatible version
+matches. With both, the [dependency resolver](#dependency-resolvers) of the package can add
+requirements.
 
 ```python
 from feu import install_package, install_package_closest_version
@@ -233,10 +237,11 @@ show_compat_targets(discovery, pkg_name="numpy")
 
 ## Installing Every Compatible Version
 
-`get_installable_versions` lists the stable releases of a package on PyPI that are valid for a
-target, and `install_all_versions` installs them one after the other, for example to test a library
-against all the versions of a dependency. A failure to install one version is logged and does not
-stop the others. The result lists the versions that were installed and the ones that failed.
+`get_installable_versions` lists the stable (and not yanked) releases of a package on PyPI that are
+valid for a target, and `install_all_versions` installs them one after the other, for example to
+test a library against all the versions of a dependency. A failure to install one version is logged
+and does not stop the others. The result lists the versions that were installed and the ones that
+failed. The package can have extras (`"pandas[performance]"`); a version specifier is ignored.
 
 ```python
 from feu.compat import Target
@@ -283,7 +288,8 @@ to_test = fetch_package_versions("pyproject.toml")  # {"numpy": ["1.26.4", "2.0.
 command, see the [CLI reference](cli.md#benchmark-trend)). A `Run` is the times of the benchmarks of
 one run on one machine. `find_regressions` compares the latest run of each machine with the median
 of its previous runs, and `make_report` renders the Markdown report and the GitHub Actions
-annotations. Both are pure functions of the runs; `load_runs` reads them from a storage directory.
+annotations. Both are pure functions of the runs, which must be in chronological order; `load_runs`
+reads them, in that order, from a storage directory.
 
 ```pycon
 >>> from datetime import UTC, datetime
@@ -318,17 +324,24 @@ last_tag = get_last_tag_name(raise_error=False)  # None instead
 If you have installed the `requests` extra (`pip install 'feu[requests]'`):
 
 ```python
-from feu.github import fetch_github_metadata, fetch_github_repos, sort_repos_by_key
+from feu.github import (
+    display_repos_summary,
+    fetch_github_metadata,
+    fetch_github_repos,
+    sort_repos_by_key,
+)
 
 # The `GITHUB_TOKEN` environment variable, if set, increases the rate limit.
 metadata = fetch_github_metadata(owner="durandtibo", repo="feu")  # a read-only mapping
 repos = fetch_github_repos(owner="durandtibo")  # a tuple of read-only mappings
 by_stars = sort_repos_by_key(repos, key="stargazers_count", reverse=True)
+display_repos_summary(by_stars)  # logged at the INFO level
 ```
 
 ## Testing Utilities
 
-`feu.testing` provides `pytest` marks to skip a test when an optional dependency is (not) available:
+`feu.testing` provides `pytest` marks to skip a test when an optional dependency is (not) available
+(it needs `pytest`):
 
 ```python
 from feu.testing import click_available, requests_not_available
