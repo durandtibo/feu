@@ -3659,9 +3659,9 @@ versions are the registered ones or, if there are none,
 the ones of the version source (downloaded when the
 method is called). The list is empty if the package
 has no data, if no version is valid for the target, or
-if nothing matches. A package
-that has no configuration for the target accepts every
-known version.</p>
+if nothing matches. A package that has no
+configuration for the target accepts every known
+version.</p>
               </div>
             </td>
           </tr>
@@ -6613,10 +6613,14 @@ default registry.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>True</code> if valid or unconfigured, <code>False</code> otherwise,
-including when no package version is valid for the
-target. A wildcard or empty request is valid if a known
-compatible version satisfies it.</p>
+                <p>For an exact version: <code>True</code> if it is valid or if the
+package is unconfigured, <code>False</code> otherwise, including
+when no package version is valid for the target. For a
+wildcard: <code>True</code> if a known compatible version satisfies
+it. For the latest version: <code>True</code> if the registry has
+data for the package and a version is valid for the
+target. A package without data is therefore valid for an
+exact version only.</p>
               </div>
             </td>
           </tr>
@@ -8922,9 +8926,9 @@ versions are the registered ones or, if there are none,
 the ones of the version source (downloaded when the
 method is called). The list is empty if the package
 has no data, if no version is valid for the target, or
-if nothing matches. A package
-that has no configuration for the target accepts every
-known version.</p>
+if nothing matches. A package that has no
+configuration for the target accepts every known
+version.</p>
               </div>
             </td>
           </tr>

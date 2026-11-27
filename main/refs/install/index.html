@@ -6220,8 +6220,8 @@ The same instance is returned by every call.</p>
 
         <p>Normalize the arguments of an installer to a tuple of strings.</p>
 <p>A string is split once with <code>shlex.split</code> (POSIX rules, on every
-platform). A sequence of strings is converted to a tuple and is not
-split again.</p>
+platform). A list or a tuple of strings is converted to a tuple and is
+not split again.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -6245,7 +6245,7 @@ split again.</p>
             <td>
               <div class="doc-md-description">
                 <p>The installer arguments, as one string e.g.
-<code>"-U --pre"</code> or as a sequence of arguments.</p>
+<code>"-U --pre"</code> or as a list or a tuple of arguments.</p>
               </div>
             </td>
             <td>

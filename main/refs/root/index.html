@@ -1415,11 +1415,46 @@
     <div class="doc doc-contents first">
 
         <p>Root package of <code>feu</code>.</p>
+<p><code>feu</code> is a lightweight library to manage Python packages and their
+versions across Python environments. The only required dependency is
+<code>packaging</code>. The optional libraries (<code>click</code>, <code>gitpython</code>,
+<code>requests</code> and <code>rich</code>) are imported lazily, and a feature that
+needs one of them raises <code>feu.imports.MissingPackageError</code> if it is
+missing.</p>
+<p>The main functions and classes are available from this package:</p>
+<ul>
+<li><code>is_package_available</code> and <code>is_module_available</code>: check if a
+  package or a module can be used.</li>
+<li><code>get_package_version</code> and <code>compare_version</code>: read the installed
+  version of a package and compare it to a version.</li>
+<li><code>Target</code> and <code>resolve_target</code>: the environment (Python version,
+  free-threaded flag, OS and CPU architecture) a compatibility answer
+  is about.</li>
+<li><code>is_valid_version</code> and <code>find_closest_version</code>: check a version
+  request against a target, or find the closest valid version. A
+  version request is an exact version (<code>"2.4.0"</code>), a wildcard
+  (<code>"2.4.*"</code>) or <code>""</code> for the latest version.</li>
+<li><code>install_package</code> and <code>install_package_closest_version</code>: install
+  a package, as written or at the closest valid version.
+  <code>InstallerSpec</code> and <code>PackageSpec</code> describe the installer and the
+  package.</li>
+</ul>
 <p>The public names are imported lazily (PEP 562): <code>import feu</code> does not
 import any submodule, so it does not import any optional library. <code>from
 feu import compare_version</code> imports <code>feu.version</code> the first time it
 is used.</p>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_available</span><span class="p">(</span><span class="s2">"packaging"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.3.0"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.9"</span><span class="p">))</span>
+<span class="go">'2.0.2'</span>
+</code></pre></div>
+</details>
 
 
 
@@ -2955,10 +2990,14 @@ default registry.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>True</code> if valid or unconfigured, <code>False</code> otherwise,
-including when no package version is valid for the
-target. A wildcard or empty request is valid if a known
-compatible version satisfies it.</p>
+                <p>For an exact version: <code>True</code> if it is valid or if the
+package is unconfigured, <code>False</code> otherwise, including
+when no package version is valid for the target. For a
+wildcard: <code>True</code> if a known compatible version satisfies
+it. For the latest version: <code>True</code> if the registry has
+data for the package and a version is valid for the
+target. A package without data is therefore valid for an
+exact version only.</p>
               </div>
             </td>
           </tr>

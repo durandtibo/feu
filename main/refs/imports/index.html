@@ -1980,8 +1980,10 @@ libraries of <code>feu</code>) and <code>lazy.py</code> (<code>lazy_exports</cod
 
         <p>Raised when an optional package is required but not installed.</p>
 <p>It is a <code>ModuleNotFoundError</code> (so <code>except ImportError</code> works as
-expected). It also derives from <code>RuntimeError</code>, which this error
-used to be, so existing <code>except RuntimeError</code> code keeps working.</p>
+expected) and a <code>RuntimeError</code> (so <code>except RuntimeError</code> works
+too). Its <code>name</code> attribute is the name of the missing package,
+and its message gives the <code>pip install</code> and <code>uv pip install</code>
+commands.</p>
 
 
 <details class="example" open>
@@ -3128,8 +3130,10 @@ missing.</p>
 
         <p>Raised when an optional package is required but not installed.</p>
 <p>It is a <code>ModuleNotFoundError</code> (so <code>except ImportError</code> works as
-expected). It also derives from <code>RuntimeError</code>, which this error
-used to be, so existing <code>except RuntimeError</code> code keeps working.</p>
+expected) and a <code>RuntimeError</code> (so <code>except RuntimeError</code> works
+too). Its <code>name</code> attribute is the name of the missing package,
+and its message gives the <code>pip install</code> and <code>uv pip install</code>
+commands.</p>
 
 
 <details class="example" open>

@@ -2674,18 +2674,21 @@
         <p>Lower and upper version bounds for a package dependency.</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><span title="feu.version.PackageBounds.name">name</span></code></td>
+            <td>
+                <code>name</code>
+            </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -2695,9 +2698,14 @@
 specifier.</p>
               </div>
             </td>
+            <td>
+                <em>required</em>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="feu.version.PackageBounds.lower">lower</span></code></td>
+            <td>
+                <code>lower</code>
+            </td>
             <td>
                   <code><span title="str">str</span> | None</code>
             </td>
@@ -2707,9 +2715,14 @@ specifier.</p>
 specifiers), or <code>None</code> if no lower bound is declared.</p>
               </div>
             </td>
+            <td>
+                <em>required</em>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="feu.version.PackageBounds.upper">upper</span></code></td>
+            <td>
+                <code>upper</code>
+            </td>
             <td>
                   <code><span title="str">str</span> | None</code>
             </td>
@@ -2719,9 +2732,14 @@ specifiers), or <code>None</code> if no lower bound is declared.</p>
 specifiers), or <code>None</code> if no upper bound is declared.</p>
               </div>
             </td>
+            <td>
+                <em>required</em>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="feu.version.PackageBounds.section">section</span></code></td>
+            <td>
+                <code>section</code>
+            </td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -2732,6 +2750,9 @@ was found (e.g. <code>'project.dependencies'</code>,
 <code>'project.optional-dependencies.dev'</code>,
 <code>'dependency-groups.dev'</code>).</p>
               </div>
+            </td>
+            <td>
+                <em>required</em>
             </td>
           </tr>
       </tbody>

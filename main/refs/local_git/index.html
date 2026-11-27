@@ -1490,7 +1490,8 @@ installed.</p>
 repository.</p>
 <p>The repository is searched from the current working directory
 and its parent directories. The tags are sorted by the commit
-date of the commit they point to.</p>
+date of the commit they point to. The repository is closed before
+returning, so that no <code>git</code> helper process is left running.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -1549,8 +1550,6 @@ not in a git repository.</p>
           </tr>
       </tbody>
     </table>
-        <p>The repository is closed before returning, so that no <code>git</code>
-helper process is left running.</p>
 
 
 <details class="example" open>

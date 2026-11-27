@@ -1462,6 +1462,9 @@ option.</p>
 <!-- prettier-ignore -->
 <h2 id="feu">feu<a class="headerlink" href="#feu" title="Permanent link">&para;</a></h2>
 <p>Implement the main entrypoint, which groups the commands.</p>
+<p>Args:
+    verbose: If <code>True</code>, log the executed commands on the
+        standard error.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu [OPTIONS] COMMAND [ARGS]...
 </code></pre></div>
@@ -1532,9 +1535,12 @@ if an argument is invalid or a result file is invalid.</p>
 </code></pre></div>
 <h3 id="check-valid-version">check-valid-version<a class="headerlink" href="#check-valid-version" title="Permanent link">&para;</a></h3>
 <p>Print if a package version is valid for a target.</p>
-<p><code>True</code> is printed and the exit status is <code>0</code> if the version is
-valid or if the package is not configured for the target. Otherwise
-<code>False</code> is printed and the exit status is <code>1</code>.</p>
+<p><code>True</code> is printed and the exit status is <code>0</code> if the version
+request is valid. Otherwise <code>False</code> is printed and the exit
+status is <code>1</code>. An exact version of a package that has no data is
+valid, whereas a wildcard or an empty request of such a package is
+not (see <code>feu.compat.is_valid_version</code>). The exit status is <code>2</code>
+if the version request is malformed.</p>
 <p>Args:
     pkg_name: The package name.
     pkg_version: The package version request to check.
