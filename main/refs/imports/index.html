@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#feu.imports" class="md-skip">
+        <a href="#feuimports" class="md-skip">
           Skip to content
         </a>
       
@@ -808,6 +808,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -849,6 +851,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1476,6 +1480,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1923,7 +1929,10 @@
   
 
 
-  <h1>Imports</h1>
+<h1 id="feuimports"><code>feu.imports</code><a class="headerlink" href="#feuimports" title="Permanent link">&para;</a></h1>
+<p>The checks of the optional dependencies, <code>MissingPackageError</code> and the helper that makes the names of
+a package lazy. See the <a href="../../usage/#checking-package-availability">usage guide</a>.</p>
+
 
 <div class="doc doc-object doc-module">
 
@@ -2423,7 +2432,9 @@ availability of a package cannot change during the life of the
 process. Call this function to force the checks to run again, for
 example in a test that changes <code>sys.modules</code> or <code>sys.path</code>.</p>
 <p>The functions to clear are the ones decorated with
-<code>availability_cache</code>, so there is no list to maintain.</p>
+<code>availability_cache</code>, so there is no list to maintain. The checks
+of the installer tools (<code>feu.install.is_pip_available</code> and
+<code>is_uv_available</code>) are cached separately and are not cleared.</p>
 
 
 <details class="example" open>
@@ -2746,31 +2757,13 @@ access does not call <code>__getattr__</code>.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="str">str</span>], <span title="typing.Any">Any</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The <code>__getattr__</code> and <code>__dir__</code> functions of the package.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[], <span title="list">list</span>[<span title="str">str</span>]]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The returned <code>__getattr__</code> raises an <code>AttributeError</code> if the</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
                   <code><span title="tuple">tuple</span>[<span title="collections.abc.Callable">Callable</span>[[<span title="str">str</span>], <span title="typing.Any">Any</span>], <span title="collections.abc.Callable">Callable</span>[[], <span title="list">list</span>[<span title="str">str</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>name is not in <code>exports</code>.</p>
+                <p>The <code>__getattr__</code> and <code>__dir__</code> functions of the package.
+The returned <code>__getattr__</code> raises an <code>AttributeError</code> if the
+name is not in <code>exports</code>.</p>
               </div>
             </td>
           </tr>
@@ -2898,7 +2891,10 @@ cached; use <code>clear_availability_caches</code> to reset it.</p>
         <p>Indicate if a package is installed or not.</p>
 <p>The package is only looked up (it is not imported), so a package that
 is installed but broken is reported as available. Use
-<code>module_available</code> to check that a module can be imported.</p>
+<code>module_available</code> to check that a module can be imported. For a
+dotted name (e.g. <code>"os.path"</code>), the parent packages are imported to
+look the name up. The result is cached; use
+<code>clear_availability_caches</code> to reset it.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3369,7 +3365,9 @@ availability of a package cannot change during the life of the
 process. Call this function to force the checks to run again, for
 example in a test that changes <code>sys.modules</code> or <code>sys.path</code>.</p>
 <p>The functions to clear are the ones decorated with
-<code>availability_cache</code>, so there is no list to maintain.</p>
+<code>availability_cache</code>, so there is no list to maintain. The checks
+of the installer tools (<code>feu.install.is_pip_available</code> and
+<code>is_uv_available</code>) are cached separately and are not cleared.</p>
 
 
 <details class="example" open>
@@ -3488,7 +3486,10 @@ cached; use <code>clear_availability_caches</code> to reset it.</p>
         <p>Indicate if a package is installed or not.</p>
 <p>The package is only looked up (it is not imported), so a package that
 is installed but broken is reported as available. Use
-<code>module_available</code> to check that a module can be imported.</p>
+<code>module_available</code> to check that a module can be imported. For a
+dotted name (e.g. <code>"os.path"</code>), the parent packages are imported to
+look the name up. The result is cached; use
+<code>clear_availability_caches</code> to reset it.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4262,31 +4263,13 @@ access does not call <code>__getattr__</code>.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="str">str</span>], <span title="typing.Any">Any</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The <code>__getattr__</code> and <code>__dir__</code> functions of the package.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[], <span title="list">list</span>[<span title="str">str</span>]]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The returned <code>__getattr__</code> raises an <code>AttributeError</code> if the</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
                   <code><span title="tuple">tuple</span>[<span title="collections.abc.Callable">Callable</span>[[<span title="str">str</span>], <span title="typing.Any">Any</span>], <span title="collections.abc.Callable">Callable</span>[[], <span title="list">list</span>[<span title="str">str</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>name is not in <code>exports</code>.</p>
+                <p>The <code>__getattr__</code> and <code>__dir__</code> functions of the package.
+The returned <code>__getattr__</code> raises an <code>AttributeError</code> if the
+name is not in <code>exports</code>.</p>
               </div>
             </td>
           </tr>

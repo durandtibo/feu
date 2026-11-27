@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#feu.install" class="md-skip">
+        <a href="#feuinstall" class="md-skip">
           Skip to content
         </a>
       
@@ -836,6 +836,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -877,6 +879,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1604,6 +1608,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2179,7 +2185,10 @@
   
 
 
-  <h1>Install</h1>
+<h1 id="feuinstall"><code>feu.install</code><a class="headerlink" href="#feuinstall" title="Permanent link">&para;</a></h1>
+<p>Install packages with <code>pip</code> or <code>uv</code>: the installers, the dependency resolvers and the installation of
+every compatible version. See the <a href="../../usage/#installing-packages">usage guide</a>.</p>
+
 
 <div class="doc doc-object doc-module">
 
@@ -2193,7 +2202,14 @@
 
     <div class="doc doc-contents first">
 
-        <p>Contain package installers.</p>
+        <p>Contain the functions and classes to install packages.</p>
+<p><code>install_package</code> installs a package as requested, and
+<code>install_package_closest_version</code> first resolves the closest
+compatible version (<code>feu.compat</code>). An <code>Installer</code> (<code>pip</code> or
+<code>uv</code>) builds one command that installs into the interpreter that runs
+<code>feu</code>, after a dependency resolver (<code>feu.install.resolver</code>) added
+the requirements that the package needs. The installers and the
+resolvers are registered in registries that can be extended.</p>
 
 
 
@@ -2235,50 +2251,49 @@
 package.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.install.InstallResult.installed">installed</span></code></td>
             <td>
-                <code>installed</code>
-            </td>
-            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The versions that were installed successfully.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="feu.install.InstallResult.failed">failed</span></code></td>
             <td>
-                <code>failed</code>
-            </td>
-            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The versions for which the installation failed.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallResult</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">InstallResult</span><span class="p">(</span><span class="n">installed</span><span class="o">=</span><span class="p">[</span><span class="s2">"2.0.2"</span><span class="p">],</span> <span class="n">failed</span><span class="o">=</span><span class="p">[])</span>
+<span class="go">InstallResult(installed=['2.0.2'], failed=[])</span>
+</code></pre></div>
+</details>
 
 
 
@@ -2463,6 +2478,13 @@ tuple of strings.</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">Installer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Installer</span><span class="p">()</span><span class="o">.</span><span class="n">check_available</span><span class="p">()</span>
+</code></pre></div>
+</details>
+
     </div>
 
 </div>
@@ -2530,7 +2552,7 @@ tuple of strings.</p>
             <td>
               <div class="doc-md-description">
                 <p>The command, as an argument vector: the prefix, the
-installer arguments and the requirements.</p>
+    installer arguments and the requirements.</p>
               </div>
             </td>
           </tr>
@@ -3237,6 +3259,8 @@ same instance is returned by every call.</p>
     <div class="doc doc-contents ">
 
         <p>Get the stable package versions compatible with a target.</p>
+<p>The releases are read from PyPI (the yanked ones are excluded) and
+checked with the default compatibility registry.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3326,7 +3350,51 @@ e.g. <code>'2024-01-01'</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The stable versions of the package that are valid for the
-given target, in PEP 440 order (ascending).</p>
+    given target, in PEP 440 order (ascending).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>start_date</code> is a string that is not an ISO
+8601 date.</p>
               </div>
             </td>
           </tr>
@@ -3380,7 +3448,9 @@ given target, in PEP 440 order (ascending).</p>
         <p>Install all the versions of a package that are compatible with a
 target, one after the other.</p>
 <p>A failure to install one version does not stop the installation of
-the remaining versions. The failure is logged.</p>
+the remaining versions. The failure is logged. Only the name and the
+extras of <code>package</code> are used: its version specifier, if any, is
+ignored.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3492,7 +3562,7 @@ e.g. <code>'2024-01-01'</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The versions that were installed successfully and the
-versions for which the installation failed.</p>
+    versions for which the installation failed.</p>
               </div>
             </td>
           </tr>
@@ -3517,6 +3587,37 @@ versions for which the installation failed.</p>
               <div class="doc-md-description">
                 <p>If <code>package</code> is
 not a valid requirement.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>start_date</code> is a string that is not an ISO
+8601 date.</p>
               </div>
             </td>
           </tr>
@@ -3574,9 +3675,11 @@ not a valid requirement.</p>
     <div class="doc doc-contents ">
 
         <p>Install a package with the specified installer.</p>
-<p>The package is installed as specified, without any version
-compatibility check. Use <code>install_package_closest_version</code> to
-install the closest compatible version. The cached availability
+<p>The package version is installed as specified, without any version
+compatibility check. The dependency resolver of the package can add
+requirements, e.g. <code>numpy&lt;2.0.0</code> for an old <code>pandas</code> (see
+<code>feu.install.resolver</code>). Use <code>install_package_closest_version</code>
+to install the closest compatible version. The cached availability
 checks (<code>feu.imports.clear_availability_caches</code>) are cleared after
 a successful installation.</p>
 
@@ -3677,6 +3780,17 @@ registry.</p>
               <div class="doc-md-description">
                 <p>If no installer is registered for the installer
 name, or if the tool of the installer is not available.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the package specification is not a valid
+requirement (e.g. a malformed version).</p>
               </div>
             </td>
           </tr>
@@ -3878,7 +3992,20 @@ registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>If no installer is registered for the installer
-name, or if the tool of the installer is not available.</p>
+name, if the tool of the installer is not available, or if
+the versions needed to match a wildcard cannot be
+downloaded.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -3972,7 +4099,7 @@ fails.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if the <code>pip</code> module is available, otherwise
-<code>False</code>.</p>
+    <code>False</code>.</p>
               </div>
             </td>
           </tr>
@@ -4029,7 +4156,7 @@ fails.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if <code>uv</code> is found on the <code>PATH</code>, otherwise
-<code>False</code>.</p>
+    <code>False</code>.</p>
               </div>
             </td>
           </tr>
@@ -4378,9 +4505,11 @@ package and <code>exist_ok</code> is <code>False</code>.</p>
     <div class="doc doc-contents ">
 
         <p>Install a package with the specified installer.</p>
-<p>The package is installed as specified, without any version
-compatibility check. Use <code>install_package_closest_version</code> to
-install the closest compatible version. The cached availability
+<p>The package version is installed as specified, without any version
+compatibility check. The dependency resolver of the package can add
+requirements, e.g. <code>numpy&lt;2.0.0</code> for an old <code>pandas</code> (see
+<code>feu.install.resolver</code>). Use <code>install_package_closest_version</code>
+to install the closest compatible version. The cached availability
 checks (<code>feu.imports.clear_availability_caches</code>) are cleared after
 a successful installation.</p>
 
@@ -4481,6 +4610,17 @@ registry.</p>
               <div class="doc-md-description">
                 <p>If no installer is registered for the installer
 name, or if the tool of the installer is not available.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the package specification is not a valid
+requirement (e.g. a malformed version).</p>
               </div>
             </td>
           </tr>
@@ -4682,7 +4822,20 @@ registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>If no installer is registered for the installer
-name, or if the tool of the installer is not available.</p>
+name, if the tool of the installer is not available, or if
+the versions needed to match a wildcard cannot be
+downloaded.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -4801,50 +4954,49 @@ package.</p>
 package.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.install.all_versions.InstallResult.installed">installed</span></code></td>
             <td>
-                <code>installed</code>
-            </td>
-            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The versions that were installed successfully.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="feu.install.all_versions.InstallResult.failed">failed</span></code></td>
             <td>
-                <code>failed</code>
-            </td>
-            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The versions for which the installation failed.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallResult</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">InstallResult</span><span class="p">(</span><span class="n">installed</span><span class="o">=</span><span class="p">[</span><span class="s2">"2.0.2"</span><span class="p">],</span> <span class="n">failed</span><span class="o">=</span><span class="p">[])</span>
+<span class="go">InstallResult(installed=['2.0.2'], failed=[])</span>
+</code></pre></div>
+</details>
 
 
 
@@ -4899,6 +5051,8 @@ package.</p>
     <div class="doc doc-contents ">
 
         <p>Get the stable package versions compatible with a target.</p>
+<p>The releases are read from PyPI (the yanked ones are excluded) and
+checked with the default compatibility registry.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -4988,7 +5142,51 @@ e.g. <code>'2024-01-01'</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The stable versions of the package that are valid for the
-given target, in PEP 440 order (ascending).</p>
+    given target, in PEP 440 order (ascending).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>start_date</code> is a string that is not an ISO
+8601 date.</p>
               </div>
             </td>
           </tr>
@@ -5042,7 +5240,9 @@ given target, in PEP 440 order (ascending).</p>
         <p>Install all the versions of a package that are compatible with a
 target, one after the other.</p>
 <p>A failure to install one version does not stop the installation of
-the remaining versions. The failure is logged.</p>
+the remaining versions. The failure is logged. Only the name and the
+extras of <code>package</code> are used: its version specifier, if any, is
+ignored.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -5154,7 +5354,7 @@ e.g. <code>'2024-01-01'</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The versions that were installed successfully and the
-versions for which the installation failed.</p>
+    versions for which the installation failed.</p>
               </div>
             </td>
           </tr>
@@ -5179,6 +5379,37 @@ versions for which the installation failed.</p>
               <div class="doc-md-description">
                 <p>If <code>package</code> is
 not a valid requirement.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>start_date</code> is a string that is not an ISO
+8601 date.</p>
               </div>
             </td>
           </tr>
@@ -5398,6 +5629,13 @@ tuple of strings.</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">Installer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Installer</span><span class="p">()</span><span class="o">.</span><span class="n">check_available</span><span class="p">()</span>
+</code></pre></div>
+</details>
+
     </div>
 
 </div>
@@ -5465,7 +5703,7 @@ tuple of strings.</p>
             <td>
               <div class="doc-md-description">
                 <p>The command, as an argument vector: the prefix, the
-installer arguments and the requirements.</p>
+    installer arguments and the requirements.</p>
               </div>
             </td>
           </tr>
@@ -6126,7 +6364,7 @@ The same instance is returned by every call.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if the <code>pip</code> module is available, otherwise
-<code>False</code>.</p>
+    <code>False</code>.</p>
               </div>
             </td>
           </tr>
@@ -6183,7 +6421,7 @@ The same instance is returned by every call.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if <code>uv</code> is found on the <code>PATH</code>, otherwise
-<code>False</code>.</p>
+    <code>False</code>.</p>
               </div>
             </td>
           </tr>
@@ -7055,6 +7293,30 @@ without a registered resolver.</p>
             <td>
               <div class="doc-md-description">
                 <p>The requirements to install.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the package specification is not a valid
+requirement (e.g. a malformed version).</p>
               </div>
             </td>
           </tr>

@@ -1400,6 +1400,7 @@
 
 
 <h1 id="main-functions">Main functions<a class="headerlink" href="#main-functions" title="Permanent link">&para;</a></h1>
+<p>The names that can be imported from <code>feu</code>. They are imported lazily, on first use.</p>
 
 
 <div class="doc doc-object doc-module">
@@ -1439,10 +1440,17 @@ missing.</p>
   <code>InstallerSpec</code> and <code>PackageSpec</code> describe the installer and the
   package.</li>
 </ul>
-<p>The public names are imported lazily (PEP 562): <code>import feu</code> does not
-import any submodule, so it does not import any optional library. <code>from
+<p>The public names are imported lazily (PEP 562): <code>import feu</code> imports
+only <code>feu.imports</code>, so it does not import any optional library. <code>from
 feu import compare_version</code> imports <code>feu.version</code> the first time it
 is used.</p>
+<p>The subpackages are <code>feu.compat</code> (compatibility registry and discovery
+from PyPI), <code>feu.install</code> (installers and dependency resolvers),
+<code>feu.version</code> (version utilities, PyPI and <code>pyproject.toml</code>),
+<code>feu.imports</code> (optional dependencies), <code>feu.utils</code> (shared helpers),
+<code>feu.benchmark</code> (trend of <code>pytest-benchmark</code> results),
+<code>feu.github</code> (GitHub API), <code>feu.local_git</code> (tags of a git
+repository) and <code>feu.testing</code> (<code>pytest</code> marks).</p>
 
 
 <details class="example" open>
@@ -2169,7 +2177,31 @@ called as <code>op(installed_version, Version(version))</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The comparison status. <code>False</code> if the package is not
-installed.</p>
+    installed.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>InvalidVersion</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the package is installed
+and <code>version</code> is not a valid PEP 440 version.</p>
               </div>
             </td>
           </tr>
@@ -2321,11 +2353,13 @@ default registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>The closest valid version as a string. An exact version is
-returned unchanged if it is valid or if the package is not
-configured for the target. A wildcard or empty request is
-resolved to the latest compatible version, or returned
-unchanged if it lies in an open-ended range (see
-<code>CompatRegistry.find_closest_version</code>).</p>
+    returned unchanged if it is valid or if the package is not
+    configured for the target, otherwise the nearest range
+    boundary is returned. A wildcard or empty request is
+    resolved to the latest compatible version, or returned
+    unchanged if it lies in an open-ended range or if the
+    registry has no data for the package (see
+    <code>CompatRegistry.find_closest_version</code>).</p>
               </div>
             </td>
           </tr>
@@ -2361,6 +2395,28 @@ wildcard request.</p>
             <td>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions needed to match a wildcard cannot
+be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -2445,8 +2501,8 @@ wildcard request.</p>
             <td>
               <div class="doc-md-description">
                 <p>The package version, or <code>None</code> if the package is not
-installed or if its version is not a valid PEP 440
-version.</p>
+    installed or if its version is not a valid PEP 440
+    version.</p>
               </div>
             </td>
           </tr>
@@ -2500,9 +2556,11 @@ version.</p>
     <div class="doc doc-contents ">
 
         <p>Install a package with the specified installer.</p>
-<p>The package is installed as specified, without any version
-compatibility check. Use <code>install_package_closest_version</code> to
-install the closest compatible version. The cached availability
+<p>The package version is installed as specified, without any version
+compatibility check. The dependency resolver of the package can add
+requirements, e.g. <code>numpy&lt;2.0.0</code> for an old <code>pandas</code> (see
+<code>feu.install.resolver</code>). Use <code>install_package_closest_version</code>
+to install the closest compatible version. The cached availability
 checks (<code>feu.imports.clear_availability_caches</code>) are cleared after
 a successful installation.</p>
 
@@ -2603,6 +2661,17 @@ registry.</p>
               <div class="doc-md-description">
                 <p>If no installer is registered for the installer
 name, or if the tool of the installer is not available.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the package specification is not a valid
+requirement (e.g. a malformed version).</p>
               </div>
             </td>
           </tr>
@@ -2804,7 +2873,20 @@ registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>If no installer is registered for the installer
-name, or if the tool of the installer is not available.</p>
+name, if the tool of the installer is not available, or if
+the versions needed to match a wildcard cannot be
+downloaded.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -2991,13 +3073,13 @@ default registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>For an exact version: <code>True</code> if it is valid or if the
-package is unconfigured, <code>False</code> otherwise, including
-when no package version is valid for the target. For a
-wildcard: <code>True</code> if a known compatible version satisfies
-it. For the latest version: <code>True</code> if the registry has
-data for the package and a version is valid for the
-target. A package without data is therefore valid for an
-exact version only.</p>
+    package is unconfigured, <code>False</code> otherwise, including
+    when no package version is valid for the target. For a
+    wildcard: <code>True</code> if a known compatible version satisfies
+    it. For the latest version: <code>True</code> if the registry has
+    data for the package and a version is valid for the
+    target. A package without data is therefore valid for an
+    exact version only.</p>
               </div>
             </td>
           </tr>
@@ -3021,6 +3103,28 @@ exact version only.</p>
             <td>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions needed to match a wildcard cannot
+be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -3145,7 +3249,9 @@ the current interpreter's free-threaded status.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The resolved target, with the current OS and architecture.</p>
+                <p>The resolved target, with the current OS and architecture. The
+    OS or the architecture is <code>None</code> if it is not one of the
+    supported values.</p>
               </div>
             </td>
           </tr>
@@ -3169,7 +3275,8 @@ the current interpreter's free-threaded status.</p>
             <td>
               <div class="doc-md-description">
                 <p>if <code>python_version</code> ends with <code>t</code> and
-<code>free_threaded=False</code> is specified.</p>
+<code>free_threaded=False</code> is specified, or if
+<code>python_version</code> is not a <code>"major.minor"</code> string.</p>
               </div>
             </td>
           </tr>

@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#feu.testing" class="md-skip">
+        <a href="#feutesting" class="md-skip">
           Skip to content
         </a>
       
@@ -864,6 +864,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -905,6 +907,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1067,6 +1071,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1105,7 +1111,106 @@
   
 
 
-  <h1>Testing</h1>
+<h1 id="feutesting"><code>feu.testing</code><a class="headerlink" href="#feutesting" title="Permanent link">&para;</a></h1>
+<p>The <code>pytest</code> marks to skip a test depending on the availability of an optional dependency. The module
+needs <code>pytest</code>. See the <a href="../../usage/#testing-utilities">usage guide</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Dependency</th>
+<th>Skips the test if not available</th>
+<th>Skips the test if available</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>click</code></td>
+<td><code>click_available</code></td>
+<td><code>click_not_available</code></td>
+</tr>
+<tr>
+<td><code>git</code></td>
+<td><code>git_available</code></td>
+<td><code>git_not_available</code></td>
+</tr>
+<tr>
+<td><code>jax</code></td>
+<td><code>jax_available</code></td>
+<td><code>jax_not_available</code></td>
+</tr>
+<tr>
+<td><code>matplotlib</code></td>
+<td><code>matplotlib_available</code></td>
+<td><code>matplotlib_not_available</code></td>
+</tr>
+<tr>
+<td><code>numpy</code></td>
+<td><code>numpy_available</code></td>
+<td><code>numpy_not_available</code></td>
+</tr>
+<tr>
+<td><code>pandas</code></td>
+<td><code>pandas_available</code></td>
+<td><code>pandas_not_available</code></td>
+</tr>
+<tr>
+<td><code>pip</code></td>
+<td><code>pip_available</code></td>
+<td><code>pip_not_available</code></td>
+</tr>
+<tr>
+<td><code>polars</code></td>
+<td><code>polars_available</code></td>
+<td><code>polars_not_available</code></td>
+</tr>
+<tr>
+<td><code>pyarrow</code></td>
+<td><code>pyarrow_available</code></td>
+<td><code>pyarrow_not_available</code></td>
+</tr>
+<tr>
+<td><code>pytest_benchmark</code></td>
+<td><code>pytest_benchmark_available</code></td>
+<td><code>pytest_benchmark_not_available</code></td>
+</tr>
+<tr>
+<td><code>requests</code></td>
+<td><code>requests_available</code></td>
+<td><code>requests_not_available</code></td>
+</tr>
+<tr>
+<td><code>rich</code></td>
+<td><code>rich_available</code></td>
+<td><code>rich_not_available</code></td>
+</tr>
+<tr>
+<td><code>scipy</code></td>
+<td><code>scipy_available</code></td>
+<td><code>scipy_not_available</code></td>
+</tr>
+<tr>
+<td><code>sklearn</code></td>
+<td><code>sklearn_available</code></td>
+<td><code>sklearn_not_available</code></td>
+</tr>
+<tr>
+<td><code>torch</code></td>
+<td><code>torch_available</code></td>
+<td><code>torch_not_available</code></td>
+</tr>
+<tr>
+<td><code>uv</code></td>
+<td><code>uv_available</code></td>
+<td><code>uv_not_available</code></td>
+</tr>
+<tr>
+<td><code>xarray</code></td>
+<td><code>xarray_available</code></td>
+<td><code>xarray_not_available</code></td>
+</tr>
+</tbody>
+</table>
+
 
 <div class="doc doc-object doc-module">
 
@@ -1123,7 +1228,12 @@
 availability of optional dependencies.</p>
 <p>For each dependency, <code>&lt;name&gt;_available</code> skips the test if the
 dependency is not available, and <code>&lt;name&gt;_not_available</code> skips the
-test if the dependency is available.</p>
+test if the dependency is available. The marks are provided for
+<code>click</code>, <code>git</code>, <code>jax</code>, <code>matplotlib</code>, <code>numpy</code>, <code>pandas</code>,
+<code>pip</code>, <code>polars</code>, <code>pyarrow</code>, <code>pytest_benchmark</code>, <code>requests</code>,
+<code>rich</code>, <code>scipy</code>, <code>sklearn</code>, <code>torch</code>, <code>uv</code> and <code>xarray</code>. The
+availability is checked once, when this module is imported.</p>
+<p>This module needs <code>pytest</code>, which is not a dependency of <code>feu</code>.</p>
 
 
 <details class="example" open>

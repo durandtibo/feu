@@ -1208,6 +1208,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#feu.compat.interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.find_closest_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_closest_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.get_compatible_versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_compatible_versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.get_default_compat_registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_default_compat_registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.is_valid_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_valid_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.register_compat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register_compat
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#feu.compat.discover" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2457,6 +2529,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#feu.compat.interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        interface
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="interface">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.find_closest_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_closest_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.get_compatible_versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_compatible_versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.get_default_compat_registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_default_compat_registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.is_valid_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_valid_version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feu.compat.interface.register_compat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register_compat
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#feu.compat.discover" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3062,8 +3206,11 @@ is the list of files: add a package with
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.23.2"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"0.1.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-<span class="go">'...'</span>
+<span class="go">'1.23.2'</span>
 </code></pre></div>
+<p>A wildcard request (e.g. <code>"2.*"</code>) is matched against the releases downloaded from PyPI when it is
+resolved, so it needs network access and the <code>requests</code> extra (see
+<a href="../../design/#wildcards-are-matched-against-pypi-at-call-time">Design</a>).</p>
 <p>Corrections can be registered on top of the built-in data:</p>
 <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">register_compat</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionRange</span>
@@ -3086,7 +3233,23 @@ is the list of files: add a package with
 
         <p>Contain a registry-based system for package/target compatibility
 resolution.</p>
+<p>A <code>Target</code> describes an environment (Python version, free-threaded
+flag, OS and CPU architecture). A <code>CompatRegistry</code> holds, for each
+package and target, the ranges of compatible versions, and answers if a
+version request is valid (<code>is_valid_version</code>), which version is the
+closest valid one (<code>find_closest_version</code>) and which known versions are
+compatible (<code>get_compatible_versions</code>). The default registry is filled
+with the data shipped in <code>feu/compat/data</code>, which is generated from the
+files published on PyPI by <code>discover_compat_targets</code>.</p>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">is_valid_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">True</span>
+</code></pre></div>
+</details>
 
 
 
@@ -3306,6 +3469,15 @@ mapping of canonical package name to <code>Target</code> to a list of
 <code>VersionRange</code>.</p>
 <p>Reading it loads the data of every package of the loader.</p>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">registry</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+<span class="go">['numpy']</span>
+</code></pre></div>
+</details>
     </div>
 
 </div>
@@ -3423,64 +3595,22 @@ version.</p>
             <td>
               <div class="doc-md-description">
                 <p>The version to install, as a string.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+<ul>
 <li>For an exact version: the version itself if it is valid
-or if the package is not configured for the target,
-otherwise the nearest range boundary, as it was
-registered.</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+  or if the package is not configured for the target,
+  otherwise the nearest range boundary, as it was
+  registered.</li>
 <li>For the latest version (<code>""</code>/<code>None</code>): the request
-itself if a range is open-ended, otherwise the highest
-upper bound. No version is downloaded.</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+  itself if a range is open-ended, otherwise the highest
+  upper bound. No version is downloaded.</li>
 <li>For a wildcard: the latest known compatible version
-that satisfies the request (the versions are the
-registered ones or the ones of the version source, so
-they are up to date). If it lies in an open-ended
-range, the request itself is returned (<code>"2.*"</code>) so
-that the installer picks the real latest release.</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+  that satisfies the request (the versions are the
+  registered ones or the ones of the version source, so
+  they are up to date). If it lies in an open-ended
+  range, the request itself is returned (<code>"2.*"</code>) so
+  that the installer picks the real latest release.</li>
 <li>If the registry has no data for the package, the
-request is returned unchanged.</li>
+  request is returned unchanged.</li>
 </ul>
               </div>
             </td>
@@ -3518,6 +3648,17 @@ satisfies a wildcard request.</p>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version
 request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="Exception">Exception</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An error of the version source (e.g. no
+network) is not caught.</p>
               </div>
             </td>
           </tr>
@@ -3654,14 +3795,14 @@ version.</p>
             <td>
               <div class="doc-md-description">
                 <p>The known versions that lie in a valid range of the
-target and satisfy the request, in PEP 440 order. The
-versions are the registered ones or, if there are none,
-the ones of the version source (downloaded when the
-method is called). The list is empty if the package
-has no data, if no version is valid for the target, or
-if nothing matches. A package that has no
-configuration for the target accepts every known
-version.</p>
+    target and satisfy the request, in PEP 440 order. The
+    versions are the registered ones or, if there are none,
+    the ones of the version source (downloaded when the
+    method is called). The list is empty if the package
+    has no data, if no version is valid for the target, or
+    if nothing matches. A package that has no
+    configuration for the target accepts every known
+    version.</p>
               </div>
             </td>
           </tr>
@@ -3686,6 +3827,17 @@ version.</p>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version
 request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="Exception">Exception</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An error of the version source (e.g. no
+network) is not caught.</p>
               </div>
             </td>
           </tr>
@@ -3801,23 +3953,26 @@ compatibility target.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The list of <code>VersionRange</code> for this target, or an empty</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>list if no configuration matches.</p>
+                <p>The list of <code>VersionRange</code> for this target. The list is
+empty if no configuration matches, and also if the target is
+explicitly unsupported (see <code>is_unsupported</code>).</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">))</span>
+<span class="go">[VersionRange(min='1.0', max=None)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.12"</span><span class="p">))</span>
+<span class="go">[]</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -3914,9 +4069,9 @@ compatibility target.</p>
             <td>
               <div class="doc-md-description">
                 <p>A list of <code>(min_version, max_version)</code> tuples sorted by
-ascending minimum version, either value being <code>None</code>
-if unconstrained on that side. The list is empty if
-the package is not configured for the target.</p>
+    ascending minimum version, either value being <code>None</code>
+    if unconstrained on that side. The list is empty if
+    the package is not configured for the target.</p>
               </div>
             </td>
           </tr>
@@ -3947,6 +4102,15 @@ for the given target.</p>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_version_ranges</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">[(&lt;Version('1.0')&gt;, None)]</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -4018,13 +4182,22 @@ this method lets the caller detect that case.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if a configuration is registered for the
-package, otherwise <code>False</code>.</p>
+    package, otherwise <code>False</code>.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">has_package</span><span class="p">(</span><span class="s2">"NumPy"</span><span class="p">),</span> <span class="n">registry</span><span class="o">.</span><span class="n">has_package</span><span class="p">(</span><span class="s2">"pandas"</span><span class="p">)</span>
+<span class="go">(True, False)</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -4123,23 +4296,25 @@ registered with an empty range list is unsupported
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>True</code> if the package has no valid version for the</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>given target, <code>False</code> otherwise.</p>
+                <p><code>True</code> if the package has no valid version for the
+given target, <code>False</code> otherwise.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.8"</span><span class="p">):</span> <span class="p">[]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">is_unsupported</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.8"</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">is_unsupported</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>  <span class="c1"># not configured</span>
+<span class="go">False</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -4242,108 +4417,27 @@ version, a wildcard (e.g. <code>"2.*"</code>) or
     <table>
       <thead>
         <tr>
-<th>Name</th>          <th>Type</th>
+          <th>Type</th>
           <th>Description</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-<td></td>            <td>
+            <td>
                   <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>For an exact version: <code>True</code> if valid for any registered</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>range or unconfigured, <code>False</code> otherwise, including when</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>no package version is valid for the given target. For a</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td><code>wildcard</code></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p><code>True</code> if at least one known compatible</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>version satisfies the request (see</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p><code>get_compatible_versions</code>, which downloads the</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>versions); a package without data gives <code>False</code>. For</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>the latest version: <code>True</code> if the registry has data for</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>the package and a version is valid for the target; no</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>version is downloaded.</p>
+                <p>For an exact version: <code>True</code> if valid for any registered
+range or unconfigured, <code>False</code> otherwise, including when
+no package version is valid for the given target. For a
+wildcard: <code>True</code> if at least one known compatible
+version satisfies the request (see
+<code>get_compatible_versions</code>, which downloads the
+versions); a package without data gives <code>False</code>. For
+the latest version: <code>True</code> if the registry has data for
+the package and a version is valid for the target; no
+version is downloaded.</p>
               </div>
             </td>
           </tr>
@@ -4368,6 +4462,17 @@ version, a wildcard (e.g. <code>"2.*"</code>) or
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version
 request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="Exception">Exception</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An error of the version source (e.g. no
+network) is not caught.</p>
               </div>
             </td>
           </tr>
@@ -4424,8 +4529,8 @@ request.</p>
             <td>
               <div class="doc-md-description">
                 <p>The sorted canonical names of the registered packages and
-of the packages that the loader can load. No data is
-loaded.</p>
+    of the packages that the loader can load. No data is
+    loaded.</p>
               </div>
             </td>
           </tr>
@@ -4598,6 +4703,16 @@ of the same range. Nothing is registered in that case.</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">),</span> <span class="n">ranges</span><span class="o">=</span><span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.23.2"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">[VersionRange(min='1.23.2', max=None)]</span>
+</code></pre></div>
+</details>
+
     </div>
 
 </div>
@@ -4696,13 +4811,34 @@ of the same range. Nothing is registered in that case.</p>
               <div class="doc-md-description">
                 <p>If any configuration already exists for a
 given package name and target, and <code>exist_ok</code> is
-<code>False</code>.</p>
+<code>False</code>. The entries before the conflict stay
+registered.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a range is invalid (see <code>register</code>).</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register_many</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.23.2"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">packages</span><span class="p">()</span>
+<span class="go">['numpy']</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -4873,22 +5009,20 @@ valid PEP 440 version.</p>
         <p>Represent the result of <code>discover_compat_targets</code>.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.Discovery.versions">versions</span></code></td>
             <td>
-                <code>versions</code>
-            </td>
-            <td>
+                  <code><span title="tuple">tuple</span>[<span title="str">str</span>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4896,15 +5030,16 @@ valid PEP 440 version.</p>
 not ignored), in PEP 440 order.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.Discovery.targets">targets</span></code></td>
             <td>
-                <code>targets</code>
-            </td>
-            <td>
+                  <code><span title="dict">dict</span>[<a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a>, <span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4913,13 +5048,18 @@ range that reaches the latest release is open (its
 <code>max</code> is <code>None</code>).</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Discovery</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Discovery</span><span class="p">(</span><span class="n">versions</span><span class="o">=</span><span class="p">(</span><span class="s2">"1.0.0"</span><span class="p">,),</span> <span class="n">targets</span><span class="o">=</span><span class="p">{})</span>
+<span class="go">Discovery(versions=('1.0.0',), targets={})</span>
+</code></pre></div>
+</details>
 
 
 
@@ -5004,6 +5144,14 @@ and <code>pydantic</code> pins <code>pydantic-core</code>).</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">PinnedDependency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PinnedDependency</span><span class="p">(</span><span class="s2">"pydantic-core"</span><span class="p">)</span>
+<span class="go">PinnedDependency(package='pydantic-core')</span>
+</code></pre></div>
+</details>
+
 
 
 
@@ -5085,6 +5233,14 @@ version (e.g. <code>jax</code> and <code>jaxlib</code>).</p>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">SameVersion</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SameVersion</span><span class="p">(</span><span class="s2">"jaxlib"</span><span class="p">)</span>
+<span class="go">SameVersion(package='jaxlib')</span>
+</code></pre></div>
+</details>
 
 
 
@@ -5306,6 +5462,19 @@ values.</p>
 target.</p>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">UnsupportedVersionError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"my_package"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">registry</span><span class="o">.</span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="s2">"1.0"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">UnsupportedVersionError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">UnsupportedVersionError</span>
+</code></pre></div>
+</details>
+
 
 
 
@@ -5337,22 +5506,20 @@ target.</p>
         <p>Represent one contiguous range of valid package versions.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.VersionRange.min">min</span></code></td>
             <td>
-                <code>min</code>
-            </td>
-            <td>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5360,15 +5527,11 @@ target.</p>
 minimum.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.VersionRange.max">max</span></code></td>
             <td>
-                <code>max</code>
-            </td>
-            <td>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5376,13 +5539,19 @@ minimum.</p>
 maximum.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
+        <p>Both bounds are inclusive.</p>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="go">VersionRange(min='1.0.0', max=None)</span>
+</code></pre></div>
+</details>
 
 
 
@@ -5721,8 +5890,41 @@ ones registered for the package in <code>IGNORED_VERSIONS</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The considered versions and the ranges of compatible versions
-of each target. The ranges can be given to
-<code>CompatRegistry.register_many</code>.</p>
+    of each target. The ranges can be given to
+    <code>CompatRegistry.register_many</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -5807,7 +6009,40 @@ date.</p>
             <td>
               <div class="doc-md-description">
                 <p>The stable, valid, not yanked and not ignored releases (see
-<code>IGNORED_VERSIONS</code>), in ascending PEP 440 order.</p>
+    <code>IGNORED_VERSIONS</code>), in ascending PEP 440 order.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -5957,11 +6192,13 @@ default registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>The closest valid version as a string. An exact version is
-returned unchanged if it is valid or if the package is not
-configured for the target. A wildcard or empty request is
-resolved to the latest compatible version, or returned
-unchanged if it lies in an open-ended range (see
-<code>CompatRegistry.find_closest_version</code>).</p>
+    returned unchanged if it is valid or if the package is not
+    configured for the target, otherwise the nearest range
+    boundary is returned. A wildcard or empty request is
+    resolved to the latest compatible version, or returned
+    unchanged if it lies in an open-ended range or if the
+    registry has no data for the package (see
+    <code>CompatRegistry.find_closest_version</code>).</p>
               </div>
             </td>
           </tr>
@@ -5997,6 +6234,28 @@ wildcard request.</p>
             <td>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions needed to match a wildcard cannot
+be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -6149,8 +6408,8 @@ default registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>The known compatible versions that satisfy the request, in
-PEP 440 order (see
-<code>CompatRegistry.get_compatible_versions</code>).</p>
+    PEP 440 order (see
+    <code>CompatRegistry.get_compatible_versions</code>).</p>
               </div>
             </td>
           </tr>
@@ -6177,18 +6436,39 @@ PEP 440 order (see
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions cannot be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a download is needed and <code>requests</code>
+is not installed.</p>
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
 
 <details class="example" open>
   <summary>Example</summary>
-  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_compatible_versions</span><span class="p">,</span> <span class="n">Target</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">versions</span> <span class="o">=</span> <span class="n">get_compatible_versions</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">),</span> <span class="s2">"1.26.*"</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">versions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">'1.26.4'</span>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span><span class="p">,</span> <span class="n">get_compatible_versions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"my_package"</span><span class="p">:</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="s2">"2.0"</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register_versions</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="s2">"1.5"</span><span class="p">,</span> <span class="s2">"2.0"</span><span class="p">,</span> <span class="s2">"3.0"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_compatible_versions</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">)</span>
+<span class="go">['1.0', '1.5']</span>
 </code></pre></div>
 </details>
 
@@ -6237,7 +6517,7 @@ the first time the package is looked up.</p>
             <td>
               <div class="doc-md-description">
                 <p>A singleton <code>CompatRegistry</code> configured with the
-shipped package version constraints.</p>
+    shipped package version constraints.</p>
               </div>
             </td>
           </tr>
@@ -6358,7 +6638,7 @@ releases.</p>
             <td>
               <div class="doc-md-description">
                 <p>The ranges of consecutive compatible versions. The <code>max</code> of a
-range that reaches <code>latest</code> is <code>None</code>.</p>
+    range that reaches <code>latest</code> is <code>None</code>.</p>
               </div>
             </td>
           </tr>
@@ -6461,7 +6741,7 @@ version.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if the release is compatible or declares no
-constraint (or an invalid one), <code>False</code> otherwise.</p>
+    constraint (or an invalid one), <code>False</code> otherwise.</p>
               </div>
             </td>
           </tr>
@@ -6614,13 +6894,13 @@ default registry.</p>
             <td>
               <div class="doc-md-description">
                 <p>For an exact version: <code>True</code> if it is valid or if the
-package is unconfigured, <code>False</code> otherwise, including
-when no package version is valid for the target. For a
-wildcard: <code>True</code> if a known compatible version satisfies
-it. For the latest version: <code>True</code> if the registry has
-data for the package and a version is valid for the
-target. A package without data is therefore valid for an
-exact version only.</p>
+    package is unconfigured, <code>False</code> otherwise, including
+    when no package version is valid for the target. For a
+    wildcard: <code>True</code> if a known compatible version satisfies
+    it. For the latest version: <code>True</code> if the registry has
+    data for the package and a version is valid for the
+    target. A package without data is therefore valid for an
+    exact version only.</p>
               </div>
             </td>
           </tr>
@@ -6644,6 +6924,28 @@ exact version only.</p>
             <td>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions needed to match a wildcard cannot
+be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -6739,11 +7041,11 @@ exact version only.</p>
             <td>
               <div class="doc-md-description">
                 <p>The distinct tags of the wheel, sorted. A wheel with a
-compressed tag set (<code>macosx_10_9_x86_64.macosx_11_0_arm64</code>)
-or a <code>universal2</code> wheel gives one tag per platform. The
-tuple is empty if <code>filename</code> is not a valid wheel file
-name, or if every tag is out of scope (<code>musllinux</code>,
-<code>win32</code>, <code>i686</code>, PyPy, ...).</p>
+    compressed tag set (<code>macosx_10_9_x86_64.macosx_11_0_arm64</code>)
+    or a <code>universal2</code> wheel gives one tag per platform. The
+    tuple is empty if <code>filename</code> is not a valid wheel file
+    name, or if every tag is out of scope (<code>musllinux</code>,
+    <code>win32</code>, <code>i686</code>, PyPy, ...).</p>
               </div>
             </td>
           </tr>
@@ -6862,6 +7164,18 @@ registrations silently.</p>
               <div class="doc-md-description">
                 <p>If any entry is already registered and
 <code>exist_ok</code> is <code>False</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a bound of a range is not a valid PEP 440
+version, or if a minimum is greater than the maximum of the
+same range.</p>
               </div>
             </td>
           </tr>
@@ -6985,7 +7299,9 @@ the current interpreter's free-threaded status.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The resolved target, with the current OS and architecture.</p>
+                <p>The resolved target, with the current OS and architecture. The
+    OS or the architecture is <code>None</code> if it is not one of the
+    supported values.</p>
               </div>
             </td>
           </tr>
@@ -7009,7 +7325,8 @@ the current interpreter's free-threaded status.</p>
             <td>
               <div class="doc-md-description">
                 <p>if <code>python_version</code> ends with <code>t</code> and
-<code>free_threaded=False</code> is specified.</p>
+<code>free_threaded=False</code> is specified, or if
+<code>python_version</code> is not a <code>"major.minor"</code> string.</p>
               </div>
             </td>
           </tr>
@@ -7278,6 +7595,860 @@ other wheel needs the same Python version. A pure-Python tag (its
 
 
 
+<h2 id="feu.compat.interface" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">feu.compat.interface</span>
+
+
+<a href="#feu.compat.interface" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Define the public interface for package/target compatibility
+resolution.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.compat.interface.find_closest_version" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.compat.interface.find_closest_version</span>
+
+
+<a href="#feu.compat.interface.find_closest_version" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">find_closest_version</span><span class="p">(</span>
+    <span class="n">pkg_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
+    <span class="n">pkg_version</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Find the closest valid version for a package using the default
+registry.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pkg_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The package name to check (e.g., <code>"numpy"</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pkg_version</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The requested package version: an exact
+version, a wildcard (e.g. <code>"2.*"</code>) or <code>""</code>/<code>None</code>
+for the latest version.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>target</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compatibility target.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>registry</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compatibility registry. <code>None</code> means the
+default registry.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The closest valid version as a string. An exact version is
+    returned unchanged if it is valid or if the package is not
+    configured for the target, otherwise the nearest range
+    boundary is returned. A wildcard or empty request is
+    resolved to the latest compatible version, or returned
+    unchanged if it lies in an open-ended range or if the
+    registry has no data for the package (see
+    <code>CompatRegistry.find_closest_version</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.registry.UnsupportedVersionError" href="#feu.compat.registry.UnsupportedVersionError">UnsupportedVersionError</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If no package version is valid for
+the given target, or if no known version satisfies a
+wildcard request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions needed to match a wildcard cannot
+be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_closest_version</span><span class="p">,</span> <span class="n">Target</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">pkg_version</span><span class="o">=</span><span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">'2.0.2'</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.compat.interface.get_compatible_versions" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.compat.interface.get_compatible_versions</span>
+
+
+<a href="#feu.compat.interface.get_compatible_versions" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_compatible_versions</span><span class="p">(</span>
+    <span class="n">pkg_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></span><span class="p">,</span>
+    <span class="n">pkg_version</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Get the known versions that are valid for a target and satisfy
+a version request, using the default registry.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pkg_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The package name (e.g., <code>"numpy"</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>target</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compatibility target.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pkg_version</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The version request: an exact version, a
+wildcard (e.g. <code>"2.*"</code>) or <code>""</code>/<code>None</code> for every
+version.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>registry</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compatibility registry. <code>None</code> means the
+default registry.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The known compatible versions that satisfy the request, in
+    PEP 440 order (see
+    <code>CompatRegistry.get_compatible_versions</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions cannot be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a download is needed and <code>requests</code>
+is not installed.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span><span class="p">,</span> <span class="n">get_compatible_versions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"my_package"</span><span class="p">:</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="s2">"2.0"</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register_versions</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="s2">"1.5"</span><span class="p">,</span> <span class="s2">"2.0"</span><span class="p">,</span> <span class="s2">"3.0"</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_compatible_versions</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">)</span>
+<span class="go">['1.0', '1.5']</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.compat.interface.get_default_compat_registry" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.compat.interface.get_default_compat_registry</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+  </span>
+
+<a href="#feu.compat.interface.get_default_compat_registry" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_default_compat_registry</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the default global compatibility registry.</p>
+<p>The registry is created on the first call and reused on all
+subsequent calls (singleton pattern). Its packages are the JSON
+files of <code>feu/compat/data</code>, generated by
+<code>dev/generate_compat_data.py</code>; the file of a package is parsed
+the first time the package is looked up.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A singleton <code>CompatRegistry</code> configured with the
+    shipped package version constraints.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_default_compat_registry</span><span class="p">,</span> <span class="n">Target</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">get_default_compat_registry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">True</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.compat.interface.is_valid_version" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.compat.interface.is_valid_version</span>
+
+
+<a href="#feu.compat.interface.is_valid_version" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_valid_version</span><span class="p">(</span>
+    <span class="n">pkg_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
+    <span class="n">pkg_version</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="bool">bool</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Check if a package version is valid for a target using the
+default registry.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>pkg_name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The package name to check (e.g., <code>"numpy"</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>pkg_version</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The package version request to validate: an
+exact version, a wildcard (e.g. <code>"2.*"</code>) or
+<code>""</code>/<code>None</code> for the latest version.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>target</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compatibility target.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>registry</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.registry.CompatRegistry" href="#feu.compat.registry.CompatRegistry">CompatRegistry</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The compatibility registry. <code>None</code> means the
+default registry.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>For an exact version: <code>True</code> if it is valid or if the
+    package is unconfigured, <code>False</code> otherwise, including
+    when no package version is valid for the target. For a
+    wildcard: <code>True</code> if a known compatible version satisfies
+    it. For the latest version: <code>True</code> if the registry has
+    data for the package and a version is valid for the
+    target. A package without data is therefore valid for an
+    exact version only.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>pkg_version</code> is not a valid version request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the versions needed to match a wildcard cannot
+be downloaded from PyPI.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a wildcard needs a download and
+<code>requests</code> is not installed.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_valid_version</span><span class="p">,</span> <span class="n">Target</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_version</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">pkg_version</span><span class="o">=</span><span class="s2">"2.0.2"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="feu.compat.interface.register_compat" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">feu.compat.interface.register_compat</span>
+
+
+<a href="#feu.compat.interface.register_compat" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">register_compat</span><span class="p">(</span>
+    <span class="n">mapping</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a></span><span class="p">,</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a></span><span class="p">]]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">exist_ok</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Register custom package configurations into the default global
+registry.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mapping</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="dict">dict</span>[<a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a>, <span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a>]]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mapping of package name to <code>Target</code> to a list of
+<code>VersionRange</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exist_ok</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>False</code> (default), raises an error if any entry
+is already registered. If <code>True</code>, overwrites existing
+registrations silently.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If any entry is already registered and
+<code>exist_ok</code> is <code>False</code>.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a bound of a range is not a valid PEP 440
+version, or if a minimum is greater than the maximum of the
+same range.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_compat</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">register_compat</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">"my_package"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}}</span>
+<span class="gp">... </span><span class="p">)</span>
+</code></pre></div>
+</details>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
 <h2 id="feu.compat.discover" class="doc doc-heading">
             <span class="doc doc-object-name doc-module-name">feu.compat.discover</span>
 
@@ -7331,22 +8502,20 @@ not carry the platform tags themselves are described by data (a
         <p>Represent the result of <code>discover_compat_targets</code>.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.discover.Discovery.versions">versions</span></code></td>
             <td>
-                <code>versions</code>
-            </td>
-            <td>
+                  <code><span title="tuple">tuple</span>[<span title="str">str</span>, ...]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7354,15 +8523,16 @@ not carry the platform tags themselves are described by data (a
 not ignored), in PEP 440 order.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.discover.Discovery.targets">targets</span></code></td>
             <td>
-                <code>targets</code>
-            </td>
-            <td>
+                  <code><span title="dict">dict</span>[<a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a>, <span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7371,13 +8541,18 @@ range that reaches the latest release is open (its
 <code>max</code> is <code>None</code>).</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Discovery</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Discovery</span><span class="p">(</span><span class="n">versions</span><span class="o">=</span><span class="p">(</span><span class="s2">"1.0.0"</span><span class="p">,),</span> <span class="n">targets</span><span class="o">=</span><span class="p">{})</span>
+<span class="go">Discovery(versions=('1.0.0',), targets={})</span>
+</code></pre></div>
+</details>
 
 
 
@@ -7462,6 +8637,14 @@ and <code>pydantic</code> pins <code>pydantic-core</code>).</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">PinnedDependency</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PinnedDependency</span><span class="p">(</span><span class="s2">"pydantic-core"</span><span class="p">)</span>
+<span class="go">PinnedDependency(package='pydantic-core')</span>
+</code></pre></div>
+</details>
+
 
 
 
@@ -7543,6 +8726,14 @@ version (e.g. <code>jax</code> and <code>jaxlib</code>).</p>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">SameVersion</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SameVersion</span><span class="p">(</span><span class="s2">"jaxlib"</span><span class="p">)</span>
+<span class="go">SameVersion(package='jaxlib')</span>
+</code></pre></div>
+</details>
 
 
 
@@ -7721,8 +8912,41 @@ ones registered for the package in <code>IGNORED_VERSIONS</code>.</p>
             <td>
               <div class="doc-md-description">
                 <p>The considered versions and the ranges of compatible versions
-of each target. The ranges can be given to
-<code>CompatRegistry.register_many</code>.</p>
+    of each target. The ranges can be given to
+    <code>CompatRegistry.register_many</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -7807,7 +9031,40 @@ date.</p>
             <td>
               <div class="doc-md-description">
                 <p>The stable, valid, not yanked and not ignored releases (see
-<code>IGNORED_VERSIONS</code>), in ascending PEP 440 order.</p>
+    <code>IGNORED_VERSIONS</code>), in ascending PEP 440 order.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the request to PyPI fails.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>MissingPackageError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>requests</code> is not installed.</p>
               </div>
             </td>
           </tr>
@@ -7926,7 +9183,7 @@ releases.</p>
             <td>
               <div class="doc-md-description">
                 <p>The ranges of consecutive compatible versions. The <code>max</code> of a
-range that reaches <code>latest</code> is <code>None</code>.</p>
+    range that reaches <code>latest</code> is <code>None</code>.</p>
               </div>
             </td>
           </tr>
@@ -8029,7 +9286,7 @@ version.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if the release is compatible or declares no
-constraint (or an invalid one), <code>False</code> otherwise.</p>
+    constraint (or an invalid one), <code>False</code> otherwise.</p>
               </div>
             </td>
           </tr>
@@ -8573,6 +9830,15 @@ mapping of canonical package name to <code>Target</code> to a list of
 <code>VersionRange</code>.</p>
 <p>Reading it loads the data of every package of the loader.</p>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">registry</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+<span class="go">['numpy']</span>
+</code></pre></div>
+</details>
     </div>
 
 </div>
@@ -8690,64 +9956,22 @@ version.</p>
             <td>
               <div class="doc-md-description">
                 <p>The version to install, as a string.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+<ul>
 <li>For an exact version: the version itself if it is valid
-or if the package is not configured for the target,
-otherwise the nearest range boundary, as it was
-registered.</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+  or if the package is not configured for the target,
+  otherwise the nearest range boundary, as it was
+  registered.</li>
 <li>For the latest version (<code>""</code>/<code>None</code>): the request
-itself if a range is open-ended, otherwise the highest
-upper bound. No version is downloaded.</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+  itself if a range is open-ended, otherwise the highest
+  upper bound. No version is downloaded.</li>
 <li>For a wildcard: the latest known compatible version
-that satisfies the request (the versions are the
-registered ones or the ones of the version source, so
-they are up to date). If it lies in an open-ended
-range, the request itself is returned (<code>"2.*"</code>) so
-that the installer picks the real latest release.</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
+  that satisfies the request (the versions are the
+  registered ones or the ones of the version source, so
+  they are up to date). If it lies in an open-ended
+  range, the request itself is returned (<code>"2.*"</code>) so
+  that the installer picks the real latest release.</li>
 <li>If the registry has no data for the package, the
-request is returned unchanged.</li>
+  request is returned unchanged.</li>
 </ul>
               </div>
             </td>
@@ -8785,6 +10009,17 @@ satisfies a wildcard request.</p>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version
 request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="Exception">Exception</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An error of the version source (e.g. no
+network) is not caught.</p>
               </div>
             </td>
           </tr>
@@ -8921,14 +10156,14 @@ version.</p>
             <td>
               <div class="doc-md-description">
                 <p>The known versions that lie in a valid range of the
-target and satisfy the request, in PEP 440 order. The
-versions are the registered ones or, if there are none,
-the ones of the version source (downloaded when the
-method is called). The list is empty if the package
-has no data, if no version is valid for the target, or
-if nothing matches. A package that has no
-configuration for the target accepts every known
-version.</p>
+    target and satisfy the request, in PEP 440 order. The
+    versions are the registered ones or, if there are none,
+    the ones of the version source (downloaded when the
+    method is called). The list is empty if the package
+    has no data, if no version is valid for the target, or
+    if nothing matches. A package that has no
+    configuration for the target accepts every known
+    version.</p>
               </div>
             </td>
           </tr>
@@ -8953,6 +10188,17 @@ version.</p>
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version
 request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="Exception">Exception</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An error of the version source (e.g. no
+network) is not caught.</p>
               </div>
             </td>
           </tr>
@@ -9068,23 +10314,26 @@ compatibility target.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The list of <code>VersionRange</code> for this target, or an empty</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>list if no configuration matches.</p>
+                <p>The list of <code>VersionRange</code> for this target. The list is
+empty if no configuration matches, and also if the target is
+explicitly unsupported (see <code>is_unsupported</code>).</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">))</span>
+<span class="go">[VersionRange(min='1.0', max=None)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.12"</span><span class="p">))</span>
+<span class="go">[]</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -9181,9 +10430,9 @@ compatibility target.</p>
             <td>
               <div class="doc-md-description">
                 <p>A list of <code>(min_version, max_version)</code> tuples sorted by
-ascending minimum version, either value being <code>None</code>
-if unconstrained on that side. The list is empty if
-the package is not configured for the target.</p>
+    ascending minimum version, either value being <code>None</code>
+    if unconstrained on that side. The list is empty if
+    the package is not configured for the target.</p>
               </div>
             </td>
           </tr>
@@ -9214,6 +10463,15 @@ for the given target.</p>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_version_ranges</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">[(&lt;Version('1.0')&gt;, None)]</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -9285,13 +10543,22 @@ this method lets the caller detect that case.</p>
             <td>
               <div class="doc-md-description">
                 <p><code>True</code> if a configuration is registered for the
-package, otherwise <code>False</code>.</p>
+    package, otherwise <code>False</code>.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">has_package</span><span class="p">(</span><span class="s2">"NumPy"</span><span class="p">),</span> <span class="n">registry</span><span class="o">.</span><span class="n">has_package</span><span class="p">(</span><span class="s2">"pandas"</span><span class="p">)</span>
+<span class="go">(True, False)</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -9390,23 +10657,25 @@ registered with an empty range list is unsupported
             </td>
             <td>
               <div class="doc-md-description">
-                <p><code>True</code> if the package has no valid version for the</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>given target, <code>False</code> otherwise.</p>
+                <p><code>True</code> if the package has no valid version for the
+given target, <code>False</code> otherwise.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.8"</span><span class="p">):</span> <span class="p">[]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">is_unsupported</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.8"</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">is_unsupported</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>  <span class="c1"># not configured</span>
+<span class="go">False</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -9509,108 +10778,27 @@ version, a wildcard (e.g. <code>"2.*"</code>) or
     <table>
       <thead>
         <tr>
-<th>Name</th>          <th>Type</th>
+          <th>Type</th>
           <th>Description</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-<td></td>            <td>
+            <td>
                   <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>For an exact version: <code>True</code> if valid for any registered</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>range or unconfigured, <code>False</code> otherwise, including when</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>no package version is valid for the given target. For a</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td><code>wildcard</code></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p><code>True</code> if at least one known compatible</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>version satisfies the request (see</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p><code>get_compatible_versions</code>, which downloads the</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>versions); a package without data gives <code>False</code>. For</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>the latest version: <code>True</code> if the registry has data for</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>the package and a version is valid for the target; no</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-<td></td>            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>version is downloaded.</p>
+                <p>For an exact version: <code>True</code> if valid for any registered
+range or unconfigured, <code>False</code> otherwise, including when
+no package version is valid for the given target. For a
+wildcard: <code>True</code> if at least one known compatible
+version satisfies the request (see
+<code>get_compatible_versions</code>, which downloads the
+versions); a package without data gives <code>False</code>. For
+the latest version: <code>True</code> if the registry has data for
+the package and a version is valid for the target; no
+version is downloaded.</p>
               </div>
             </td>
           </tr>
@@ -9635,6 +10823,17 @@ version, a wildcard (e.g. <code>"2.*"</code>) or
               <div class="doc-md-description">
                 <p>If <code>pkg_version</code> is not a valid version
 request.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="Exception">Exception</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An error of the version source (e.g. no
+network) is not caught.</p>
               </div>
             </td>
           </tr>
@@ -9691,8 +10890,8 @@ request.</p>
             <td>
               <div class="doc-md-description">
                 <p>The sorted canonical names of the registered packages and
-of the packages that the loader can load. No data is
-loaded.</p>
+    of the packages that the loader can load. No data is
+    loaded.</p>
               </div>
             </td>
           </tr>
@@ -9865,6 +11064,16 @@ of the same range. Nothing is registered in that case.</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">),</span> <span class="n">ranges</span><span class="o">=</span><span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.23.2"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">get_config</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">[VersionRange(min='1.23.2', max=None)]</span>
+</code></pre></div>
+</details>
+
     </div>
 
 </div>
@@ -9963,13 +11172,34 @@ of the same range. Nothing is registered in that case.</p>
               <div class="doc-md-description">
                 <p>If any configuration already exists for a
 given package name and target, and <code>exist_ok</code> is
-<code>False</code>.</p>
+<code>False</code>. The entries before the conflict stay
+registered.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a range is invalid (see <code>register</code>).</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">register_many</span><span class="p">({</span><span class="s2">"numpy"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.23.2"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">packages</span><span class="p">()</span>
+<span class="go">['numpy']</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -10142,6 +11372,22 @@ valid PEP 440 version.</p>
 loads the data of a package the first time it needs it.</p>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyLoader</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">packages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">[</span><span class="s2">"my-package"</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">PackageData</span><span class="p">({</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[</span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]})</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">MyLoader</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span><span class="o">.</span><span class="n">is_valid_version</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="s2">"0.5"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="go">False</span>
+</code></pre></div>
+</details>
+
 
 
 
@@ -10209,6 +11455,29 @@ loads the data of a package the first time it needs it.</p>
     </table>
 
 
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="feu.compat.registry.PackageData" href="#feu.compat.registry.PackageData">PackageData</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The data of the package.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
     </div>
 
 </div>
@@ -10227,6 +11496,29 @@ loads the data of a package the first time it needs it.</p>
     <div class="doc doc-contents ">
 
         <p>Get the canonical names of the packages that have data.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="collections.abc.Collection">Collection</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The canonical package names.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
     </div>
@@ -10261,35 +11553,43 @@ loads the data of a package the first time it needs it.</p>
         <p>Represent the compatibility data of one package.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.registry.PackageData.targets">targets</span></code></td>
             <td>
-                <code>targets</code>
-            </td>
-            <td>
+                  <code><span title="dict">dict</span>[<a class="autorefs autorefs-internal" title="feu.compat.target.Target
+
+
+  
+      dataclass
+  " href="#feu.compat.target.Target">Target</a>, <span title="list">list</span>[<a class="autorefs autorefs-internal" title="feu.compat.registry.VersionRange" href="#feu.compat.registry.VersionRange">VersionRange</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>The ranges of each target.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PackageData</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">{})</span>
+<span class="go">PackageData(targets={})</span>
+</code></pre></div>
+</details>
 
 
 
@@ -10340,6 +11640,19 @@ loads the data of a package the first time it needs it.</p>
 target.</p>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompatRegistry</span><span class="p">,</span> <span class="n">Target</span><span class="p">,</span> <span class="n">UnsupportedVersionError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registry</span> <span class="o">=</span> <span class="n">CompatRegistry</span><span class="p">({</span><span class="s2">"my_package"</span><span class="p">:</span> <span class="p">{</span><span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">):</span> <span class="p">[]}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">registry</span><span class="o">.</span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"my_package"</span><span class="p">,</span> <span class="s2">"1.0"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.11"</span><span class="p">))</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">UnsupportedVersionError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">UnsupportedVersionError</span>
+</code></pre></div>
+</details>
+
 
 
 
@@ -10371,22 +11684,20 @@ target.</p>
         <p>Represent one contiguous range of valid package versions.</p>
 
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.registry.VersionRange.min">min</span></code></td>
             <td>
-                <code>min</code>
-            </td>
-            <td>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10394,15 +11705,11 @@ target.</p>
 minimum.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="feu.compat.registry.VersionRange.max">max</span></code></td>
             <td>
-                <code>max</code>
-            </td>
-            <td>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10410,13 +11717,19 @@ minimum.</p>
 maximum.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
       </tbody>
     </table>
+        <p>Both bounds are inclusive.</p>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">VersionRange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">VersionRange</span><span class="p">(</span><span class="s2">"1.0.0"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="go">VersionRange(min='1.0.0', max=None)</span>
+</code></pre></div>
+</details>
 
 
 
@@ -10658,6 +11971,14 @@ parsed), and a file is parsed when its package is loaded.</p>
     </table>
 
 
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat.shipped</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShippedData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">ShippedData</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">)</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="go">True</span>
+</code></pre></div>
+</details>
+
     </div>
 
 </div>
@@ -10700,6 +12021,14 @@ parsed), and a file is parsed when its package is loaded.</p>
       </tbody>
     </table>
 
+
+<details class="example" open>
+  <summary>Example</summary>
+  <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat.shipped</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShippedData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">"pandas"</span> <span class="ow">in</span> <span class="n">ShippedData</span><span class="p">()</span><span class="o">.</span><span class="n">packages</span><span class="p">()</span>
+<span class="go">True</span>
+</code></pre></div>
+</details>
 
     </div>
 
@@ -11286,7 +12615,9 @@ the current interpreter's free-threaded status.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The resolved target, with the current OS and architecture.</p>
+                <p>The resolved target, with the current OS and architecture. The
+    OS or the architecture is <code>None</code> if it is not one of the
+    supported values.</p>
               </div>
             </td>
           </tr>
@@ -11310,7 +12641,8 @@ the current interpreter's free-threaded status.</p>
             <td>
               <div class="doc-md-description">
                 <p>if <code>python_version</code> ends with <code>t</code> and
-<code>free_threaded=False</code> is specified.</p>
+<code>free_threaded=False</code> is specified, or if
+<code>python_version</code> is not a <code>"major.minor"</code> string.</p>
               </div>
             </td>
           </tr>
@@ -11616,11 +12948,11 @@ which runs on its Python version and the later ones.</p>
             <td>
               <div class="doc-md-description">
                 <p>The distinct tags of the wheel, sorted. A wheel with a
-compressed tag set (<code>macosx_10_9_x86_64.macosx_11_0_arm64</code>)
-or a <code>universal2</code> wheel gives one tag per platform. The
-tuple is empty if <code>filename</code> is not a valid wheel file
-name, or if every tag is out of scope (<code>musllinux</code>,
-<code>win32</code>, <code>i686</code>, PyPy, ...).</p>
+    compressed tag set (<code>macosx_10_9_x86_64.macosx_11_0_arm64</code>)
+    or a <code>universal2</code> wheel gives one tag per platform. The
+    tuple is empty if <code>filename</code> is not a valid wheel file
+    name, or if every tag is out of scope (<code>musllinux</code>,
+    <code>win32</code>, <code>i686</code>, PyPy, ...).</p>
               </div>
             </td>
           </tr>

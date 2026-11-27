@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#feu.github" class="md-skip">
+        <a href="#feugithub" class="md-skip">
           Skip to content
         </a>
       
@@ -780,6 +780,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -821,6 +823,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1251,6 +1255,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1473,7 +1479,11 @@
   
 
 
-  <h1>GitHub</h1>
+<h1 id="feugithub"><code>feu.github</code><a class="headerlink" href="#feugithub" title="Permanent link">&para;</a></h1>
+<p>The metadata of GitHub repositories, from the GitHub REST API. The functions that call the API need
+the <code>requests</code> extra; the <code>GITHUB_TOKEN</code> environment variable, if set, authenticates them. See the
+<a href="../../usage/#working-with-github">usage guide</a>.</p>
+
 
 <div class="doc doc-object doc-module">
 
@@ -1488,6 +1498,10 @@
     <div class="doc doc-contents first">
 
         <p>Contain GitHub utility functions.</p>
+<p>The functions read the metadata of repositories from the GitHub REST API
+(they need the <code>feu[requests]</code> extra), sort it and summarize it. The
+<code>GITHUB_TOKEN</code> environment variable, if set, authenticates the
+requests.</p>
 
 
 
@@ -1554,6 +1568,8 @@ request if it is set.</p>
   <summary>Example</summary>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_github_headers</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">headers</span> <span class="o">=</span> <span class="n">build_github_headers</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">headers</span><span class="p">[</span><span class="s2">"Accept"</span><span class="p">]</span>
+<span class="go">'application/vnd.github+json'</span>
 </code></pre></div>
 </details>
 
@@ -1714,7 +1730,7 @@ read-only, so a caller cannot corrupt the cache.</p>
             <td>
               <div class="doc-md-description">
                 <p>The repo metadata, as returned by the GitHub API, as a
-read-only mapping.</p>
+    read-only mapping.</p>
               </div>
             </td>
           </tr>
@@ -1841,7 +1857,7 @@ name.</p>
             <td>
               <div class="doc-md-description">
                 <p>The metadata of each repository, as returned by the GitHub
-API, as read-only mappings.</p>
+    API, as read-only mappings.</p>
               </div>
             </td>
           </tr>
@@ -1996,10 +2012,10 @@ key, are placed at the end in their original order.</p>
             <td>
               <div class="doc-md-description">
                 <p>A new list of repository mappings sorted in ascending
-order (or descending if <code>reverse=True</code>). Repositories
-without the key, or with a <code>None</code> value for the key,
-appear at the end in their original order, whatever the
-value of <code>reverse</code>.</p>
+    order (or descending if <code>reverse=True</code>). Repositories
+    without the key, or with a <code>None</code> value for the key,
+    appear at the end in their original order, whatever the
+    value of <code>reverse</code>.</p>
               </div>
             </td>
           </tr>
@@ -2132,6 +2148,8 @@ request if it is set.</p>
   <summary>Example</summary>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.github</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_github_headers</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">headers</span> <span class="o">=</span> <span class="n">build_github_headers</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">headers</span><span class="p">[</span><span class="s2">"Accept"</span><span class="p">]</span>
+<span class="go">'application/vnd.github+json'</span>
 </code></pre></div>
 </details>
 
@@ -2271,7 +2289,7 @@ read-only, so a caller cannot corrupt the cache.</p>
             <td>
               <div class="doc-md-description">
                 <p>The repo metadata, as returned by the GitHub API, as a
-read-only mapping.</p>
+    read-only mapping.</p>
               </div>
             </td>
           </tr>
@@ -2505,7 +2523,7 @@ name.</p>
             <td>
               <div class="doc-md-description">
                 <p>The metadata of each repository, as returned by the GitHub
-API, as read-only mappings.</p>
+    API, as read-only mappings.</p>
               </div>
             </td>
           </tr>
@@ -2702,10 +2720,10 @@ key, are placed at the end in their original order.</p>
             <td>
               <div class="doc-md-description">
                 <p>A new list of repository mappings sorted in ascending
-order (or descending if <code>reverse=True</code>). Repositories
-without the key, or with a <code>None</code> value for the key,
-appear at the end in their original order, whatever the
-value of <code>reverse</code>.</p>
+    order (or descending if <code>reverse=True</code>). Repositories
+    without the key, or with a <code>None</code> value for the key,
+    appear at the end in their original order, whatever the
+    value of <code>reverse</code>.</p>
               </div>
             </td>
           </tr>

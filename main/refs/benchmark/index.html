@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#feu.benchmark" class="md-skip">
+        <a href="#feubenchmark" class="md-skip">
           Skip to content
         </a>
       
@@ -696,6 +696,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -737,6 +739,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1278,6 +1282,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1527,7 +1533,11 @@
   
 
 
-  <h1>Benchmark</h1>
+<h1 id="feubenchmark"><code>feu.benchmark</code><a class="headerlink" href="#feubenchmark" title="Permanent link">&para;</a></h1>
+<p>The trend of the <code>pytest-benchmark</code> results: load the runs, find the regressions, make a report and
+prune the old results. See the <a href="../../cli/#benchmark-trend"><code>benchmark-trend</code> command</a> and the
+<a href="../../usage/#benchmark-trend">usage guide</a>.</p>
+
 
 <div class="doc doc-object doc-module">
 
@@ -1542,6 +1552,12 @@
     <div class="doc doc-contents first">
 
         <p>Contain functions to follow the trend of the benchmarks.</p>
+<p><code>load_runs</code> reads the results saved by <code>pytest-benchmark</code> as <code>Run</code>
+values, <code>find_regressions</code> compares the latest run of each machine
+with the median of its previous runs, <code>make_report</code> renders a Markdown
+report with GitHub Actions annotations, and <code>prune_runs</code> deletes the
+old results. This package only uses the standard library. The <code>feu
+benchmark-trend</code> command is built on these functions.</p>
 
 
 
@@ -2054,7 +2070,9 @@ machine has its own latest run and its own baseline.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The runs returned by <code>load_runs</code>.</p>
+                <p>The runs returned by <code>load_runs</code>. They must be in
+chronological order: the last run of a machine is its
+latest run.</p>
               </div>
             </td>
             <td>
@@ -2120,7 +2138,7 @@ a regression. It must be greater than 0.</p>
             <td>
               <div class="doc-md-description">
                 <p>The regressions sorted by decreasing change, then by label and
-machine. It is empty if no machine has two runs.</p>
+    machine. It is empty if no machine has two runs.</p>
               </div>
             </td>
           </tr>
@@ -2414,7 +2432,10 @@ of a run have the same label.</p>
 <p>The report has a table of the trend of each benchmark and, if
 there are regressions, a regression block. If the runs come from
 several machines, the report has one section per machine, because
-the runs of different machines are never compared.</p>
+the runs of different machines are never compared. In the table, the
+change is between the first and the latest run of the benchmark,
+whereas the change of a regression is relative to the median of the
+previous runs. The rows are sorted by latest time then by label.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2442,8 +2463,8 @@ the runs of different machines are never compared.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The runs returned by <code>load_runs</code>. There must be at
-least one.</p>
+                <p>The runs returned by <code>load_runs</code>, in chronological
+order. There must be at least one.</p>
               </div>
             </td>
             <td>
@@ -3550,7 +3571,9 @@ machine has its own latest run and its own baseline.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The runs returned by <code>load_runs</code>.</p>
+                <p>The runs returned by <code>load_runs</code>. They must be in
+chronological order: the last run of a machine is its
+latest run.</p>
               </div>
             </td>
             <td>
@@ -3616,7 +3639,7 @@ a regression. It must be greater than 0.</p>
             <td>
               <div class="doc-md-description">
                 <p>The regressions sorted by decreasing change, then by label and
-machine. It is empty if no machine has two runs.</p>
+    machine. It is empty if no machine has two runs.</p>
               </div>
             </td>
           </tr>
@@ -3871,7 +3894,10 @@ the regressions, already escaped.</p>
 <p>The report has a table of the trend of each benchmark and, if
 there are regressions, a regression block. If the runs come from
 several machines, the report has one section per machine, because
-the runs of different machines are never compared.</p>
+the runs of different machines are never compared. In the table, the
+change is between the first and the latest run of the benchmark,
+whereas the change of a regression is relative to the median of the
+previous runs. The rows are sorted by latest time then by label.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -3899,8 +3925,8 @@ the runs of different machines are never compared.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The runs returned by <code>load_runs</code>. There must be at
-least one.</p>
+                <p>The runs returned by <code>load_runs</code>, in chronological
+order. There must be at least one.</p>
               </div>
             </td>
             <td>

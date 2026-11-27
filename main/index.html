@@ -1287,6 +1287,9 @@ packages and their versions across different Python environments. It provides ut
   and read dependency bounds from <code>pyproject.toml</code></li>
 <li><strong>Git and GitHub utilities</strong>: Get the tags of a local git repository, and fetch and sort
   repository metadata from the GitHub API</li>
+<li><strong>Benchmark trend</strong>: Follow the results of <code>pytest-benchmark</code> and detect the regressions</li>
+<li><strong>Optional dependencies</strong>: Check them, raise a helpful error when one is missing, and skip the
+  tests that need them (<code>feu.imports</code>, <code>feu.testing</code>)</li>
 </ul>
 <p>The library is particularly useful for projects that need to support multiple Python versions,
 free-threaded builds, OSes, and CPU architectures, and want to ensure they install compatible
@@ -1310,9 +1313,18 @@ package versions.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.3.0"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 <span class="go">'2.0.2'</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"1.*"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
 <span class="go">'1.26.4'</span>
 </code></pre></div>
+<p>A wildcard needs network access (and the <code>requests</code> extra), so the example is skipped by the tests.</p>
+<p>Install a package at the closest valid version, from Python or from the command line:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span><span class="p">,</span> <span class="n">PackageSpec</span><span class="p">,</span> <span class="n">install_package_closest_version</span>
+
+<span class="n">install_package_closest_version</span><span class="p">(</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="s2">"uv"</span><span class="p">),</span> <span class="n">PackageSpec</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.*"</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>uv<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s1">'2.*'</span>
+</code></pre></div>
+<p>The <a href="usage/">Usage Guide</a> has examples of every feature.</p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <ul>
 <li>🚀 <a href="get_started/">Get Started Guide</a></li>

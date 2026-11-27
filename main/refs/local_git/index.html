@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#feu.local_git" class="md-skip">
+        <a href="#feulocal_git" class="md-skip">
           Skip to content
         </a>
       
@@ -752,6 +752,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -793,6 +795,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -1106,6 +1110,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1183,7 +1189,10 @@
   
 
 
-  <h1>Git</h1>
+<h1 id="feulocal_git"><code>feu.local_git</code><a class="headerlink" href="#feulocal_git" title="Permanent link">&para;</a></h1>
+<p>The tags of the local git repository. It needs the <code>git</code> extra. See the
+<a href="../../usage/#working-with-git-repositories">usage guide</a>.</p>
+
 
 <div class="doc doc-object doc-module">
 
@@ -1199,7 +1208,9 @@
 
         <p>Contain git utility functions to inspect the tags of the current
 repository.</p>
-<p>These functions require the <code>gitpython</code> package.</p>
+<p>These functions require the <code>gitpython</code> package, which can be
+installed with <code>pip install 'feu[git]'</code>. The repository is searched
+from the current working directory and its parent directories.</p>
 
 
 
@@ -1290,7 +1301,7 @@ instead.</p>
             <td>
               <div class="doc-md-description">
                 <p>The tag name, or <code>None</code> if no tag was found and
-<code>raise_error=False</code>.</p>
+    <code>raise_error=False</code>.</p>
               </div>
             </td>
           </tr>
@@ -1327,6 +1338,17 @@ instead.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="git.InvalidGitRepositoryError">InvalidGitRepositoryError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if the current directory is
+not in a git repository.</p>
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -1334,10 +1356,9 @@ instead.</p>
 <details class="example" open>
   <summary>Example</summary>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.local_git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_last_tag_name</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="o">=</span> <span class="n">get_last_tag_name</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="o">=</span> <span class="n">get_last_tag_name</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+<span class="go">True</span>
 </code></pre></div>
 </details>
 
@@ -1416,7 +1437,7 @@ returned instead.</p>
             <td>
               <div class="doc-md-description">
                 <p>The tag name, or <code>None</code> if no version tag was found and
-<code>raise_error=False</code>.</p>
+    <code>raise_error=False</code>.</p>
               </div>
             </td>
           </tr>
@@ -1455,6 +1476,17 @@ installed.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="git.InvalidGitRepositoryError">InvalidGitRepositoryError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if the current directory is
+not in a git repository.</p>
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -1462,10 +1494,9 @@ installed.</p>
 <details class="example" open>
   <summary>Example</summary>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.local_git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_last_version_tag_name</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="o">=</span> <span class="n">get_last_version_tag_name</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="o">=</span> <span class="n">get_last_version_tag_name</span><span class="p">(</span><span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"v"</span><span class="p">)</span>
+<span class="go">True</span>
 </code></pre></div>
 </details>
 
@@ -1510,7 +1541,7 @@ returning, so that no <code>git</code> helper process is left running.</p>
             <td>
               <div class="doc-md-description">
                 <p>The list of git tags sorted by commit date/time, from the
-oldest to the most recent.</p>
+    oldest to the most recent.</p>
               </div>
             </td>
           </tr>
@@ -1556,7 +1587,8 @@ not in a git repository.</p>
   <summary>Example</summary>
   <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.local_git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tags</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tags</span> <span class="o">=</span> <span class="n">get_tags</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tags</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+<span class="go">True</span>
 </code></pre></div>
 </details>
 

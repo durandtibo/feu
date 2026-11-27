@@ -1328,12 +1328,12 @@ imports nothing from <code>feu</code>. <code>tests/unit/test_layers.py</code> ch
 </tr>
 <tr>
 <td><code>utils</code></td>
-<td><code>Registry[T]</code>, <code>run_command</code>, <code>fetch_data</code>/<code>fetch_response</code>, <code>PackageSpec</code>, the platform of the interpreter.</td>
+<td><code>Registry[T]</code>, <code>run_command</code>, <code>fetch_data</code>/<code>fetch_response</code>, <code>PackageSpec</code>, the platform of the interpreter, JSON files, mappings.</td>
 <td><code>command.py</code> (subprocess), <code>http.py</code> (network)</td>
 </tr>
 <tr>
 <td><code>version</code></td>
-<td>Version comparison and filtering, the version request, <code>pyproject</code> bounds, PyPI metadata (<code>fetch_pypi_project</code>).</td>
+<td>The installed version, version comparison and filtering, the version request, <code>pyproject</code> bounds, PyPI metadata (<code>fetch_pypi_project</code>).</td>
 <td><code>pypi.py</code>, <code>package.py</code> (network)</td>
 </tr>
 <tr>
@@ -1387,7 +1387,7 @@ the lower layers (<code>feu.benchmark</code> uses only the standard library).</p
 </tbody>
 </table>
 <h2 id="public-names-and-lazy-imports">Public names and lazy imports<a class="headerlink" href="#public-names-and-lazy-imports" title="Permanent link">&para;</a></h2>
-<p><code>import feu</code> imports no submodule. The names of <code>feu.__all__</code> (<code>find_closest_version</code>,
+<p><code>import feu</code> imports only <code>feu.imports</code>. The names of <code>feu.__all__</code> (<code>find_closest_version</code>,
 <code>install_package</code>, <code>is_package_available</code>, ...) are resolved on first use by the <code>__getattr__</code> that
 <code>feu.imports.lazy_exports</code> builds from a table <code>{name: module}</code>. This keeps <code>import feu</code> cheap and
 independent of the optional libraries, and <code>tests/integration/test_import_weight.py</code> checks that no

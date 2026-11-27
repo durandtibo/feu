@@ -714,6 +714,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#in-a-scheduled-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In a scheduled workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#what-is-read" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1361,6 +1372,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#in-a-scheduled-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In a scheduled workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#what-is-read" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1431,7 +1453,15 @@ standard error (<code>--verbose</code> logs the executed commands), and the exit
 <li><code>1</code>: a negative answer (no compatible version, or <code>check-valid-version</code> printed <code>False</code>);</li>
 <li><code>2</code>: a usage error (unknown option, missing option, invalid version request).</li>
 </ul>
-<p><code>feu --version</code> prints the version. <code>feu</code> is a console script; <code>python -m feu</code> is equivalent.</p>
+<p>An unexpected error, such as a network failure, a missing extra or a failed installation, is not
+caught: Python prints the traceback on the standard error and the status is <code>1</code>. So a script that
+must tell a negative answer from a failure has to check that the standard output holds the answer
+(<code>check-valid-version</code> prints <code>False</code>).</p>
+<p><code>feu --version</code> prints the version. <code>feu</code> is a console script; <code>python -m feu</code> is equivalent.
+<code>--verbose</code> is an option of <code>feu</code> itself, so it goes before the command:
+<code>feu --verbose install --pkg-name=numpy</code>.</p>
+<p>A wildcard version request (<code>2.*</code>) and <code>package-versions</code> download the releases from PyPI, so they
+need network access and the <code>requests</code> extra (<code>pip install 'feu[cli,requests]'</code>).</p>
 <h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
 <p>The reference below is generated from the code (<code>mkdocs-click</code>), so it cannot drift. <code>install</code>
 installs into the interpreter that runs <code>feu</code> for the current target, so it has no target option.
@@ -1439,10 +1469,7 @@ The platform (OS and CPU architecture) is always the current one: there is no <c
 option.</p>
 <!-- prettier-ignore -->
 <h2 id="feu">feu<a class="headerlink" href="#feu" title="Permanent link">&para;</a></h2>
-<p>Implement the main entrypoint, which groups the commands.</p>
-<p>Args:
-    verbose: If <code>True</code>, log the executed commands on the
-        standard error.</p>
+<p>Manage Python packages and their versions across Python environments.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu [OPTIONS] COMMAND [ARGS]...
 </code></pre></div>
@@ -1452,37 +1479,14 @@ option.</p>
   --help     Show this message and exit.
 </code></pre></div>
 <h3 id="benchmark-trend">benchmark-trend<a class="headerlink" href="#benchmark-trend" title="Permanent link">&para;</a></h3>
-<p>Print the trend of the pytest-benchmark results.</p>
-<p>The standard output holds only the Markdown report (a table of the
-trend of each benchmark and, if any, the regressions). The GitHub
-Actions <code>::warning::</code> annotations of the regressions and the
-messages go to the standard error, as UTF-8. If there is no result
-in the window, a message is printed on the standard error and the
-standard output is empty. The exit status is <code>0</code>, <code>1</code> if
-<code>fail_on_regression</code> is set and there is a regression, and <code>2</code>
-if an argument is invalid or a result file is invalid.</p>
-<p>Args:
-    storage: The pytest-benchmark storage directory.
-    kind: The kind of results: <code>'benchmark'</code> or <code>'import'</code>.
-    stat: The statistic of the times: <code>'min'</code>, <code>'mean'</code>,
-        <code>'median'</code> or <code>'max'</code>. The <code>import</code> kind ignores the
-        benchmarks that do not have it.
-    unit: The unit of the times in the report (<code>'s'</code>, <code>'ms'</code>,
-        <code>'us'</code> or <code>'ns'</code>), or <code>None</code> for the default unit of
-        the kind.
-    label: The label of a benchmark: <code>'name'</code> or <code>'fullname'</code>.
-    days: The size of the window in days.
-    baseline_runs: The maximum number of previous runs used to
-        detect the regressions.
-    threshold: The slowdown in percent above which a benchmark is
-        a regression.
-    prune: If <code>True</code>, delete the results older than the window
-        after the report is made.
-    fail_on_regression: If <code>True</code>, exit with the status <code>1</code> if
-        there is a regression.</p>
-<p>Example:
-    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>benchmark-trend<span class="w"> </span>.benchmarks<span class="w"> </span>--days<span class="w"> </span><span class="m">90</span><span class="w"> </span>--fail-on-regression
-</code></pre></div></p>
+<p>Print the trend of the pytest-benchmark results saved in STORAGE.</p>
+<p>The standard output holds only the Markdown report (a table of the trend
+of each benchmark and, if any, the regressions). The GitHub Actions
+<code>::warning::</code> annotations of the regressions and the messages go to the
+standard error, as UTF-8. If there is no result in the window, a message
+is printed on the standard error and the standard output is empty.</p>
+<p>The exit status is <code>0</code>, <code>1</code> with <code>--fail-on-regression</code> and a
+regression, and <code>2</code> if an argument or a result file is invalid.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu benchmark-trend [OPTIONS] STORAGE
 </code></pre></div>
@@ -1513,23 +1517,11 @@ if an argument is invalid or a result file is invalid.</p>
 </code></pre></div>
 <h3 id="check-valid-version">check-valid-version<a class="headerlink" href="#check-valid-version" title="Permanent link">&para;</a></h3>
 <p>Print if a package version is valid for a target.</p>
-<p><code>True</code> is printed and the exit status is <code>0</code> if the version
-request is valid. Otherwise <code>False</code> is printed and the exit
-status is <code>1</code>. An exact version of a package that has no data is
-valid, whereas a wildcard or an empty request of such a package is
-not (see <code>feu.compat.is_valid_version</code>). The exit status is <code>2</code>
-if the version request is malformed.</p>
-<p>Args:
-    pkg_name: The package name.
-    pkg_version: The package version request to check.
-    python_version: The python version. If not provided, the
-        current python version is used.
-    free_threaded: Whether the target is a free-threaded build.
-        If not provided, the current interpreter's free-threaded
-        status is used.</p>
-<p>Example:
-    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
-</code></pre></div></p>
+<p><code>True</code> is printed and the exit status is <code>0</code> if the version request is
+valid, otherwise <code>False</code> is printed and the exit status is <code>1</code>. An exact
+version of a package that has no data is valid, whereas a wildcard or an
+empty request of such a package is not.</p>
+<p>The exit status is <code>2</code> if an argument is invalid.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu check-valid-version [OPTIONS]
 </code></pre></div>
@@ -1548,22 +1540,12 @@ if the version request is malformed.</p>
 </code></pre></div>
 <h3 id="find-closest-version">find-closest-version<a class="headerlink" href="#find-closest-version" title="Permanent link">&para;</a></h3>
 <p>Print the closest valid version of a package for a target.</p>
-<p>The standard output holds only the version to install. For a
-wildcard or an empty version request that lies in an open-ended
-range, the request itself is printed. If no version is compatible
-with the target, the message is printed on the standard error, the
-standard output is empty and the exit status is <code>1</code>.</p>
-<p>Args:
-    pkg_name: The package name.
-    pkg_version: The package version request to check.
-    python_version: The python version. If not provided, the
-        current python version is used.
-    free_threaded: Whether the target is a free-threaded build.
-        If not provided, the current interpreter's free-threaded
-        status is used.</p>
-<p>Example:
-    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
-</code></pre></div></p>
+<p>The standard output holds only the version to install. For a wildcard or
+an empty version request that lies in an open-ended range, the request
+itself is printed.</p>
+<p>The exit status is <code>1</code> if no version is compatible with the target (the
+message is printed on the standard error) and <code>2</code> if an argument is
+invalid.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu find-closest-version [OPTIONS]
 </code></pre></div>
@@ -1582,27 +1564,11 @@ standard output is empty and the exit status is <code>1</code>.</p>
 </code></pre></div>
 <h3 id="install">install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h3>
 <p>Install a package and associated packages.</p>
-<p>The package is installed in the interpreter that runs <code>feu</code>, for
-the current target. The closest compatible version is installed if
-<code>pkg_version</code> is not compatible. The exit status is <code>1</code> if no
-version is compatible and <code>2</code> if an argument is invalid (e.g. a
-malformed wildcard).</p>
-<p>Args:
-    pkg_name: The package name e.g. <code>'pandas'</code>.
-    pkg_version: The version request of the package to install:
-        an exact version, a wildcard (e.g. <code>'2.*'</code>) or an empty
-        string for the latest version.
-    pkg_extras: Optional package extra dependencies, separated by
-        commas e.g. <code>'dev,doc'</code>. An empty string means no extra.
-    installer_name: The package installer name to use to install
-        the packages.
-    installer_args: Optional arguments to pass to the package
-        installer, as a single string e.g. <code>'--upgrade'</code>. It is
-        split once with <code>shlex.split</code>. The valid arguments
-        depend on the package installer.</p>
-<p>Example:
-    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>pip<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
-</code></pre></div></p>
+<p>The package is installed in the interpreter that runs <code>feu</code>, for the
+current target. The closest compatible version is installed if the
+requested version is not compatible.</p>
+<p>The exit status is <code>1</code> if no version is compatible and <code>2</code> if an
+argument is invalid (e.g. a malformed wildcard).</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu install [OPTIONS]
 </code></pre></div>
@@ -1621,18 +1587,10 @@ malformed wildcard).</p>
 <h3 id="package-versions">package-versions<a class="headerlink" href="#package-versions" title="Permanent link">&para;</a></h3>
 <p>Write the versions to test of the dependencies of a project.</p>
 <p>The dependencies are read from <code>[project.dependencies]</code> and
-<code>[project.optional-dependencies]</code>. The output is a JSON object
-that maps each package to the latest version of each minor (or
-major) version at or above its lower bound.</p>
-<p>Args:
-    pyproject: The <code>pyproject.toml</code> file.
-    output: The JSON file to write, or <code>None</code> for the standard
-        output.
-    major_only: The packages for which only the major versions
-        are kept.</p>
-<p>Example:
-    <div class="highlight"><pre><span></span><code><span class="gp">$ </span>feu<span class="w"> </span>package-versions<span class="w"> </span>--pyproject<span class="w"> </span>pyproject.toml<span class="w"> </span>--output<span class="w"> </span>dev/config/package_versions.json
-</code></pre></div></p>
+<code>[project.optional-dependencies]</code>. The output is a JSON object that maps
+each package to the latest version of each minor (or major) version at or
+above its lower bound, and to the first version at or above that bound.</p>
+<p>The command needs network access and the <code>requests</code> extra.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>feu package-versions [OPTIONS]
 </code></pre></div>
@@ -1662,23 +1620,48 @@ No<span class="w"> </span>version<span class="w"> </span>of<span class="w"> </sp
 $<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
 <span class="m">1</span>
 </code></pre></div>
+<p>Every option has a short form (<code>-n</code>, <code>-v</code>, and <code>-p</code> / <code>-f</code> for the target; see the reference
+above). A free-threaded target is chosen with a <code>t</code> suffix or with <code>--free-threaded</code>, and a
+contradiction between the two is a usage error:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>-n<span class="w"> </span>numpy<span class="w"> </span>-v<span class="w"> </span><span class="m">1</span>.26.4<span class="w"> </span>-p<span class="w"> </span><span class="m">3</span>.14t
+<span class="m">2</span>.3.2
+$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>-n<span class="w"> </span>numpy<span class="w"> </span>-v<span class="w"> </span><span class="m">1</span>.26.4<span class="w"> </span>-p<span class="w"> </span><span class="m">3</span>.14<span class="w"> </span>--free-threaded
+<span class="m">2</span>.3.2
+$<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>-n<span class="w"> </span>numpy<span class="w"> </span>-p<span class="w"> </span><span class="m">3</span>.14t<span class="w"> </span>--no-free-threaded
+Usage:<span class="w"> </span>feu<span class="w"> </span>find-closest-version<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+...
+$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
+<span class="m">2</span>
+</code></pre></div>
+<p>Without <code>--pkg-version</code>, the request is the latest version. For a package whose latest release is
+compatible, the request itself is printed, which is an empty line.</p>
 <p>Check if a version is valid. The exit status is <code>0</code> when the version is valid:</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10
 True
 $<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">1</span>.0.0<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.11
 False
 </code></pre></div>
+<p>An exact version of a package without data is valid, but a wildcard of such a package is not:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>-n<span class="w"> </span>my-package<span class="w"> </span>-v<span class="w"> </span><span class="m">1</span>.0
+True
+$<span class="w"> </span>feu<span class="w"> </span>check-valid-version<span class="w"> </span>-n<span class="w"> </span>my-package<span class="w"> </span>-v<span class="w"> </span><span class="s1">'1.*'</span>
+False
+</code></pre></div>
 <p>Install a package, with extras and installer arguments:</p>
 <div class="highlight"><pre><span></span><code>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
 feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>pandas<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s1">'2.*'</span><span class="w"> </span>--pkg-extras<span class="o">=</span>performance
 feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>uv<span class="w"> </span>--installer-args<span class="o">=</span><span class="s1">'--upgrade'</span><span class="w"> </span>--pkg-name<span class="o">=</span>numpy
+feu<span class="w"> </span>install<span class="w"> </span>-i<span class="w"> </span>uv<span class="w"> </span>-a<span class="w"> </span><span class="s1">'--upgrade --pre'</span><span class="w"> </span>-n<span class="w"> </span>pandas<span class="w"> </span>-v<span class="w"> </span><span class="s1">'2.*'</span><span class="w"> </span>-e<span class="w"> </span>performance,excel
+feu<span class="w"> </span>--verbose<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>numpy<span class="w"> </span>-v<span class="w"> </span><span class="m">2</span>.0.2<span class="w">  </span><span class="c1"># logs the pip command on the standard error</span>
+python<span class="w"> </span>-m<span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>numpy<span class="w">           </span><span class="c1"># the same CLI, for a given interpreter</span>
 </code></pre></div>
 <p>Write the versions to test of the dependencies of a project, from the bounds of its
 <code>pyproject.toml</code>. For each dependency of <code>[project.dependencies]</code> and
-<code>[project.optional-dependencies]</code>, the output holds the latest version of each minor version at or
-above the lower bound (of each major version for the packages given with <code>--major-only</code>, which
-defaults to <code>packaging</code>). The result is a JSON object, written to the standard output unless
-<code>--output</code> is given. It needs network access:</p>
+<code>[project.optional-dependencies]</code>, the output holds the latest stable version of each minor version
+at or above the lower bound (of each major version for the packages given with <code>--major-only</code>, which
+defaults to <code>packaging</code>), and the first stable version at or above the lower bound. The upper bound
+is not applied. The result is a JSON object, written to the standard output unless <code>--output</code> is
+given:</p>
 <div class="highlight"><pre><span></span><code>feu<span class="w"> </span>package-versions<span class="w"> </span>--pyproject<span class="w"> </span>pyproject.toml<span class="w"> </span>--output<span class="w"> </span>dev/config/package_versions.json
 feu<span class="w"> </span>package-versions<span class="w"> </span>--major-only<span class="w"> </span>packaging<span class="w"> </span>--major-only<span class="w"> </span>click
 </code></pre></div>
@@ -1687,6 +1670,15 @@ feu<span class="w"> </span>package-versions<span class="w"> </span>--major-only<
 step fail instead of installing <code>pkg==None</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>feu<span class="w"> </span>find-closest-version<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2<span class="w"> </span>--python-version<span class="o">=</span><span class="m">3</span>.10<span class="k">)</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span><span class="o">&amp;&amp;</span><span class="w"> </span>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="s2">"</span><span class="nv">$VERSION</span><span class="s2">"</span>
+</code></pre></div>
+<p>In a GitHub Actions matrix, give the Python version of the job to the command (<code>3.14t</code> selects the
+free-threaded build):</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install the closest valid NumPy</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">VERSION=$(feu find-closest-version -n numpy -v 2.0.2 -p "${PYTHON_VERSION}")</span>
+<span class="w">    </span><span class="no">feu install -n numpy -v "${VERSION}"</span>
+<span class="w">  </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">PYTHON_VERSION</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.python-version }}</span>
 </code></pre></div>
 <h2 id="benchmark-trend_1">benchmark-trend<a class="headerlink" href="#benchmark-trend_1" title="Permanent link">&para;</a></h2>
 <p>Show the trend of the <code>pytest-benchmark</code> results saved in a directory (for example by a scheduled
@@ -1761,6 +1753,18 @@ several machines.</p>
 or an invalid result file. If there is no result in the window, a message goes to the standard
 error, the standard output is empty and the status is <code>0</code>: the first run of a new workflow has no
 history.</p>
+<h3 id="in-a-scheduled-workflow">In a scheduled workflow<a class="headerlink" href="#in-a-scheduled-workflow" title="Permanent link">&para;</a></h3>
+<p>Keep the storage between the runs (here with the cache of GitHub Actions), add the results of the
+run, then write the report in the summary of the job. The annotations of the regressions go to the
+standard error, so they are still read by GitHub when the standard output is redirected:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/cache@v4</span>
+<span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.benchmarks</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">benchmarks-${{ github.run_id }}</span>
+<span class="w">    </span><span class="nt">restore-keys</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">benchmarks-</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pytest tests/benchmarks --benchmark-only --benchmark-save=run --benchmark-storage=.benchmarks</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">feu benchmark-trend .benchmarks --prune &gt;&gt; "$GITHUB_STEP_SUMMARY"</span>
+</code></pre></div>
 <h3 id="what-is-read">What is read<a class="headerlink" href="#what-is-read" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Only the files named <code>NNNN_*.json</code>, the names that <code>pytest-benchmark</code> writes

@@ -554,6 +554,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#first-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installing-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1122,6 +1133,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#first-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installing-from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1165,15 +1187,42 @@ It is possible to install all the optional dependencies by running the following
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'feu[all]'</span>
 </code></pre></div>
 <p>It is also possible to install specific optional dependencies:</p>
-<ul>
-<li><code>feu[cli]</code> - Install CLI support (click): the <code>feu</code> command</li>
-<li><code>feu[git]</code> - Install git support (gitpython): <code>feu.local_git</code></li>
-<li><code>feu[requests]</code> - Install HTTP request support (requests, urllib3): the calls to PyPI and
-  GitHub, which a wildcard version request (<code>2.*</code>) needs</li>
-<li><code>feu[rich]</code> - Install rich console/formatting support (rich): <code>show_compat_targets</code></li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Extra</th>
+<th>Installs</th>
+<th>Needed for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feu[cli]</code></td>
+<td><code>click</code></td>
+<td>The <code>feu</code> command</td>
+</tr>
+<tr>
+<td><code>feu[git]</code></td>
+<td><code>gitpython</code></td>
+<td><code>feu.local_git</code></td>
+</tr>
+<tr>
+<td><code>feu[requests]</code></td>
+<td><code>requests</code>, <code>urllib3</code></td>
+<td>The calls to PyPI and GitHub, which a wildcard request (<code>2.*</code>) needs</td>
+</tr>
+<tr>
+<td><code>feu[rich]</code></td>
+<td><code>rich</code></td>
+<td><code>show_compat_targets</code></td>
+</tr>
+</tbody>
+</table>
 <p><code>feu</code> requires Python 3.11 or newer. Without an extra, the feature that needs it raises a
-<code>MissingPackageError</code> that gives the <code>pip install</code> command.</p>
+<code>MissingPackageError</code> that gives the <code>pip install</code> command. The <code>pytest</code> marks of <code>feu.testing</code>
+need <code>pytest</code>, which is not a dependency of <code>feu</code>.</p>
+<p>Installing with the <code>uv</code> installer of <code>feu</code> also needs the <a href="https://docs.astral.sh/uv/"><code>uv</code></a> tool
+on the <code>PATH</code>.</p>
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">'feu[cli,git]'</span>
 </code></pre></div>
@@ -1182,6 +1231,24 @@ It is possible to install all the optional dependencies by running the following
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_package_available</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_package_available</span><span class="p">(</span><span class="s2">"packaging"</span><span class="p">)</span>
 <span class="go">True</span>
+</code></pre></div>
+<p>With the <code>cli</code> extra, the command prints its version and its commands:</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>--version
+feu<span class="w"> </span>--help
+</code></pre></div>
+<h2 id="first-steps">First steps<a class="headerlink" href="#first-steps" title="Permanent link">&para;</a></h2>
+<p>Find the version to install on an environment, here Python 3.9 on Linux:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_closest_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.3.0"</span><span class="p">,</span> <span class="n">Target</span><span class="p">(</span><span class="s2">"3.9"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">))</span>
+<span class="go">'2.0.2'</span>
+</code></pre></div>
+<p>Install the closest valid version in the current environment (this runs <code>pip</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span><span class="p">,</span> <span class="n">PackageSpec</span><span class="p">,</span> <span class="n">install_package_closest_version</span>
+
+<span class="n">install_package_closest_version</span><span class="p">(</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="s2">"pip"</span><span class="p">),</span> <span class="n">PackageSpec</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="s2">"2.0.2"</span><span class="p">))</span>
+</code></pre></div>
+<p>The same from the command line:</p>
+<div class="highlight"><pre><span></span><code>feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class="o">=</span>numpy<span class="w"> </span>--pkg-version<span class="o">=</span><span class="m">2</span>.0.2
 </code></pre></div>
 <p>The <a href="../usage/">Usage Guide</a> shows the main features, and the <a href="../design/">Design</a> page explains the
 properties of the library and the trade-offs of its design.</p>
@@ -1221,9 +1288,12 @@ uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> <
 <span class="c1"># Install the package with all dependencies</span>
 uv<span class="w"> </span>sync<span class="w"> </span>--all-extras<span class="w"> </span>--group<span class="w"> </span>dev<span class="w"> </span>--group<span class="w"> </span>docs
 </code></pre></div>
-<p>After installation, you can verify everything is working by running the tests:</p>
+<p>After installation, activate the virtual environment (<code>source .venv/bin/activate</code>) and verify that
+everything is working by running the tests:</p>
 <div class="highlight"><pre><span></span><code>inv<span class="w"> </span>test.unit<span class="w"> </span>--cov
 </code></pre></div>
+<p>See <a href="https://github.com/durandtibo/feu/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for the other
+development tasks.</p>
 
 
 
