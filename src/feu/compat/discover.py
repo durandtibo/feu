@@ -88,7 +88,7 @@ IGNORED_VERSIONS: dict[str, frozenset[str]] = {"duckdb": frozenset({"0.0.0"})}
 class Discovery(NamedTuple):
     r"""Represent the result of ``discover_compat_targets``.
 
-    Args:
+    Attributes:
         versions: The releases that were considered (stable, valid and
             not ignored), in PEP 440 order.
         targets: The ranges of compatible versions of each target. A

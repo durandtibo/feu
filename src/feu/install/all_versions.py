@@ -33,7 +33,7 @@ class InstallResult(NamedTuple):
     r"""Represent the outcome of installing multiple versions of a
     package.
 
-    Args:
+    Attributes:
         installed: The versions that were installed successfully.
         failed: The versions for which the installation failed.
     """
