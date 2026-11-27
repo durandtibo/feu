@@ -1509,7 +1509,7 @@ function.</p>
 <tr>
 <td>9</td>
 <td><strong>Fresh and immutable</strong></td>
-<td>Availability checks are cached and <code>clear_availability_caches()</code> resets them (<code>install_package</code> calls it after a success). The PyPI and GitHub values that are cached are immutable, so no caller can corrupt a cache.</td>
+<td>The checks of packages, modules and optional libraries are cached and <code>clear_availability_caches()</code> resets them (<code>install_package</code> calls it after a success). The PyPI and GitHub values that are cached are immutable, so no caller can corrupt a cache.</td>
 </tr>
 <tr>
 <td>10</td>
@@ -1735,8 +1735,10 @@ request stops a script instead of installing <code>pkg==None</code>. <code>check
 <code>False</code> and uses the same status.</p>
 <h3 id="availability-checks-keep-the-is_-names">Availability checks keep the <code>is_*</code> names<a class="headerlink" href="#availability-checks-keep-the-is_-names" title="Permanent link">&para;</a></h3>
 <p><code>is_package_available</code> and <code>is_module_available</code> are the public names, as in the <code>feu.testing</code>
-marks. The checks are cached with <code>availability_cache</code> (the design of <code>coola.utils.imports</code>) so that
-one call, <code>clear_availability_caches()</code>, resets all of them.</p>
+marks. The checks of packages, modules and optional libraries are cached with <code>availability_cache</code>
+(the design of <code>coola.utils.imports</code>), so that one call, <code>clear_availability_caches()</code>, resets all
+of them. The checks of the installer tools (<code>is_pip_available</code>, <code>is_uv_available</code>) are cached
+separately and are not reset by it.</p>
 <h3 id="python-versions-of-the-data">Python versions of the data<a class="headerlink" href="#python-versions-of-the-data" title="Permanent link">&para;</a></h3>
 <p>The shipped data covers the Python versions of one constant, <code>PYTHON_VERSIONS</code>, in
 <code>feu/compat/target.py</code>: from the oldest version that CI matrices still ask for to the newest release

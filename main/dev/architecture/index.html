@@ -651,6 +651,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#public-names-and-lazy-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public names and lazy imports
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#feubenchmark" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1177,6 +1188,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#public-names-and-lazy-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public names and lazy imports
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#feubenchmark" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1331,8 +1353,46 @@ imports nothing from <code>feu</code>. <code>tests/unit/test_layers.py</code> ch
 </tr>
 </tbody>
 </table>
-<p><code>feu.benchmark</code>, <code>feu.github</code> and <code>feu.local_git</code> are outside the chain and only use the lower layers
-(<code>feu.benchmark</code> uses only the standard library).</p>
+<p><code>feu.benchmark</code>, <code>feu.github</code>, <code>feu.local_git</code> and <code>feu.testing</code> are outside the chain and only use
+the lower layers (<code>feu.benchmark</code> uses only the standard library).</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>What it does</th>
+<th>Extra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feu.github</code></td>
+<td>The metadata of a repository and of the repositories of an owner, from the GitHub API.</td>
+<td><code>requests</code></td>
+</tr>
+<tr>
+<td><code>feu.local_git</code></td>
+<td>The tags of the local git repository, and the last (version) tag.</td>
+<td><code>git</code></td>
+</tr>
+<tr>
+<td><code>feu.testing</code></td>
+<td>The <code>pytest</code> marks <code>&lt;name&gt;_available</code> and <code>&lt;name&gt;_not_available</code> for the optional libraries.</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>feu.benchmark</code></td>
+<td>The trend of the <code>pytest-benchmark</code> results, see below.</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-names-and-lazy-imports">Public names and lazy imports<a class="headerlink" href="#public-names-and-lazy-imports" title="Permanent link">&para;</a></h2>
+<p><code>import feu</code> imports no submodule. The names of <code>feu.__all__</code> (<code>find_closest_version</code>,
+<code>install_package</code>, <code>is_package_available</code>, ...) are resolved on first use by the <code>__getattr__</code> that
+<code>feu.imports.lazy_exports</code> builds from a table <code>{name: module}</code>. This keeps <code>import feu</code> cheap and
+independent of the optional libraries, and <code>tests/integration/test_import_weight.py</code> checks that no optional library is imported. A
+module that needs an optional library calls <code>check_&lt;package&gt;()</code> (for example <code>check_requests()</code>)
+inside the function that uses it, never at import time.</p>
 <h2 id="feubenchmark"><code>feu.benchmark</code><a class="headerlink" href="#feubenchmark" title="Permanent link">&para;</a></h2>
 <p><code>feu.benchmark</code> has one module per role, so that the I/O is visible in the file list: one loader that
 validates, one pure analysis, one pure renderer, and a thin command (<code>feu benchmark-trend</code>).</p>

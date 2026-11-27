@@ -642,6 +642,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#installing-every-compatible-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing Every Compatible Version
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Utilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Trend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#working-with-git-repositories" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1305,6 +1338,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#installing-every-compatible-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing Every Compatible Version
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Utilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Trend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#working-with-git-repositories" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1570,6 +1636,56 @@ is the data that <code>dev/generate_compat_data.py</code> writes to <code>feu/co
 <span class="c1"># Pretty-print the matrix as a table (requires the `rich` extra)</span>
 <span class="n">show_compat_targets</span><span class="p">(</span><span class="n">discovery</span><span class="p">,</span> <span class="n">pkg_name</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="installing-every-compatible-version">Installing Every Compatible Version<a class="headerlink" href="#installing-every-compatible-version" title="Permanent link">&para;</a></h2>
+<p><code>get_installable_versions</code> lists the stable releases of a package on PyPI that are valid for a
+target, and <code>install_all_versions</code> installs them one after the other, for example to test a library
+against all the versions of a dependency. A failure to install one version is logged and does not
+stop the others. The result lists the versions that were installed and the ones that failed.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">feu.install</span><span class="w"> </span><span class="kn">import</span> <span class="n">InstallerSpec</span><span class="p">,</span> <span class="n">get_installable_versions</span><span class="p">,</span> <span class="n">install_all_versions</span>
+
+<span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">python_version</span><span class="o">=</span><span class="s2">"3.12"</span><span class="p">,</span> <span class="n">os</span><span class="o">=</span><span class="s2">"linux"</span><span class="p">,</span> <span class="n">arch</span><span class="o">=</span><span class="s2">"x86_64"</span><span class="p">)</span>
+<span class="n">versions</span> <span class="o">=</span> <span class="n">get_installable_versions</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="s2">"2024-01-01"</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">install_all_versions</span><span class="p">(</span><span class="n">InstallerSpec</span><span class="p">(</span><span class="s2">"pip"</span><span class="p">),</span> <span class="s2">"pandas[performance]"</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">installed</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">failed</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="version-utilities">Version Utilities<a class="headerlink" href="#version-utilities" title="Permanent link">&para;</a></h2>
+<p><code>feu.version</code> has the helpers that sort, filter and select versions. They use PEP 440 order, never
+the order of the strings:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">filter_stable_versions</span><span class="p">,</span> <span class="n">latest_minor_versions</span><span class="p">,</span> <span class="n">sort_versions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">versions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"1.10.0"</span><span class="p">,</span> <span class="s2">"1.9.0"</span><span class="p">,</span> <span class="s2">"1.9.1"</span><span class="p">,</span> <span class="s2">"2.0.0rc1"</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sort_versions</span><span class="p">(</span><span class="n">filter_stable_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">))</span>
+<span class="go">['1.9.0', '1.9.1', '1.10.0']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latest_minor_versions</span><span class="p">(</span><span class="n">filter_stable_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">))</span>
+<span class="go">['1.9.1', '1.10.0']</span>
+</code></pre></div>
+<p>The functions that read PyPI (<code>fetch_pypi_versions</code>, <code>fetch_versions</code>, <code>fetch_latest_version</code>, ...)
+use the Simple API, need the <code>requests</code> extra and cache the metadata of a project for the life of the
+process. <code>read_pyproject_bounds</code> reads the lower and upper bounds of the dependencies of a
+<code>pyproject.toml</code>, and <code>fetch_package_versions</code> combines both to give the versions to test of a
+project (the <code>package-versions</code> command):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_latest_stable_version</span><span class="p">,</span> <span class="n">fetch_package_versions</span><span class="p">,</span> <span class="n">read_pyproject_bounds</span>
+
+<span class="n">bounds</span> <span class="o">=</span> <span class="n">read_pyproject_bounds</span><span class="p">(</span><span class="s2">"pyproject.toml"</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>  <span class="c1"># one entry per section</span>
+<span class="n">latest</span> <span class="o">=</span> <span class="n">fetch_latest_stable_version</span><span class="p">(</span><span class="s2">"numpy"</span><span class="p">)</span>
+<span class="n">to_test</span> <span class="o">=</span> <span class="n">fetch_package_versions</span><span class="p">(</span><span class="s2">"pyproject.toml"</span><span class="p">)</span>  <span class="c1"># {"numpy": ["1.26.4", "2.0.2", ...], ...}</span>
+</code></pre></div>
+<h2 id="benchmark-trend">Benchmark Trend<a class="headerlink" href="#benchmark-trend" title="Permanent link">&para;</a></h2>
+<p><code>feu.benchmark</code> follows the trend of the <code>pytest-benchmark</code> results (the <code>feu benchmark-trend</code>
+command, see the <a href="../cli/#benchmark-trend">CLI reference</a>). A <code>Run</code> is the times of the benchmarks of
+one run on one machine. <code>find_regressions</code> compares the latest run of each machine with the median
+of its previous runs, and <code>make_report</code> renders the Markdown report and the GitHub Actions
+annotations. Both are pure functions of the runs; <code>load_runs</code> reads them from a storage directory.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.benchmark</span><span class="w"> </span><span class="kn">import</span> <span class="n">Run</span><span class="p">,</span> <span class="n">make_report</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">runs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">}),</span> <span class="n">Run</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="p">{</span><span class="s2">"sort"</span><span class="p">:</span> <span class="mf">0.003</span><span class="p">})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">make_report</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">item</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">change</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">regressions</span><span class="p">]</span>
+<span class="go">[('sort', 200.0)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">report</span><span class="o">.</span><span class="n">annotations</span>
+<span class="go">('::warning title=Regression::sort is 200.0%25 slower than the median of the previous runs (3000 µs instead of 1000 µs)',)</span>
+</code></pre></div>
 <h2 id="working-with-git-repositories">Working with Git Repositories<a class="headerlink" href="#working-with-git-repositories" title="Permanent link">&para;</a></h2>
 <p>If you have installed the <code>git</code> extra (<code>pip install 'feu[git]'</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">feu.local_git</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_last_tag_name</span><span class="p">,</span> <span class="n">get_last_version_tag_name</span><span class="p">,</span> <span class="n">get_tags</span>
@@ -1605,7 +1721,7 @@ is the data that <code>dev/generate_compat_data.py</code> writes to <code>feu/co
 <p>Each mark has an <code>..._available</code> variant (skips the test if the dependency is <em>not</em> available) and
 an <code>..._not_available</code> variant (skips the test if the dependency <em>is</em> available). Marks are
 provided for <code>click</code>, <code>git</code>, <code>jax</code>, <code>matplotlib</code>, <code>numpy</code>, <code>pandas</code>, <code>pip</code>, <code>polars</code>, <code>pyarrow</code>,
-<code>requests</code>, <code>rich</code>, <code>scipy</code>, <code>sklearn</code>, <code>torch</code>, <code>uv</code>, and <code>xarray</code>.</p>
+<code>pytest_benchmark</code>, <code>requests</code>, <code>rich</code>, <code>scipy</code>, <code>sklearn</code>, <code>torch</code>, <code>uv</code>, and <code>xarray</code>.</p>
 <h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
 <h3 id="install-the-compatible-version-of-a-dependency-in-a-ci-matrix">Install the compatible version of a dependency in a CI matrix<a class="headerlink" href="#install-the-compatible-version-of-a-dependency-in-a-ci-matrix" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">feu.compat</span><span class="w"> </span><span class="kn">import</span> <span class="n">Target</span><span class="p">,</span> <span class="n">find_closest_version</span>

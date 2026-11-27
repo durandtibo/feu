@@ -746,17 +746,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#changes-from-the-previous-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Changes from the previous version
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1404,17 +1393,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#changes-from-the-previous-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Changes from the previous version
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1696,8 +1674,13 @@ feu<span class="w"> </span>install<span class="w"> </span>--pkg-name<span class=
 feu<span class="w"> </span>install<span class="w"> </span>--installer-name<span class="o">=</span>uv<span class="w"> </span>--installer-args<span class="o">=</span><span class="s1">'--upgrade'</span><span class="w"> </span>--pkg-name<span class="o">=</span>numpy
 </code></pre></div>
 <p>Write the versions to test of the dependencies of a project, from the bounds of its
-<code>pyproject.toml</code>:</p>
+<code>pyproject.toml</code>. For each dependency of <code>[project.dependencies]</code> and
+<code>[project.optional-dependencies]</code>, the output holds the latest version of each minor version at or
+above the lower bound (of each major version for the packages given with <code>--major-only</code>, which
+defaults to <code>packaging</code>). The result is a JSON object, written to the standard output unless
+<code>--output</code> is given. It needs network access:</p>
 <div class="highlight"><pre><span></span><code>feu<span class="w"> </span>package-versions<span class="w"> </span>--pyproject<span class="w"> </span>pyproject.toml<span class="w"> </span>--output<span class="w"> </span>dev/config/package_versions.json
+feu<span class="w"> </span>package-versions<span class="w"> </span>--major-only<span class="w"> </span>packaging<span class="w"> </span>--major-only<span class="w"> </span>click
 </code></pre></div>
 <h2 id="use-in-a-shell-script-or-a-workflow">Use in a shell script or a workflow<a class="headerlink" href="#use-in-a-shell-script-or-a-workflow" title="Permanent link">&para;</a></h2>
 <p>The standard output holds only the answer, so it can be captured. An unsupported request makes the
@@ -1815,19 +1798,8 @@ in seconds, and the label is the parameter of the test. A producer is a test suc
 <h3 id="python-api">Python API<a class="headerlink" href="#python-api" title="Permanent link">&para;</a></h3>
 <p>The command is a thin layer over <code>feu.benchmark</code>: <code>load_runs</code> reads and validates the files,
 <code>find_regressions</code> and <code>make_report</code> are pure functions of the runs, and <code>prune_runs</code> deletes the
-old files.</p>
-<h3 id="changes-from-the-previous-version">Changes from the previous version<a class="headerlink" href="#changes-from-the-previous-version" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>--window</code> is renamed <code>--baseline-runs</code>, and <code>--scale</code> is removed (use <code>--unit</code> with <code>s</code>, <code>ms</code>,
-  <code>us</code> or <code>ns</code>). A workflow that passes one of them fails with a usage error that names the option.</li>
-<li>The label of a parametrized benchmark is <code>sort[10]</code>, not <code>sort_benchmark[10]</code>.</li>
-<li>A malformed result file, a duplicate label, an unknown <code>--stat</code>, <code>--days 0</code>, and a time that is not
-  greater than zero fail instead of giving an empty or a wrong report.</li>
-<li>Foreign JSON files are ignored, and the runs of different machines are no longer merged.</li>
-<li>The times have three significant digits, and the title shows the statistic and <code>1 run</code>.</li>
-<li>The Python API changed: <code>Run</code> and <code>Regression</code> are dataclasses, <code>build_trend_report</code> is replaced
-  by <code>load_runs</code> and <code>make_report</code>, and <code>TrendKind</code>, <code>with_unit</code> and <code>UnknownStatError</code> are removed.</li>
-</ul>
+old files. See <a href="../usage/#benchmark-trend">Benchmark trend</a> for an example and the
+<a href="../refs/benchmark/">API reference</a> for the signatures.</p>
 
 
 
