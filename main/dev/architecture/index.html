@@ -1390,9 +1390,9 @@ the lower layers (<code>feu.benchmark</code> uses only the standard library).</p
 <p><code>import feu</code> imports no submodule. The names of <code>feu.__all__</code> (<code>find_closest_version</code>,
 <code>install_package</code>, <code>is_package_available</code>, ...) are resolved on first use by the <code>__getattr__</code> that
 <code>feu.imports.lazy_exports</code> builds from a table <code>{name: module}</code>. This keeps <code>import feu</code> cheap and
-independent of the optional libraries, and <code>tests/integration/test_import_weight.py</code> checks that no optional library is imported. A
-module that needs an optional library calls <code>check_&lt;package&gt;()</code> (for example <code>check_requests()</code>)
-inside the function that uses it, never at import time.</p>
+independent of the optional libraries, and <code>tests/integration/test_import_weight.py</code> checks that no
+optional library is imported. A module that needs an optional library calls <code>check_&lt;package&gt;()</code> (for
+example <code>check_requests()</code>) inside the function that uses it, never at import time.</p>
 <h2 id="feubenchmark"><code>feu.benchmark</code><a class="headerlink" href="#feubenchmark" title="Permanent link">&para;</a></h2>
 <p><code>feu.benchmark</code> has one module per role, so that the I/O is visible in the file list: one loader that
 validates, one pure analysis, one pure renderer, and a thin command (<code>feu benchmark-trend</code>).</p>
