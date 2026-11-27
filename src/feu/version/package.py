@@ -52,6 +52,10 @@ def fetch_versions(
         A tuple containing the unique, valid, stable versions in
             ascending order.
 
+    Raises:
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
+
     Example:
         ```pycon
         >>> from feu.version import fetch_versions
@@ -102,6 +106,8 @@ def fetch_latest_versions(
 
     Raises:
         ValueError: If ``group`` is not ``"major"`` or ``"minor"``.
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -137,6 +143,8 @@ def fetch_latest_version(package: str) -> str:
 
     Raises:
         ValueError: If the package has no valid version.
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -161,6 +169,8 @@ def fetch_latest_stable_version(package: str) -> str:
 
     Raises:
         ValueError: If the package has no stable valid version.
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -228,6 +238,10 @@ def fetch_latest_major_versions_map(
         A dictionary mapping each package name to the list of latest major
             version strings returned by ``fetch_latest_versions``.
 
+    Raises:
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
+
     Example:
         ```pycon
         >>> from feu.version import PackageBounds, fetch_latest_major_versions_map
@@ -263,6 +277,10 @@ def fetch_latest_minor_versions_map(
     Returns:
         A dictionary mapping each package name to the list of latest minor
             version strings returned by ``fetch_latest_versions``.
+
+    Raises:
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -308,6 +326,10 @@ def fetch_package_versions(
     Raises:
         FileNotFoundError: If the file does not exist.
         tomllib.TOMLDecodeError: If the file is not valid TOML.
+        packaging.requirements.InvalidRequirement: If a dependency is
+            not a valid requirement.
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon

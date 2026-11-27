@@ -179,6 +179,13 @@ class Installer:
 
         Raises:
             RuntimeError: If the tool is not available.
+
+        Example:
+            ```pycon
+            >>> from feu.install import Installer
+            >>> Installer().check_available()
+
+            ```
         """
 
     def install(self, package: PackageSpec, *, resolvers: Registry[Resolver] | None = None) -> None:

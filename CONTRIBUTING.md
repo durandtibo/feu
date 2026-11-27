@@ -50,6 +50,9 @@ inv test.integration
 
 # Run functional tests
 inv test.functional
+
+# Run the examples of the docstrings and of the Markdown files
+inv test.doctest
 ```
 
 ### Code Quality
@@ -58,11 +61,14 @@ Before submitting a pull request, ensure your code meets our quality standards:
 
 #### Formatting
 
-We use `black` for code formatting:
+We use `ruff` for code formatting:
 
 ```bash
 # Check formatting
 inv format.check-python
+
+# Format the code
+inv format.fix-python
 ```
 
 #### Linting
@@ -72,6 +78,17 @@ We use `ruff` for linting:
 ```bash
 # Check linting
 inv lint.check-python
+
+# Fix the issues that can be fixed automatically
+inv lint.fix-python
+```
+
+#### Type Checking
+
+We use `ty` and `pyright` for type checking:
+
+```bash
+inv types.check --complete
 ```
 
 #### Pre-commit Hooks
@@ -99,11 +116,13 @@ The documentation is built using MkDocs with `mike` for versioning:
 
 ```bash
 # Install documentation dependencies
-uv sync --group docs
+uv sync --all-extras --group dev --group docs
 
 # Serve documentation locally (for development)
-cd docs
-mike serve
+inv doc.serve
+
+# Build the documentation and fail on any warning
+inv doc.build
 
 # Deploy documentation with mike (for maintainers)
 # Development version:
@@ -116,17 +135,21 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 
 #### Writing Documentation
 
-- Add docstrings to all public functions, classes, and modules
-- Follow the Google docstring format
-- Include example usage in docstrings when appropriate
-- Update relevant `.md` files in `docs/docs/` for user-facing documentation
+- Add docstrings to all modules, classes and functions, including the private ones
+- Follow the Google docstring format (`Args:`, `Returns:`, `Raises:`)
+- Add a `pycon` example to the public functions and classes: it runs as a doctest. Mark the lines
+  that need the network or modify the environment with `# doctest: +SKIP`
+- The help of a command of the CLI is its `help` argument, not its docstring
+- Update relevant `.md` files in `docs/docs/` for user-facing documentation. The examples of
+  `README.md` and of the main pages also run as tests (`tests/unit/test_docs.py`)
 
 ## Pull Request Process
 
-1. **Create a new branch** for your feature or bugfix:
+1. **Create a new branch** named `<type>/<short-description>`, where the type is one of `feat`,
+   `bugfix`, `hotfix`, `docs`, `refactor`, `perf`, `test`, `chore` or `ci`:
 
    ```bash
-   git checkout -b feature/my-new-feature
+   git checkout -b feat/my-new-feature
    ```
 
 2. **Make your changes** following the code style guidelines
@@ -141,16 +164,17 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 
 5. **Update documentation** if you've changed APIs or added features
 
-6. **Commit your changes** with clear, descriptive commit messages:
+6. **Commit your changes** with a short imperative sentence that starts with a verb such as `Add`,
+   `Fix`, `Update`, `Remove` or `Improve`:
 
    ```bash
-   git commit -m "Add feature: description of what you added"
+   git commit -m "Add the cache option"
    ```
 
 7. **Push to your fork**:
 
    ```bash
-   git push origin feature/my-new-feature
+   git push origin feat/my-new-feature
    ```
 
 8. **Open a Pull Request** on GitHub with:
@@ -230,7 +254,8 @@ Use absolute imports and separate groups with blank lines.
 
 ### Writing Tests
 
-- Place tests in the appropriate directory (`unit/`, `integration/`, or `functional/`)
+- Place tests in the appropriate directory (`unit/`, `integration/`, or `functional/`). The unit
+  tests mirror the source tree and do not use the network or run installers
 - Name test files with `test_` prefix
 - Name test functions with `test_` prefix
 - Use descriptive test names that explain what is being tested
@@ -239,7 +264,7 @@ Use absolute imports and separate groups with blank lines.
 
 ### Test Coverage
 
-- Aim for high test coverage (current target: >80%)
+- Cover all the code that you add or change
 - Focus on testing behavior, not implementation details
 - Include integration tests for complex interactions
 
@@ -249,11 +274,13 @@ Use absolute imports and separate groups with blank lines.
 feu/
 ├── src/feu/              # Source code
 │   ├── __init__.py       # Main package exports
-│   ├── __main__.py       # CLI entry point
+│   ├── __main__.py       # Entry point of `python -m feu`
+│   ├── benchmark/        # Trend of the pytest-benchmark results
+│   ├── cli.py            # Command line interface
 │   ├── compat/           # Package/Python-version compatibility registry and discovery
 │   ├── github/           # GitHub API utilities
 │   ├── imports/          # Optional-dependency availability checks
-│   ├── install/          # Installation utilities (incl. install/pip)
+│   ├── install/          # Installers (pip, uv) and dependency resolvers
 │   ├── local_git.py      # Git tag utilities
 │   ├── testing.py        # Pytest skip marks for optional dependencies
 │   ├── utils/            # Utility functions
@@ -261,7 +288,9 @@ feu/
 ├── tests/               # Test suite
 │   ├── unit/           # Unit tests
 │   ├── integration/    # Integration tests
-│   └── functional/     # Functional tests
+│   ├── functional/     # Functional tests
+│   └── benchmarks/     # Performance benchmarks
+├── dev/                  # Maintenance scripts (compatibility data, package versions)
 ├── docs/               # Documentation
 │   ├── docs/          # Markdown files
 │   └── mkdocs.yml     # MkDocs configuration
@@ -273,9 +302,10 @@ feu/
 Releases are managed by the project maintainers. The process includes:
 
 1. Update version in `pyproject.toml`
-2. Create a git tag
-3. Build and upload to PyPI
-4. Create a GitHub release with release notes
+2. Create and push a git tag `vX.Y.Z`
+3. The `release-pypi` workflow builds, signs and publishes the package to PyPI, and the
+   `release-docs` workflow deploys the documentation
+4. Write the release notes of the GitHub release
 
 ## Getting Help
 

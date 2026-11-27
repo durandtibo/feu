@@ -81,7 +81,9 @@ def clear_availability_caches() -> None:
     example in a test that changes ``sys.modules`` or ``sys.path``.
 
     The functions to clear are the ones decorated with
-    ``availability_cache``, so there is no list to maintain.
+    ``availability_cache``, so there is no list to maintain. The checks
+    of the installer tools (``feu.install.is_pip_available`` and
+    ``is_uv_available``) are cached separately and are not cleared.
 
     Example:
         ```pycon
@@ -123,7 +125,10 @@ def package_available(name: str) -> bool:
 
     The package is only looked up (it is not imported), so a package that
     is installed but broken is reported as available. Use
-    ``module_available`` to check that a module can be imported.
+    ``module_available`` to check that a module can be imported. For a
+    dotted name (e.g. ``"os.path"``), the parent packages are imported to
+    look the name up. The result is cached; use
+    ``clear_availability_caches`` to reset it.
 
     Args:
         name: The package name to check.

@@ -16,7 +16,17 @@ standard error (`--verbose` logs the executed commands), and the exit status car
 - `1`: a negative answer (no compatible version, or `check-valid-version` printed `False`);
 - `2`: a usage error (unknown option, missing option, invalid version request).
 
+An unexpected error, such as a network failure, a missing extra or a failed installation, is not
+caught: Python prints the traceback on the standard error and the status is `1`. So a script that
+must tell a negative answer from a failure has to check that the standard output holds the answer
+(`check-valid-version` prints `False`).
+
 `feu --version` prints the version. `feu` is a console script; `python -m feu` is equivalent.
+`--verbose` is an option of `feu` itself, so it goes before the command:
+`feu --verbose install --pkg-name=numpy`.
+
+A wildcard version request (`2.*`) and `package-versions` download the releases from PyPI, so they
+need network access and the `requests` extra (`pip install 'feu[cli,requests]'`).
 
 ## Commands
 
@@ -75,10 +85,11 @@ feu install --installer-name=uv --installer-args='--upgrade' --pkg-name=numpy
 
 Write the versions to test of the dependencies of a project, from the bounds of its
 `pyproject.toml`. For each dependency of `[project.dependencies]` and
-`[project.optional-dependencies]`, the output holds the latest version of each minor version at or
-above the lower bound (of each major version for the packages given with `--major-only`, which
-defaults to `packaging`). The result is a JSON object, written to the standard output unless
-`--output` is given. It needs network access:
+`[project.optional-dependencies]`, the output holds the latest stable version of each minor version
+at or above the lower bound (of each major version for the packages given with `--major-only`, which
+defaults to `packaging`), and the first stable version at or above the lower bound. The upper bound
+is not applied. The result is a JSON object, written to the standard output unless `--output` is
+given:
 
 ```shell
 feu package-versions --pyproject pyproject.toml --output dev/config/package_versions.json

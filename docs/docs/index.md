@@ -49,6 +49,7 @@ packages and their versions across different Python environments. It provides ut
   and read dependency bounds from `pyproject.toml`
 - **Git and GitHub utilities**: Get the tags of a local git repository, and fetch and sort
   repository metadata from the GitHub API
+- **Benchmark trend**: Follow the results of `pytest-benchmark` and detect the regressions
 
 The library is particularly useful for projects that need to support multiple Python versions,
 free-threaded builds, OSes, and CPU architectures, and want to ensure they install compatible
@@ -75,10 +76,12 @@ True
 >>> target = Target(python_version="3.9", os="linux", arch="x86_64")
 >>> find_closest_version("numpy", "2.3.0", target)
 '2.0.2'
->>> find_closest_version("numpy", "1.*", target)
+>>> find_closest_version("numpy", "1.*", target)  # doctest: +SKIP
 '1.26.4'
 
 ```
+
+A wildcard needs network access (and the `requests` extra), so the example is skipped by the tests.
 
 ## Documentation
 

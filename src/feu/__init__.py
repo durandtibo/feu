@@ -25,10 +25,18 @@ The main functions and classes are available from this package:
   ``InstallerSpec`` and ``PackageSpec`` describe the installer and the
   package.
 
-The public names are imported lazily (PEP 562): ``import feu`` does not
-import any submodule, so it does not import any optional library. ``from
+The public names are imported lazily (PEP 562): ``import feu`` imports
+only ``feu.imports``, so it does not import any optional library. ``from
 feu import compare_version`` imports ``feu.version`` the first time it
 is used.
+
+The subpackages are ``feu.compat`` (compatibility registry and discovery
+from PyPI), ``feu.install`` (installers and dependency resolvers),
+``feu.version`` (version utilities, PyPI and ``pyproject.toml``),
+``feu.imports`` (optional dependencies), ``feu.utils`` (shared helpers),
+``feu.benchmark`` (trend of ``pytest-benchmark`` results),
+``feu.github`` (GitHub API), ``feu.local_git`` (tags of a git
+repository) and ``feu.testing`` (``pytest`` marks).
 
 Example:
     ```pycon

@@ -53,6 +53,25 @@ def test_cli_help(runner: CliRunner) -> None:
 
 
 @click_available
+@pytest.mark.parametrize(
+    "command",
+    [
+        [],
+        ["install"],
+        ["find-closest-version"],
+        ["check-valid-version"],
+        ["package-versions"],
+        ["benchmark-trend"],
+    ],
+)
+def test_cli_help_does_not_show_the_docstring_sections(
+    runner: CliRunner, command: list[str]
+) -> None:
+    result = runner.invoke(cli, [*command, "--help"])
+    assert "Args:" not in result.output
+
+
+@click_available
 def test_cli_no_command_shows_the_usage(runner: CliRunner) -> None:
     result = runner.invoke(cli, [])
     assert "Usage" in result.output

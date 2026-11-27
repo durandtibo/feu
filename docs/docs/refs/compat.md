@@ -66,9 +66,13 @@ is the list of files: add a package with
 >>> is_valid_version("numpy", "1.23.2", target)
 True
 >>> find_closest_version("numpy", "0.1.0", target)
-'...'
+'1.23.2'
 
 ```
+
+A wildcard request (e.g. `"2.*"`) is matched against the releases downloaded from PyPI when it is
+resolved, so it needs network access and the `requests` extra (see
+[Design](../design.md#wildcards-are-matched-against-pypi-at-call-time)).
 
 Corrections can be registered on top of the built-in data:
 
@@ -82,6 +86,8 @@ Corrections can be registered on top of the built-in data:
 ## API reference
 
 ::: feu.compat
+
+::: feu.compat.interface
 
 ::: feu.compat.discover
 

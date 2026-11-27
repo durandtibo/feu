@@ -190,6 +190,14 @@ class ShippedData:
 
         Returns:
             The canonical names of the packages, sorted.
+
+        Example:
+            ```pycon
+            >>> from feu.compat.shipped import ShippedData
+            >>> "pandas" in ShippedData().packages()
+            True
+
+            ```
         """
         return sorted(
             entry.name.removesuffix(_SUFFIX)
@@ -209,5 +217,13 @@ class ShippedData:
         Raises:
             FileNotFoundError: If there is no data for the package.
             ValueError: If the file is not valid.
+
+        Example:
+            ```pycon
+            >>> from feu.compat.shipped import ShippedData
+            >>> len(ShippedData().load("numpy").targets) > 0
+            True
+
+            ```
         """
         return parse_package_data(files(_DATA_PACKAGE).joinpath(f"{name}{_SUFFIX}").read_text())

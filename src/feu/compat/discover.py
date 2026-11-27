@@ -54,6 +54,14 @@ class SameVersion:
 
     Args:
         package: The companion package name.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import SameVersion
+        >>> SameVersion("jaxlib")
+        SameVersion(package='jaxlib')
+
+        ```
     """
 
     package: str
@@ -67,6 +75,14 @@ class PinnedDependency:
 
     Args:
         package: The companion package name.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import PinnedDependency
+        >>> PinnedDependency("pydantic-core")
+        PinnedDependency(package='pydantic-core')
+
+        ```
     """
 
     package: str
@@ -94,6 +110,14 @@ class Discovery(NamedTuple):
         targets: The ranges of compatible versions of each target. A
             range that reaches the latest release is open (its
             ``max`` is ``None``).
+
+    Example:
+        ```pycon
+        >>> from feu.compat import Discovery
+        >>> Discovery(versions=("1.0.0",), targets={})
+        Discovery(versions=('1.0.0',), targets={})
+
+        ```
     """
 
     versions: tuple[str, ...]
@@ -373,6 +397,10 @@ def fetch_known_versions(pkg_name: str) -> tuple[str, ...]:
         The stable, valid, not yanked and not ignored releases (see
             ``IGNORED_VERSIONS``), in ascending PEP 440 order.
 
+    Raises:
+        RuntimeError: If the request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
+
     Example:
         ```pycon
         >>> from feu.compat import fetch_known_versions
@@ -424,6 +452,10 @@ def discover_compat_targets(
         The considered versions and the ranges of compatible versions
             of each target. The ranges can be given to
             ``CompatRegistry.register_many``.
+
+    Raises:
+        RuntimeError: If a request to PyPI fails.
+        MissingPackageError: If ``requests`` is not installed.
 
     Example:
         ```pycon

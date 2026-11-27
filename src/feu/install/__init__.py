@@ -1,4 +1,13 @@
-r"""Contain package installers."""
+r"""Contain the functions and classes to install packages.
+
+``install_package`` installs a package as requested, and
+``install_package_closest_version`` first resolves the closest
+compatible version (``feu.compat``). An ``Installer`` (``pip`` or
+``uv``) builds one command that installs into the interpreter that runs
+``feu``, after a dependency resolver (``feu.install.resolver``) added
+the requirements that the package needs. The installers and the
+resolvers are registered in registries that can be extended.
+"""
 
 from __future__ import annotations
 

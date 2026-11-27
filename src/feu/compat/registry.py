@@ -38,6 +38,16 @@ class VersionRange(NamedTuple):
             minimum.
         max: The maximum valid package version, or ``None`` for no
             maximum.
+
+    Both bounds are inclusive.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import VersionRange
+        >>> VersionRange("1.0.0", None)
+        VersionRange(min='1.0.0', max=None)
+
+        ```
     """
 
     min: str | None
@@ -49,6 +59,14 @@ class PackageData(NamedTuple):
 
     Attributes:
         targets: The ranges of each target.
+
+    Example:
+        ```pycon
+        >>> from feu.compat.registry import PackageData
+        >>> PackageData(targets={})
+        PackageData(targets={})
+
+        ```
     """
 
     targets: dict[Target, list[VersionRange]]
@@ -59,10 +77,30 @@ class DataLoader(Protocol):
 
     A registry asks its loader for the list of packages (cheap) and
     loads the data of a package the first time it needs it.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import CompatRegistry, Target, VersionRange
+        >>> from feu.compat.registry import PackageData
+        >>> class MyLoader:
+        ...     def packages(self):
+        ...         return ["my-package"]
+        ...     def load(self, name):
+        ...         return PackageData({Target("3.11"): [VersionRange("1.0", None)]})
+        ...
+        >>> registry = CompatRegistry(loader=MyLoader())
+        >>> registry.is_valid_version("my_package", "0.5", Target("3.11"))
+        False
+
+        ```
     """
 
     def packages(self) -> Collection[str]:
-        r"""Get the canonical names of the packages that have data."""
+        r"""Get the canonical names of the packages that have data.
+
+        Returns:
+            The canonical package names.
+        """
         ...
 
     def load(self, name: str) -> PackageData:
@@ -70,6 +108,9 @@ class DataLoader(Protocol):
 
         Args:
             name: The canonical package name.
+
+        Returns:
+            The data of the package.
         """
         ...
 
@@ -88,7 +129,21 @@ def _parse(version: str | None) -> Version | None:
 
 class UnsupportedVersionError(Exception):
     r"""Raised when no package version is compatible with a given
-    target."""
+    target.
+
+    Example:
+        ```pycon
+        >>> from feu.compat import CompatRegistry, Target, UnsupportedVersionError
+        >>> registry = CompatRegistry({"my_package": {Target("3.11"): []}})
+        >>> try:
+        ...     registry.find_closest_version("my_package", "1.0", Target("3.11"))
+        ... except UnsupportedVersionError as error:
+        ...     print(type(error).__name__)
+        ...
+        UnsupportedVersionError
+
+        ```
+    """
 
 
 class CompatRegistry:
@@ -233,6 +288,15 @@ class CompatRegistry:
         ``VersionRange``.
 
         Reading it loads the data of every package of the loader.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry({"numpy": {Target("3.11"): [VersionRange("1.0", None)]}})
+            >>> list(registry.state)
+            ['numpy']
+
+            ```
         """
         for name in self.packages():
             self._ensure_loaded(name)
@@ -287,6 +351,16 @@ class CompatRegistry:
             ValueError: If a bound of a range is not a valid PEP 440
                 version, or if a minimum is greater than the maximum
                 of the same range. Nothing is registered in that case.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry()
+            >>> registry.register("numpy", Target("3.11"), ranges=[VersionRange("1.23.2", None)])
+            >>> registry.get_config("numpy", Target("3.11"))
+            [VersionRange(min='1.23.2', max=None)]
+
+            ```
         """
         name = canonicalize_name(pkg_name)
         self._validate_ranges(name, ranges)
@@ -341,7 +415,19 @@ class CompatRegistry:
         Raises:
             RuntimeError: If any configuration already exists for a
                 given package name and target, and ``exist_ok`` is
-                ``False``.
+                ``False``. The entries before the conflict stay
+                registered.
+            ValueError: If a range is invalid (see ``register``).
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry()
+            >>> registry.register_many({"numpy": {Target("3.11"): [VersionRange("1.23.2", None)]}})
+            >>> registry.packages()
+            ['numpy']
+
+            ```
         """
         for pkg_name, targets in mapping.items():
             for target, ranges in targets.items():
@@ -471,6 +557,15 @@ class CompatRegistry:
         Returns:
             ``True`` if a configuration is registered for the
                 package, otherwise ``False``.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry({"numpy": {Target("3.11"): [VersionRange("1.0", None)]}})
+            >>> registry.has_package("NumPy"), registry.has_package("pandas")
+            (True, False)
+
+            ```
         """
         name = canonicalize_name(pkg_name)
         self._ensure_loaded(name)
@@ -485,8 +580,20 @@ class CompatRegistry:
             target: The compatibility target.
 
         Returns:
-            The list of ``VersionRange`` for this target, or an empty
-            list if no configuration matches.
+            The list of ``VersionRange`` for this target. The list is
+            empty if no configuration matches, and also if the target is
+            explicitly unsupported (see ``is_unsupported``).
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry({"numpy": {Target("3.11"): [VersionRange("1.0", None)]}})
+            >>> registry.get_config("numpy", Target("3.11", os="linux"))
+            [VersionRange(min='1.0', max=None)]
+            >>> registry.get_config("numpy", Target("3.12"))
+            []
+
+            ```
         """
         return self._resolve_ranges(pkg_name, target) or []
 
@@ -506,6 +613,17 @@ class CompatRegistry:
         Returns:
             ``True`` if the package has no valid version for the
             given target, ``False`` otherwise.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target
+            >>> registry = CompatRegistry({"numpy": {Target("3.8"): []}})
+            >>> registry.is_unsupported("numpy", Target("3.8"))
+            True
+            >>> registry.is_unsupported("numpy", Target("3.11"))  # not configured
+            False
+
+            ```
         """
         ranges = self._resolve_ranges(pkg_name, target)
         return ranges is not None and not ranges
@@ -528,6 +646,15 @@ class CompatRegistry:
         Raises:
             UnsupportedVersionError: If no package version is valid
                 for the given target.
+
+        Example:
+            ```pycon
+            >>> from feu.compat import CompatRegistry, Target, VersionRange
+            >>> registry = CompatRegistry({"numpy": {Target("3.11"): [VersionRange("1.0", None)]}})
+            >>> registry.get_version_ranges("numpy", Target("3.11"))
+            [(<Version('1.0')>, None)]
+
+            ```
         """
         if self.is_unsupported(pkg_name=pkg_name, target=target):
             msg = f"No version of package {pkg_name} is compatible with target {target}"
@@ -690,6 +817,8 @@ class CompatRegistry:
         Raises:
             ValueError: If ``pkg_version`` is not a valid version
                 request.
+            Exception: An error of the version source (e.g. no
+                network) is not caught.
 
         Example:
             ```pycon
@@ -798,6 +927,8 @@ class CompatRegistry:
                 satisfies a wildcard request.
             ValueError: If ``pkg_version`` is not a valid version
                 request.
+            Exception: An error of the version source (e.g. no
+                network) is not caught.
 
         Example:
             ```pycon
@@ -864,6 +995,8 @@ class CompatRegistry:
         Raises:
             ValueError: If ``pkg_version`` is not a valid version
                 request.
+            Exception: An error of the version source (e.g. no
+                network) is not caught.
 
         Example:
             ```pycon

@@ -9,7 +9,13 @@ installed with ``pip install 'feu[cli]'``. It provides the commands
 The standard output holds only the answer of a command (it is used in
 ``$(...)``), the logs and the error messages go to the standard error,
 and the exit status carries the result: ``0`` for success, ``1`` for a
-negative answer and ``2`` for a usage error.
+negative answer and ``2`` for a usage error. An unexpected error (e.g. a
+network failure, a missing extra or a failed installation) is not
+caught.
+
+The help shown by ``--help``, and in the CLI reference of the
+documentation, is the ``help`` argument of each command. The docstrings
+document the Python functions.
 """
 
 from __future__ import annotations
@@ -40,6 +46,61 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 F = TypeVar("F", bound="Callable[..., Any]")
+
+_CLI_HELP = """Manage Python packages and their versions across Python environments."""
+
+_INSTALL_HELP = """Install a package and associated packages.
+
+The package is installed in the interpreter that runs `feu`, for the
+current target. The closest compatible version is installed if the
+requested version is not compatible.
+
+The exit status is `1` if no version is compatible and `2` if an
+argument is invalid (e.g. a malformed wildcard).
+"""
+
+_FIND_CLOSEST_VERSION_HELP = """Print the closest valid version of a package for a target.
+
+The standard output holds only the version to install. For a wildcard or
+an empty version request that lies in an open-ended range, the request
+itself is printed.
+
+The exit status is `1` if no version is compatible with the target (the
+message is printed on the standard error) and `2` if an argument is
+invalid.
+"""
+
+_CHECK_VALID_VERSION_HELP = """Print if a package version is valid for a target.
+
+`True` is printed and the exit status is `0` if the version request is
+valid, otherwise `False` is printed and the exit status is `1`. An exact
+version of a package that has no data is valid, whereas a wildcard or an
+empty request of such a package is not.
+
+The exit status is `2` if an argument is invalid.
+"""
+
+_PACKAGE_VERSIONS_HELP = """Write the versions to test of the dependencies of a project.
+
+The dependencies are read from `[project.dependencies]` and
+`[project.optional-dependencies]`. The output is a JSON object that maps
+each package to the latest version of each minor (or major) version at or
+above its lower bound, and to the first version at or above that bound.
+
+The command needs network access and the `requests` extra.
+"""
+
+_BENCHMARK_TREND_HELP = """Print the trend of the pytest-benchmark results saved in STORAGE.
+
+The standard output holds only the Markdown report (a table of the trend
+of each benchmark and, if any, the regressions). The GitHub Actions
+`::warning::` annotations of the regressions and the messages go to the
+standard error, as UTF-8. If there is no result in the window, a message
+is printed on the standard error and the standard output is empty.
+
+The exit status is `0`, `1` with `--fail-on-regression` and a
+regression, and `2` if an argument or a result file is invalid.
+"""
 
 _PKG_NAME = click.option("-n", "--pkg-name", "pkg_name", help="Package name", required=True)
 _PKG_VERSION = click.option(
@@ -83,7 +144,7 @@ def target_options(function: F) -> F:
     )(function)
 
 
-@click.group()
+@click.group(help=_CLI_HELP)
 @click.version_option(__version__, "--version", prog_name="feu")
 @click.option("--verbose", is_flag=True, help="Log the executed commands on the standard error.")
 def cli(*, verbose: bool) -> None:
@@ -92,12 +153,18 @@ def cli(*, verbose: bool) -> None:
     Args:
         verbose: If ``True``, log the executed commands on the
             standard error.
+
+    Example:
+        ```console
+        $ feu --verbose install --pkg-name=numpy
+
+        ```
     """
     if verbose:
         logging.basicConfig(level=logging.INFO, stream=sys.stderr, format="%(message)s")
 
 
-@cli.command()
+@cli.command(help=_INSTALL_HELP)
 @_PKG_NAME
 @_PKG_VERSION
 @click.option(
@@ -153,6 +220,9 @@ def install(
             split once with ``shlex.split``. The valid arguments
             depend on the package installer.
 
+    Raises:
+        click.UsageError: If an argument is invalid.
+
     Example:
         ```console
         $ feu install --installer-name=pip --pkg-name=numpy --pkg-version=2.0.2
@@ -172,7 +242,7 @@ def install(
         raise click.UsageError(str(exc)) from exc
 
 
-@cli.command(name="find-closest-version")
+@cli.command(name="find-closest-version", help=_FIND_CLOSEST_VERSION_HELP)
 @_PKG_NAME
 @_PKG_VERSION
 @target_options
@@ -196,6 +266,9 @@ def find_closest_version(
             If not provided, the current interpreter's free-threaded
             status is used.
 
+    Raises:
+        click.UsageError: If an argument is invalid.
+
     Example:
         ```console
         $ feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
@@ -216,7 +289,7 @@ def find_closest_version(
     click.echo(version)
 
 
-@cli.command(name="check-valid-version")
+@cli.command(name="check-valid-version", help=_CHECK_VALID_VERSION_HELP)
 @_PKG_NAME
 @_PKG_VERSION
 @target_options
@@ -241,6 +314,9 @@ def check_valid_version(
             If not provided, the current interpreter's free-threaded
             status is used.
 
+    Raises:
+        click.UsageError: If an argument is invalid.
+
     Example:
         ```console
         $ feu check-valid-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10
@@ -259,7 +335,7 @@ def check_valid_version(
     sys.exit(0 if valid else 1)
 
 
-@cli.command(name="package-versions")
+@cli.command(name="package-versions", help=_PACKAGE_VERSIONS_HELP)
 @click.option(
     "--pyproject",
     "pyproject",
@@ -290,7 +366,8 @@ def package_versions(pyproject: str, output: str | None, major_only: tuple[str, 
     The dependencies are read from ``[project.dependencies]`` and
     ``[project.optional-dependencies]``. The output is a JSON object
     that maps each package to the latest version of each minor (or
-    major) version at or above its lower bound.
+    major) version at or above its lower bound, and to the first version
+    at or above that bound (see ``feu.version.fetch_package_versions``).
 
     Args:
         pyproject: The ``pyproject.toml`` file.
@@ -326,7 +403,7 @@ def _use_utf8_streams() -> None:
             reconfigure(encoding="utf-8")
 
 
-@cli.command(name="benchmark-trend")
+@cli.command(name="benchmark-trend", help=_BENCHMARK_TREND_HELP)
 @click.argument("storage", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.option(
     "--kind",
@@ -436,6 +513,10 @@ def benchmark_trend(
             after the report is made.
         fail_on_regression: If ``True``, exit with the status ``1`` if
             there is a regression.
+
+    Raises:
+        click.UsageError: If an argument is invalid or if a result file is
+            invalid.
 
     Example:
         ```console

@@ -248,6 +248,10 @@ def resolve(
     Returns:
         The requirements to install.
 
+    Raises:
+        ValueError: If the package specification is not a valid
+            requirement (e.g. a malformed version).
+
     Example:
         ```pycon
         >>> from feu.install.resolver import resolve

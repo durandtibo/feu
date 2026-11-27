@@ -1,4 +1,18 @@
-r"""Contain functions to manage package versions."""
+r"""Contain functions to manage package versions.
+
+The versions are compared and sorted in PEP 440 order. The functions are
+grouped by role:
+
+- the installed version of a package (``get_package_version``,
+  ``compare_version``);
+- sorting and filtering lists of versions (``sort_versions``,
+  ``filter_*``, ``latest_*``);
+- the version request (``parse_version_request``);
+- the metadata published on PyPI (``fetch_pypi_*``) and the selection of
+  versions from it (``fetch_*``), which need ``requests``;
+- the dependency bounds of a ``pyproject.toml`` file
+  (``read_pyproject_*``).
+"""
 
 from __future__ import annotations
 

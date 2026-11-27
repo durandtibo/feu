@@ -27,6 +27,10 @@ def compare_version(package: str, op: Callable, version: str) -> bool:
         The comparison status. ``False`` if the package is not
             installed.
 
+    Raises:
+        packaging.version.InvalidVersion: If the package is installed
+            and ``version`` is not a valid PEP 440 version.
+
     Example:
         ```pycon
         >>> import operator

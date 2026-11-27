@@ -258,11 +258,14 @@ def make_report(
     The report has a table of the trend of each benchmark and, if
     there are regressions, a regression block. If the runs come from
     several machines, the report has one section per machine, because
-    the runs of different machines are never compared.
+    the runs of different machines are never compared. In the table, the
+    change is between the first and the latest run of the benchmark,
+    whereas the change of a regression is relative to the median of the
+    previous runs. The rows are sorted by latest time then by label.
 
     Args:
-        runs: The runs returned by ``load_runs``. There must be at
-            least one.
+        runs: The runs returned by ``load_runs``, in chronological
+            order. There must be at least one.
         kind: The kind of results, ``"benchmark"`` or ``"import"``.
         stat: The statistic of the times, it is shown in the title.
         unit: The unit of the times: ``"s"``, ``"ms"``, ``"us"`` or

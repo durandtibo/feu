@@ -67,6 +67,9 @@ def register_compat(
     Raises:
         RuntimeError: If any entry is already registered and
             ``exist_ok`` is ``False``.
+        ValueError: If a bound of a range is not a valid PEP 440
+            version, or if a minimum is greater than the maximum of the
+            same range.
 
     Example:
         ```pycon
@@ -102,9 +105,11 @@ def find_closest_version(
     Returns:
         The closest valid version as a string. An exact version is
             returned unchanged if it is valid or if the package is not
-            configured for the target. A wildcard or empty request is
+            configured for the target, otherwise the nearest range
+            boundary is returned. A wildcard or empty request is
             resolved to the latest compatible version, or returned
-            unchanged if it lies in an open-ended range (see
+            unchanged if it lies in an open-ended range or if the
+            registry has no data for the package (see
             ``CompatRegistry.find_closest_version``).
 
     Raises:
@@ -112,6 +117,10 @@ def find_closest_version(
             the given target, or if no known version satisfies a
             wildcard request.
         ValueError: If ``pkg_version`` is not a valid version request.
+        RuntimeError: If the versions needed to match a wildcard cannot
+            be downloaded from PyPI.
+        MissingPackageError: If a wildcard needs a download and
+            ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -158,6 +167,10 @@ def is_valid_version(
 
     Raises:
         ValueError: If ``pkg_version`` is not a valid version request.
+        RuntimeError: If the versions needed to match a wildcard cannot
+            be downloaded from PyPI.
+        MissingPackageError: If a wildcard needs a download and
+            ``requests`` is not installed.
 
     Example:
         ```pycon
@@ -199,15 +212,18 @@ def get_compatible_versions(
 
     Raises:
         ValueError: If ``pkg_version`` is not a valid version request.
+        RuntimeError: If the versions cannot be downloaded from PyPI.
+        MissingPackageError: If a download is needed and ``requests``
+            is not installed.
 
     Example:
         ```pycon
-        >>> from feu.compat import get_compatible_versions, Target
-        >>> versions = get_compatible_versions(
-        ...     "numpy", Target(python_version="3.9", os="linux", arch="x86_64"), "1.26.*"
-        ... )
-        >>> versions[-1]
-        '1.26.4'
+        >>> from feu.compat import CompatRegistry, Target, VersionRange, get_compatible_versions
+        >>> target = Target(python_version="3.11")
+        >>> registry = CompatRegistry({"my_package": {target: [VersionRange("1.0", "2.0")]}})
+        >>> registry.register_versions("my_package", ["1.0", "1.5", "2.0", "3.0"])
+        >>> get_compatible_versions("my_package", target, "1.*", registry=registry)
+        ['1.0', '1.5']
 
         ```
     """

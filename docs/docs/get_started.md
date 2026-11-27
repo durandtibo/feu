@@ -28,7 +28,11 @@ It is also possible to install specific optional dependencies:
 - `feu[rich]` - Install rich console/formatting support (rich): `show_compat_targets`
 
 `feu` requires Python 3.11 or newer. Without an extra, the feature that needs it raises a
-`MissingPackageError` that gives the `pip install` command.
+`MissingPackageError` that gives the `pip install` command. The `pytest` marks of `feu.testing`
+need `pytest`, which is not a dependency of `feu`.
+
+Installing with the `uv` installer of `feu` also needs the [`uv`](https://docs.astral.sh/uv/) tool
+on the `PATH`.
 
 For example:
 

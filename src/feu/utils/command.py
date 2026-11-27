@@ -29,6 +29,7 @@ def run_command(argv: Sequence[str]) -> None:
     Raises:
         subprocess.CalledProcessError: If the command exits with a
             non-zero status.
+        FileNotFoundError: If the program is not found.
 
     Example:
         ```pycon
