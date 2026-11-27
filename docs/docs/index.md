@@ -50,6 +50,8 @@ packages and their versions across different Python environments. It provides ut
 - **Git and GitHub utilities**: Get the tags of a local git repository, and fetch and sort
   repository metadata from the GitHub API
 - **Benchmark trend**: Follow the results of `pytest-benchmark` and detect the regressions
+- **Optional dependencies**: Check them, raise a helpful error when one is missing, and skip the
+  tests that need them (`feu.imports`, `feu.testing`)
 
 The library is particularly useful for projects that need to support multiple Python versions,
 free-threaded builds, OSes, and CPU architectures, and want to ensure they install compatible
@@ -82,6 +84,20 @@ True
 ```
 
 A wildcard needs network access (and the `requests` extra), so the example is skipped by the tests.
+
+Install a package at the closest valid version, from Python or from the command line:
+
+```python
+from feu import InstallerSpec, PackageSpec, install_package_closest_version
+
+install_package_closest_version(InstallerSpec("uv"), PackageSpec("numpy", "2.*"))
+```
+
+```shell
+feu install --installer-name=uv --pkg-name=numpy --pkg-version='2.*'
+```
+
+The [Usage Guide](usage.md) has examples of every feature.
 
 ## Documentation
 

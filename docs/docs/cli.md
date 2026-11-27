@@ -66,6 +66,25 @@ $ echo $?
 1
 ```
 
+Every option has a short form (`-n`, `-v`, and `-p` / `-f` for the target; see the reference
+above). A free-threaded target is chosen with a `t` suffix or with `--free-threaded`, and a
+contradiction between the two is a usage error:
+
+```shell
+$ feu find-closest-version -n numpy -v 1.26.4 -p 3.14t
+2.3.2
+$ feu find-closest-version -n numpy -v 1.26.4 -p 3.14 --free-threaded
+2.3.2
+$ feu find-closest-version -n numpy -p 3.14t --no-free-threaded
+Usage: feu find-closest-version [OPTIONS]
+...
+$ echo $?
+2
+```
+
+Without `--pkg-version`, the request is the latest version. For a package whose latest release is
+compatible, the request itself is printed, which is an empty line.
+
 Check if a version is valid. The exit status is `0` when the version is valid:
 
 ```shell
@@ -75,12 +94,24 @@ $ feu check-valid-version --pkg-name=numpy --pkg-version=1.0.0 --python-version=
 False
 ```
 
+An exact version of a package without data is valid, but a wildcard of such a package is not:
+
+```shell
+$ feu check-valid-version -n my-package -v 1.0
+True
+$ feu check-valid-version -n my-package -v '1.*'
+False
+```
+
 Install a package, with extras and installer arguments:
 
 ```shell
 feu install --pkg-name=numpy --pkg-version=2.0.2
 feu install --pkg-name=pandas --pkg-version='2.*' --pkg-extras=performance
 feu install --installer-name=uv --installer-args='--upgrade' --pkg-name=numpy
+feu install -i uv -a '--upgrade --pre' -n pandas -v '2.*' -e performance,excel
+feu --verbose install -n numpy -v 2.0.2  # logs the pip command on the standard error
+python -m feu install -n numpy           # the same CLI, for a given interpreter
 ```
 
 Write the versions to test of the dependencies of a project, from the bounds of its
@@ -104,6 +135,18 @@ step fail instead of installing `pkg==None`:
 ```shell
 VERSION=$(feu find-closest-version --pkg-name=numpy --pkg-version=2.0.2 --python-version=3.10) \
   && feu install --pkg-name=numpy --pkg-version="$VERSION"
+```
+
+In a GitHub Actions matrix, give the Python version of the job to the command (`3.14t` selects the
+free-threaded build):
+
+```yaml
+- name: Install the closest valid NumPy
+  run: |
+    VERSION=$(feu find-closest-version -n numpy -v 2.0.2 -p "${PYTHON_VERSION}")
+    feu install -n numpy -v "${VERSION}"
+  env:
+    PYTHON_VERSION: ${{ matrix.python-version }}
 ```
 
 ## benchmark-trend
@@ -140,6 +183,22 @@ The exit status is `0`, `1` with `--fail-on-regression` and a regression, and `2
 or an invalid result file. If there is no result in the window, a message goes to the standard
 error, the standard output is empty and the status is `0`: the first run of a new workflow has no
 history.
+
+### In a scheduled workflow
+
+Keep the storage between the runs (here with the cache of GitHub Actions), add the results of the
+run, then write the report in the summary of the job. The annotations of the regressions go to the
+standard error, so they are still read by GitHub when the standard output is redirected:
+
+```yaml
+- uses: actions/cache@v4
+  with:
+    path: .benchmarks
+    key: benchmarks-${{ github.run_id }}
+    restore-keys: benchmarks-
+- run: pytest tests/benchmarks --benchmark-only --benchmark-save=run --benchmark-storage=.benchmarks
+- run: feu benchmark-trend .benchmarks --prune >> "$GITHUB_STEP_SUMMARY"
+```
 
 ### What is read
 

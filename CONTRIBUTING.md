@@ -53,7 +53,12 @@ inv test.functional
 
 # Run the examples of the docstrings and of the Markdown files
 inv test.doctest
+
+# Run the benchmarks (tests/benchmarks/, skipped by the other commands)
+inv test.benchmark
 ```
+
+Check that your change does not create an import cycle with `inv imports.check-cycles`.
 
 ### Code Quality
 
@@ -90,6 +95,23 @@ We use `ty` and `pyright` for type checking:
 ```bash
 inv types.check --complete
 ```
+
+#### Other Files
+
+The YAML, Makefile, shell, TOML and Markdown files have their own tools, which the CI also checks:
+
+```bash
+# Format these files
+make format
+
+# Lint these files, and the GitHub Actions workflows
+make lint
+
+# Check the spelling
+inv lint.check-spelling
+```
+
+`make help` lists the targets and `inv --list` lists the tasks.
 
 #### Pre-commit Hooks
 
@@ -142,6 +164,21 @@ Visit `http://127.0.0.1:8000` to view the documentation locally.
 - The help of a command of the CLI is its `help` argument, not its docstring
 - Update relevant `.md` files in `docs/docs/` for user-facing documentation. The examples of
   `README.md` and of the main pages also run as tests (`tests/unit/test_docs.py`)
+
+## Maintenance Scripts
+
+The scripts of `dev/` are run by scheduled workflows, and can be run by hand. All of them use the
+network.
+
+| Script                                                | What it does                                                                                                                                      |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `python dev/generate_compat_data.py [packages]`       | Regenerate the compatibility data in `src/feu/compat/data` (all the files without argument).                                                      |
+| `python dev/generate_compat_data.py --new <package>`  | Add the compatibility data of a new package.                                                                                                      |
+| `python dev/generate_versions.py`                     | Update `dev/config/package_versions.json`, the versions of the dependencies tested by the CI.                                                     |
+| `python dev/install_all_versions.py [--installer uv]` | Install every compatible version, released in the last 5 years, of the packages that have data. It modifies the environment: use a throwaway one. |
+
+When you add a package to the compatibility data, update the list of the shipped packages in
+`README.md` and `docs/docs/usage.md`.
 
 ## Pull Request Process
 
