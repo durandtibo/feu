@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING
+from inspect import signature
+from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -30,7 +32,11 @@ NUMPY_PY39 = ["--pkg-name", "numpy", "--python-version", "3.9", "--no-free-threa
 
 @pytest.fixture
 def runner() -> CliRunner:
-    return CliRunner()
+    # click < 8.2 mixes stderr into stdout unless asked not to; the option is gone in 8.2.
+    kwargs: dict[str, Any] = {}
+    if "mix_stderr" in signature(CliRunner).parameters:
+        kwargs["mix_stderr"] = False
+    return CliRunner(**kwargs)
 
 
 #################################
@@ -195,7 +201,7 @@ def test_install_unsupported_version_exits_with_1(runner: CliRunner) -> None:
     with patch("feu.cli.install_package_closest_version", mock):
         result = runner.invoke(cli, ["install", "-n", "numpy", "-v", "1.24.*"])
     assert result.exit_code == 1
-    assert "no compatible version" in result.output
+    assert "no compatible version" in result.stderr
 
 
 @click_available
@@ -214,7 +220,7 @@ def test_install_does_not_accept_target_options(runner: CliRunner) -> None:
 def test_install_invalid_wildcard_is_a_usage_error(runner: CliRunner) -> None:
     result = runner.invoke(cli, ["install", "-n", "numpy", "-v", "2.*.1"])
     assert result.exit_code == 2
-    assert "invalid version wildcard" in result.output
+    assert "invalid version wildcard" in result.stderr
 
 
 @click_available
@@ -301,7 +307,7 @@ def test_find_closest_version_unsupported_prints_the_message(runner: CliRunner) 
     mock = Mock(side_effect=UnsupportedVersionError("no version matches '3.*'"))
     with patch("feu.cli.find_closest_version_", mock):
         result = runner.invoke(cli, ["find-closest-version", *NUMPY_PY39, "-v", "3.*"])
-    assert "no version matches '3.*'" in result.output
+    assert "no version matches '3.*'" in result.stderr
 
 
 @click_available
@@ -655,7 +661,8 @@ def test_benchmark_trend_unknown_unit_is_a_usage_error(runner: CliRunner, tmp_pa
 @click_available
 def test_benchmark_trend_scale_is_not_an_option(runner: CliRunner, tmp_path: Path) -> None:
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--scale", "2"])
-    assert (result.exit_code, "No such option '--scale'" in result.stderr) == (2, True)
+    found = re.search(r"No such option:? '?--scale", result.stderr)
+    assert (result.exit_code, found is not None) == (2, True)
 
 
 @click_available
@@ -783,7 +790,8 @@ def test_benchmark_trend_baseline_runs(runner: CliRunner, tmp_path: Path) -> Non
 @click_available
 def test_benchmark_trend_window_is_not_an_option(runner: CliRunner, tmp_path: Path) -> None:
     result = runner.invoke(cli, ["benchmark-trend", str(tmp_path), "--window", "2"])
-    assert (result.exit_code, "No such option '--window'" in result.stderr) == (2, True)
+    found = re.search(r"No such option:? '?--window", result.stderr)
+    assert (result.exit_code, found is not None) == (2, True)
 
 
 @click_available

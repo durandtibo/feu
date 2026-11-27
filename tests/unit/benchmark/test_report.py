@@ -66,7 +66,7 @@ def test_sparkline_does_not_modify_values() -> None:
 
 
 def test_sparkline_empty() -> None:
-    with pytest.raises(ValueError, match=r"min\(\) iterable argument is empty"):
+    with pytest.raises(ValueError, match=r"min\(\) .*empty"):
         _sparkline([])
 
 
