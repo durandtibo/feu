@@ -21,11 +21,12 @@ pip install 'feu[all]'
 
 It is also possible to install specific optional dependencies:
 
-- `feu[cli]` - Install CLI support (click): the `feu` command
-- `feu[git]` - Install git support (gitpython): `feu.local_git`
-- `feu[requests]` - Install HTTP request support (requests, urllib3): the calls to PyPI and
-  GitHub, which a wildcard version request (`2.*`) needs
-- `feu[rich]` - Install rich console/formatting support (rich): `show_compat_targets`
+| Extra           | Installs              | Needed for                                                           |
+| --------------- | --------------------- | -------------------------------------------------------------------- |
+| `feu[cli]`      | `click`               | The `feu` command                                                    |
+| `feu[git]`      | `gitpython`           | `feu.local_git`                                                      |
+| `feu[requests]` | `requests`, `urllib3` | The calls to PyPI and GitHub, which a wildcard request (`2.*`) needs |
+| `feu[rich]`     | `rich`                | `show_compat_targets`                                                |
 
 `feu` requires Python 3.11 or newer. Without an extra, the feature that needs it raises a
 `MissingPackageError` that gives the `pip install` command. The `pytest` marks of `feu.testing`
@@ -48,6 +49,38 @@ pip install 'feu[cli,git]'
 >>> is_package_available("packaging")
 True
 
+```
+
+With the `cli` extra, the command prints its version and its commands:
+
+```shell
+feu --version
+feu --help
+```
+
+## First steps
+
+Find the version to install on an environment, here Python 3.9 on Linux:
+
+```pycon
+>>> from feu import Target, find_closest_version
+>>> find_closest_version("numpy", "2.3.0", Target("3.9", os="linux", arch="x86_64"))
+'2.0.2'
+
+```
+
+Install the closest valid version in the current environment (this runs `pip`):
+
+```python
+from feu import InstallerSpec, PackageSpec, install_package_closest_version
+
+install_package_closest_version(InstallerSpec("pip"), PackageSpec("numpy", "2.0.2"))
+```
+
+The same from the command line:
+
+```shell
+feu install --pkg-name=numpy --pkg-version=2.0.2
 ```
 
 The [Usage Guide](usage.md) shows the main features, and the [Design](design.md) page explains the
@@ -103,8 +136,12 @@ source .venv/bin/activate
 uv sync --all-extras --group dev --group docs
 ```
 
-After installation, you can verify everything is working by running the tests:
+After installation, activate the virtual environment (`source .venv/bin/activate`) and verify that
+everything is working by running the tests:
 
 ```shell
 inv test.unit --cov
 ```
+
+See [CONTRIBUTING.md](https://github.com/durandtibo/feu/blob/main/CONTRIBUTING.md) for the other
+development tasks.

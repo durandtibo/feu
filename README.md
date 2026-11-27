@@ -99,6 +99,62 @@ feu install --pkg-name=numpy --pkg-version=2.0.2
 `python -m feu ...` is equivalent. The commands are `install`, `find-closest-version`,
 `check-valid-version`, `package-versions` and `benchmark-trend`.
 
+### More examples
+
+Add your own compatibility constraints, without touching the default registry:
+
+```pycon
+>>> from feu.compat import CompatRegistry, VersionRange
+>>> registry = CompatRegistry()
+>>> registry.register("my_package", Target("3.11"), ranges=[VersionRange("1.2.0", "2.0.0")])
+>>> find_closest_version("my_package", "3.0.0", Target("3.11"), registry=registry)
+'2.0.0'
+
+```
+
+See the requirements that are installed for a package, here an old `pandas`:
+
+```pycon
+>>> from feu import PackageSpec
+>>> from feu.install.resolver import resolve
+>>> resolve(PackageSpec("pandas", "2.1.1"))
+[<Requirement('pandas==2.1.1')>, <Requirement('numpy<2.0.0')>]
+
+```
+
+Sort and filter versions:
+
+```pycon
+>>> from feu.version import filter_stable_versions, latest_minor_versions
+>>> latest_minor_versions(filter_stable_versions(["1.9.0", "1.9.1", "1.10.0", "2.0.0rc1"]))
+['1.9.1', '1.10.0']
+
+```
+
+Install a package, or every compatible version of it:
+
+```python
+from feu import InstallerSpec, PackageSpec, install_package_closest_version, resolve_target
+from feu.install import install_all_versions
+
+install_package_closest_version(InstallerSpec("uv"), PackageSpec("numpy", "2.*"))
+result = install_all_versions(InstallerSpec("pip"), "numpy", resolve_target())
+```
+
+Report the trend of the `pytest-benchmark` results:
+
+```shell
+pytest --benchmark-only --benchmark-save=run --benchmark-storage=.benchmarks
+feu benchmark-trend .benchmarks --days 30 --fail-on-regression
+```
+
+The [usage guide](https://durandtibo.github.io/feu/usage) has examples of every feature.
+
+The shipped compatibility data covers `bokeh`, `click`, `duckdb`, `jax`, `matplotlib`, `numpy`,
+`pandas`, `polars`, `pyarrow`, `pydantic`, `requests`, `safetensors`, `scikit-learn`, `scipy`,
+`torch`, `xarray` and `xy`, for Python 3.9 to 3.15 on Linux, macOS and Windows (`x86_64` and
+`arm64`).
+
 ### Main API
 
 | Name                                                 | What it does                                                                 |
@@ -206,6 +262,8 @@ is the corresponding `feu` versions and supported dependencies.
 | `0.5.0` | `>=21.0,<26.0` | `>=3.10,<3.15` | `>=8.1,<9.0`        | `>=3.1.41,<4.0`         | `>=2.30,<3.0`          |                    |
 
 <sup>*</sup> indicates an optional dependency
+
+The `requests` extra also installs `urllib3>=2.0,<3.0`.
 
 <details>
     <summary>older versions</summary>

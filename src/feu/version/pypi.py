@@ -225,7 +225,7 @@ def fetch_pypi_project(package: str) -> PypiProject:
         >>> from feu.version import fetch_pypi_project
         >>> project = fetch_pypi_project("requests")  # doctest: +SKIP
         >>> list(project.releases)[:2]  # doctest: +SKIP
-        ['0.0.1', '0.1.0']
+        ['0.2.0', '0.2.1']
 
         ```
     """

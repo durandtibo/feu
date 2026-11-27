@@ -79,10 +79,11 @@ that need inputs and the pull request security review.
 ## Composite actions vs. reusable workflows
 
 - **`.github/actions/*`** (composite actions): used when the shared unit is a
-  handful of _steps_ inside a single job (e.g. checkout + `uv` setup,
-  generating a bot token + checking out, or opening the resulting PR as
-  ci-bot). Composite actions cannot produce a job-level output usable in a
-  `strategy.matrix`.
+  handful of _steps_ inside a single job. Composite actions cannot produce a
+  job-level output usable in a `strategy.matrix`. There are two:
+  `setup-doc-deploy` (configure git and fetch the `gh-pages` branch for `mike`)
+  and `verify-installed-package` (check an installed `feu` package, used by the
+  `nightly-test-*` workflows).
 - **`.github/workflows/lib-*.yaml`** (reusable workflows called with `uses:
 ./.github/workflows/lib-....yaml`): used when the output needs to feed a
   matrix, or when the shared logic is naturally a whole job (e.g. reading
